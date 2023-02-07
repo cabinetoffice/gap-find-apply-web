@@ -1,0 +1,25 @@
+{
+  "extends": [
+    "prettier",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "env": {
+    "jest": true,
+    "amd": true,
+    "es6": true,
+    "node": true
+  },
+  "globals": {
+    "cy": true,
+    "cypress": true,
+    "after": true
+  },
+  "rules": {
+    "no-unused-vars": "off",
+    "no-undef": "warn",
+    "no-shadow-restricted-names": "off",
+    "no-prototype-builtins": "off"
+  }
+}

@@ -1,0 +1,71 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - gap:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8082:8080
+
+  gap-admin-client:
+    image: admin:latest
+    restart: always
+    environment:
+      - BACKEND_HOST=http://gap-admin-api:8080
+      - SUB_PATH=/apply/admin
+      - APPLICANT_DOMAIN=https://localhost:3000/apply/applicant
+      - MAX_COOKIE_AGE=900
+      - JWT_COOKIE_NAME=find-grants-test
+      - LOGIN_URL=https://auth-testing.cabinetoffice.gov.uk/v2/find-grants/login
+      - SESSION_COOKIE_NAME=session_id
+    ports:
+      - 3001:3000
+
+  gap-admin-api:
+    image: admin-backend:latest
+    restart: always
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/gapapply
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=mysecretpassword
+    ports:
+      - 8081:8080
+
+  gap-applicant-client:
+    image: applicant:latest
+    restart: always
+    environment:
+      - BACKEND_HOST=http://gap-applicant-api:8080
+      - USER_TOKEN_NAME=find-grants-test
+      - ADMIN_FRONTEND_URL=http://localhost:3001/apply/admin
+      - APPLICANT_FRONTEND_URL=http://localhost:3000/apply/applicant/dashboard
+      - COLA_URL=https://auth-testing.cabinetoffice.gov.uk/v2/find-grants/login
+      - SUB_PATH=/apply/applicant
+      - APPLICANT_FRONTEND_URL_NO_VALID_TOKEN=http://localhost:3000/apply/applicant/dashboard
+    ports:
+      - 3000:3000
+
+  gap-applicant-api:
+    image: applicant-backend:latest
+    restart: always
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/gapapply
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=mysecretpassword
+    ports:
+      - 8080:8080
+
+volumes:
+  gap:

@@ -1,0 +1,14 @@
+@import '~govuk-frontend/govuk/settings/colours-applied';
+
+.gap-table-cell-top-border {
+  border-top: 1px solid $govuk-border-colour;
+}
+
+.gap-thead-static-position {
+  position: static !important;
+}
+
+.gap-table-caption-link {
+  font-weight: 100;
+  float: right;
+}

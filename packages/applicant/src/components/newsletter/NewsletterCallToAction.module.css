@@ -1,0 +1,12 @@
+.newsletterCtaTitle {
+  margin-bottom: 10px;
+  margin-left: 25px;
+}
+
+.newsLetterCtaInnerContent {
+  position: relative;
+}
+
+.withBorder {
+  border: 1px solid #b1b4b6;
+}

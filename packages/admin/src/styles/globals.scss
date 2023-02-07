@@ -1,0 +1,84 @@
+$govuk-new-link-styles: true;
+$govuk-assets-path: $sub_path + '/assets/';
+
+@import '~govuk-frontend/govuk/all';
+
+//Custom global styles below
+@import 'components/moj-pagination';
+@import 'components/date-picker';
+
+.hr-blue-border {
+  border: 1px solid govuk-colour('blue');
+}
+
+.border {
+  border: 1px solid;
+}
+
+.border-top {
+  border-top: 1px solid;
+}
+.border-bottom {
+  border-bottom: 1px solid;
+}
+.border-start {
+  border-left: 1px solid;
+}
+.border-end {
+  border-right: 1px solid;
+}
+
+.border-colour-blue {
+  border-color: govuk-colour('blue');
+}
+
+.border-2 {
+  border-width: 2px;
+}
+
+.border-3 {
+  border-width: 3px;
+}
+
+.border-4 {
+  border-width: 4px;
+}
+
+.border-5 {
+  border-width: 5px;
+}
+
+// To be used on the <table> tag
+.table-thead-bottom-border {
+  .govuk-table__header {
+    border-bottom: unset;
+  }
+  .govuk-table__row {
+    &:first-of-type {
+      .govuk-table__cell {
+        border-top: 1px solid $govuk-border-colour;
+      }
+    }
+  }
+}
+
+.no-overflow {
+  overflow-wrap: break-word;
+}
+
+@include govuk-exports('govuk/core/links') {
+}
+
+.button--tertiary {
+  background: unset;
+  border: unset;
+  padding: unset;
+  color: $govuk-link-colour;
+  cursor: pointer;
+  @include govuk-link-common;
+  @include govuk-font($size: 19, $line-height: 19px);
+}
+
+.break-all-words {
+  word-break: break-all;
+}

@@ -1,0 +1,9 @@
+{
+  "baseUrl": "http://localhost:3000/apply/admin",
+  "watchForFileChanges": false,
+  "video": false,
+  "screenshotOnRunFailure": false,
+  "chromeWebSecurity": false,
+  "experimentalSessionAndOrigin": true,
+  "redirectionLimit": 50
+}

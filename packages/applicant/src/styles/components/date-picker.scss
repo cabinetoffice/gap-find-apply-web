@@ -1,0 +1,248 @@
+.datepicker {
+  position: relative;
+  top: 0.5rem;
+  .govuk-fieldset {
+    width: 100%;
+    float: left;
+  }
+  button.govuk-button {
+    &:active {
+      top: unset;
+    }
+  }
+  button.icon {
+    padding: 5px;
+    background-color: white;
+    min-width: 40px;
+    border: none;
+    &:focus {
+      background-color: #fd0;
+    }
+    &:hover {
+      background-color: white;
+    }
+  }
+  .datepicker-dialog {
+    position: absolute;
+    width: 23rem;
+    right: -96px;
+    clear: both;
+    display: none;
+    border: 2px solid black;
+    margin-top: 1rem;
+    padding: 0;
+    background-color: #fff;
+    font-size: 1.1875rem;
+    button {
+      &::-moz-focus-inner {
+        border: 0;
+      }
+    }
+  }
+  .header {
+    cursor: default;
+    background-color: black;
+    padding: 7px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+    display: flex;
+    justify-content: space-around;
+    margin: -1px;
+    h2 {
+      margin: 0;
+      padding: 0;
+      display: inline-block;
+      font-size: 1em;
+      color: white;
+      text-transform: none;
+      font-weight: bold;
+    }
+    button {
+      border-style: none;
+      background: transparent;
+      color: white;
+    }
+  }
+  .prevYear {
+    padding: 4px 4px 0px 4px;
+    top: -1px;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: white;
+    background-color: #0b0c0c;
+    margin-bottom: 0px;
+    box-shadow: none;
+  }
+  .prevMonth {
+    padding: 4px 4px 0px 4px;
+    top: -1px;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: white;
+    background-color: #0b0c0c;
+    margin-bottom: 0px;
+    box-shadow: none;
+  }
+  .nextMonth {
+    padding: 4px 4px 0px 4px;
+    top: -1px;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: white;
+    background-color: #0b0c0c;
+    margin-bottom: 0px;
+    box-shadow: none;
+  }
+  .nextYear {
+    padding: 4px 4px 0px 4px;
+    top: -1px;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: white;
+    background-color: #0b0c0c;
+    margin-bottom: 0px;
+    box-shadow: none;
+  }
+  .dialogButtonGroup {
+    text-align: left;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-right: 1em;
+  }
+  .dialogButton {
+    padding: 5px;
+    margin-left: 1em;
+    outline: none;
+    &:focus {
+      background-color: #fd0;
+      color: #0b0c0c;
+    }
+  }
+  .fa-calendar-alt {
+    color: black;
+  }
+  .monthYear {
+    display: inline-block;
+    width: 12em;
+    text-align: center;
+  }
+  table.dates {
+    width: 100%;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: 1em;
+    th {
+      text-align: center;
+    }
+    td {
+      text-align: center;
+    }
+  }
+  .dateRow {
+    border: 1px solid black;
+  }
+  .dateCell {
+    outline: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    height: 40px;
+    width: 40px;
+  }
+  td {
+    padding: 0;
+    margin: 0;
+    line-height: inherit;
+    height: 40px;
+    width: 40px;
+    border: 1px solid #eee;
+    font-size: 15px;
+    background: #eee;
+    text-align: center !important;
+    &:focus {
+      background-color: #fd0;
+    }
+    &:disabled {
+      color: #777;
+      background-color: #fff;
+      border: none;
+      cursor: not-allowed;
+    }
+  }
+  td[aria-selected] {
+    border: 2px solid black;
+  }
+  td[tabindex='0'] {
+    border-color: black;
+  }
+  .disabled {
+    color: #afafaf;
+    &:hover {
+      color: black;
+    }
+  }
+  .message {
+    padding-top: 0.25em;
+    padding-left: 1em;
+    background: black;
+    color: white;
+    margin: -1px;
+  }
+  .icon {
+    margin-bottom: 0px;
+    box-shadow: none;
+  }
+}
+@media (max-width: 1020px) {
+  .datepicker {
+    .datepicker-dialog {
+      width: 20rem;
+    }
+  }
+}
+@media (max-width: 640px) {
+  .datepicker {
+    .datepicker-dialog {
+      button {
+        text-align: center;
+        margin-left: 0px;
+      }
+    }
+    .dialogButtonGroup {
+      margin-left: 1em;
+    }
+  }
+  #reverse-left-col {
+    .form-field-group {
+      .datepicker {
+        button {
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+@media (max-width: 340px) {
+  .datepicker {
+    .datepicker-dialog {
+      width: 100%;
+      min-width: 225px;
+    }
+  }
+}
+
+.withDatePicker {
+  .govuk-date-input__item {
+    margin-right: 0.7rem;
+  }
+}
+.dialog-ok-cancel-group {
+  padding-left: 1rem;
+  button {
+    margin: 0 1rem 1rem 0;
+  }
+}
+.dialog-message {
+  padding-left: 1rem;
+}

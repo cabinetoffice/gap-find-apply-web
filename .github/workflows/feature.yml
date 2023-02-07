@@ -1,0 +1,81 @@
+name: Feature Workflow
+
+on:
+  push:
+    branches:
+      - feature/**
+      - AFG-**
+      - GAP-**
+      - bug/**
+    paths-ignore:
+      - "*.md"
+
+jobs:
+  build:
+    name: Build Feature
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Generate applicant .env
+        run: |
+          cat << EOF > packages/applicant/.env
+          COLA_URL=${{ secrets.NEXT_PUBLIC_COLA_URL }}
+          HOST=${{ secrets.HOST}}
+          EOF
+
+      - name: Read .nvmrc
+        run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
+        id: nvm
+
+      - name: Setup node
+        uses: actions/setup-node@master
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+
+      - name: Read yarn cache directory path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+        id: yarn-cache-dir-path
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            **/node_modules
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: |
+          yarn install
+
+      - name: Lint files
+        run: |
+          yarn lint
+
+      - name: Build application
+        run: |
+          yarn build
+
+      - name: Units Tests
+        run: |
+          yarn coverage
+
+      - name: Cache application build
+        uses: actions/cache@v2
+        id: build-cache
+        with:
+          path: |
+            ${{ github.workspace }}/.next/cache
+          key: gap-cache-build-${{ github.event.pull_request.head.sha }}

@@ -1,0 +1,31 @@
+{
+  "name": "gap-apply-web",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "postinstall": "node -e \"try { require('husky').install() } catch (e) {if (e.code !== 'MODULE_NOT_FOUND') throw e}\"",
+    "lint": "yarn workspaces foreach -pv run lint",
+    "format": "yarn workspaces foreach -pv run format",
+    "coverage": "yarn workspaces foreach -ptv run coverage",
+    "build": "yarn workspaces foreach -ptv run build",
+    "build:image:admin": "docker build --build-arg APP_NAME=admin -t admin:latest .",
+    "build:image:applicant": "docker build --build-arg APP_NAME=applicant -t applicant:latest ."
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "devDependencies": {
+    "husky": "^8.0.1",
+    "lint-staged": "^12.3.8"
+  },
+  "resolutions": {
+    "trim": "^0.0.3",
+    "trim-newlines": "^3.0.0",
+    "glob-parent": "^6.0.1",
+    "postcss": "^8.4.16"
+  },
+  "packageManager": "yarn@3.2.2"
+}

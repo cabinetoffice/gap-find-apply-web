@@ -1,0 +1,9 @@
+@import '~govuk-frontend/govuk/helpers/colour';
+
+.gap-light-grey-background {
+    background-color: govuk-colour("light-grey");
+}
+
+.gap-new-line {
+    white-space: pre-line;
+}

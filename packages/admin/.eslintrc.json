@@ -1,0 +1,21 @@
+{
+  "extends": ["next/core-web-vitals", "next", "prettier", "eslint:recommended"],
+  "env": {
+    "jest": true,
+    "amd": true,
+    "es6": true
+  },
+  "globals": {
+    "cy": true,
+    "cypress": true,
+    "after": true,
+    "JSX": true
+  },
+  "rules": {
+    "no-unused-vars": "off",
+    "no-shadow-restricted-names": "off",
+    "no-prototype-builtins": "off",
+    "@next/next/no-server-import-in-page": "off" // Needed due to middleware lint rule being outdated in current next.js version,
+  },
+  "ignorePatterns": ["cypress/**/*"]
+}

@@ -1,0 +1,4 @@
+$govuk-new-link-styles: true;
+$govuk-assets-path: $sub_path + '/assets/';
+
+@import '~govuk-frontend/govuk/all';

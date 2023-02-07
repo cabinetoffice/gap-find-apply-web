@@ -1,0 +1,8 @@
+{
+  "baseUrl": "http://localhost:3000/apply/applicant",
+  "watchForFileChanges": false,
+  "video": false,
+  "screenshotOnRunFailure": false,
+  "chromeWebSecurity": false,
+  "experimentalSessionAndOrigin": true
+}

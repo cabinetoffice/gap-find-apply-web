@@ -1,0 +1,8 @@
+# Ignore artifacts:
+.github
+.next
+.vscode
+docs
+makefiles
+coverage
+node_modules

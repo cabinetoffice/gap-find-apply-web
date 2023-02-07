@@ -1,0 +1,143 @@
+name: Push Image Workflow
+
+on:
+  create:
+  push:
+    branches:
+      - release/**
+      - develop
+    paths-ignore:
+      - "*.md"
+
+env:
+  AWS_REGION: eu-west-2
+
+jobs:
+  build:
+    name: Build Feature
+
+    # Need to check here as create event can't be filtered by branch name...
+    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release')
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Generate applicant .env
+        run: |
+          cat << EOF > packages/applicant/.env
+          COLA_URL=${{ secrets.NEXT_PUBLIC_COLA_URL }}
+          HOST=${{ secrets.HOST}}
+          EOF
+
+      - name: Read .nvmrc
+        run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
+        id: nvm
+
+      - name: Setup node
+        uses: actions/setup-node@master
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+
+      - name: Read yarn cache directory path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+        id: yarn-cache-dir-path
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            **/node_modules
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: |
+          yarn install
+
+      - name: Lint files
+        run: |
+          yarn lint
+
+      - name: Build application
+        run: |
+          yarn build
+
+      - name: Units Tests
+        run: |
+          yarn coverage
+
+      - name: Cache application build
+        uses: actions/cache@v2
+        id: build-cache
+        with:
+          path: |
+            ${{ github.workspace }}/.next/cache
+          key: gap-cache-build-${{ github.event.pull_request.head.sha }}
+
+  imageBuild:
+    needs: build
+
+    environment: AWS
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        app_name: ["applicant", "admin"]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Fetch all commits since we use the total commit count to determine the build version
+          fetch-depth: 0
+
+      - name: Setup AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Determine & set BUILD_VERSION
+        run: |
+          GIT_COUNT=$(git rev-list $GITHUB_SHA --count)
+          echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
+          echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
+
+      - name: Build, tag and push Docker image to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build --build-arg APP_NAME=${{ matrix.app_name }} -t $ECR_REGISTRY/gap-apply-${{ matrix.app_name }}-web:${{ env.BUILD_VERSION }} .
+          docker push $ECR_REGISTRY/gap-apply-${{ matrix.app_name }}-web:${{ env.BUILD_VERSION }}
+
+      - name: Create env tag
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          ENV_TAG=${{ (github.ref == 'refs/heads/develop' && 'develop') || (startsWith(github.ref, 'refs/heads/release') && 'qa') }}
+          docker tag $ECR_REGISTRY/gap-apply-${{ matrix.app_name }}-web:${{ env.BUILD_VERSION }} $ECR_REGISTRY/gap-apply-${{ matrix.app_name }}-web:$ENV_TAG
+          docker push $ECR_REGISTRY/gap-apply-${{ matrix.app_name }}-web:$ENV_TAG
+
+      - name: Create release tag - if we are committing to a release branch
+        if: ${{ startsWith(github.ref, 'refs/heads/release/') }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          RELEASE_VERSION=V_${GITHUB_REF##*/}
+          docker tag $ECR_REGISTRY/gap-apply-${{ matrix.app_name }}-web:${{ env.BUILD_VERSION }} $ECR_REGISTRY/gap-apply-${{ matrix.app_name }}-web:$RELEASE_VERSION
+          docker push $ECR_REGISTRY/gap-apply-${{ matrix.app_name }}-web:$RELEASE_VERSION

@@ -1,0 +1,11 @@
+@import '~govuk-frontend/govuk/base';
+@import '~govuk-frontend/govuk/core/global-styles.scss';
+
+.breakLine {
+  background-color: govuk-colour("blue");
+  padding: 0.08rem;
+}
+
+.wrapper {
+  word-break:break-all;
+}

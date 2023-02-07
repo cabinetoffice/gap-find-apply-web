@@ -1,0 +1,30 @@
+.next/
+.env
+build/
+dist/
+node_modules/
+ADD-TO-ROOT-OF-BUILD/
+logs
+manifest.yml
+package-lock.json
+src/assets/.DS_Store
+coverage
+.vscode
+.env.local
+.DS_Store
+
+# yarn related files
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# IntelliJ
+.idea
+*.iml
+
+# Local environment variable overrides
+.env*.local

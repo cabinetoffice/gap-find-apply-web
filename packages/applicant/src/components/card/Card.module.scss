@@ -1,0 +1,13 @@
+@import '~govuk-frontend/govuk/base';
+@import '~govuk-frontend/govuk/core/global-styles.scss';
+
+.card {
+  background-color: govuk-colour('light-grey');
+  padding: 0.75rem;
+}
+
+@media only screen and (max-width: 801px) {
+  .card {
+    margin-bottom: 0.5rem;
+  }
+}
