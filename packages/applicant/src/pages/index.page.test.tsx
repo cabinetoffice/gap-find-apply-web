@@ -4,28 +4,19 @@ import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { createMockRouter } from '../testUtils/createMockRouter';
 import Home, { getServerSideProps } from './index.page';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-      subPath: '',
-    },
-    publicRuntimeConfig: {
-      subPath: '',
-    },
-  };
-});
-
 describe('getServerSideProps', () => {
-  it('should return loginUrl', async () => {
+  it('should return page props', async () => {
     const response = await getServerSideProps(null);
     expect(response).toEqual({
       props: {
-        loginUrl: process.env.COLA_URL,
+        loginUrl: process.env.LOGIN_URL,
+        registerUrl: `${process.env.USER_SERVICE_URL}/register`,
       },
     });
   });
 });
+
+const registerUrl = 'https://test.url/register';
 
 describe('Apply for a grant home page', () => {
   beforeEach(async () => {
@@ -35,18 +26,23 @@ describe('Apply for a grant home page', () => {
           pathname: `/`,
         })}
       >
-        <Home loginUrl="https://test.url/some/path" />
+        <Home loginUrl="https://test.url/some/path" registerUrl={registerUrl} />
       </RouterContext.Provider>
     );
   });
 
   it('should render page heading and description', async () => {
     expect(
-      screen.getByText(/use this service to apply for a government grant\./i)
+      screen.getByText(/Use this service to apply for a government grant./i)
     ).toBeDefined();
     expect(
       screen.getByText(
-        /If you have an account you can sign in. If you do not have an account you can register for one\./i
+        /During your application you will be asked questions that help funding organisations make a decision about who to award funding to./i
+      )
+    ).toBeDefined();
+    expect(
+      screen.getByText(
+        /If you have an account you can sign in. If you do not have an account you can register for one./i
       )
     ).toBeDefined();
   });
@@ -56,7 +52,7 @@ describe('Apply for a grant home page', () => {
       screen.getByRole('button', {
         name: /register/i,
       })
-    ).toHaveAttribute('href', '/register');
+    ).toHaveAttribute('href', registerUrl);
   });
 
   it('should render link to login page with correct href', async () => {

@@ -34,8 +34,7 @@ const res = (overrides: any = {}) =>
 
 describe('Logout page', () => {
   beforeEach(() => {
-    process.env.LOGIN_URL =
-      'https://auth-testing.cabinetoffice.gov.uk/v2/gap/login';
+    process.env.LOGOUT = 'http://localhost:8082/logout';
   });
 
   it('Should clear back-end authentication session if there is session_id cookie available', async () => {
@@ -64,7 +63,7 @@ describe('Logout page', () => {
     expect(mockedRedirect).toHaveBeenNthCalledWith(
       1,
       302,
-      'https://auth-testing.cabinetoffice.gov.uk/v2/gap/login'
+      'http://localhost:8082/logout'
     );
   });
 });

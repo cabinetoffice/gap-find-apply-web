@@ -26,7 +26,7 @@ jobs:
       - name: Generate applicant .env
         run: |
           cat << EOF > packages/applicant/.env
-          COLA_URL=${{ secrets.NEXT_PUBLIC_COLA_URL }}
+          LOGIN_URL=${{ secrets.NEXT_PUBLIC_COLA_URL }}
           HOST=${{ secrets.HOST}}
           EOF
 

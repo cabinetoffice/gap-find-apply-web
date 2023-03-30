@@ -1,7 +1,10 @@
 import { AxiosError } from 'axios';
-import { FlexibleQuestionPageLayout, Table, ImportantBanner } from 'gap-web-ui';
+import {
+  FlexibleQuestionPageLayout,
+  ImportantBanner,
+  TaskList,
+} from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
-import getConfig from 'next/config';
 import { ConfirmationMessage } from '../../../../../components/confirmation-message/ConfirmationMessage';
 import CustomLink from '../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../components/layout/Meta';
@@ -78,50 +81,27 @@ const SectionOverview = ({
   recentlyUnpublished,
   csrfToken,
 }: InferProps<typeof getServerSideProps>) => {
-  const table = sections.map(({ id, title, pages }: AdvertSection) => {
-    const rows = pages.map((page) => {
-      const title = (
+  const list = sections.map(({ id, title, pages }: AdvertSection) => {
+    const subList = pages.map((page) => {
+      const taskName = (
         <CustomLink
           href={`/scheme/${schemeId}/advert/${advertId}/${id}/${page.id}`}
-          dataCy={`cy-advert-section-overview-page-${page.title}`}
+          dataCy={`cy-${title}-sublist-task-name-${page.title}`}
         >
           {page.title}
         </CustomLink>
       );
       const pageStatus = page.status;
-      const statusTag = (
-        <strong
-          aria-label={`Status for page "${page.title}" is`}
-          className={`govuk-tag ${STATUS_TAGS[pageStatus].colourClass}`}
-          data-cy={`cy-status-tag-${page.title}-${STATUS_TAGS[pageStatus].displayName}`}
-        >
-          {STATUS_TAGS[pageStatus].displayName}
-        </strong>
-      );
       return {
-        cells: [
-          {
-            content: title,
-          },
-          { content: statusTag },
-        ],
+        taskName: taskName,
+        taskStatus: {
+          displayName: STATUS_TAGS[pageStatus].displayName,
+          colourClass: STATUS_TAGS[pageStatus].colourClass,
+        },
       };
     });
 
-    return (
-      <Table
-        key={id}
-        rows={rows}
-        caption={title}
-        tHeadColumns={[
-          { name: 'page name', isVisuallyHidden: true },
-          { name: 'status', isVisuallyHidden: true },
-        ]}
-        tableClassName="table-thead-bottom-border"
-        captionSize="m"
-        alignLastCellToTheRight={true}
-      />
-    );
+    return { value: title, subList: subList };
   });
 
   const getAdvertActionSection = () => {
@@ -252,15 +232,14 @@ const SectionOverview = ({
                 href="https://www.find-government-grants.service.gov.uk/"
                 target="_blank"
                 className="govuk-link"
-                rel="noreferrer"
+                rel="noreferrer noopener"
               >
-                Find a Grant
+                Find a Grant (opens in new tab)
               </a>
               .
             </p>
           </div>
-
-          {table}
+          <TaskList listItems={list} />
           {getAdvertActionSection()}
         </FlexibleQuestionPageLayout>
       </div>

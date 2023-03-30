@@ -24,6 +24,12 @@ describe('schemeList page', () => {
     cy.get('[data-cy="cy_dashboardTableHeader_Scheme description"]').should(
       'not.exist'
     );
+    cy.get('[data-cy="cy_sidebar_header_add_a_grant"]')
+      .should('have.text', 'Add a grant')
+      .and('be.visible');
+    cy.get('[data-cy="cy_sidebar_description_add_a_grant"]')
+      .should('have.text', 'Create and customise a grant for your applicants.')
+      .and('be.visible');
     cy.get('[data-cy="cy_addAGrantButton"')
       .should('be.visible')
       .contains('Add a grant');

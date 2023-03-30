@@ -3,22 +3,22 @@ import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
 import AdvertStatusEnum from '../../../../../enums/AdvertStatus';
 import {
-  getSectionOverviewPageContent,
   getAdvertStatusBySchemeId,
+  getSectionOverviewPageContent,
 } from '../../../../../services/AdvertPageService';
 import {
   AdvertPage,
-  AdvertSection,
   AdvertQuestionStatusEnum,
+  AdvertSection,
   GetSectionOverviewPageContentResponse,
 } from '../../../../../types/GetSectionOverviewPageContentResponse';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
-import SectionOverview, { getServerSideProps } from './section-overview.page';
 import {
-  mockServiceMethod,
-  InferServiceMethodResponse,
   expectObjectEquals,
+  InferServiceMethodResponse,
+  mockServiceMethod,
 } from '../../../../../utils/UnitTestHelpers';
+import SectionOverview, { getServerSideProps } from './section-overview.page';
 
 jest.mock('../../../../../services/AdvertPageService');
 
@@ -266,13 +266,26 @@ describe('section-overview', () => {
       );
     });
 
-    it('Should render the table', () => {
+    it('Should render the task list headings', () => {
       render(<SectionOverview {...getProps()} />);
-      screen.getByRole('table', {
-        name: /sectiontitle1/i,
+      screen.getByRole('heading', {
+        name: 'sectionTitle1',
       });
-      screen.getByRole('table', {
-        name: /sectiontitle2/i,
+      screen.getByRole('heading', {
+        name: 'sectionTitle2',
+      });
+    });
+
+    it('Should render the task list sub list headings', () => {
+      render(<SectionOverview {...getProps()} />);
+      screen.getByRole('link', {
+        name: 'pageTitle1',
+      });
+      screen.getByRole('link', {
+        name: 'pageTitle2',
+      });
+      screen.getByRole('link', {
+        name: 'pageTitle3',
       });
     });
 

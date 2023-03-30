@@ -84,50 +84,50 @@ describe('Section-overview', () => {
       );
   });
 
-  it('Should render the table', () => {
-    cy.get('[data-cy="cy-table-caption-1. Grant details"]')
+  it('Should render the task-list', () => {
+    cy.get('[data-cy="cy-task-list-heading-1. Grant details"]')
       .should('be.visible')
       .should('have.text', '1. Grant details');
-    cy.get('[data-cy="cy_table_row-for-1. Grant details-row-0-cell-0"]')
+    cy.get('[data-cy="cy-1. Grant details-sublist-task-name-Short description"]')
       .should('be.visible')
       .should('have.text', 'Short description');
 
-    cy.get('[data-cy="cy_table_row-for-1. Grant details-row-0-cell-1"]')
+    cy.get('[data-cy="cy-1. Grant details-sublist-task-status-0"]')
       .should('be.visible')
       .should('have.text', 'Not Started');
 
-    cy.get('[data-cy="cy_table_row-for-1. Grant details-row-1-cell-0"]')
+    cy.get('[data-cy="cy-1. Grant details-sublist-task-name-Location"]')
       .should('be.visible')
       .should('have.text', 'Location');
 
-    cy.get('[data-cy="cy_table_row-for-1. Grant details-row-1-cell-1"]')
+    cy.get('[data-cy="cy-1. Grant details-sublist-task-status-1"]')
       .should('be.visible')
       .should('have.text', 'Not Started');
 
-    cy.get('[data-cy="cy_table_row-for-1. Grant details-row-2-cell-0"]')
+    cy.get('[data-cy="cy-1. Grant details-sublist-task-name-Funding organisation"]')
       .should('be.visible')
       .should('have.text', 'Funding organisation');
 
-    cy.get('[data-cy="cy_table_row-for-1. Grant details-row-2-cell-1"]')
+    cy.get('[data-cy="cy-1. Grant details-sublist-task-status-2"]')
       .should('be.visible')
       .should('have.text', 'Not Started');
 
-    cy.get('[data-cy="cy_table_row-for-1. Grant details-row-3-cell-0"]')
+    cy.get('[data-cy="cy-1. Grant details-sublist-task-name-Who can apply"]')
       .should('be.visible')
       .should('have.text', 'Who can apply');
 
-    cy.get('[data-cy="cy_table_row-for-1. Grant details-row-3-cell-1"]')
+    cy.get('[data-cy="cy-1. Grant details-sublist-task-status-3"]')
       .should('be.visible')
       .should('have.text', 'Not Started');
 
-    cy.get('[data-cy="cy-table-caption-2. Award amounts"]')
+    cy.get('[data-cy="cy-task-list-heading-2. Award amounts"]')
       .should('be.visible')
       .should('have.text', '2. Award amounts');
-    cy.get('[data-cy="cy_table_row-for-2. Award amounts-row-0-cell-0"]')
+    cy.get('[data-cy="cy-2. Award amounts-sublist-task-name-How much funding is available?"]')
       .should('be.visible')
       .should('have.text', 'How much funding is available?');
 
-    cy.get('[data-cy="cy_table_row-for-2. Award amounts-row-0-cell-1"]')
+    cy.get('[data-cy="cy-2. Award amounts-sublist-task-status-0"]')
       .should('be.visible')
       .should('have.text', 'Not Started');
   });

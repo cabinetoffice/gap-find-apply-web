@@ -5,11 +5,6 @@ import Header from './Header';
 import Meta from './Meta';
 
 const Layout = ({ children, showCookieBanner }: LayoutProps) => {
-  const clx = ['js-enabled', 'govuk-template__body'];
-  useEffect(() => {
-    document.querySelector('body')?.classList.add(...clx);
-  });
-
   useEffect(() => {
     const GOVUKFrontend = window.GOVUKFrontend;
     if (typeof GOVUKFrontend !== 'undefined') {

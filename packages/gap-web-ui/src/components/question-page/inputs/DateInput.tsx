@@ -42,108 +42,106 @@ const DateInput = ({
         role="group"
         aria-describedby={`${fieldName}-hint`}
       >
-        <legend className="govuk-fieldset__legend">
-          <legend
-            className={`govuk-fieldset__legend govuk-fieldset__legend--${titleSize}`}
-            data-testid="title-legend"
+        <legend
+          className={`govuk-fieldset__legend govuk-fieldset__legend--${titleSize}`}
+          data-testid="title-legend"
+        >
+          <TitleTag
+            className="govuk-fieldset__heading"
+            data-cy={`cy-${fieldName}-question-title`}
           >
-            <TitleTag
-              className="govuk-fieldset__heading"
-              data-cy={`cy-${fieldName}-question-title`}
-            >
-              {questionTitle}
-            </TitleTag>
-          </legend>
-
-          <div
-            id={`${fieldName}-hint`}
-            className={`govuk-hint gap-new-line`}
-            data-testid={`${fieldName}-hint`}
-            data-cy={`cy-${fieldName}-question-hint`}
-          >
-            {questionHintText ? `${questionHintText}\n\n` : ''}
-            {'For example, 31 3 2023'}
-          </div>
-
-          {hasError && (
-            <ErrorMessage fieldErrors={fieldErrors} fieldName={fieldName} />
-          )}
-
-          <div className="govuk-date-input" id={`${fieldName}-date`}>
-            <div className="govuk-date-input__item">
-              <div className="govuk-form-group">
-                <label
-                  className="govuk-label govuk-date-input__label"
-                  htmlFor={`${fieldName}-day`}
-                >
-                  Day
-                </label>
-                <input
-                  className={`govuk-input govuk-date-input__input govuk-input--width-2 ${
-                    isInFieldErrors('day') ? 'govuk-input--error' : ''
-                  }`}
-                  id={`${fieldName}-day`}
-                  name={`${fieldName}-day`}
-                  defaultValue={defaultValues?.day}
-                  type="text"
-                  pattern="[0-9]*"
-                  inputMode="numeric"
-                  data-testid={`${fieldName}-day`}
-                  data-cy={`cyDateFilter-${fieldName}Day`}
-                  disabled={disabled}
-                />
-              </div>
-            </div>
-            <div className="govuk-date-input__item">
-              <div className="govuk-form-group">
-                <label
-                  className="govuk-label govuk-date-input__label"
-                  htmlFor={`${fieldName}-month`}
-                >
-                  Month
-                </label>
-                <input
-                  className={`govuk-input govuk-date-input__input govuk-input--width-2 ${
-                    isInFieldErrors(`month`) ? 'govuk-input--error' : ''
-                  }`}
-                  id={`${fieldName}-month`}
-                  name={`${fieldName}-month`}
-                  defaultValue={defaultValues?.month}
-                  type="text"
-                  pattern="[0-9]*"
-                  inputMode="numeric"
-                  data-testid={`${fieldName}-month`}
-                  data-cy={`cyDateFilter-${fieldName}Month`}
-                  disabled={disabled}
-                />
-              </div>
-            </div>
-            <div className="govuk-date-input__item">
-              <div className="govuk-form-group">
-                <label
-                  className="govuk-label govuk-date-input__label"
-                  htmlFor={`${fieldName}-year`}
-                >
-                  Year
-                </label>
-                <input
-                  className={`govuk-input govuk-date-input__input govuk-input--width-4 ${
-                    isInFieldErrors(`year`) ? 'govuk-input--error' : ''
-                  }`}
-                  id={`${fieldName}-year`}
-                  name={`${fieldName}-year`}
-                  defaultValue={defaultValues?.year}
-                  type="text"
-                  pattern="[0-9]*"
-                  inputMode="numeric"
-                  data-testid={`${fieldName}-year`}
-                  data-cy={`cyDateFilter-${fieldName}Year`}
-                  disabled={disabled}
-                />
-              </div>
-            </div>
-          </div>
+            {questionTitle}
+          </TitleTag>
         </legend>
+
+        <div
+          id={`${fieldName}-hint`}
+          className={`govuk-hint gap-new-line`}
+          data-testid={`${fieldName}-hint`}
+          data-cy={`cy-${fieldName}-question-hint`}
+        >
+          {questionHintText ? `${questionHintText}\n\n` : ''}
+          {'For example, 31 3 2023'}
+        </div>
+
+        {hasError && (
+          <ErrorMessage fieldErrors={fieldErrors} fieldName={fieldName} />
+        )}
+
+        <div className="govuk-date-input" id={`${fieldName}-date`}>
+          <div className="govuk-date-input__item">
+            <div className="govuk-form-group">
+              <label
+                className="govuk-label govuk-date-input__label"
+                htmlFor={`${fieldName}-day`}
+              >
+                Day
+              </label>
+              <input
+                className={`govuk-input govuk-date-input__input govuk-input--width-2 ${
+                  isInFieldErrors('day') ? 'govuk-input--error' : ''
+                }`}
+                id={`${fieldName}-day`}
+                name={`${fieldName}-day`}
+                defaultValue={defaultValues?.day}
+                type="text"
+                pattern="[0-9]*"
+                inputMode="numeric"
+                data-testid={`${fieldName}-day`}
+                data-cy={`cyDateFilter-${fieldName}Day`}
+                disabled={disabled}
+              />
+            </div>
+          </div>
+          <div className="govuk-date-input__item">
+            <div className="govuk-form-group">
+              <label
+                className="govuk-label govuk-date-input__label"
+                htmlFor={`${fieldName}-month`}
+              >
+                Month
+              </label>
+              <input
+                className={`govuk-input govuk-date-input__input govuk-input--width-2 ${
+                  isInFieldErrors(`month`) ? 'govuk-input--error' : ''
+                }`}
+                id={`${fieldName}-month`}
+                name={`${fieldName}-month`}
+                defaultValue={defaultValues?.month}
+                type="text"
+                pattern="[0-9]*"
+                inputMode="numeric"
+                data-testid={`${fieldName}-month`}
+                data-cy={`cyDateFilter-${fieldName}Month`}
+                disabled={disabled}
+              />
+            </div>
+          </div>
+          <div className="govuk-date-input__item">
+            <div className="govuk-form-group">
+              <label
+                className="govuk-label govuk-date-input__label"
+                htmlFor={`${fieldName}-year`}
+              >
+                Year
+              </label>
+              <input
+                className={`govuk-input govuk-date-input__input govuk-input--width-4 ${
+                  isInFieldErrors(`year`) ? 'govuk-input--error' : ''
+                }`}
+                id={`${fieldName}-year`}
+                name={`${fieldName}-year`}
+                defaultValue={defaultValues?.year}
+                type="text"
+                pattern="[0-9]*"
+                inputMode="numeric"
+                data-testid={`${fieldName}-year`}
+                data-cy={`cyDateFilter-${fieldName}Year`}
+                disabled={disabled}
+              />
+            </div>
+          </div>
+        </div>
       </fieldset>
     </div>
   );

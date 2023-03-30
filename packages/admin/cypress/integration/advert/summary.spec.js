@@ -63,7 +63,7 @@ describe('Grant advert summary page', () => {
     run_accessibility();
 
     // Section 1
-    cy.get('[data-cy="cy-summary-1. Grant details"]').should(
+    cy.get('[data-cy="cy-task-list-heading-1. Grant details"]').should(
       'have.text',
       '1. Grant details'
     );
@@ -170,7 +170,7 @@ describe('Grant advert summary page', () => {
     backToSummaryPage();
 
     // Section 2
-    cy.get('[data-cy="cy-summary-2. Award amounts"]').should(
+    cy.get('[data-cy="cy-task-list-heading-2. Award amounts"]').should(
       'have.text',
       '2. Award amounts'
     );
@@ -246,7 +246,7 @@ describe('Grant advert summary page', () => {
     backToSummaryPage();
 
     // Section 3
-    cy.get('[data-cy="cy-summary-3. Application dates"]').should(
+    cy.get('[data-cy="cy-task-list-heading-3. Application dates"]').should(
       'have.text',
       '3. Application dates'
     );
@@ -347,7 +347,7 @@ describe('Grant advert summary page', () => {
     backToSummaryPage();
 
     // Section 4
-    cy.get('[data-cy="cy-summary-4. How to apply"]').should(
+    cy.get('[data-cy="cy-task-list-heading-4. How to apply"]').should(
       'have.text',
       '4. How to apply'
     );
@@ -380,7 +380,7 @@ describe('Grant advert summary page', () => {
     cy.get('[data-cy="cy-publish-advert-button"]').click();
 
     // Section 5
-    cy.get('[data-cy="cy-summary-5. Further information"]').should(
+    cy.get('[data-cy="cy-task-list-heading-5. Further information"]').should(
       'have.text',
       '5. Further information'
     );

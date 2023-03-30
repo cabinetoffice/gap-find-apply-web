@@ -1,17 +1,16 @@
 import { QuestionPageLayout, ValidationError } from 'gap-web-ui';
-import Meta from '../../components/layout/Meta';
-import React from 'react';
 import { GetServerSideProps } from 'next';
+import getConfig from 'next/config';
+import CustomLink from '../../components/custom-link/CustomLink';
+import Meta from '../../components/layout/Meta';
 import {
   addToSession,
   getValueFromSession,
 } from '../../services/SessionService';
 import SchemeQuestionPage from '../../types/SchemeQuestionPage';
 import callServiceMethod from '../../utils/callServiceMethod';
-import { errorPageParams } from './newSchemeServiceError';
-import CustomLink from '../../components/custom-link/CustomLink';
-import getConfig from 'next/config';
 import { getSessionIdFromCookies } from '../../utils/session';
+import { errorPageParams } from './newSchemeServiceError';
 
 type RequestBody = {
   name: string;
@@ -87,7 +86,7 @@ const SchemeName = ({
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Add a grant - Manage a grant`}
+        }Scheme name - Add a grant - Manage a grant`}
       />
 
       <CustomLink

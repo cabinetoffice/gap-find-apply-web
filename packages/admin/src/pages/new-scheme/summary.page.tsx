@@ -1,14 +1,14 @@
+import { GetServerSideProps } from 'next';
+import getConfig from 'next/config';
+import CustomLink from '../../components/custom-link/CustomLink';
 import Meta from '../../components/layout/Meta';
 import SummaryList from '../../components/summary-list/SummaryList';
 import SummaryListProps from '../../components/summary-list/SummaryListType';
-import { getSummaryFromSession } from '../../services/SessionService';
-import { GetServerSideProps } from 'next';
-import callServiceMethod from '../../utils/callServiceMethod';
 import { createNewScheme } from '../../services/SchemeService';
-import { errorPageParams, serviceErrorRedirect } from './newSchemeServiceError';
-import getConfig from 'next/config';
-import CustomLink from '../../components/custom-link/CustomLink';
+import { getSummaryFromSession } from '../../services/SessionService';
+import callServiceMethod from '../../utils/callServiceMethod';
 import { getSessionIdFromCookies } from '../../utils/session';
+import { errorPageParams, serviceErrorRedirect } from './newSchemeServiceError';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const sessionCookie = getSessionIdFromCookies(req);
@@ -24,8 +24,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     return serviceErrorRedirect;
   }
 
-  
-
   const schemeSummary = await getSummaryFromSession('newScheme', sessionCookie);
 
   const result = await callServiceMethod(
@@ -36,7 +34,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         sessionCookie,
         schemeSummary['name'],
         schemeSummary['ggisReference'],
-        schemeSummary['contactEmail'],
+        schemeSummary['contactEmail']
       ),
     '/dashboard',
     errorPageParams
@@ -94,13 +92,15 @@ const SchemeSummary = ({ summaryData, csrfToken }: SchemeSummaryProps) => {
   const { publicRuntimeConfig } = getConfig();
   return (
     <>
-      <Meta title="Confirm details - Manage a grant" />
+      <Meta title="Confirm details - Add a grant - Manage a grant" />
 
       <CustomLink href="/new-scheme/email" isBackButton />
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-          <h1 className="govuk-heading-l">Check and confirm the details of your grant</h1>
+          <h1 className="govuk-heading-l">
+            Check and confirm the details of your grant
+          </h1>
 
           <form
             action={`${publicRuntimeConfig.SUB_PATH}/new-scheme/summary`}

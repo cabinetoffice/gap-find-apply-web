@@ -6,16 +6,18 @@ import Meta from '../components/partials/Meta';
 export const getServerSideProps: GetServerSideProps = () => {
   return Promise.resolve({
     props: {
-      loginUrl: process.env.COLA_URL,
+      loginUrl: process.env.LOGIN_URL,
+      registerUrl: `${process.env.USER_SERVICE_URL}/register`,
     },
   });
 };
 
 type HomePageProps = {
   loginUrl: string;
+  registerUrl: string;
 };
 
-function HomePage({ loginUrl }: HomePageProps) {
+function HomePage({ loginUrl, registerUrl }: HomePageProps) {
   return (
     <>
       <Meta title="Register to apply - Apply for a grant" />
@@ -23,7 +25,7 @@ function HomePage({ loginUrl }: HomePageProps) {
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-l" data-cy="cy-apply-header">
-              Apply for a grant
+              Find a Grant
             </h1>
             <p className="govuk-body" data-cy="cy-apply-description">
               Use this service to apply for a government grant.
@@ -37,7 +39,7 @@ function HomePage({ loginUrl }: HomePageProps) {
               If you have an account you can sign in. If you do not have an
               account you can register for one.
             </p>
-            <Link href="/register">
+            <Link href={registerUrl}>
               <a
                 role="button"
                 draggable="false"
@@ -73,7 +75,7 @@ function HomePage({ loginUrl }: HomePageProps) {
               data-testid="find-a-grant-heading"
               data-cy="cy-find-a-grant-header"
             >
-              Find a grant
+              Browse grants
             </h2>
             <p className="govuk-body" data-cy="cy-find-a-grant-description">
               Before you can apply, you will need to find a grant that you want
@@ -85,7 +87,7 @@ function HomePage({ loginUrl }: HomePageProps) {
               data-testid="find-a-grant-link"
               data-cy="cy-find-a-grant-link"
             >
-              Find a grant
+              Browse grants
             </a>
           </div>
         </div>

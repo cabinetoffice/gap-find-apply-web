@@ -234,7 +234,7 @@ describe('getServerSideProps', () => {
       const summaryPageResponseFuture = cloneDeep(summaryPageResponse);
       summaryPageResponseFuture.sections[2].pages[0].questions[0].multiResponse =
         [
-          today.getDay().toString(),
+          today.getDate().toString(),
           (today.getMonth() + 1).toString(),
           today.getFullYear().toString(),
           today.getHours().toString(),
@@ -242,7 +242,7 @@ describe('getServerSideProps', () => {
         ];
       summaryPageResponseFuture.sections[2].pages[0].questions[1].multiResponse =
         [
-          today.getDay().toString(),
+          today.getDate().toString(),
           (today.getMonth() + 1).toString(),
           today.getFullYear().toString(),
           today.getHours().toString(),
@@ -541,11 +541,11 @@ describe('AdvertSummaryPage', () => {
     it('Should render a publish button, status: DRAFT', () => {
       render(<AdvertSummaryPage {...getPageProps(getDefaultProps)} />);
       screen.getByRole('button', {
-        name: `Publish ${advertName} grant advert`,
+        name: `Publish my advert - ${advertName}`,
       });
       expect(
         screen.queryByRole('button', {
-          name: `Schedule ${advertName} grant advert`,
+          name: `Schedule my advert - ${advertName}`,
         })
       ).toBeFalsy();
       expect(screen.getAllByRole('link', { name: 'Back' })).toHaveLength(1);
@@ -558,11 +558,11 @@ describe('AdvertSummaryPage', () => {
         />
       );
       screen.getByRole('button', {
-        name: `Schedule ${advertName} grant advert`,
+        name: `Schedule my advert - ${advertName}`,
       });
       expect(
         screen.queryByRole('button', {
-          name: `Publish ${advertName} grant advert`,
+          name: `Publish my advert - ${advertName}`,
         })
       ).toBeFalsy();
       expect(screen.getAllByRole('link', { name: 'Back' })).toHaveLength(1);
@@ -577,11 +577,11 @@ describe('AdvertSummaryPage', () => {
         />
       );
       screen.getByRole('button', {
-        name: `Publish ${advertName} grant advert`,
+        name: `Publish my advert - ${advertName}`,
       });
       expect(
         screen.queryByRole('button', {
-          name: `Schedule ${advertName} grant advert`,
+          name: `Schedule my advert - ${advertName}`,
         })
       ).toBeFalsy();
       expect(screen.getAllByRole('link', { name: 'Back' })).toHaveLength(1);
@@ -597,11 +597,11 @@ describe('AdvertSummaryPage', () => {
         />
       );
       screen.getByRole('button', {
-        name: `Schedule ${advertName} grant advert`,
+        name: `Schedule my advert - ${advertName}`,
       });
       expect(
         screen.queryByRole('button', {
-          name: `Publish ${advertName} grant advert`,
+          name: `Publish my advert - ${advertName}`,
         })
       ).toBeFalsy();
       expect(screen.getAllByRole('link', { name: 'Back' })).toHaveLength(1);
@@ -616,11 +616,11 @@ describe('AdvertSummaryPage', () => {
         />
       );
       screen.getByRole('button', {
-        name: `Publish ${advertName} grant advert`,
+        name: `Publish my advert - ${advertName}`,
       });
       expect(
         screen.queryByRole('button', {
-          name: `Schedule ${advertName} grant advert`,
+          name: `Schedule my advert - ${advertName}`,
         })
       ).toBeFalsy();
       expect(screen.getAllByRole('link', { name: 'Back' })).toHaveLength(1);
@@ -636,11 +636,11 @@ describe('AdvertSummaryPage', () => {
         />
       );
       screen.getByRole('button', {
-        name: `Schedule ${advertName} grant advert`,
+        name: `Schedule my advert - ${advertName}`,
       });
       expect(
         screen.queryByRole('button', {
-          name: `Publish ${advertName} grant advert`,
+          name: `Publish my advert - ${advertName}`,
         })
       ).toBeFalsy();
       expect(screen.getAllByRole('link', { name: 'Back' })).toHaveLength(1);
@@ -656,12 +656,12 @@ describe('AdvertSummaryPage', () => {
       );
       expect(
         screen.queryByRole('button', {
-          name: `Schedule ${advertName} grant advert`,
+          name: `Schedule my advert - ${advertName}`,
         })
       ).toBeFalsy();
       expect(
         screen.queryByRole('button', {
-          name: `Publish ${advertName} grant advert`,
+          name: `Publish my advert - ${advertName}`,
         })
       ).toBeFalsy();
       expect(screen.getAllByRole('link', { name: 'Back' })).toHaveLength(1);
@@ -680,12 +680,12 @@ describe('AdvertSummaryPage', () => {
       );
       expect(
         screen.queryByRole('button', {
-          name: `Schedule ${advertName} grant advert`,
+          name: `Schedule my advert - ${advertName}`,
         })
       ).toBeFalsy();
       expect(
         screen.queryByRole('button', {
-          name: `Publish ${advertName} grant advert`,
+          name: `Publish my advert - ${advertName}`,
         })
       ).toBeFalsy();
       expect(screen.getAllByRole('link', { name: 'Back' })).toHaveLength(1);

@@ -23,11 +23,6 @@ const Layout: FC<LayoutPropsType> = ({
   backBtnUrl = null,
   isUserLoggedIn,
 }) => {
-  const clx: string[] = ['js-enabled', 'govuk-template__body'];
-  useEffect(() => {
-    document.querySelector('body')?.classList.add(...clx);
-  });
-
   useEffect(() => {
     const GOVUKFrontend = window.GOVUKFrontend;
     if (typeof GOVUKFrontend !== 'undefined') {

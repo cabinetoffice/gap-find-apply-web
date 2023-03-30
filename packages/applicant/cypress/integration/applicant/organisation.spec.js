@@ -1,7 +1,7 @@
 import run_accessibility from '../../utils/accessibility';
-import resetDatabase from '../../utils/resetDatabase';
-import getLoginCookie from '../../utils/getLoginCookie';
 import checkErrorBanner from '../../utils/checkErrorBanner';
+import getLoginCookie from '../../utils/getLoginCookie';
+import resetDatabase from '../../utils/resetDatabase';
 
 const organisationUrl = '/organisation';
 
@@ -78,7 +78,11 @@ describe('Manage your organisation details', () => {
       .type('a'.repeat(251), { delay: 0 });
     cy.get('[data-cy="cy-button-submit-Save"]').click();
 
-    checkErrorBanner('legalName', 'Organisation name must be 250 characters or less', true);
+    checkErrorBanner(
+      'legalName',
+      'Organisation name must be 250 characters or less',
+      true
+    );
 
     cy.get('[data-cy=cy-legalName-text-input]')
       .should('have.value', 'a'.repeat(251))
@@ -147,7 +151,9 @@ describe('Manage your organisation details', () => {
 
     run_accessibility();
 
-    cy.get('[data-cy="cy-radioInput-option-RegisteredCharity"]').should('be.checked');
+    cy.get('[data-cy="cy-radioInput-option-RegisteredCharity"]').should(
+      'be.checked'
+    );
 
     cy.get('[data-cy="cy-radioInput-option-UnregisteredCharity"]').click();
     cy.get('[data-cy="cy-radioInput-option-UnregisteredCharity"]').should(
@@ -155,7 +161,9 @@ describe('Manage your organisation details', () => {
     );
 
     cy.get('[data-cy="cy-radioInput-option-LimitedCompany"]').click();
-    cy.get('[data-cy="cy-radioInput-option-LimitedCompany"]').should('be.checked');
+    cy.get('[data-cy="cy-radioInput-option-LimitedCompany"]').should(
+      'be.checked'
+    );
 
     cy.get('[data-cy="cy-radioInput-option-NonLimitedCompany"]').click();
     cy.get('[data-cy="cy-radioInput-option-NonLimitedCompany"]').should(
@@ -212,7 +220,23 @@ describe('Manage your organisation details', () => {
 
     cy.get('[data-cy=cy-charityCommissionNumber-question-hint]').should(
       'have.text',
-      'If your organisation is registered with the Charity Commission, enter your charity number below.Search for your charity number'
+      'If your organisation is registered with the Charity Commission, enter your charity number below.Search for your charity number (opens in new tab)'
+    );
+
+    cy.get('[data-cy=cy-search-charity-commission-number]').invoke(
+      'removeAttr',
+      'target'
+    );
+
+    cy.get('[data-cy=cy-search-charity-commission-number]').click();
+
+    cy.url().should(
+      'eq',
+      'https://register-of-charities.charitycommission.gov.uk/charity-search'
+    );
+
+    cy.visit(
+      'http://localhost:3000/apply/applicant/organisation/charity-commission-number'
     );
 
     // Check max length validation
@@ -222,8 +246,12 @@ describe('Manage your organisation details', () => {
       .type('a'.repeat(251), { delay: 0 });
     cy.get('[data-cy="cy-button-submit-Save"]').click();
 
-    checkErrorBanner('charityCommissionNumber', 'Charity commission number must be 250 characters or less', true);
-    
+    checkErrorBanner(
+      'charityCommissionNumber',
+      'Charity commission number must be 250 characters or less',
+      true
+    );
+
     cy.get('[data-cy=cy-charityCommissionNumber-text-input]')
       .should('have.value', 'a'.repeat(251))
       .clear()
@@ -292,17 +320,37 @@ describe('Manage your organisation details', () => {
 
     cy.get('[data-cy="cy-companiesHouseNumber-question-hint"]').should(
       'have.text',
-      'If your organisation is registered with Companies House, enter your company number below.Search for your company number'
+      'If your organisation is registered with Companies House, enter your company number below.Search for your company number (opens in new tab)'
+    );
+
+    cy.get('[data-cy=cy-search-companies-house-number]').invoke(
+      'removeAttr',
+      'target'
+    );
+
+    cy.get('[data-cy=cy-search-companies-house-number]').click();
+
+    cy.url().should(
+      'eq',
+      'https://find-and-update.company-information.service.gov.uk/?_ga=2.111669508.18905375.1663663866-660770501.1644938489'
+    );
+
+    cy.visit(
+      'http://localhost:3000/apply/applicant/organisation/companies-house-number'
     );
 
     // Check max length validation
     cy.get('[data-cy=cy-companiesHouseNumber-text-input]')
-    .should('have.value', '12345678')
-    .clear()
-    .type('a'.repeat(251), { delay: 0 });
+      .should('have.value', '12345678')
+      .clear()
+      .type('a'.repeat(251), { delay: 0 });
     cy.get('[data-cy="cy-button-submit-Save"]').click();
 
-    checkErrorBanner('companiesHouseNumber', 'Companies house number must be 250 characters or less', true);
+    checkErrorBanner(
+      'companiesHouseNumber',
+      'Companies house number must be 250 characters or less',
+      true
+    );
 
     cy.get('[data-cy=cy-companiesHouseNumber-text-input]')
       .should('have.value', 'a'.repeat(251))
@@ -371,7 +419,6 @@ describe('Manage your organisation details', () => {
       'Enter the address of your organisation (optional)'
     );
 
-
     // Check max length validation
     cy.get('[data-cy="cy-addressLine1-text-input"]')
       .should('have.value', 'AND Digital')
@@ -396,9 +443,21 @@ describe('Manage your organisation details', () => {
 
     cy.get('[data-cy="cy-button-submit-Save"]').click();
 
-    checkErrorBanner('addressLine1', 'Address line 1 must be 250 characters or less', true);
-    checkErrorBanner('addressLine2', 'Address line 2 must be 250 characters or less', true);
-    checkErrorBanner('town', 'Town or City must be 250 characters or less', true);
+    checkErrorBanner(
+      'addressLine1',
+      'Address line 1 must be 250 characters or less',
+      true
+    );
+    checkErrorBanner(
+      'addressLine2',
+      'Address line 2 must be 250 characters or less',
+      true
+    );
+    checkErrorBanner(
+      'town',
+      'Town or City must be 250 characters or less',
+      true
+    );
     checkErrorBanner('county', 'County must be 250 characters or less', true);
     checkErrorBanner('postcode', 'Postcode must be 8 characters or less', true);
 

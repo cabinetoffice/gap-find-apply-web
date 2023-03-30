@@ -9,11 +9,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   try {
     result = await isAdmin(getJwtFromCookies(req));
   } catch (error) {
-    console.error("Error determining if user isAdmin")
+    console.error('Error determining if user isAdmin');
     console.error(error);
     return {
       redirect: {
-        destination: '/register',
+        destination: `${process.env.USER_SERVICE_URL}/register`,
         permanent: false,
       },
     };
@@ -38,7 +38,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
   return {
     redirect: {
-      destination: '/register',
+      destination: `${process.env.USER_SERVICE_URL}/register`,
       permanent: false,
     },
   };

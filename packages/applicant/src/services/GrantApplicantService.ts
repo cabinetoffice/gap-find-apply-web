@@ -1,8 +1,16 @@
 import axios from 'axios';
 import { GrantApplicant } from '../models/GrantApplicant';
-import { RegisterAnApplicant } from '../pages/register/index.page';
 import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
+
+export interface RegisterAnApplicant {
+  firstName: string;
+  lastName: string;
+  email: string;
+  emailConfirmed: string;
+  telephone: string;
+  privacyPolicy?: string;
+}
 
 export class GrantApplicantService {
   private static instance: GrantApplicantService;
@@ -43,13 +51,5 @@ export class GrantApplicantService {
       axiosConfig(jwt)
     );
     return data;
-  }
-
-  public async registerAnApplicant(applicantInformation: RegisterAnApplicant) {
-    const response = await axios.post(
-      `${this.BACKEND_HOST}/grant-applicant/register`,
-      applicantInformation
-    );
-    return response.data;
   }
 }

@@ -2,10 +2,6 @@ export const routes = {
   homePage: '/',
   dashboard: '/dashboard',
   grants: '/grants',
-  register: {
-    index: '/register',
-    confirmation: '/register/confirmation',
-  },
   personalDetails: '/personal-details',
   organisation: {
     index: '/organisation',

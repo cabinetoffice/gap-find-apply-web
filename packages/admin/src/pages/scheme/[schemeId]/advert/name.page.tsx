@@ -5,7 +5,6 @@ import {
   ValidationError,
 } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
-import React from 'react';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';
 import NoSSRWrapper from '../../../../components/layout/NoSSRWrapper';
@@ -86,7 +85,7 @@ const AdvertName = ({
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Create an advert - Manage a grant`}
+        }Grant name - Create an advert - Manage a grant`}
       />
 
       <CustomLink

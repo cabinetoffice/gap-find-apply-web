@@ -104,10 +104,10 @@ const CookieBanner = () => {
           <a
             href="https://www.find-government-grants.service.gov.uk/info/cookies"
             target="_blank"
-            rel="noreferrer"
+            rel="noreferrer noopener"
             className="govuk-link"
           >
-            View cookies
+            View cookies (opens in new tab)
           </a>
         </div>
       </div>

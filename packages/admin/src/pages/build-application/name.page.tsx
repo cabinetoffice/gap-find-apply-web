@@ -1,6 +1,5 @@
 import { QuestionPageLayout, ValidationError } from 'gap-web-ui';
 import { GetServerSideProps } from 'next';
-import React from 'react';
 import CustomLink from '../../components/custom-link/CustomLink';
 import Meta from '../../components/layout/Meta';
 import { createNewApplicationForm } from '../../services/ApplicationService';
@@ -104,7 +103,7 @@ const ApplicationName = ({
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Build an application form - Manage a grant`}
+        }Grant name - Build an application form - Manage a grant`}
       />
 
       <CustomLink

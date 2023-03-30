@@ -46,9 +46,11 @@ const MyApp = ({ Component, pageProps, cookies }) => {
     </>
   );
 };
+
 MyApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext);
   const cookies = appContext.ctx.res.req.cookies;
   return { ...appProps, cookies };
 };
+
 export default MyApp;

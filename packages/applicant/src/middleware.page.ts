@@ -1,8 +1,10 @@
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { verifyToken } from './services/JwtService';
+
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
 const HOST = process.env.HOST;
+
 // //it will apply the middleware to all those paths
 export const config = {
   matcher: [
@@ -15,17 +17,12 @@ export const config = {
   ],
 };
 
-function tokenHasExpired(validJwtResponse) {
-  return new Date(validJwtResponse.expiresAt).getTime() < Date.now();
-}
-
 function isWithinNumberOfMinsOfExpiry(expiresAt: Date, numberOfMins: number) {
-  const expiryDateMinusMins = new Date(expiresAt);
-  expiryDateMinusMins.setMinutes(
-    expiryDateMinusMins.getMinutes() - numberOfMins
-  );
+  const now = new Date();
+  const nowPlusMins = new Date();
+  nowPlusMins.setMinutes(now.getMinutes() + numberOfMins);
 
-  return expiryDateMinusMins.getTime() <= Date.now();
+  return expiresAt >= now && expiresAt <= nowPlusMins;
 }
 
 function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
@@ -51,6 +48,9 @@ function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
 
 export async function middleware(req: NextRequest) {
   const cookie = req.cookies.get(USER_TOKEN_NAME);
+
+  console.log('cookie ' + cookie);
+
   const response = await fetch(`${HOST}/api/getJwt`, {
     method: 'get',
     headers: {
@@ -58,7 +58,11 @@ export async function middleware(req: NextRequest) {
     },
   });
 
+  console.log('cookie next API response ' + JSON.stringify(response));
+
   const jwt = await response.text();
+
+  console.log('API response JWT' + jwt);
 
   if (!response.ok || jwt === 'undefined') {
     if (!response.ok) {
@@ -66,38 +70,32 @@ export async function middleware(req: NextRequest) {
       console.error(err);
     }
 
-    const res = buildMiddlewareResponse(
-      req,
-      process.env.APPLICANT_FRONTEND_URL_NO_VALID_TOKEN
-    );
+    const res = buildMiddlewareResponse(req, process.env.LOGIN_URL);
     return res;
   }
 
   try {
     const validJwtResponse = await verifyToken(jwt);
+    console.log('Valid JWT response' + JSON.stringify(validJwtResponse));
 
-    // can't currently refresh expired tokens because of a bug with COLA so user will have to log in again
-    if (tokenHasExpired(validJwtResponse)) {
-      return buildMiddlewareResponse(
-        req,
-        process.env.APPLICANT_FRONTEND_URL_NO_VALID_TOKEN
-      );
+    const expiresAt = new Date(validJwtResponse.expiresAt);
+
+    if (!validJwtResponse.valid) {
+      return buildMiddlewareResponse(req, process.env.LOGIN_URL);
     }
 
-    if (
-      !validJwtResponse.valid ||
-      isWithinNumberOfMinsOfExpiry(new Date(validJwtResponse.expiresAt), 30)
-    ) {
-      const refreshUrl = `${process.env.REFRESH_URL}?refresh=${process.env.SUB_PATH}${req.nextUrl.pathname}`;
-      const res = buildMiddlewareResponse(req, refreshUrl);
-      return res;
+    if (isWithinNumberOfMinsOfExpiry(expiresAt, 30)) {
+      console.log('is within 30 mins of expiry');
+
+      return buildMiddlewareResponse(
+        req,
+        `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}${req.nextUrl.pathname}`
+      );
     }
   } catch (err) {
     console.error('middleware error');
     console.error(err);
-    return NextResponse.redirect(
-      process.env.APPLICANT_FRONTEND_URL_NO_VALID_TOKEN
-    );
+    return NextResponse.redirect(process.env.LOGIN_URL);
   }
 }
 

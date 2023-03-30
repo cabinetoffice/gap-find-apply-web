@@ -1,17 +1,19 @@
-import { GetServerSideProps } from 'next';
 import {
   Button,
   FlexibleQuestionPageLayout,
   TextInput,
   ValidationError,
 } from 'gap-web-ui';
-import SchemeQuestionPage from '../../../types/SchemeQuestionPage';
-import Link from '../../../components/custom-link/CustomLink';
+import { GetServerSideProps } from 'next';
+import {
+  default as CustomLink,
+  default as Link,
+} from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
-import callServiceMethod from '../../../utils/callServiceMethod';
 import { patchScheme } from '../../../services/SchemeService';
+import SchemeQuestionPage from '../../../types/SchemeQuestionPage';
+import callServiceMethod from '../../../utils/callServiceMethod';
 import { getSessionIdFromCookies } from '../../../utils/session';
-import CustomLink from '../../../components/custom-link/CustomLink';
 
 type RequestBody = {
   ggisReference: string;
@@ -107,7 +109,7 @@ const SchemeGGiSReference = ({
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Edit grant scheme - Manage a grant`}
+        }Edit GGIS reference - Edit grant scheme - Manage a grant`}
       />
 
       <Link href={backButtonHref}>

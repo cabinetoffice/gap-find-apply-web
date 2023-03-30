@@ -7,17 +7,6 @@ import { createMockRouter } from '../../testUtils/createMockRouter';
 import { getJwtFromCookies } from '../../utils/jwt';
 import ExistingApplications, { getServerSideProps } from './index.page';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-      subPath: '',
-    },
-    publicRuntimeConfig: {
-      subPath: '',
-    },
-  };
-});
 jest.mock('../../services/ApplicationService');
 jest.mock('../../utils/jwt');
 const MockApplicationData = [
@@ -218,9 +207,9 @@ describe('No data for existing applications', () => {
 
   it('should render find a grant link', () => {
     expect(
-      screen.getByRole('link', {
+      screen.getAllByRole('link', {
         name: /find a grant/i,
-      })
+      })[1]
     ).toHaveAttribute(
       'href',
       'https://www.find-government-grants.service.gov.uk/'

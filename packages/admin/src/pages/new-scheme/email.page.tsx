@@ -1,22 +1,21 @@
 import {
   Button,
   FlexibleQuestionPageLayout,
-  QuestionPageLayout,
   TextInput,
   ValidationError,
 } from 'gap-web-ui';
-import Meta from '../../components/layout/Meta';
 import { GetServerSideProps } from 'next';
+import getConfig from 'next/config';
+import CustomLink from '../../components/custom-link/CustomLink';
+import Meta from '../../components/layout/Meta';
 import {
   addToSession,
   getValueFromSession,
 } from '../../services/SessionService';
 import SchemeQuestionPage from '../../types/SchemeQuestionPage';
 import callServiceMethod from '../../utils/callServiceMethod';
-import { errorPageParams, serviceErrorRedirect } from './newSchemeServiceError';
-import CustomLink from '../../components/custom-link/CustomLink';
-import getConfig from 'next/config';
 import { getSessionIdFromCookies } from '../../utils/session';
+import { errorPageParams, serviceErrorRedirect } from './newSchemeServiceError';
 
 type RequestBody = {
   contactEmail: string;
@@ -100,7 +99,7 @@ const SchemeEmail = ({
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Add a grant - Manage a grant`}
+        }Support email - Add a grant - Manage a grant`}
       />
 
       <CustomLink

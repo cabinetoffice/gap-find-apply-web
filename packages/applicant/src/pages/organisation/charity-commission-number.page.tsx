@@ -42,9 +42,10 @@ export default function CharityCommissionNumberPage({
                   href="https://register-of-charities.charitycommission.gov.uk/charity-search"
                   className="govuk-link govuk-link--no-visited-state"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noreferrer noopener"
+                  data-cy="cy-search-charity-commission-number"
                 >
-                  Search for your charity number
+                  Search for your charity number (opens in new tab)
                 </a>
               </>
             }

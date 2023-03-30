@@ -19,6 +19,7 @@ WithDescription.args = {
   fieldName: 'details',
   defaultValue: '',
   fieldErrors: [],
+  isJsEnabled: true,
 };
 
 export const WithError = Template.bind({});
@@ -34,4 +35,5 @@ WithError.args = {
       errorMessage: 'Too many characters.',
     },
   ],
+  isJsEnabled: true,
 };

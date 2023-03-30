@@ -50,7 +50,7 @@ describe('Header Component', () => {
     });
     expect(signInLink).toHaveAttribute(
       'href',
-      process.env.NEXT_PUBLIC_COLA_URL
+      process.env.NEXT_PUBLIC_LOGIN_URL
     );
   });
 });

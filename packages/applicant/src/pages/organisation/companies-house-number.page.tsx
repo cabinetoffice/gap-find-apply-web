@@ -42,9 +42,10 @@ export default function CompaniesHouseNumberPage({
                   href="https://find-and-update.company-information.service.gov.uk/?_ga=2.111669508.18905375.1663663866-660770501.1644938489"
                   className="govuk-link govuk-link--no-visited-state"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noreferrer noopener"
+                  data-cy="cy-search-companies-house-number"
                 >
-                  Search for your company number
+                  Search for your company number (opens in new tab)
                 </a>
               </>
             }

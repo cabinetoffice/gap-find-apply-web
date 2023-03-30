@@ -50,8 +50,8 @@ const PublishOrScheduleButton = ({
           }
           ariaLabel={
             futurePublishingDate
-              ? `Schedule ${advertName} grant advert`
-              : `Publish ${advertName} grant advert`
+              ? `Schedule my advert - ${advertName}`
+              : `Publish my advert - ${advertName}`
           }
           data-cy="cy-advert-confirm-and-publish"
         />

@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios';
+import { TaskList } from 'gap-web-ui';
 import moment from 'moment';
 import { GetServerSidePropsContext } from 'next';
 import React from 'react';
@@ -10,6 +11,7 @@ import {
   publishAdvert,
   scheduleAdvert,
 } from '../../../../../../services/AdvertPageService';
+import { grantAdvertStatus } from '../../../../../../services/AdvertPageService.d';
 import CustomError from '../../../../../../types/CustomError';
 import {
   GrantAdvertQuestionResponseType,
@@ -21,22 +23,20 @@ import InferProps from '../../../../../../types/InferProps';
 import callServiceMethod from '../../../../../../utils/callServiceMethod';
 import { generateErrorPageRedirectV2 } from '../../../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../../../utils/session';
-import { DateTime } from './components/DateTime';
 import { Date } from './components/Date';
+import { DateTime } from './components/DateTime';
 import { DefaultResponse } from './components/DefaultResponse';
 import { List } from './components/List';
+import PublishOrScheduleButton from './components/PublishOrScheduleButton';
 import { RichText } from './components/RichText';
 import { ShortText } from './components/ShortText';
-import { grantAdvertStatus } from '../../../../../../services/AdvertPageService.d';
-import PublishOrScheduleButton from './components/PublishOrScheduleButton';
 import UnpublishButton from './components/UnpublishButton';
 import UnscheduleButton from './components/UnscheduleButton';
 import {
-  isGrantAdvertNotPublished,
   advertIsPublishedOrScheduled,
+  isGrantAdvertNotPublished,
   summaryPageTitleWhenAdvertIsNotPublished,
 } from './components/util';
-import { getAdvertStatusBySchemeIdResponse } from '../../../../../../services/AdvertPageService.d';
 
 export const getServerSideProps = async ({
   req,
@@ -174,10 +174,35 @@ const AdvertSummaryPage = ({
   status,
   grantAdvertData,
 }: InferProps<typeof getServerSideProps>) => {
+  const list = sections.map((section) => {
+    const customSubList = (
+      <dl className="govuk-summary-list">
+        {section.pages.map((page) => (
+          <React.Fragment key={`${section.id}-${page.id}`}>
+            {page.questions.map((question) => (
+              <React.Fragment key={`${section.id}-${page.id}-${question.id}`}>
+                {RenderQuestion(
+                  question,
+                  section,
+                  page,
+                  schemeId,
+                  advertId,
+                  status
+                )}
+              </React.Fragment>
+            ))}
+          </React.Fragment>
+        ))}
+      </dl>
+    );
+    return { value: section.title, customSubList: customSubList };
+  });
   return (
     <>
       <Meta
-        title={`${summaryPageTitleWhenAdvertIsNotPublished(status)} - Manage a grant`}
+        title={`${summaryPageTitleWhenAdvertIsNotPublished(
+          status
+        )} - Manage a grant`}
       />
 
       <CustomLink
@@ -229,36 +254,7 @@ const AdvertSummaryPage = ({
         </div>
 
         <div className="govuk-grid-column-full">
-          {sections.map((section, index) => (
-            <div key={`${section.id}-heading`}>
-              <h2
-                className="govuk-heading-m"
-                data-cy={`cy-summary-${section.title}`}
-              >
-                {section.title}
-              </h2>
-              <dl className="govuk-summary-list">
-                {section.pages.map((page) => (
-                  <React.Fragment key={`${section.id}-${page.id}`}>
-                    {page.questions.map((question) => (
-                      <React.Fragment
-                        key={`${section.id}-${page.id}-${question.id}`}
-                      >
-                        {RenderQuestion(
-                          question,
-                          section,
-                          page,
-                          schemeId,
-                          advertId,
-                          status
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </dl>
-            </div>
-          ))}
+          <TaskList listItems={list} />
         </div>
       </div>
 

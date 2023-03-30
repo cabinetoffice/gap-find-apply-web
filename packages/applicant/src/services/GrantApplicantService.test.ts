@@ -1,7 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { GrantApplicant } from '../models/GrantApplicant';
-import { RegisterAnApplicant } from '../pages/register/index.page';
 import { axiosConfig } from '../utils/jwt';
 import { GrantApplicantService } from './GrantApplicantService';
 import getConfig from 'next/config';
@@ -123,25 +122,5 @@ describe('Grant Applicant Service', () => {
         Authorization: `Bearer testJwt`,
       },
     });
-  });
-
-  test('register applicant', async () => {
-    const spy = jest.spyOn(axios, 'post');
-
-    const registrationData = {
-      firstName: 'Jane',
-      lastName: 'Doe',
-      email: 'email@test.com',
-      emailConfirmed: 'email@test.com',
-      telephone: '00000000000',
-    } as RegisterAnApplicant;
-
-    const expectedUrl = `${BACKEND_HOST}/grant-applicant/register`;
-    mock.onPost(expectedUrl).reply(200, 'created');
-
-    await subject.registerAnApplicant(registrationData);
-
-    expect(spy).toBeCalledTimes(1);
-    expect(spy).toBeCalledWith(expectedUrl, registrationData);
   });
 });

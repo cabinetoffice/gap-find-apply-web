@@ -1,12 +1,11 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { getServerSideProps } from './name.page';
-import { GetServerSidePropsResult, Redirect } from 'next';
-import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
-import AdvertName from './name.page';
-import { createNewAdvert } from '../../../../services/AdvertPageService';
 import { merge } from 'lodash';
+import { GetServerSidePropsResult, Redirect } from 'next';
 import { parseBody } from 'next/dist/server/api-utils/node';
+import { createNewAdvert } from '../../../../services/AdvertPageService';
+import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
+import AdvertName, { getServerSideProps } from './name.page';
 
 jest.mock('../../../../services/SessionService');
 jest.mock('../../../../services/SchemeService');
@@ -32,7 +31,9 @@ describe('Application name page', () => {
   describe('UI/rendering', () => {
     it('Should render a meta title WITHOUT "Error: " when fieldErrors is empty', () => {
       render(component);
-      expect(document.title).toBe('Create an advert - Manage a grant');
+      expect(document.title).toBe(
+        'Grant name - Create an advert - Manage a grant'
+      );
     });
 
     it('Should render a meta title WITH "Error: " when fieldErrors is NOT empty', () => {
@@ -44,7 +45,9 @@ describe('Application name page', () => {
         />
       );
 
-      expect(document.title).toBe('Error: Create an advert - Manage a grant');
+      expect(document.title).toBe(
+        'Error: Grant name - Create an advert - Manage a grant'
+      );
     });
 
     it('Renders the question page layout output', () => {

@@ -143,7 +143,7 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn = true }) => {
               href="/"
               className="govuk-header__link govuk-header__link--service-name"
             >
-              Apply for a grant
+              Find a grant
             </a>
           </div>
         </div>
@@ -161,7 +161,7 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn = true }) => {
             </Link>
           ) : (
             <a
-              href={process.env.COLA_URL}
+              href={process.env.LOGIN_URL}
               className="govuk-link govuk-link--no-visited-state"
             >
               Sign in

@@ -1,15 +1,15 @@
-import { GetServerSideProps } from 'next';
 import {
   Button,
   FlexibleQuestionPageLayout,
   TextInput,
   ValidationError,
 } from 'gap-web-ui';
-import SchemeQuestionPage from '../../../types/SchemeQuestionPage';
-import Meta from '../../../components/layout/Meta';
-import callServiceMethod from '../../../utils/callServiceMethod';
-import { patchScheme } from '../../../services/SchemeService';
+import { GetServerSideProps } from 'next';
 import Link from '../../../components/custom-link/CustomLink';
+import Meta from '../../../components/layout/Meta';
+import { patchScheme } from '../../../services/SchemeService';
+import SchemeQuestionPage from '../../../types/SchemeQuestionPage';
+import callServiceMethod from '../../../utils/callServiceMethod';
 import { getSessionIdFromCookies } from '../../../utils/session';
 
 type RequestBody = {
@@ -91,7 +91,7 @@ const SchemeEmail = ({
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Edit grant scheme - Manage a grant`}
+        }Edit support email - Edit grant scheme - Manage a grant`}
       />
 
       <Link href={backButtonHref}>
