@@ -46,7 +46,9 @@ const loginAndInitialiseAdvert = (name) => {
 const PAGE_TITLE = 'Opening and closing dates';
 const SECTION_NAME = 'applicationDates';
 const SECTION_TITLE = 'Application dates';
+const SECTION_ID = 3;
 const PAGE_ID = '1';
+const PAGE_INDEX = 0;
 const OPEN_INPUT = 'grantApplicationOpenDate';
 const CLOSE_INPUT = 'grantApplicationCloseDate';
 
@@ -66,7 +68,9 @@ describe('Section 3. Application Dates', () => {
   it('Should be able to access section 3 and populate the pages', () => {
     enterInPageAndCheckUrlContainRightSectionAndId(
       PAGE_TITLE,
+      SECTION_TITLE,
       SECTION_NAME,
+      SECTION_ID,
       PAGE_ID
     );
 
@@ -78,7 +82,9 @@ describe('Section 3. Application Dates', () => {
     clickBackButton();
     enterInPageAndCheckUrlContainRightSectionAndId(
       PAGE_TITLE,
+      SECTION_TITLE,
       SECTION_NAME,
+      SECTION_ID,
       PAGE_ID
     );
 
@@ -91,10 +97,12 @@ describe('Section 3. Application Dates', () => {
       'have.text',
       'Create an advert'
     );
-    checkPageStatus(PAGE_TITLE, 'Not Started');
+    checkPageStatus(SECTION_ID, SECTION_TITLE, 'Not Started', PAGE_INDEX);
     enterInPageAndCheckUrlContainRightSectionAndId(
       PAGE_TITLE,
+      SECTION_TITLE,
       SECTION_NAME,
+      SECTION_ID,
       PAGE_ID
     );
 
@@ -140,8 +148,8 @@ describe('Section 3. Application Dates', () => {
     getErrorRelatedToRadio(
       "Select 'Yes, I've completed this question', or 'No, I'll come back later'"
     );
-    getDateError(OPEN_INPUT, 'day', 'You must enter a date');
-    getDateError(CLOSE_INPUT, 'day', 'You must enter a date');
+    getDateError(OPEN_INPUT, 'day', 'Enter an opening date');
+    getDateError(CLOSE_INPUT, 'day', 'Enter a closing date');
 
     // Errors: "Date must include a month and a year" & "Date must include a year"
     setDatesContent(OPEN_INPUT, '5', '', '');
@@ -152,9 +160,13 @@ describe('Section 3. Application Dates', () => {
 
     checkLengthOfErrorsInErrorBanner(2);
     checkDatesContent(OPEN_INPUT, '5', '', '');
-    getDateError(OPEN_INPUT, 'month', 'Date must include a month and a year');
+    getDateError(
+      OPEN_INPUT,
+      'month',
+      'Opening date must include a month and a year'
+    );
     checkDatesContent(CLOSE_INPUT, '5', '12', '');
-    getDateError(CLOSE_INPUT, 'year', 'Date must include a year');
+    getDateError(CLOSE_INPUT, 'year', 'Closing date must include a year');
 
     // Errors: "Date must include a month" & "Date must include a day"
     setDatesContent(OPEN_INPUT, '5', '', '2022');
@@ -164,9 +176,9 @@ describe('Section 3. Application Dates', () => {
 
     checkLengthOfErrorsInErrorBanner(2);
     checkDatesContent(OPEN_INPUT, '5', '', '2022');
-    getDateError(OPEN_INPUT, 'month', 'Date must include a month');
+    getDateError(OPEN_INPUT, 'month', 'Opening date must include a month');
     checkDatesContent(CLOSE_INPUT, '', '12', '2022');
-    getDateError(CLOSE_INPUT, 'day', 'Date must include a day');
+    getDateError(CLOSE_INPUT, 'day', 'Closing date must include a day');
 
     // Errors: "Date must include a day and a month" & "Date must include a real month": 13
     setDatesContent(OPEN_INPUT, '', '', '2022');
@@ -176,9 +188,17 @@ describe('Section 3. Application Dates', () => {
 
     checkLengthOfErrorsInErrorBanner(2);
     checkDatesContent(OPEN_INPUT, '', '', '2022');
-    getDateError(OPEN_INPUT, 'day', 'Date must include a day and a month');
+    getDateError(
+      OPEN_INPUT,
+      'day',
+      'Opening date must include a day and a month'
+    );
     checkDatesContent(CLOSE_INPUT, '5', '13', '2022');
-    getDateError(CLOSE_INPUT, 'month', 'Date must include a real month');
+    getDateError(
+      CLOSE_INPUT,
+      'month',
+      'Closing date must include a real month'
+    );
 
     // Errors: "Date must include a real month": 0 & "Date must include a real month": -1
     setDatesContent(OPEN_INPUT, '5', '0', '2022');
@@ -188,9 +208,13 @@ describe('Section 3. Application Dates', () => {
 
     checkLengthOfErrorsInErrorBanner(2);
     checkDatesContent(OPEN_INPUT, '5', '0', '2022');
-    getDateError(OPEN_INPUT, 'month', 'Date must include a real month');
+    getDateError(OPEN_INPUT, 'month', 'Opening date must include a real month');
     checkDatesContent(CLOSE_INPUT, '5', '-1', '2022');
-    getDateError(CLOSE_INPUT, 'month', 'Date must include a real month');
+    getDateError(
+      CLOSE_INPUT,
+      'month',
+      'Closing date must include a real month'
+    );
 
     // Errors: "Date must include a real day": 0 & "Date must include a real day": -1
     setDatesContent(OPEN_INPUT, '0', '4', '2022');
@@ -200,9 +224,9 @@ describe('Section 3. Application Dates', () => {
 
     checkLengthOfErrorsInErrorBanner(2);
     checkDatesContent(OPEN_INPUT, '0', '4', '2022');
-    getDateError(OPEN_INPUT, 'day', 'Date must include a real day');
+    getDateError(OPEN_INPUT, 'day', 'Opening date must include a real day');
     checkDatesContent(CLOSE_INPUT, '-1', '3', '2022');
-    getDateError(CLOSE_INPUT, 'day', 'Date must include a real day');
+    getDateError(CLOSE_INPUT, 'day', 'Closing date must include a real day');
 
     // Errors: "Date must include a real day": 32 & "Date must include a real year": 359
     setDatesContent(OPEN_INPUT, '32', '4', '2022');
@@ -212,9 +236,9 @@ describe('Section 3. Application Dates', () => {
 
     checkLengthOfErrorsInErrorBanner(2);
     checkDatesContent(OPEN_INPUT, '32', '4', '2022');
-    getDateError(OPEN_INPUT, 'day', 'Date must include a real day');
+    getDateError(OPEN_INPUT, 'day', 'Opening date must include a real day');
     checkDatesContent(CLOSE_INPUT, '2', '3', '359');
-    getDateError(CLOSE_INPUT, 'year', 'Date must include a real year');
+    getDateError(CLOSE_INPUT, 'year', 'Closing date must include a real year');
 
     // Errors: "Date must include a real year": -2022 & "Date must include a real year": 10512
     setDatesContent(OPEN_INPUT, '28', '4', '-2022');
@@ -224,9 +248,9 @@ describe('Section 3. Application Dates', () => {
 
     checkLengthOfErrorsInErrorBanner(2);
     checkDatesContent(OPEN_INPUT, '28', '4', '-2022');
-    getDateError(OPEN_INPUT, 'year', 'Date must include a real year');
+    getDateError(OPEN_INPUT, 'year', 'Opening date must include a real year');
     checkDatesContent(CLOSE_INPUT, '2', '3', '10512');
-    getDateError(CLOSE_INPUT, 'year', 'Date must include a real year');
+    getDateError(CLOSE_INPUT, 'year', 'Closing date must include a real year');
 
     // Errors: "Date must include a real year": "test" & "Date must include a real year": "#"
     setDatesContent(OPEN_INPUT, 'test', '4', '2022');
@@ -236,9 +260,9 @@ describe('Section 3. Application Dates', () => {
 
     checkLengthOfErrorsInErrorBanner(2);
     checkDatesContent(OPEN_INPUT, 'test', '4', '2022');
-    getDateError(OPEN_INPUT, 'day', 'Date must include a real day');
+    getDateError(OPEN_INPUT, 'day', 'Opening date must include a real day');
     checkDatesContent(CLOSE_INPUT, '2', '3', '#');
-    getDateError(CLOSE_INPUT, 'year', 'Date must include a real year');
+    getDateError(CLOSE_INPUT, 'year', 'Closing date must include a real year');
 
     // Errors: "The closing date must be later than the opening date"
     setDatesContent(OPEN_INPUT, '28', '4', '2022');
@@ -265,10 +289,12 @@ describe('Section 3. Application Dates', () => {
       'have.text',
       'Create an advert'
     );
-    checkPageStatus(PAGE_TITLE, 'In Progress');
+    checkPageStatus(SECTION_ID, SECTION_TITLE, 'In Progress', PAGE_INDEX);
     enterInPageAndCheckUrlContainRightSectionAndId(
       PAGE_TITLE,
+      SECTION_TITLE,
       SECTION_NAME,
+      SECTION_ID,
       PAGE_ID
     );
 
@@ -284,10 +310,12 @@ describe('Section 3. Application Dates', () => {
       'have.text',
       'Create an advert'
     );
-    checkPageStatus(PAGE_TITLE, 'Completed');
+    checkPageStatus(SECTION_ID, SECTION_TITLE, 'Completed', PAGE_INDEX);
     enterInPageAndCheckUrlContainRightSectionAndId(
       PAGE_TITLE,
+      SECTION_TITLE,
       SECTION_NAME,
+      SECTION_ID,
       PAGE_ID
     );
 
@@ -302,10 +330,12 @@ describe('Section 3. Application Dates', () => {
       'have.text',
       'Create an advert'
     );
-    checkPageStatus(PAGE_TITLE, 'Completed');
+    checkPageStatus(SECTION_ID, SECTION_TITLE, 'Completed', PAGE_INDEX);
     enterInPageAndCheckUrlContainRightSectionAndId(
       PAGE_TITLE,
+      SECTION_TITLE,
       SECTION_NAME,
+      SECTION_ID,
       PAGE_ID
     );
 
@@ -314,6 +344,6 @@ describe('Section 3. Application Dates', () => {
       'have.text',
       'Create an advert'
     );
-    checkPageStatus(PAGE_TITLE, 'Completed');
+    checkPageStatus(SECTION_ID, SECTION_TITLE, 'Completed', PAGE_INDEX);
   });
 });

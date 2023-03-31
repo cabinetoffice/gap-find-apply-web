@@ -107,6 +107,7 @@ describe('Test each question type', () => {
       'have.value',
       `QA Question ${questionNo} Hint text for testing question types.`
     );
+    cy.get('[data-cy="cy-radioInput-option-No"]').check();
     cy.get('[data-cy="cy-radioInput-option-No"]').should('be.checked');
     cy.get('[data-cy="cy-radioInput-option-Yes"]').should('not.be.checked');
     run_accessibility();
@@ -187,8 +188,7 @@ describe('Test each question type', () => {
     cy.get('textarea').click().clear().type('a '.repeat(500), { delay: 0 });
 
     //making question optional
-    cy.get('[data-cy="cy-radioInput-option-No"]').should('be.checked');
-    cy.get('[data-cy="cy-radioInput-option-Yes"]').should('not.be.checked');
+    cy.get('[data-cy="cy-radioInput-option-No"]').should('not.be.checked');
 
     cy.get('[data-cy="cy-radioInput-option-Yes"]').check();
 
@@ -507,6 +507,9 @@ describe('Test each question type', () => {
     cy.get('[data-cy="cy-radioInput-option-No"]').should('not.be.checked');
     cy.get('[data-cy="cy-radioInput-option-Yes"]').should('not.be.checked');
 
+    cy.get('[data-cy="cy-radioInput-option-No"]').check();
+
+    cy.get('[data-cy="cy-radioInput-option-No"]').should('be.checked');
     cy.get('[data-cy="cy-button-Confirm"]').contains('Confirm').click();
 
     //back to dashboard
@@ -841,6 +844,9 @@ describe('Test each question type', () => {
       'have.value',
       `QA Question ${questionNo} Hint text for testing question types.`
     );
+
+    cy.get('[data-cy="cy-radioInput-option-No"]').check();
+
     cy.get('[data-cy="cy-radioInput-option-No"]').should('be.checked');
     cy.get('[data-cy="cy-radioInput-option-Yes"]').should('not.be.checked');
     run_accessibility();

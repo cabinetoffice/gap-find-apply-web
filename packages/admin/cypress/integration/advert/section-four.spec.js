@@ -21,6 +21,7 @@ import {
 
 const SECTION_4_TITLE = 'How to apply';
 const SECTION_4_NAME = 'howToApply';
+const SECTION_4_ID = 4;
 const COMPLETED = 'Completed';
 const IN_PROGRESS = 'In Progress';
 const NOT_STARTED = 'Not Started';
@@ -29,7 +30,8 @@ const SECTION_4_TEXT_URL = 'http://www.google.com';
 const SECTION_4_SHORT_URL_CASE1 = 'https://tinyurl.com/decs4kpn';
 const SECTION_4_SHORT_URL_CASE2 = 'https://bit.ly/3Bg19uM';
 const SECTION_4_SHORT_URL_CASE3 = 'http://ow.ly/d9AV30jRJWJ';
-const SECTION_4_MANDATORY_QUESTION_ERROR = 'You must enter a link';
+const SECTION_4_MANDATORY_QUESTION_ERROR =
+  'Enter a link where applicants can apply';
 const SECTION_4_STANDARD_QUESTION_ERROR = 'You must enter a valid link';
 const SECTION_4_SHORT_URL_QUESTION_ERROR = 'You must enter the full link';
 const SECTION_4_RADIO_ERROR =
@@ -69,19 +71,23 @@ describe('Section 4. How to apply - Advert builder', () => {
     deleteTestAdvert();
   });
 
-  const PAGE_1_QUESTION_TITLE =
-    'Add a link so applicants know where to apply';
+  const PAGE_1_QUESTION_TITLE = 'Add a link so applicants know where to apply';
   const PAGE_1_FIELD_NAME = 'grantWebpageUrl';
   const PAGE_1_QUESTION_HINT =
     'Applicants will be directed to this link when they select "Start new application" \n\nEnter a link that all applicants can access. The link must begin with "https://".';
   const PAGE_1_TITLE = 'Link to application form';
   const PAGE_1_ID = 1;
+  const PAGE_1_QUESTION_INDEX = 0;
 
   it('Should be able to access section 4 and populate the pages', () => {
-    cy.log('page 1 - Enter in the page, add something to tiny mce, press back, reenter, check no value is in tiny mce, and go back to section-overview page');
+    cy.log(
+      'page 1 - Enter in the page, add something to tiny mce, press back, reenter, check no value is in tiny mce, and go back to section-overview page'
+    );
     enterInPageAddValueAndPressBackAndReEnterAndCheckInputIsEmpty(
       PAGE_1_TITLE,
+      SECTION_4_TITLE,
       SECTION_4_NAME,
+      SECTION_4_ID,
       PAGE_1_ID,
       SECTION_4_TEXT_ADDED,
       PAGE_1_FIELD_NAME
@@ -92,11 +98,13 @@ describe('Section 4. How to apply - Advert builder', () => {
       PAGE_1_TITLE,
       SECTION_4_NAME,
       SECTION_4_TITLE,
+      SECTION_4_ID,
       PAGE_1_FIELD_NAME,
       PAGE_1_QUESTION_TITLE,
       PAGE_1_QUESTION_HINT,
       NOT_STARTED,
-      PAGE_1_ID
+      PAGE_1_ID,
+      PAGE_1_QUESTION_INDEX
     );
 
     //cy.log('page 1 click save and continue');
@@ -191,11 +199,13 @@ describe('Section 4. How to apply - Advert builder', () => {
       PAGE_1_TITLE,
       SECTION_4_NAME,
       SECTION_4_TITLE,
+      SECTION_4_ID,
       PAGE_1_FIELD_NAME,
       PAGE_1_QUESTION_TITLE,
       PAGE_1_QUESTION_HINT,
       COMPLETED,
-      PAGE_1_ID
+      PAGE_1_ID,
+      PAGE_1_QUESTION_INDEX
     );
 
     //cy.log('page 1 check content of input');
@@ -218,6 +228,11 @@ describe('Section 4. How to apply - Advert builder', () => {
     cy.url().should('include', '/section-overview');
 
     //cy.log('page 1 check status');
-    checkPageStatus(PAGE_1_TITLE, COMPLETED);
+    checkPageStatus(
+      SECTION_4_ID,
+      SECTION_4_TITLE,
+      COMPLETED,
+      PAGE_1_QUESTION_INDEX
+    );
   });
 });

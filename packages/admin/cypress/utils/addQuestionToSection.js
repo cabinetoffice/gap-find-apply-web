@@ -8,6 +8,6 @@ export default function addQuestionToSection(sectionName, questionNo) {
   cy.get('textarea[name="hintText"]').type(
     `QA Question ${questionNo} Hint text for testing question types.`
   );
-
+  cy.get(`[data-cy="cy-radioInput-option-Yes"]`).click();
   cy.get('button').contains('Save and continue').click();
 }

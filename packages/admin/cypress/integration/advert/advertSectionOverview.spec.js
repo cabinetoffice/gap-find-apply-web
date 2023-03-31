@@ -75,7 +75,10 @@ describe('Section-overview', () => {
       .should('have.text', 'you can save your progress and come back later');
     cy.get('[data-cy="cy-summary-overview-help-text-2"]')
       .should('be.visible')
-      .should('have.text', 'This advert will be published on Find a Grant.')
+      .should(
+        'have.text',
+        'This advert will be published on Find a Grant (opens in new tab).'
+      )
       .find('a')
       .should(
         'have.attr',

@@ -22,21 +22,27 @@ const checkInputContent = (content, fieldname) => {
 
 const enterInPageAddValueAndPressBackAndReEnterAndCheckInputIsEmpty = (
   pageTitle,
+  sectionTitle,
   sectionName,
+  sectionId,
   pageId,
   textToAdd,
   fieldName
 ) => {
   enterInPageAndCheckUrlContainRightSectionAndId(
     pageTitle,
+    sectionTitle,
     sectionName,
+    sectionId,
     pageId
   );
   setInputContent(textToAdd, fieldName);
   clickBackButton();
   enterInPageAndCheckUrlContainRightSectionAndId(
     pageTitle,
+    sectionTitle,
     sectionName,
+    sectionId,
     pageId
   );
   checkInputContent('', fieldName);

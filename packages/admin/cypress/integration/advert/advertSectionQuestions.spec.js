@@ -1,14 +1,14 @@
 import addAdvertToScheme from '../../utils/addAdvertToScheme';
 import {
-  deleteTestAdvert,
   deleteExistingGrantAdvert,
+  deleteTestAdvert,
 } from '../../utils/deleteTestAdverts';
-import run_accessibility from '../../utils/run_accessibility';
 import {
-  sectionTwoFromFieldsCheck,
   sectionTwoFormInputValueCheck,
+  sectionTwoFromFieldsCheck,
   sectionTwoInvalidInputTypeCheck,
 } from '../../utils/grantAdvertUtils/section2Utils';
+import run_accessibility from '../../utils/run_accessibility';
 let sectionOverviewPageURL;
 
 // Authentication for the admin side
@@ -60,22 +60,20 @@ describe('Section two Award amounts - Advert builder', () => {
 
   it('Should be able to access section two and populate the section', () => {
     //section overview - checking status and link content
-    cy.get(
-      '[data-cy="cy-status-tag-How much funding is available?-Not Started"]'
-    )
+    cy.get('[data-cy="cy-2. Award amounts-sublist-task-status-0"]')
       .should('have.text', 'Not Started')
       .and('have.prop', 'tagName', 'STRONG')
       .and('have.class', 'govuk-tag--grey');
 
     cy.get(
-      '[data-cy="cy-advert-section-overview-page-How much funding is available?"]'
+      '[data-cy="cy-2. Award amounts-sublist-task-name-How much funding is available?"]'
     )
       .contains('How much funding is available?')
       .and('have.attr', 'href')
       .and('include', 'awardAmounts/1');
 
     cy.get(
-      '[data-cy="cy-advert-section-overview-page-How much funding is available?"]'
+      '[data-cy="cy-2. Award amounts-sublist-task-name-How much funding is available?"]'
     ).click();
 
     cy.url().should('include', 'awardAmounts/1');
@@ -130,21 +128,21 @@ describe('Section two Award amounts - Advert builder', () => {
 
     sectionTwoInvalidInputTypeCheck({
       fieldName: 'grantTotalAwardAmount',
-      errorMessage: 'You must enter a total amount',
+      errorMessage: 'Enter a total amount',
       oldInputValue: '',
       newInputValue: 'Non numeric answer 1',
     });
 
     sectionTwoInvalidInputTypeCheck({
       fieldName: 'grantMaximumAward',
-      errorMessage: 'You must enter a maximum amount',
+      errorMessage: 'Enter a maximum amount',
       oldInputValue: '',
       newInputValue: 'Non numeric answer 2',
     });
 
     sectionTwoInvalidInputTypeCheck({
       fieldName: 'grantMinimumAward',
-      errorMessage: 'You must enter a minimum amount',
+      errorMessage: 'Enter a minimum amount',
       oldInputValue: '',
       newInputValue: 'Non numeric answer 3',
     });
@@ -231,21 +229,21 @@ describe('Section two Award amounts - Advert builder', () => {
     //To change the error message to say "zero" rather than "0"
     sectionTwoInvalidInputTypeCheck({
       fieldName: 'grantTotalAwardAmount',
-      errorMessage: 'You must enter an amount higher than zero',
+      errorMessage: 'Total amount must be higher than zero',
       oldInputValue: '-500000',
       newInputValue: '500000',
     });
 
     sectionTwoInvalidInputTypeCheck({
       fieldName: 'grantMaximumAward',
-      errorMessage: 'You must enter an amount higher than zero',
+      errorMessage: 'Maximum amount must be higher than zero',
       oldInputValue: '-50',
       newInputValue: '50',
     });
 
     sectionTwoInvalidInputTypeCheck({
       fieldName: 'grantMinimumAward',
-      errorMessage: 'You must enter an amount higher than zero',
+      errorMessage: 'Minimum amount must be higher than zero',
       oldInputValue: '0',
       newInputValue: '100',
     });
@@ -276,18 +274,15 @@ describe('Section two Award amounts - Advert builder', () => {
 
     //back to section overview - Section 2 with completed tag
     cy.url().should('include', '/section-overview');
-    cy.get(
-      '[data-cy="cy-status-tag-How much funding is available?-Not Started"]'
-    ).should('not.exist');
 
-    cy.get('[data-cy="cy-status-tag-How much funding is available?-Completed"]')
+    cy.get('[data-cy="cy-2. Award amounts-sublist-task-status-0"]')
       .should('have.text', 'Completed')
       .and('have.prop', 'tagName', 'STRONG')
       .and('have.class', 'govuk-tag');
 
     //Back to section to check if data is retained
     cy.get(
-      '[data-cy="cy-advert-section-overview-page-How much funding is available?"]'
+      '[data-cy="cy-2. Award amounts-sublist-task-name-How much funding is available?"]'
     ).click();
 
     cy.url().should('include', 'awardAmounts/1');
@@ -326,13 +321,14 @@ describe('Section two Award amounts - Advert builder', () => {
     //back to sectionOver view - Section 2 with completed tag
     cy.url().should('include', '/section-overview');
 
-    cy.get(
-      '[data-cy="cy-status-tag-How much funding is available?-Completed"]'
-    ).should('have.text', 'Completed');
+    cy.get('[data-cy="cy-2. Award amounts-sublist-task-status-0"]').should(
+      'have.text',
+      'Completed'
+    );
 
     //back to section 2 - to test save and exit button with "No, I'll come back later" option
     cy.get(
-      '[data-cy="cy-advert-section-overview-page-How much funding is available?"]'
+      '[data-cy="cy-2. Award amounts-sublist-task-name-How much funding is available?"]'
     ).click();
 
     cy.url().should('include', 'awardAmounts/1');
@@ -344,9 +340,7 @@ describe('Section two Award amounts - Advert builder', () => {
     //back to sectionOver view - Section 2 with in progress tag
     cy.url().should('include', '/section-overview');
 
-    cy.get(
-      '[data-cy="cy-status-tag-How much funding is available?-In Progress"]'
-    )
+    cy.get('[data-cy="cy-2. Award amounts-sublist-task-status-0"]')
       .should('have.text', 'In Progress')
       .and('have.prop', 'tagName', 'STRONG')
       .and('have.class', 'govuk-tag--blue');
@@ -355,7 +349,7 @@ describe('Section two Award amounts - Advert builder', () => {
 
     //back to section 2- save and continue button with "No, I'll come back later" option
     cy.get(
-      '[data-cy="cy-advert-section-overview-page-How much funding is available?"]'
+      '[data-cy="cy-2. Award amounts-sublist-task-name-How much funding is available?"]'
     ).click();
 
     cy.url().should('include', 'awardAmounts/1');
@@ -369,16 +363,14 @@ describe('Section two Award amounts - Advert builder', () => {
     //back to sectionOver view - section 2 with completed tag
     cy.url().should('include', '/section-overview');
 
-    cy.get(
-      '[data-cy="cy-status-tag-How much funding is available?-In Progress"]'
-    )
+    cy.get('[data-cy="cy-2. Award amounts-sublist-task-status-0"]')
       .should('have.text', 'In Progress')
       .and('have.prop', 'tagName', 'STRONG')
       .and('have.class', 'govuk-tag');
 
     //back to section 2- testing back navigation button and Section 2 tag should not change
     cy.get(
-      '[data-cy="cy-advert-section-overview-page-How much funding is available?"]'
+      '[data-cy="cy-2. Award amounts-sublist-task-name-How much funding is available?"]'
     ).click();
 
     cy.url().should('include', 'awardAmounts/1');
@@ -392,9 +384,7 @@ describe('Section two Award amounts - Advert builder', () => {
     //back to section overview
     cy.url().should('include', '/section-overview');
 
-    cy.get(
-      '[data-cy="cy-status-tag-How much funding is available?-In Progress"]'
-    )
+    cy.get('[data-cy="cy-2. Award amounts-sublist-task-status-0"]')
       .should('have.text', 'In Progress')
       .and('have.prop', 'tagName', 'STRONG')
       .and('have.class', 'govuk-tag--blue');

@@ -9,6 +9,10 @@ import advertCheckSectionStatus from '../../utils/grantAdvertUtils/advertCheckSt
 import run_accessibility from '../../utils/run_accessibility';
 let sectionOverviewPageURL;
 
+const SECTION_1_TITLE = 'Grant details';
+const SECTION_1_NAME = 'grantDetails';
+const SECTION_1_ID = 1;
+
 // Authentication for the admin side
 const loginAndInitiliaseAdvert = (name) => {
   cy.session(
@@ -61,19 +65,23 @@ describe('Section on Grant details - Advert builder', () => {
       'have.text',
       'Create an advert'
     );
-    let sectionTitle = 'Short description';
-    cy.get(`[data-cy="cy-status-tag-${sectionTitle}-Not Started"]`)
+    let pageTitle = 'Short description';
+    cy.get(
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-status-0"]`
+    )
       .should('have.text', 'Not Started')
       .and('have.prop', 'tagName', 'STRONG')
       .and('have.class', 'govuk-tag--grey');
 
-    cy.get(`[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`)
-      .contains(sectionTitle)
+    cy.get(
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
+    )
+      .contains(pageTitle)
       .and('have.attr', 'href')
       .and('include', 'grantDetails/1');
 
     cy.get(
-      `[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
     ).click();
 
     cy.url().should('include', 'grantDetails/1');
@@ -112,7 +120,10 @@ describe('Section on Grant details - Advert builder', () => {
 
     advertCheckCompleteSection();
     advertCheckSectionStatus(
-      sectionTitle,
+      SECTION_1_ID,
+      SECTION_1_TITLE,
+      pageTitle,
+      '0',
       'cy-grantShortDescription-text-area',
       'test description',
       false
@@ -120,7 +131,7 @@ describe('Section on Grant details - Advert builder', () => {
 
     // should redirect to question 2 in the section when save and continue is clicked
     cy.get(
-      `[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
     ).click();
 
     cy.get(
@@ -137,19 +148,23 @@ describe('Section on Grant details - Advert builder', () => {
       'have.text',
       'Create an advert'
     );
-    let sectionTitle = 'Location';
-    cy.get(`[data-cy="cy-status-tag-${sectionTitle}-Not Started"]`)
+    let pageTitle = 'Location';
+    cy.get(
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-status-1"]`
+    )
       .should('have.text', 'Not Started')
       .and('have.prop', 'tagName', 'STRONG')
       .and('have.class', 'govuk-tag--grey');
 
-    cy.get(`[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`)
-      .contains(sectionTitle)
+    cy.get(
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
+    )
+      .contains(pageTitle)
       .and('have.attr', 'href')
       .and('include', 'grantDetails/2');
 
     cy.get(
-      `[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
     ).click();
 
     cy.url().should('include', 'grantDetails/2');
@@ -160,7 +175,10 @@ describe('Section on Grant details - Advert builder', () => {
     run_accessibility();
 
     cy.get('[data-cy="cy-advert-page-save-and-continue-button"]').click();
-    checkErrorBanner('grantLocation', 'You must select at least one location');
+    checkErrorBanner(
+      'grantLocation',
+      'Select at least one location where the grant is available'
+    );
     checkErrorBanner(
       'completed',
       "Select 'Yes, I've completed this question', or 'No, I'll come back later'"
@@ -177,7 +195,10 @@ describe('Section on Grant details - Advert builder', () => {
 
     advertCheckCompleteSection();
     advertCheckSectionStatus(
-      sectionTitle,
+      SECTION_1_ID,
+      SECTION_1_TITLE,
+      pageTitle,
+      '1',
       'cy-checkbox-value-National',
       true,
       true
@@ -185,7 +206,7 @@ describe('Section on Grant details - Advert builder', () => {
 
     // should redirect to question 3 in the section when save and continue is clicked
     cy.get(
-      `[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
     ).click();
 
     cy.get(
@@ -202,19 +223,23 @@ describe('Section on Grant details - Advert builder', () => {
       'have.text',
       'Create an advert'
     );
-    let sectionTitle = 'Funding organisation';
-    cy.get(`[data-cy="cy-status-tag-${sectionTitle}-Not Started"]`)
+    let pageTitle = 'Funding organisation';
+    cy.get(
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-status-2"]`
+    )
       .should('have.text', 'Not Started')
       .and('have.prop', 'tagName', 'STRONG')
       .and('have.class', 'govuk-tag--grey');
 
-    cy.get(`[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`)
-      .contains(sectionTitle)
+    cy.get(
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
+    )
+      .contains(pageTitle)
       .and('have.attr', 'href')
       .and('include', 'grantDetails/3');
 
     cy.get(
-      `[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
     ).click();
 
     cy.url().should('include', 'grantDetails/3');
@@ -225,7 +250,7 @@ describe('Section on Grant details - Advert builder', () => {
     run_accessibility();
 
     cy.get('[data-cy="cy-advert-page-save-and-continue-button"]').click();
-    checkErrorBanner('grantFunder', 'You must enter an answer');
+    checkErrorBanner('grantFunder', 'Enter a funding organisation');
     checkErrorBanner(
       'completed',
       "Select 'Yes, I've completed this question', or 'No, I'll come back later'"
@@ -237,14 +262,20 @@ describe('Section on Grant details - Advert builder', () => {
 
     cy.get('[data-cy="cy-advert-page-save-and-continue-button"]').click();
     cy.get('[data-cy="cy-advert-page-save-and-continue-button"]').click();
-    checkErrorBanner('grantFunder', 'Your answer must be 256 characters or less');
+    checkErrorBanner(
+      'grantFunder',
+      'Funding organisation must be 256 characters or less'
+    );
 
     cy.get(`[data-cy="cy-grantFunder-text-input"]`).clear();
     cy.get(`[data-cy="cy-grantFunder-text-input"]`).type('test funder');
 
     advertCheckCompleteSection();
     advertCheckSectionStatus(
-      sectionTitle,
+      SECTION_1_ID,
+      SECTION_1_TITLE,
+      pageTitle,
+      '2',
       'cy-grantFunder-text-input',
       'test funder',
       false
@@ -252,7 +283,7 @@ describe('Section on Grant details - Advert builder', () => {
 
     // should redirect to question 4 in the section when save and continue is clicked
     cy.get(
-      `[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
     ).click();
 
     cy.get(
@@ -269,19 +300,23 @@ describe('Section on Grant details - Advert builder', () => {
       'have.text',
       'Create an advert'
     );
-    let sectionTitle = 'Who can apply';
-    cy.get(`[data-cy="cy-status-tag-${sectionTitle}-Not Started"]`)
+    let pageTitle = 'Who can apply';
+    cy.get(
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-status-3"]`
+    )
       .should('have.text', 'Not Started')
       .and('have.prop', 'tagName', 'STRONG')
       .and('have.class', 'govuk-tag--grey');
 
-    cy.get(`[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`)
-      .contains(sectionTitle)
+    cy.get(
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
+    )
+      .contains(pageTitle)
       .and('have.attr', 'href')
       .and('include', 'grantDetails/4');
 
     cy.get(
-      `[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
     ).click();
 
     cy.url().should('include', 'grantDetails/4');
@@ -292,7 +327,10 @@ describe('Section on Grant details - Advert builder', () => {
     run_accessibility();
 
     cy.get('[data-cy="cy-advert-page-save-and-continue-button"]').click();
-    checkErrorBanner('grantApplicantType', 'You must select at least one option');
+    checkErrorBanner(
+      'grantApplicantType',
+      'Select at least one group who can apply'
+    );
     checkErrorBanner(
       'completed',
       "Select 'Yes, I've completed this question', or 'No, I'll come back later'"
@@ -302,7 +340,10 @@ describe('Section on Grant details - Advert builder', () => {
 
     advertCheckCompleteSection();
     advertCheckSectionStatus(
-      sectionTitle,
+      SECTION_1_ID,
+      SECTION_1_TITLE,
+      pageTitle,
+      '3',
       'cy-checkbox-value-Personal / Individual',
       true,
       true
@@ -310,7 +351,7 @@ describe('Section on Grant details - Advert builder', () => {
 
     // final question in the section should redirect back to section overview when save and continue is clicked
     cy.get(
-      `[data-cy="cy-advert-section-overview-page-${sectionTitle}"]`
+      `[data-cy="cy-${SECTION_1_ID}. ${SECTION_1_TITLE}-sublist-task-name-${pageTitle}"]`
     ).click();
 
     cy.get(

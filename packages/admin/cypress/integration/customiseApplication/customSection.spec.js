@@ -169,6 +169,8 @@ describe('Customise Section', () => {
     cy.get('[data-cy="cy-radioInput-option-No"]').should('not.be.checked');
     cy.get('[data-cy="cy-radioInput-option-Yes"]').should('not.be.checked');
 
+    cy.get('[data-cy="cy-radioInput-option-No"]').click();
+
     cy.get('[data-cy="cy-button-Confirm"]').contains('Confirm').click();
 
     //back to dashboard

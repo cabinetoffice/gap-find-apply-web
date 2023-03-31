@@ -1,6 +1,6 @@
+import { submissionIdForStatuses } from '../../constants/constants';
 import run_accessibility from '../../utils/accessibility';
 import getLoginCookie from '../../utils/getLoginCookie';
-import { submissionIdForStatuses } from '../../constants/constants';
 
 describe('Application section status test', () => {
   beforeEach(() => {
@@ -72,7 +72,7 @@ describe('Application section status test', () => {
     );
     cy.get('[data-cy="cy-radioInput-option-Yes"]').click();
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     run_accessibility();
 
@@ -121,7 +121,7 @@ describe('Application section status test', () => {
 
     cy.get('[data-cy=cy-APPLICANT_TYPE-select]').select('Other');
 
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     cy.url().should('include', 'sections').and('not.include', 'ESSENTIAL');
 
@@ -156,7 +156,7 @@ describe('Application section status test', () => {
 
     cy.get('[data-cy="cy-radioInput-option-No"]').click();
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     cy.url().should('include', 'sections').and('include', 'ELIGIBILITY');
 
@@ -198,7 +198,7 @@ describe('Application section status test', () => {
 
     cy.get('[data-cy="cy-radioInput-option-Yes"]').click();
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     cy.get(
       '[data-cy="cy-radioInput-option-YesIveCompletedThisSection"]'
@@ -246,7 +246,7 @@ describe('Application section status test', () => {
       'Limited company'
     );
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     cy.url()
       .should('include', 'questions')
@@ -258,7 +258,7 @@ describe('Application section status test', () => {
       .type(
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sit amet suscipit est, in egestas urna. Curabitur dictum non nisl.'
       );
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     cy.url()
       .should('include', 'sections')
@@ -306,7 +306,7 @@ describe('Application section status test', () => {
 
     cy.get('[data-cy="cy-radioInput-option-No"]').click();
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     cy.get(
       '[data-cy="cy-radioInput-option-YesIveCompletedThisSection"]'

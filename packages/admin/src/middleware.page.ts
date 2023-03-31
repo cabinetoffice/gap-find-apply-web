@@ -18,7 +18,6 @@ export function middleware(req: NextRequest, ev: NextFetchEvent) {
   const res = NextResponse.rewrite(rewriteUrl);
   const auth_cookie = req.cookies.get('session_id');
 
-
   //Feature flag redirects
   const advertBuilderPath = /\/scheme\/\d*\/advert/;
 
@@ -43,9 +42,6 @@ export function middleware(req: NextRequest, ev: NextFetchEvent) {
 
     return res;
   } else {
-    const url = req.nextUrl.clone();
-    url.pathname = `/api/logout`;
-
-    return NextResponse.rewrite(url);
+    return NextResponse.redirect(process.env.LOGIN_URL!);
   }
 }

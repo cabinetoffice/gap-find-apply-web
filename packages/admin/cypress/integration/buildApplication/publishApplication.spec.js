@@ -1,12 +1,12 @@
+import addQuestionToSection from '../../utils/addQuestionToSection';
+import createTestApplication from '../../utils/createTestApplication';
 import {
   deleteExistingTestApplication,
   extractApplicationIdFromURL,
 } from '../../utils/deleteApplications';
-import run_accessibility from '../../utils/run_accessibility';
-import createTestApplication from '../../utils/createTestApplication';
-import addQuestionToSection from '../../utils/addQuestionToSection';
 import formatDate from '../../utils/formatDate';
 import questionTypePreviewCommonChecks from '../../utils/questionTypePreviewCommonChecks';
+import run_accessibility from '../../utils/run_accessibility';
 
 describe('Publish application', () => {
   const applicationName = 'A testing application';
@@ -208,6 +208,9 @@ describe('Publish application', () => {
     cy.get('[data-cy="cy-radioInput-option-No"]').should('not.be.checked');
     cy.get('[data-cy="cy-radioInput-option-Yes"]').should('not.be.checked');
 
+    cy.get('[data-cy="cy-radioInput-option-No"]').check();
+    cy.get('[data-cy="cy-radioInput-option-No"]').should('be.checked');
+
     cy.get('[data-cy="cy_publishConfirmation-ConfirmButton"]')
       .contains('Confirm')
       .click();
@@ -386,6 +389,9 @@ describe('Publish application', () => {
 
     cy.get('[data-cy="cy-radioInput-option-No"]').should('not.be.checked');
     cy.get('[data-cy="cy-radioInput-option-Yes"]').should('not.be.checked');
+
+    cy.get('[data-cy="cy-radioInput-option-No"]').check();
+    cy.get('[data-cy="cy-radioInput-option-No"]').should('be.checked');
 
     cy.get('[data-cy="cy_unpublishConfirmation-ConfirmButton"]')
       .contains('Confirm')

@@ -1,7 +1,9 @@
 import run_accessibility from '../run_accessibility';
 
-const checkPageStatus = (pageTitle, status) => {
-  cy.get(`[data-cy="cy-status-tag-${pageTitle}-${status}"]`)
+const checkPageStatus = (sectionId, sectionTitle, status, pageIndex) => {
+  cy.get(
+    `[data-cy="cy-${sectionId}. ${sectionTitle}-sublist-task-status-${pageIndex}"]`
+  )
     .should('have.text', status)
     .and('have.prop', 'tagName', 'STRONG')
     .and(
@@ -18,15 +20,21 @@ const checkPageStatus = (pageTitle, status) => {
 
 const enterInPageAndCheckUrlContainRightSectionAndId = (
   pageTitle,
+  sectionTitle,
   sectionName,
+  sectionId,
   pageId
 ) => {
-  cy.get(`[data-cy="cy-advert-section-overview-page-${pageTitle}"]`)
+  cy.get(
+    `[data-cy="cy-${sectionId}. ${sectionTitle}-sublist-task-name-${pageTitle}"]`
+  )
     .contains(pageTitle)
     .and('have.attr', 'href')
     .and('include', `${sectionName}/${pageId}`);
 
-  cy.get(`[data-cy="cy-advert-section-overview-page-${pageTitle}"]`).click();
+  cy.get(
+    `[data-cy="cy-${sectionId}. ${sectionTitle}-sublist-task-name-${pageTitle}"]`
+  ).click();
 
   cy.url().should('include', `${sectionName}/${pageId}`);
 };
@@ -45,21 +53,27 @@ const clickBackButton = () => {
 };
 const enterInPageAddValueAndPressBackAndReEnterAndCheckTinyMceIsEmpty = (
   pageTitle,
+  sectionTitle,
   sectionName,
+  sectionId,
   pageId,
   textToAdd,
   fieldName
 ) => {
   enterInPageAndCheckUrlContainRightSectionAndId(
     pageTitle,
+    sectionTitle,
     sectionName,
+    sectionId,
     pageId
   );
   cy.setTinyMceContent(textToAdd, fieldName);
   clickBackButton();
   enterInPageAndCheckUrlContainRightSectionAndId(
     pageTitle,
+    sectionTitle,
     sectionName,
+    sectionId,
     pageId
   );
   checkContentOfTinyMce('');
@@ -70,22 +84,26 @@ const checkFirstAccessToThePage = (
   pageTitle,
   sectionName,
   sectionTitle,
+  sectionId,
   fieldName,
   questionTitle,
   questionHintText,
   pageStatus,
-  pageId
+  pageId,
+  pageIndex
 ) => {
   cy.get('[data-cy="cy-summary-overview-header"]').should(
     'have.text',
     'Create an advert'
   );
 
-  checkPageStatus(pageTitle, pageStatus);
+  checkPageStatus(sectionId, sectionTitle, pageStatus, pageIndex);
 
   enterInPageAndCheckUrlContainRightSectionAndId(
     pageTitle,
+    sectionTitle,
     sectionName,
+    sectionId,
     pageId
   );
   run_accessibility();

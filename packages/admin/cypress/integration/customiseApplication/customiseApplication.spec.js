@@ -97,6 +97,7 @@ describe('Customise Application', () => {
     run_accessibility();
     //submit with valid test data
     cy.get('textarea').click().clear().type('valid description data');
+    cy.get('[data-cy="cy-radioInput-option-Yes"]').click();
     cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     cy.get('h1').contains('How would you like this question to be answered?');
@@ -110,7 +111,7 @@ describe('Customise Application', () => {
       'have.value',
       'valid question title'
     );
-    cy.get('[data-cy="cy-radioInput-option-Yes"]').should('not.be.checked');
+    cy.get('[data-cy="cy-radioInput-option-Yes"]').should('be.checked');
     cy.get('[data-cy="cy-radioInput-option-No"]').should('not.be.checked');
     cy.get('[data-cy="cy-button-Save and continue"]')
       .contains('Save and continue')

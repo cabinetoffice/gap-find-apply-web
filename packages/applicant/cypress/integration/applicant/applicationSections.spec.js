@@ -126,7 +126,7 @@ describe('View your applications', () => {
 
     // Check user cannot save and continue or save and exit without entering input
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     checkErrorBanner('ELIGIBILITY', 'Select an option', false);
 
@@ -146,17 +146,17 @@ describe('View your applications', () => {
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
 
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     checkErrorBanner('ELIGIBILITY', 'Select an option', false);
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     checkErrorBanner('ELIGIBILITY', 'Select an option', false);
 
     // Check user can edit Eligibility Statement
     cy.get('[data-cy="cy-radioInput-option-No"]').click();
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     cy.url()
       .should('include', 'submissions')
@@ -168,7 +168,7 @@ describe('View your applications', () => {
 
     // Input yes or no
     cy.get('[data-cy="cy-radioInput-option-No"]').should('be.checked');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     // Check summary of Eligibility Statement
     cy.get('[data-cy="cy-manage-section-header"]').should(
@@ -216,7 +216,7 @@ describe('View your applications', () => {
 
     cy.get('[data-cy=cy-section-title-link-Eligibility]').click();
     cy.get('[data-cy="cy-radioInput-option-Yes"]').click();
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
     cy.url()
       .should('include', 'submissions')
       .and('include', 'sections')
@@ -226,7 +226,7 @@ describe('View your applications', () => {
     cy.get('[data-cy=cy-section-title-link-Eligibility]').click();
     cy.get('[data-cy="cy-radioInput-option-Yes"]').should('be.checked');
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     checkSectionSummary('ELIGIBILITY', 'Eligibility Statement', 'Yes');
 
@@ -268,7 +268,7 @@ describe('View your applications', () => {
     );
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     checkErrorBanner(
       'CUSTOM_APPLICANT_TYPE',
@@ -288,7 +288,7 @@ describe('View your applications', () => {
     );
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     checkErrorBanner(
       'CUSTOM_APPLICANT_TYPE',
@@ -298,7 +298,7 @@ describe('View your applications', () => {
 
     // Check and Edit Organisation Type
     cy.get('[data-cy=cy-CUSTOM_APPLICANT_TYPE-select]').select('Other');
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     cy.url()
       .should('include', 'submissions')
@@ -318,7 +318,7 @@ describe('View your applications', () => {
       .should('have.value', 'Other')
       .select('Limited company');
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     // Check Titles and URL for Custom Question 1
     checkQuestionTitlesAndURL(
@@ -331,7 +331,7 @@ describe('View your applications', () => {
     cy.get('[data-cy=cy-CUSTOM_CUSTOM_QUESTION_1-text-area]').clear();
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     checkErrorBanner(
       'CUSTOM_CUSTOM_QUESTION_1',
@@ -356,7 +356,7 @@ describe('View your applications', () => {
     cy.get('[data-cy=cy-CUSTOM_CUSTOM_QUESTION_1-text-area]').clear();
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     checkErrorBanner(
       'CUSTOM_CUSTOM_QUESTION_1',
@@ -370,7 +370,7 @@ describe('View your applications', () => {
       .type(
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sit amet suscipit est, in egestas urna. Curabitur dictum non nisl.'
       );
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     cy.url()
       .should('include', 'submissions')
@@ -391,7 +391,7 @@ describe('View your applications', () => {
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur a mauris congue, feugiat sem ac, condimentum risus. Praesent at enim.'
       );
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     // Check Titles and URL for Organisation Name
     checkQuestionTitlesAndURL(
@@ -404,7 +404,7 @@ describe('View your applications', () => {
     cy.get('[data-cy=cy-CUSTOM_APPLICANT_ORG_NAME-text-input]').clear();
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     checkErrorBanner(
       'CUSTOM_APPLICANT_ORG_NAME',
@@ -429,7 +429,7 @@ describe('View your applications', () => {
     cy.get('[data-cy=cy-CUSTOM_APPLICANT_ORG_NAME-text-input]').clear();
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     checkErrorBanner(
       'CUSTOM_APPLICANT_ORG_NAME',
@@ -441,7 +441,7 @@ describe('View your applications', () => {
     cy.get('[data-cy=cy-CUSTOM_APPLICANT_ORG_NAME-text-input]')
       .clear()
       .type('Organisation Name');
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     cy.url()
       .should('include', 'submissions')
@@ -457,7 +457,7 @@ describe('View your applications', () => {
       .clear()
       .type('Name of Organisation');
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     // Check Titles and URL for Organisation Address
     checkQuestionTitlesAndURL(
@@ -497,7 +497,7 @@ describe('View your applications', () => {
     ).clear();
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     checkErrorBanner(
       'CUSTOM_APPLICANT_ORG_ADDRESS-address-line-1',
@@ -546,7 +546,7 @@ describe('View your applications', () => {
     ).clear();
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     checkErrorBanner(
       'CUSTOM_APPLICANT_ORG_ADDRESS-address-line-1',
@@ -586,7 +586,7 @@ describe('View your applications', () => {
     cy.get('[data-cy=cy-CUSTOM_APPLICANT_ORG_ADDRESS-postcode-text-input]')
       .clear()
       .type('Postcode');
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     cy.url()
       .should('include', 'submissions')
@@ -621,7 +621,7 @@ describe('View your applications', () => {
       .should('have.value', 'Postcode')
       .clear()
       .type('POSTCODE');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     // Check Titles and URL for Companies House Number
     checkQuestionTitlesAndURL(
@@ -636,7 +636,7 @@ describe('View your applications', () => {
     cy.get('[data-cy=cy-radioInput-option-No]').should('not.be.checked');
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     checkErrorBanner(
       'CUSTOM_APPLICANT_ORG_COMPANIES_HOUSE',
@@ -674,7 +674,7 @@ describe('View your applications', () => {
     cy.get('[data-cy=cy-radioInput-option-No]').should('not.be.checked');
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     checkErrorBanner(
       'CUSTOM_APPLICANT_ORG_COMPANIES_HOUSE',
@@ -684,7 +684,7 @@ describe('View your applications', () => {
 
     // Check and Edit Companies House Number
     cy.get('[data-cy=cy-radioInput-option-Yes]').click().should('be.checked');
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     cy.url()
       .should('include', 'submissions')
@@ -698,7 +698,7 @@ describe('View your applications', () => {
     cy.get('[data-cy=cy-radioInput-option-Yes]').should('be.checked');
     cy.get('[data-cy=cy-radioInput-option-No]').click().should('be.checked');
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     // Check Titles and URL for Charity Number
     checkQuestionTitlesAndURL(
@@ -734,7 +734,7 @@ describe('View your applications', () => {
     cy.get('[data-cy="cy-checkbox-value-Other"]').should('not.be.checked');
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     checkErrorBanner(
       'CUSTOM_APPLICANT_ORG_CHARITY_NUMBER',
@@ -765,7 +765,7 @@ describe('View your applications', () => {
     cy.get('[data-cy="cy-checkbox-value-Other"]').should('not.be.checked');
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     checkErrorBanner(
       'CUSTOM_APPLICANT_ORG_CHARITY_NUMBER',
@@ -777,7 +777,7 @@ describe('View your applications', () => {
     cy.get('[data-cy="cy-checkbox-value-Limited company"]').click();
     cy.get('[data-cy="cy-checkbox-value-Other"]').click();
 
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     cy.url()
       .should('include', 'submissions')
@@ -800,7 +800,7 @@ describe('View your applications', () => {
       .should('not.be.checked')
       .click();
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     // Check Titles and URL for Custom Question 4
     checkQuestionTitlesAndURL(
@@ -815,14 +815,14 @@ describe('View your applications', () => {
     cy.get('[data-cy=cyDateFilter-CUSTOM_CUSTOM_QUESTION_4Year]').clear();
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     cy.get('[data-cy="cyErrorBanner"]').should('exist');
     cy.get('[data-cy="cyErrorBannerHeading"]').should(
       'have.text',
       'There is a problem'
     );
-    cy.get('[data-cy=cyError_CUSTOM_CUSTOM_QUESTION_4-date]').should(
+    cy.get('[data-cy=cyError_CUSTOM_CUSTOM_QUESTION_4-day]').should(
       'have.text',
       'You must enter a date'
     );
@@ -852,7 +852,7 @@ describe('View your applications', () => {
     cy.get('[data-cy=cyDateFilter-CUSTOM_CUSTOM_QUESTION_4Year]').clear();
 
     cy.get('[data-cy="cyErrorBanner"]').should('not.exist');
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     cy.get('[data-cy="cyErrorBanner"]').should('exist');
     cy.get('[data-cy="cyErrorBannerHeading"]').should(
@@ -878,7 +878,7 @@ describe('View your applications', () => {
       .clear()
       .type('2021');
 
-    cy.get('[data-cy="cy-button-save-and-exit"]').click();
+    cy.get('[data-cy="cy-button-Save and exit"]').click();
 
     cy.url()
       .should('include', 'submissions')
@@ -912,7 +912,7 @@ describe('View your applications', () => {
       .clear()
       .type('2022');
 
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     cy.url()
       .should('include', 'submissions')
@@ -935,7 +935,7 @@ describe('View your applications', () => {
       'have.value',
       '2022'
     );
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     // Check summary of Project Information
     cy.get('[data-cy="cy-manage-section-header"]').should(
@@ -983,7 +983,7 @@ describe('View your applications', () => {
     cy.get('[data-cy="cy-CUSTOM_APPLICANT_ORG_NAME-text-input"]')
       .clear()
       .type('Name of Organisations');
-    cy.get('[data-cy="cy-button-save-and-continue"]').click();
+    cy.get('[data-cy="cy-button-Save and continue"]').click();
 
     cy.get('[data-cy="cy-isComplete-question-title"]').should(
       'have.text',

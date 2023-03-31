@@ -49,8 +49,6 @@ function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
 export async function middleware(req: NextRequest) {
   const cookie = req.cookies.get(USER_TOKEN_NAME);
 
-  console.log('cookie ' + cookie);
-
   const response = await fetch(`${HOST}/api/getJwt`, {
     method: 'get',
     headers: {
@@ -58,11 +56,7 @@ export async function middleware(req: NextRequest) {
     },
   });
 
-  console.log('cookie next API response ' + JSON.stringify(response));
-
   const jwt = await response.text();
-
-  console.log('API response JWT' + jwt);
 
   if (!response.ok || jwt === 'undefined') {
     if (!response.ok) {
@@ -76,8 +70,6 @@ export async function middleware(req: NextRequest) {
 
   try {
     const validJwtResponse = await verifyToken(jwt);
-    console.log('Valid JWT response' + JSON.stringify(validJwtResponse));
-
     const expiresAt = new Date(validJwtResponse.expiresAt);
 
     if (!validJwtResponse.valid) {
@@ -85,8 +77,6 @@ export async function middleware(req: NextRequest) {
     }
 
     if (isWithinNumberOfMinsOfExpiry(expiresAt, 30)) {
-      console.log('is within 30 mins of expiry');
-
       return buildMiddlewareResponse(
         req,
         `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}${req.nextUrl.pathname}`
