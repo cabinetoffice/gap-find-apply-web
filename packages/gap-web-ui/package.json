@@ -64,6 +64,7 @@
     "rollup-plugin-dts": "^4.2.2",
     "rollup-plugin-postcss": "^4.0.2",
     "sass": "^1.55.0",
+    "node-sass": "7.0.3",
     "sass-loader": "^13.0.2",
     "storybook": "7.0.18",
     "style-loader": "^3.3.1",
