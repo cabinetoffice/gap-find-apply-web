@@ -27,5 +27,5 @@
     "glob-parent": "^6.0.1",
     "postcss": "^8.4.16"
   },
-  "packageManager": "yarn@3.2.2"
+  "packageManager": "yarn@3.6.0"
 }
