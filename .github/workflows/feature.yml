@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: Snyk setup
         uses: snyk/actions/node@master
