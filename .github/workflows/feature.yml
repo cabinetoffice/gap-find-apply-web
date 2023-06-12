@@ -25,9 +25,9 @@ jobs:
 
       - name: Generate .env files
         run: |
-          cp ./packages/admin/.env.example ./packages/admin/.env
+          cp packages/admin/.env.example packages/admin/.env
           sed -i -e '/TINYMCE_API_KEY=/s/$/${{ secrets.TINYMCE_API_KEY }}/g' .env 
-          cp ./packages/applicant/.env.example ./packages/applicant/.env
+          cp packages/applicant/.env.example packages/applicant/.env
 
       - name: Read .nvmrc
         run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
