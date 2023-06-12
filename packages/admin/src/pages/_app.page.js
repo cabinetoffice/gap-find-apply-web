@@ -49,7 +49,6 @@ const MyApp = ({ Component, pageProps, cookies }) => {
 
 MyApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext);
-  console.dir(appContext, { depth: null });
   const cookies = appContext.ctx.req.cookies;
   return { ...appProps, cookies };
 };
