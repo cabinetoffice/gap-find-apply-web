@@ -51,7 +51,7 @@ export function GrantDetailsTabs({ grant, filteredOutTabs }) {
                   ? grant.grantSupportingDocuments
                   : [];
                 return (
-                  <GrantDetailsTabContent tab={tab} index={index}>
+                  <GrantDetailsTabContent tab={tab} index={index} key={index}>
                     <div className={styles.grant__breakword}>
                       {!grant.grantSupportingInfoTab &&
                         !supportingDocumentsSet.length &&
