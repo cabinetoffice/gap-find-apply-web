@@ -37,7 +37,7 @@ export function GrantDetailsTabs({ grant, filteredOutTabs }) {
             {Object.keys(gloss.grantDetails.tabs)
               .filter((tab) => !filteredOutTabs.includes(tab))
               .map((tab, index) => {
-                return <GrantDetailsTabItem tab={tab} key={index} />;
+                return <GrantDetailsTabItem tab={tab} key={`ti-${index}`} />;
               })}
           </ul>
           {/* tab content */}
@@ -51,7 +51,7 @@ export function GrantDetailsTabs({ grant, filteredOutTabs }) {
                   ? grant.grantSupportingDocuments
                   : [];
                 return (
-                  <GrantDetailsTabContent tab={tab} index={index} key={index}>
+                  <GrantDetailsTabContent tab={tab} index={index} key={`tc-${index}`}>
                     <div className={styles.grant__breakword}>
                       {!grant.grantSupportingInfoTab &&
                         !supportingDocumentsSet.length &&
@@ -66,7 +66,7 @@ export function GrantDetailsTabs({ grant, filteredOutTabs }) {
               }
 
               return (
-                <GrantDetailsTabContent tab={tab} index={index} key={index}>
+                <GrantDetailsTabContent tab={tab} index={index} key={`tc-${index}`}>
                   <div className={styles.grant__breakword}>
                     {!grant[grantTab]
                       ? gloss.grantDetails.tabs.emptyTab
