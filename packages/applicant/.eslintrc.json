@@ -10,10 +10,11 @@
     "cypress": true,
     "after": true
   },
+  "plugins": ["eslint-plugin-prettier"],
   "rules": {
-    "no-unused-vars": "off",
     "no-shadow-restricted-names": "off",
-    "no-prototype-builtins": "off"
+    "no-prototype-builtins": "off",
+    "prettier/prettier": "error"
   },
   "ignorePatterns": ["cypress/**/*"]
 }
