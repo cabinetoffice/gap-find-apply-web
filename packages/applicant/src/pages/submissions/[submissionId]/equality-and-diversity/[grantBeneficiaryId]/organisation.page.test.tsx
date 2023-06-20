@@ -186,9 +186,9 @@ describe('Sex page', () => {
       const getPostContext = (overrides: any = {}) =>
         getContext(merge({ req: { method: 'POST' } }, overrides));
 
-      it('Should call postGrantBeneficiaryResponse when the response contains "organisation", CASE: 1', async () => {
+      it('Should call postGrantBeneficiaryResponse when the response contains "organisation"', async () => {
         (parseBody as jest.Mock).mockResolvedValue({
-          sex: 'Male',
+          organisation: OrganisationRadioOptions.VCSE,
         });
 
         await getServerSideProps(getPostContext());
