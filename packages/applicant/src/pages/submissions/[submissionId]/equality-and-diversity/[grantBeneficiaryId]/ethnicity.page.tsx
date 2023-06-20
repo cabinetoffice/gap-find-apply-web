@@ -10,7 +10,6 @@ import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
 import {
-  getGrantBeneficiary,
   postGrantBeneficiaryResponse,
 } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
@@ -19,6 +18,7 @@ import {
   errorPageParams,
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
+import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 
 type RequestBody = {
   supportedEthnicity?: EthnicityCheckboxes | EthnicityCheckboxes[];
@@ -53,11 +53,8 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   let grantBeneficiary: GrantBeneficiary;
   try {
-    grantBeneficiary = await getGrantBeneficiary(
-      submissionId,
-      getJwtFromCookies(req)
-    );
-  } catch (err) {
+    grantBeneficiary = await fetchGrantBeneficiary(submissionId, req);
+  } catch (_) {
     return errorPageRedirect(submissionId);
   }
 

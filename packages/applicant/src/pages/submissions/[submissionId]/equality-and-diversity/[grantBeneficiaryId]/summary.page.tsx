@@ -4,14 +4,14 @@ import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
-import { getGrantBeneficiary } from '../../../../../services/GrantBeneficiaryService';
-import { getJwtFromCookies } from '../../../../../utils/jwt';
 import { errorPageRedirect } from '../equality-and-diversity-service-errors';
 import { AgeCheckboxes } from './age.page';
 import { EthnicityCheckboxes } from './ethnicity.page';
+import { OrganisationRadioOptions } from './organisation.page';
 import { SexRadioOptions } from './sex.page';
 import { SexualOrientationCheckboxes } from './sexual-orientation.page';
 import { mapValuesToString } from './summaryPageHelper';
+import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 
 export const getServerSideProps: GetServerSideProps = async ({
   params,
@@ -21,8 +21,8 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   let response: GrantBeneficiary;
   try {
-    response = await getGrantBeneficiary(submissionId, getJwtFromCookies(req));
-  } catch (err) {
+    response = await fetchGrantBeneficiary(submissionId, req);
+  } catch (_) {
     return errorPageRedirect(submissionId);
   }
 
@@ -62,6 +62,23 @@ const SummaryPage = ({
 
             <SummaryList
               rows={[
+                { 
+                  key: 'Which type of organisation are you applying for a grant on behalf of?',
+                  value: mapValuesToString([
+                    grantBeneficiary.organisationGroup1 && OrganisationRadioOptions.VCSE, 
+                    grantBeneficiary.organisationGroup2 && OrganisationRadioOptions.SME, 
+                    grantBeneficiary.organisationGroup3 && OrganisationRadioOptions.NEITHER
+                  ]),
+                  action: (
+                    <a
+                      href={`${baseChangeLink}/organisation?returnToSummaryPage=yes`}
+                      className="govuk-link"
+                      aria-label='Change: "Which type of organisation are you applying for a grant on behalf of?"'
+                    >
+                      Change
+                    </a>
+                  ),
+                },
                 {
                   key: 'Does your organisation primarily focus on supporting a particular sex?',
                   value: grantBeneficiary.sexGroupAll

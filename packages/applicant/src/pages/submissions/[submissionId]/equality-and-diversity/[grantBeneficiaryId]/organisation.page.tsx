@@ -13,19 +13,20 @@ import {
   errorPageParams,
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
+import { EqualityAndDiversityParams } from '../types';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 
-type RequestBody = {
-  sex: SexPageProps['defaultChecked'] | 'NoWeSupportBothSexes';
-};
-
-export enum SexRadioOptions {
-  MALE = 'Male',
-  FEMALE = 'Female',
-  ALL = 'No, we support both sexes',
+export enum OrganisationRadioOptions {
+  VCSE = 'Voluntary, community and social enterprise',
+  SME = 'Small to medium enterprise',
+  NEITHER = 'Neither',
 }
 
-export const getServerSideProps: GetServerSideProps = async ({
+type RequestBody = {
+  organisation: `${OrganisationRadioOptions}`;
+};
+
+export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
   params,
   resolvedUrl,
   req,
@@ -34,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
   const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
   const { returnToSummaryPage } = query as Record<string, string>;
-  let defaultChecked = null as SexPageProps['defaultChecked'];
+  let defaultChecked = null;
 
   let grantBeneficiary: GrantBeneficiary;
   try {
@@ -43,30 +44,24 @@ export const getServerSideProps: GetServerSideProps = async ({
     return errorPageRedirect(submissionId);
   }
 
-  if (grantBeneficiary.sexGroupAll) {
-    defaultChecked = SexRadioOptions.ALL;
-  } else if (grantBeneficiary.sexGroup1) {
-    defaultChecked = SexRadioOptions.MALE;
-  } else if (grantBeneficiary.sexGroup2) {
-    defaultChecked = SexRadioOptions.FEMALE;
-  }
+  if (grantBeneficiary.organisationGroup1) defaultChecked = OrganisationRadioOptions.VCSE;
+  else if (grantBeneficiary.organisationGroup2) defaultChecked = OrganisationRadioOptions.SME;
+  else if (grantBeneficiary.organisationGroup3) defaultChecked = OrganisationRadioOptions.NEITHER;
 
   const response = await callServiceMethod(
     req,
     res,
     async (body: RequestBody) => {
-      if (body.sex) {
+      if (body.organisation) {
         await postGrantBeneficiaryResponse(
           {
             submissionId: submissionId,
             hasProvidedAdditionalAnswers: true,
-            sexGroup1:
-              body.sex === SexRadioOptions.MALE ||
-              body.sex === 'NoWeSupportBothSexes',
-            sexGroup2:
-              body.sex === SexRadioOptions.FEMALE ||
-              body.sex === 'NoWeSupportBothSexes',
-            sexGroupAll: body.sex === 'NoWeSupportBothSexes',
+            organisationGroup1:
+              body.organisation === OrganisationRadioOptions.VCSE,
+            organisationGroup2:
+              body.organisation === OrganisationRadioOptions.SME,
+            organisationGroup3: body.organisation === OrganisationRadioOptions.NEITHER,
           },
           getJwtFromCookies(req),
           grantBeneficiaryId
@@ -75,7 +70,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     },
     returnToSummaryPage
       ? `/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/summary`
-      : `/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/age`,
+      : `/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/sex`,
     errorPageParams(submissionId)
   );
 
@@ -91,7 +86,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       skipURL: `${
         publicRuntimeConfig.subPath
       }/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/${
-        returnToSummaryPage ? 'summary' : 'age'
+        returnToSummaryPage ? 'summary' : 'sex'
       }`,
       defaultChecked: defaultChecked,
       csrfToken: (req as any).csrfToken?.() || '',
@@ -99,12 +94,12 @@ export const getServerSideProps: GetServerSideProps = async ({
   };
 };
 
-const SexPage = ({
+const OrganisationPage = ({
   formAction,
   defaultChecked,
   skipURL,
   csrfToken,
-}: SexPageProps) => {
+}: OrganisationPageProps) => {
   return (
     <>
       <Meta title="Equality and diversity - Apply for a grant" />
@@ -116,10 +111,10 @@ const SexPage = ({
           csrfToken={csrfToken}
         >
           <Radio
-            questionTitle="Does your organisation primarily focus on supporting a particular sex?"
-            fieldName="sex"
+            questionTitle="Which type of organisation are you applying for a grant on behalf of?"
+            fieldName="organisation"
             fieldErrors={[]}
-            radioOptions={Object.values(SexRadioOptions).map((option) => ({
+            radioOptions={Object.values(OrganisationRadioOptions).map((option) => ({
               label: option,
             }))}
             defaultChecked={defaultChecked}
@@ -147,11 +142,11 @@ const SexPage = ({
   );
 };
 
-export type SexPageProps = {
+export type OrganisationPageProps = {
   formAction: string;
   skipURL: string;
-  defaultChecked?: SexRadioOptions;
+  defaultChecked?: `${OrganisationRadioOptions}`;
   csrfToken: string;
 };
 
-export default SexPage;
+export default OrganisationPage;

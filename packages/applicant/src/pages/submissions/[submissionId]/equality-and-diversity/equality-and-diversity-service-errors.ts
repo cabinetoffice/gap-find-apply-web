@@ -10,13 +10,13 @@ const errorPageParams = (submissionId: string) => ({
   },
 });
 
-const errorPageRedirect = (submissionId: string) => ({
+const errorPageRedirect = (submissionId: string): { redirect: Redirect } => ({
   redirect: {
     statusCode: 302,
     destination: `/service-error?serviceErrorProps=${JSON.stringify(
       errorPageParams(submissionId)
     )}`,
-  } as Redirect,
+  }
 });
 
 export { errorPageParams, errorPageRedirect };
