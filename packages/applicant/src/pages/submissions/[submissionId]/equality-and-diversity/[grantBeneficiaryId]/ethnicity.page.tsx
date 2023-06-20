@@ -1,5 +1,5 @@
 import {
-  Checkboxes,
+  Radio,
   FlexibleQuestionPageLayout,
   TextInput,
   ValidationError,
@@ -19,13 +19,14 @@ import {
   errorPageParams,
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
+import radioFormatter from '../../../../../utils/radioFormatter';
 
 type RequestBody = {
-  supportedEthnicity?: EthnicityCheckboxes | EthnicityCheckboxes[];
   ethnicOtherDetails: string;
-};
+  supportedEthnicity: EthnicityPageProps['defaultChecked'] | EthnicityRadioOptions.ALL;
+}
 
-export enum EthnicityCheckboxes {
+export enum EthnicityRadioOptions {
   WHITE = 'White',
   MIXED = 'Mixed or multiple ethnic groups',
   ASIAN = 'Asian or Asian British',
@@ -44,10 +45,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
   const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
   const { returnToSummaryPage } = query as Record<string, string>;
-
-  let defaultChecked: EthnicityPageProps['defaultChecked'];
-  let defaultEthnicityDetails =
-    null as EthnicityPageProps['defaultEthnicityDetails'];
+  let defaultChecked = null as EthnicityPageProps['defaultChecked'];
   let fieldErrors = [] as ValidationError[];
   let body: RequestBody;
 
@@ -59,7 +57,23 @@ export const getServerSideProps: GetServerSideProps = async ({
     );
   } catch (err) {
     return errorPageRedirect(submissionId);
-  }
+  } 
+
+  if (grantBeneficiary.ethnicGroupAll) {
+    defaultChecked = EthnicityRadioOptions.ALL;
+  } else if (grantBeneficiary.ethnicGroup1) {
+    defaultChecked = EthnicityRadioOptions.WHITE;
+  } else if (grantBeneficiary.ethnicGroup2) {
+    defaultChecked = EthnicityRadioOptions.MIXED;
+  } else if (grantBeneficiary.ethnicGroup3) {
+    defaultChecked = EthnicityRadioOptions.ASIAN;
+  } else if (grantBeneficiary.ethnicGroup4) {
+    defaultChecked = EthnicityRadioOptions.BLACK;
+  } else if (grantBeneficiary.ethnicGroup5) {
+    defaultChecked = EthnicityRadioOptions.ARAB;
+  } else if (grantBeneficiary.ethnicGroupOther) {
+    defaultChecked = EthnicityRadioOptions.OTHER;
+  } 
 
   const response = await callServiceMethod(
     req,
@@ -71,30 +85,30 @@ export const getServerSideProps: GetServerSideProps = async ({
             submissionId: submissionId,
             hasProvidedAdditionalAnswers: true,
             ethnicGroup1:
-              body.supportedEthnicity.includes(EthnicityCheckboxes.WHITE) ||
-              body.supportedEthnicity.includes(EthnicityCheckboxes.ALL),
+              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.WHITE) ||
+              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL),
             ethnicGroup2:
-              body.supportedEthnicity.includes(EthnicityCheckboxes.MIXED) ||
-              body.supportedEthnicity.includes(EthnicityCheckboxes.ALL),
+              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.MIXED) ||
+              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL),
             ethnicGroup3:
-              body.supportedEthnicity.includes(EthnicityCheckboxes.ASIAN) ||
-              body.supportedEthnicity.includes(EthnicityCheckboxes.ALL),
+              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ASIAN) ||
+              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL),
             ethnicGroup4:
-              body.supportedEthnicity.includes(EthnicityCheckboxes.BLACK) ||
-              body.supportedEthnicity.includes(EthnicityCheckboxes.ALL),
+              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.BLACK) ||
+              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL),
             ethnicGroup5:
-              body.supportedEthnicity.includes(EthnicityCheckboxes.ARAB) ||
-              body.supportedEthnicity.includes(EthnicityCheckboxes.ALL),
-            ethnicGroupOther: body.supportedEthnicity.includes(
-              EthnicityCheckboxes.OTHER
+              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ARAB) ||
+              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL),
+            ethnicGroupOther: body.supportedEthnicity === (
+              radioFormatter.formatRadioOptions(EthnicityRadioOptions.OTHER)
             ),
-            ethnicOtherDetails: body.supportedEthnicity.includes(
-              EthnicityCheckboxes.OTHER
+            ethnicOtherDetails: body.supportedEthnicity === (
+              radioFormatter.formatRadioOptions(EthnicityRadioOptions.OTHER)
             )
               ? body.ethnicOtherDetails
               : '',
-            ethnicGroupAll: body.supportedEthnicity.includes(
-              EthnicityCheckboxes.ALL
+            ethnicGroupAll: body.supportedEthnicity === (
+              radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL)
             ),
           },
           getJwtFromCookies(req),
@@ -113,41 +127,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   } else if ('body' in response) {
     fieldErrors = response.fieldErrors;
     body = response.body;
-  }
-
-  if (body) {
-    if (typeof body.supportedEthnicity === 'string') {
-      defaultChecked = [body.supportedEthnicity];
-    } else {
-      defaultChecked = body.supportedEthnicity;
-    }
-    defaultEthnicityDetails = body.ethnicOtherDetails;
-  } else {
-    defaultChecked = [];
-    if (grantBeneficiary.ethnicGroupAll) {
-      defaultChecked = [EthnicityCheckboxes.ALL];
-    } else {
-      if (grantBeneficiary.ethnicGroup1) {
-        defaultChecked.push(EthnicityCheckboxes.WHITE);
-      }
-      if (grantBeneficiary.ethnicGroup2) {
-        defaultChecked.push(EthnicityCheckboxes.MIXED);
-      }
-      if (grantBeneficiary.ethnicGroup3) {
-        defaultChecked.push(EthnicityCheckboxes.ASIAN);
-      }
-      if (grantBeneficiary.ethnicGroup4) {
-        defaultChecked.push(EthnicityCheckboxes.BLACK);
-      }
-      if (grantBeneficiary.ethnicGroup5) {
-        defaultChecked.push(EthnicityCheckboxes.ARAB);
-      }
-      if (grantBeneficiary.ethnicGroupOther) {
-        defaultChecked.push(EthnicityCheckboxes.OTHER);
-        defaultEthnicityDetails = grantBeneficiary.ethnicOtherDetails;
-      }
-    }
-  }
+  } 
 
   const { publicRuntimeConfig } = getConfig();
 
@@ -163,7 +143,6 @@ export const getServerSideProps: GetServerSideProps = async ({
         returnToSummaryPage ? 'summary' : 'age'
       }`,
       defaultChecked: defaultChecked,
-      defaultEthnicityDetails: defaultEthnicityDetails,
       fieldErrors: fieldErrors,
       csrfToken: (req as any).csrfToken?.() || '',
     },
@@ -174,9 +153,9 @@ const EthnicityPage = ({
   formAction,
   skipURL,
   backButtonURL,
-  defaultChecked,
   defaultEthnicityDetails,
   fieldErrors,
+  defaultChecked,
   csrfToken,
 }: EthnicityPageProps) => {
   return (
@@ -193,14 +172,14 @@ const EthnicityPage = ({
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
         >
-          <Checkboxes
+          <Radio
             questionTitle="Does your organisation primarily focus on supporting a particular ethnic group?"
             fieldName="supportedEthnicity"
             fieldErrors={fieldErrors}
-            options={Object.values(EthnicityCheckboxes).map((checkbox) => {
-              if (checkbox === EthnicityCheckboxes.OTHER) {
+            radioOptions={Object.values(EthnicityRadioOptions).map((radio) => {
+              if (radio === EthnicityRadioOptions.OTHER) {
                 return {
-                  label: EthnicityCheckboxes.OTHER,
+                  label: EthnicityRadioOptions.OTHER,
                   conditionalInput: (
                     <TextInput
                       questionTitle="Type the ethnic group here"
@@ -213,10 +192,10 @@ const EthnicityPage = ({
                   ),
                 };
               }
-              return { label: checkbox };
+              return { label: radio };
             })}
-            defaultCheckboxes={defaultChecked}
-            divideLastCheckboxOption={true}
+            defaultChecked={defaultChecked}
+            divideLastRadioOption={true}
           />
 
           <div className="govuk-button-group">
@@ -244,7 +223,7 @@ export type EthnicityPageProps = {
   formAction: string;
   skipURL: string;
   backButtonURL: string;
-  defaultChecked?: EthnicityCheckboxes[];
+  defaultChecked?: EthnicityRadioOptions;
   defaultEthnicityDetails?: string;
   fieldErrors: ValidationError[];
   csrfToken: string;
