@@ -46,6 +46,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
   const { returnToSummaryPage } = query as Record<string, string>;
   let defaultChecked = null as EthnicityPageProps['defaultChecked'];
+  let defaultEthnicityDetails = null as EthnicityPageProps['defaultEthnicityDetails'];
   let fieldErrors = [] as ValidationError[];
   let body: RequestBody;
 
@@ -73,6 +74,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     defaultChecked = EthnicityRadioOptions.ARAB;
   } else if (grantBeneficiary.ethnicGroupOther) {
     defaultChecked = EthnicityRadioOptions.OTHER;
+    defaultEthnicityDetails = grantBeneficiary.ethnicOtherDetails;
   } 
 
   const response = await callServiceMethod(
@@ -143,6 +145,7 @@ export const getServerSideProps: GetServerSideProps = async ({
         returnToSummaryPage ? 'summary' : 'age'
       }`,
       defaultChecked: defaultChecked,
+      defaultEthnicityDetails: defaultEthnicityDetails,
       fieldErrors: fieldErrors,
       csrfToken: (req as any).csrfToken?.() || '',
     },

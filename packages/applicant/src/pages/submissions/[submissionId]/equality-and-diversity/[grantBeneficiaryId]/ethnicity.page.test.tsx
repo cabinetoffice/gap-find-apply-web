@@ -33,7 +33,7 @@ describe('Ethnicity page', () => {
   const customProps = {
     formAction: '/testFormAction',
     backButtonURL: '/back',
-    defaultChecked: [],
+    defaultChecked: null,
     fieldErrors: [],
   } as EthnicityPageProps;
 
@@ -49,15 +49,15 @@ describe('Ethnicity page', () => {
 
     it('Should render a radio input', () => {
       renderWithRouter(component);
-      screen.getByRole('checkbox', { name: 'White' });
-      screen.getByRole('checkbox', { name: 'Mixed or multiple ethnic groups' });
-      screen.getByRole('checkbox', { name: 'Asian or Asian British' });
-      screen.getByRole('checkbox', {
+      screen.getByRole('radio', { name: 'White' });
+      screen.getByRole('radio', { name: 'Mixed or multiple ethnic groups' });
+      screen.getByRole('radio', { name: 'Asian or Asian British' });
+      screen.getByRole('radio', {
         name: 'Black, African, Caribbean or Black British',
       });
-      screen.getByRole('checkbox', { name: 'Arab' });
-      screen.getByRole('checkbox', { name: 'Other ethnic group' });
-      screen.getByRole('checkbox', {
+      screen.getByRole('radio', { name: 'Arab' });
+      screen.getByRole('radio', { name: 'Other ethnic group' });
+      screen.getByRole('radio', {
         name: 'No, we support all ethnic groups',
       });
     });
@@ -169,38 +169,33 @@ describe('Ethnicity page', () => {
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(response.props.defaultChecked).toStrictEqual([]);
+        expect(response.props.defaultChecked).toStrictEqual(null);
       });
 
-      it('Should return the previously entered response prop as the default value, CASE: "1 & 5"', async () => {
+      it('Should return the previously entered response prop as the default value, CASE: "1"', async () => {
         (getGrantBeneficiary as jest.Mock).mockResolvedValue({
           ethnicGroup1: true,
-          ethnicGroup5: true,
         });
 
         const response = (await getServerSideProps(
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(response.props.defaultChecked).toStrictEqual(['White', 'Arab']);
+        expect(response.props.defaultChecked).toStrictEqual('White');
       });
 
-      it('Should return the previously entered response prop as the default value, CASE: "2, 3 & 4"', async () => {
+      it('Should return the previously entered response prop as the default value, CASE: "2"', async () => {
         (getGrantBeneficiary as jest.Mock).mockResolvedValue({
           ethnicGroup2: true,
-          ethnicGroup3: true,
-          ethnicGroup4: true,
         });
 
         const response = (await getServerSideProps(
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(response.props.defaultChecked).toStrictEqual([
+        expect(response.props.defaultChecked).toStrictEqual(
           'Mixed or multiple ethnic groups',
-          'Asian or Asian British',
-          'Black, African, Caribbean or Black British',
-        ]);
+        );
       });
 
       it('Should return the previously entered value for the details input"', async () => {
@@ -213,9 +208,9 @@ describe('Ethnicity page', () => {
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(response.props.defaultChecked).toStrictEqual([
-          'Other ethnic group',
-        ]);
+        expect(response.props.defaultChecked).toStrictEqual(
+          'Other ethnic group'
+        );
         expect(response.props.defaultEthnicityDetails).toStrictEqual('testing');
       });
 
@@ -228,9 +223,9 @@ describe('Ethnicity page', () => {
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(response.props.defaultChecked).toStrictEqual([
+        expect(response.props.defaultChecked).toStrictEqual(
           'No, we support all ethnic groups',
-        ]);
+        );
       });
 
       it('Should NOT post a grant beneficiary response', async () => {
@@ -264,8 +259,7 @@ describe('Ethnicity page', () => {
       beforeEach(() => {
         jest.resetAllMocks();
         (parseBody as jest.Mock).mockResolvedValue({
-          supportedEthnicity: ['White', 'Arab', 'Other ethnic group'],
-          ethnicOtherDetails: 'test other details',
+          supportedEthnicity: 'White',
         });
         (postGrantBeneficiaryResponse as jest.Mock).mockResolvedValue(
           'testGrantBeneficiaryId'
@@ -277,7 +271,11 @@ describe('Ethnicity page', () => {
       const getPostContext = (overrides: any = {}) =>
         getContext(merge({ req: { method: 'POST' } }, overrides));
 
-      it('Should call postGrantBeneficiaryResponse when the response contains "supportedEthnicity", CASE: SOME', async () => {
+      it('Should call postGrantBeneficiaryResponse when the response contains "supportedEthnicity", CASE: 1', async () => {
+        (parseBody as jest.Mock).mockResolvedValue({
+          supportedEthnicity: 'White',
+        }),
+        
         await getServerSideProps(getPostContext());
 
         expect(
@@ -291,9 +289,9 @@ describe('Ethnicity page', () => {
             ethnicGroup2: false,
             ethnicGroup3: false,
             ethnicGroup4: false,
-            ethnicGroup5: true,
-            ethnicGroupOther: true,
-            ethnicOtherDetails: 'test other details',
+            ethnicGroup5: false,
+            ethnicGroupOther: false,
+            ethnicOtherDetails: '',
             ethnicGroupAll: false,
           },
           'testJwt',
@@ -303,7 +301,7 @@ describe('Ethnicity page', () => {
 
       it('Should call postGrantBeneficiaryResponse when the response contains "supportedEthnicity", CASE: ALL', async () => {
         (parseBody as jest.Mock).mockResolvedValue({
-          supportedEthnicity: ['No, we support all ethnic groups'],
+          supportedEthnicity: 'NoWeSupportAllEthnicGroups',
         });
 
         await getServerSideProps(getPostContext());
@@ -393,11 +391,9 @@ describe('Ethnicity page', () => {
           getPostContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(response.props.defaultChecked).toStrictEqual([
-          'White',
-          'Arab',
-          'Other ethnic group',
-        ]);
+        expect(response.props.defaultChecked).toStrictEqual(
+          'Mixed or multiple ethnic groups',
+        );
       });
 
       it('Should return the previously entered response prop as the default value when a validation error is thrown', async () => {
@@ -424,7 +420,7 @@ describe('Ethnicity page', () => {
           getPostContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(response.props.defaultChecked).toStrictEqual(['White']);
+        expect(response.props.defaultChecked).toStrictEqual('White');
       });
     });
   });
