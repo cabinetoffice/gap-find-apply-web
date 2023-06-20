@@ -20,7 +20,7 @@ const downloadFile = async (url: string, name: string) => {
   // a.remove();
 };
 
-const getObjEntriesByKeySubstr = (substr: string, obj: Object) => {
+const getObjEntriesByKeySubstr = (substr: string, obj: object) => {
   return Object.entries(obj).filter(([key]) => key.includes(substr));
 };
 

@@ -47,7 +47,7 @@ const getContext = (overrides: any = {}) =>
     overrides
   );
 
-it('Temporary placeholder to be deleted once we unskip tests', () => {});
+// Temporary placeholder to be deleted once we unskip tests
 describe.skip('Completed submissions page', () => {
   describe('UI', () => {
     it('Should render a meta title correctly', () => {

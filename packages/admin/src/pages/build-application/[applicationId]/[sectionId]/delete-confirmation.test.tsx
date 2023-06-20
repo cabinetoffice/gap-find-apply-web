@@ -65,9 +65,7 @@ describe('Delete section page', () => {
   describe('UI', () => {
     it('Should render a meta title without "Error: " when fieldErrors is empty', () => {
       render(component);
-      expect(document.title).toBe(
-        'Delete this section - Manage a grant'
-      );
+      expect(document.title).toBe('Delete this section - Manage a grant');
     });
 
     it('Should render a meta title with "Error: " when fieldErrors is NOT empty', () => {

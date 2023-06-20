@@ -49,9 +49,7 @@ describe('Question content page', () => {
   describe('UI', () => {
     it('Should render a meta title without "Error: " when fieldErrors is empty', () => {
       render(component);
-      expect(document.title).toBe(
-        'Edit a question - Manage a grant'
-      );
+      expect(document.title).toBe('Edit a question - Manage a grant');
     });
 
     it('Should render a meta title with "Error: " when fieldErrors is NOT empty', () => {
@@ -62,9 +60,7 @@ describe('Question content page', () => {
         />
       );
 
-      expect(document.title).toBe(
-        'Error: Edit a question - Manage a grant'
-      );
+      expect(document.title).toBe('Error: Edit a question - Manage a grant');
     });
 
     it('Should render a back button with correct link on it', () => {

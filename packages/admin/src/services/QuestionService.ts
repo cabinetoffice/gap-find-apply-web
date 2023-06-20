@@ -17,7 +17,7 @@ const patchQuestion = (
     fieldTitle: string;
     displayText: string;
     hintText: string;
-    validation: { [key: string]: Object };
+    validation: { [key: string]: object };
     options: string[];
   }>
 ): Promise<void> => {

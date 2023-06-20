@@ -36,7 +36,9 @@ describe('Organisation charity commission number page', () => {
       'If your organisation is registered with the Charity Commission, enter your charity number below.'
     );
     expect(
-      screen.getByRole('link', { name: 'Search for your charity number (opens in new tab)' })
+      screen.getByRole('link', {
+        name: 'Search for your charity number (opens in new tab)',
+      })
     ).toHaveAttribute(
       'href',
       'https://register-of-charities.charitycommission.gov.uk/charity-search'

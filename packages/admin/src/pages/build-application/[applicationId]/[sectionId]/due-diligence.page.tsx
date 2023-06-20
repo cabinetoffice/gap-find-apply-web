@@ -53,7 +53,7 @@ export const getServerSideProps = async ({
     );
   }
 
-  let fieldErrors = [] as ValidationError[];
+  const fieldErrors = [] as ValidationError[];
 
   type RequestBody = {
     confirmation?: string;
@@ -132,7 +132,7 @@ const DueDiligence = ({
     </li>
   ));
 
-  let hintText = (
+  const hintText = (
     <div className="govuk-body">
       <p>All applicants are asked for certain information.</p>
       <p>

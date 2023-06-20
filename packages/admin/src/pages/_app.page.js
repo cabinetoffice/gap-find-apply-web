@@ -8,7 +8,7 @@ import '../../../../node_modules/gap-web-ui/dist/cjs/index.css';
 import Layout from '../components/layout/Layout';
 import '../lib/ie11_nodelist_polyfill';
 import '../styles/globals.scss';
-import '../../../../node_modules/gap-web-ui/dist/cjs/index.css'
+import '../../../../node_modules/gap-web-ui/dist/cjs/index.css';
 
 const MyApp = ({ Component, pageProps, cookies }) => {
   const { publicRuntimeConfig } = getConfig();

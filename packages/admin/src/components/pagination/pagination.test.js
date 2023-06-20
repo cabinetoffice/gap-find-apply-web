@@ -83,7 +83,7 @@ describe('Testing Pagination component behaviour', () => {
     render(<Pagination {...mockProps} />);
     expect(screen.queryByText(/Next/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Previous/)).toBeInTheDocument();
-     //TODO: We don't use this coponent
+    //TODO: We don't use this coponent
     // expect(screen.queryByText(/Previous/)).toHaveAttribute(
     //   'href',
     //   '/?skip=20&limit=10&page=3'

@@ -53,7 +53,7 @@ const advertLinkRedirectBasedOnStatus = (
 const viewOrChangeLink = (
   redirectDestinationBasedOnStatus: any,
   schemeId: string,
-  grantAdvertId: String | undefined
+  grantAdvertId: string | undefined
 ) => (
   <CustomLink
     href={`/scheme/${schemeId}/advert/${grantAdvertId}/${redirectDestinationBasedOnStatus}`}

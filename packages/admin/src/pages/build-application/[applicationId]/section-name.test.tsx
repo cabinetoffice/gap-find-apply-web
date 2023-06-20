@@ -57,9 +57,7 @@ describe('Section name page', () => {
 
   it('Should render a meta title without "Error: " when fieldErrors is empty', () => {
     render(component);
-    expect(document.title).toBe(
-      'Add new section - Manage a grant'
-    );
+    expect(document.title).toBe('Add new section - Manage a grant');
   });
 
   it('Should render a meta title with "Error: " when fieldErrors is NOT empty', () => {
@@ -72,9 +70,7 @@ describe('Section name page', () => {
       />
     );
 
-    expect(document.title).toBe(
-      'Error: Add new section - Manage a grant'
-    );
+    expect(document.title).toBe('Error: Add new section - Manage a grant');
   });
 
   it('Renders text input field for section name', () => {

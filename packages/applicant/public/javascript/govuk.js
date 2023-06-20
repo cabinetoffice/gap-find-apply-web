@@ -140,12 +140,12 @@
         return object;
       };
     })(Object.defineProperty);
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   (function (undefined) {
     // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Function/prototype/bind/detect.js
@@ -330,12 +330,12 @@
         return bound;
       },
     });
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   (function (undefined) {
     // Detection from https://raw.githubusercontent.com/Financial-Times/polyfill-service/master/packages/polyfill-library/polyfills/DOMTokenList/detect.js
@@ -610,12 +610,12 @@
         };
       })();
     })(this);
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   (function (undefined) {
     // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Document/detect.js
@@ -642,12 +642,12 @@
         this.Document.prototype = document;
       }
     }
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   (function (undefined) {
     // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Element/detect.js
@@ -764,12 +764,12 @@
       // remove sandboxed iframe
       document.removeChild(vbody);
     })();
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   (function (undefined) {
     // Detection from https://raw.githubusercontent.com/Financial-Times/polyfill-service/8717a9e04ac7aff99b4980fbedead98036b0929a/packages/polyfill-library/polyfills/Element/prototype/classList/detect.js
@@ -861,12 +861,12 @@
       addProp(global.HTMLAnchorElement, 'relList', 'rel');
       addProp(global.HTMLAreaElement, 'relList', 'rel');
     })(this);
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   function Accordion($module) {
     this.$module = $module;
@@ -1172,12 +1172,12 @@
         }
       })(this);
     }
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   (function (undefined) {
     // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Event/detect.js
@@ -1469,12 +1469,12 @@
         });
       }
     })();
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   var KEY_SPACE = 32;
   var DEBOUNCE_TIMEOUT_IN_SECONDS = 1;
@@ -2077,12 +2077,12 @@
 
         return !!elements[index];
       };
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   (function (undefined) {
     // Detection from https://raw.githubusercontent.com/Financial-Times/polyfill-service/1f3c09b402f65bf6e393f933a15ba63f1b86ef1f/packages/polyfill-library/polyfills/Element/prototype/closest/detect.js
@@ -2105,12 +2105,12 @@
 
       return null;
     };
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   function ErrorSummary($module) {
     this.$module = $module;
@@ -2520,12 +2520,12 @@
         return el;
       },
     });
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   (function (undefined) {
     // Detection from https://raw.githubusercontent.com/Financial-Times/polyfill-library/master/polyfills/Element/prototype/previousElementSibling/detect.js
@@ -2545,12 +2545,12 @@
         return el;
       },
     });
-  }.call(
+  }).call(
     ('object' === typeof window && window) ||
       ('object' === typeof self && self) ||
       ('object' === typeof global && global) ||
       {}
-  ));
+  );
 
   function Tabs($module) {
     this.$module = $module;

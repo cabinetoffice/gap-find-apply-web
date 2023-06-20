@@ -33,7 +33,7 @@ export default {
 
 const Template: ComponentStory<typeof FlexibleQuestionPageLayout> = (args) => {
   const childrenKeys = args.children as string[];
-  let children = [<p>Please pick children you want to render</p>];
+  let children = [<p key="default">Please pick children you want to render</p>];
 
   if (childrenKeys) {
     children = childrenKeys.map((childKey, index: number) => {

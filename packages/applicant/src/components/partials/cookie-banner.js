@@ -8,7 +8,7 @@ const CookieBanner = () => {
   const [showCookiesStatement, setShowCookiesStatement] = useState(true);
   const [showAccept, setShowAccept] = useState(false);
   const [showReject, setShowReject] = useState(false);
-  const [hasHideBeenClicked, setHasHideBeenClicked] = useState(false);
+  const [, setHasHideBeenClicked] = useState(false);
   const cookiesToDelete = [
     '_gid',
     '_gat_UA-219136711-1',
