@@ -23,12 +23,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Generate applicant .env
+      - name: Generate .env files
         run: |
-          cat << EOF > packages/applicant/.env
-          LOGIN_URL=${{ secrets.NEXT_PUBLIC_COLA_URL }}
-          HOST=${{ secrets.HOST}}
-          EOF
+          cp packages/admin/.env.example packages/admin/.env
+          sed -i -e '/TINYMCE_API_KEY=/s/$/${{ secrets.TINYMCE_API_KEY }}/g' packages/admin/.env 
+          cp packages/applicant/.env.example packages/applicant/.env
 
       - name: Read .nvmrc
         run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
@@ -58,7 +57,14 @@ jobs:
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: |
-          yarn install
+          yarn install --immutable
+
+      - name: Snyk setup
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --yarn-workspaces --strict-out-of-sync=false
 
       - name: Lint files
         run: |
