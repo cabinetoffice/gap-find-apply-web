@@ -115,9 +115,12 @@ export const getServerSideProps: GetServerSideProps = async ({
   } 
 
   if (fieldErrors.length != 0) {
-    defaultChecked = body.supportedEthnicity;
-    defaultEthnicityDetails = body.ethnicOtherDetails;
-  } else {
+    body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.OTHER) 
+    ? defaultChecked = EthnicityRadioOptions.OTHER
+    : defaultChecked = body.supportedEthnicity;
+      defaultEthnicityDetails = body.ethnicOtherDetails;
+}
+  else {
    if (grantBeneficiary.ethnicGroupAll) {
     defaultChecked = EthnicityRadioOptions.ALL;
   } else if (grantBeneficiary.ethnicGroup1) {

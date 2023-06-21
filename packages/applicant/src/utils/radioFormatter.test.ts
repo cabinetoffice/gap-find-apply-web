@@ -13,5 +13,11 @@ describe('radioFormatter', () => {
             const formattedRadioOptions = radioFormatter.formatRadioOptions(radioOptions);
             expect(formattedRadioOptions).toEqual('ThisIsATestThisIsAnotherTest');
         } );
+
+        it('should format radio options correctly when there are multiple commas', () => { 
+            const radioOptions = 'this is a test, this is another test, this is yet another test';
+            const formattedRadioOptions = radioFormatter.formatRadioOptions(radioOptions);
+            expect(formattedRadioOptions).toEqual('ThisIsATestThisIsAnotherTestThisIsYetAnotherTest');
+        } );
     });
 });
