@@ -112,49 +112,43 @@ describe('Sex page', () => {
         );
       });
 
-      it('Should return the previously entered response prop as the default value, CASE: "1"', async () => {
-        (getGrantBeneficiary as jest.Mock).mockResolvedValue({
-          organisationGroup1: true,
-          organisationGroup2: false,
-          organisationGroup3: false
-        });
-
-        const response = (await getServerSideProps(
-          getServerContext()
-        )) as NextGetServerSidePropsResponse;
-
-        expect(response.props.defaultChecked).toStrictEqual(OrganisationRadioOptions.VCSE);
-      });
-
-      it('Should return the previously entered response prop as the default value, CASE: "2"', async () => {
-        (getGrantBeneficiary as jest.Mock).mockResolvedValue({
-          organisationGroup1: false,
-          organisationGroup2: true,
-          organisationGroup3: false
-        });
-
-        const response = (await getServerSideProps(
-          getServerContext()
-        )) as NextGetServerSidePropsResponse;
-
-        expect(response.props.defaultChecked).toStrictEqual(OrganisationRadioOptions.SME);
-      });
-
-      it('Should return the previously entered response prop as the default value, CASE: "3"', async () => {
-        (getGrantBeneficiary as jest.Mock).mockResolvedValue({
-          organisationGroup1: false,
-          organisationGroup2: false,
-          organisationGroup3: true
-        });
-
-        const response = (await getServerSideProps(
-          getServerContext()
-        )) as NextGetServerSidePropsResponse;
-
-        expect(response.props.defaultChecked).toStrictEqual(
-          OrganisationRadioOptions.NEITHER
-        );
-      });
+      test.each([
+        [1,
+          {
+            organisationGroup1: true,
+            organisationGroup2: false,
+            organisationGroup3: false,
+          },
+          OrganisationRadioOptions.VCSE,
+        ],
+        [2, 
+          {
+            organisationGroup1: false,
+            organisationGroup2: true,
+            organisationGroup3: false,
+          },
+          OrganisationRadioOptions.SME,
+        ],
+        [3, 
+          {
+            organisationGroup1: false,
+            organisationGroup2: false,
+            organisationGroup3: true,
+          },
+          OrganisationRadioOptions.NEITHER,
+        ],
+      ])(
+        'Should return the previously entered response prop as the default value, CASE: "%s"',
+        async (_, mockGrantBeneficiary, expectedOptions) => {
+          (getGrantBeneficiary as jest.Mock).mockResolvedValue(
+            mockGrantBeneficiary
+          );
+          const response = (await getServerSideProps(
+            getServerContext()
+          )) as NextGetServerSidePropsResponse;
+          expect(response.props.defaultChecked).toStrictEqual(expectedOptions);
+        }
+      );
 
       it('Should NOT post a grant beneficiary response on page fetch', async () => {
         await getServerSideProps(getServerContext());
