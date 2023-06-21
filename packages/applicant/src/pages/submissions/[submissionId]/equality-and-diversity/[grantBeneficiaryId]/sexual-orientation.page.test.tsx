@@ -308,11 +308,42 @@ describe('Sexual orientation page', () => {
           {
             submissionId: 'testSubmissionId',
             hasProvidedAdditionalAnswers: true,
-            sexualOrientationGroup1: true,
-            sexualOrientationGroup2: true,
-            sexualOrientationGroup3: true,
+            sexualOrientationGroup1: false,
+            sexualOrientationGroup2: false,
+            sexualOrientationGroup3: false,
             sexualOrientationOther: false,
             sexualOrientationOtherDetails: '',
+            sexualOrientationGroupAll: true,
+          },
+          'testJwt',
+          'testGrantBeneficiaryId'
+        );
+      });
+
+      it('Should call postGrantBeneficiaryResponse when the response contains "supportedSexualOrientation", CASE: ALL', async () => {
+        (parseBody as jest.Mock).mockResolvedValue({
+          supportedSexualOrientation: [
+            'Heterosexual or straight',
+            'Gay or lesbian',
+            'Bisexual',
+            'Other',
+          ],
+        });
+
+        await getServerSideProps(getPostContext());
+
+        expect(
+          postGrantBeneficiaryResponse as jest.Mock
+        ).toHaveBeenNthCalledWith(
+          1,
+          {
+            submissionId: 'testSubmissionId',
+            hasProvidedAdditionalAnswers: true,
+            sexualOrientationGroup1: false,
+            sexualOrientationGroup2: false,
+            sexualOrientationGroup3: false,
+            sexualOrientationOther: false,
+            sexualOrientationOtherDetails: undefined,
             sexualOrientationGroupAll: true,
           },
           'testJwt',

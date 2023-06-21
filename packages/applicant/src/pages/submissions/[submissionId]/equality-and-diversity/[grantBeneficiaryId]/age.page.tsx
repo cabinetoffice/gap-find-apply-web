@@ -64,10 +64,12 @@ export const getServerSideProps: GetServerSideProps = async ({
         const userHasCheckedAllTheAges =
           body.supportedAges.includes(AgeCheckboxes.ALL) ||
           (Array.isArray(body.supportedAges) &&
-            Object.values(AgeCheckboxes).every((option) =>
-              (body.supportedAges as AgeCheckboxes[]).some(
-                (age) => age === option
-              )
+            Object.values(AgeCheckboxes).every(
+              (option) =>
+                option === AgeCheckboxes.ALL ||
+                (body.supportedAges as AgeCheckboxes[]).some(
+                  (age) => age === option
+                )
             ));
 
         await postGrantBeneficiaryResponse(
