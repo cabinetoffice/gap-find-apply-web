@@ -60,23 +60,6 @@ export const getServerSideProps: GetServerSideProps = async ({
     return errorPageRedirect(submissionId);
   } 
 
-  if (grantBeneficiary.ethnicGroupAll) {
-    defaultChecked = EthnicityRadioOptions.ALL;
-  } else if (grantBeneficiary.ethnicGroup1) {
-    defaultChecked = EthnicityRadioOptions.WHITE;
-  } else if (grantBeneficiary.ethnicGroup2) {
-    defaultChecked = EthnicityRadioOptions.MIXED;
-  } else if (grantBeneficiary.ethnicGroup3) {
-    defaultChecked = EthnicityRadioOptions.ASIAN;
-  } else if (grantBeneficiary.ethnicGroup4) {
-    defaultChecked = EthnicityRadioOptions.BLACK;
-  } else if (grantBeneficiary.ethnicGroup5) {
-    defaultChecked = EthnicityRadioOptions.ARAB;
-  } else if (grantBeneficiary.ethnicGroupOther) {
-    defaultChecked = EthnicityRadioOptions.OTHER;
-    defaultEthnicityDetails = grantBeneficiary.ethnicOtherDetails;
-  } 
-
   const response = await callServiceMethod(
     req,
     res,
@@ -130,6 +113,28 @@ export const getServerSideProps: GetServerSideProps = async ({
     fieldErrors = response.fieldErrors;
     body = response.body;
   } 
+
+  if (fieldErrors.length != 0) {
+    defaultChecked = body.supportedEthnicity;
+    defaultEthnicityDetails = body.ethnicOtherDetails;
+  } else {
+   if (grantBeneficiary.ethnicGroupAll) {
+    defaultChecked = EthnicityRadioOptions.ALL;
+  } else if (grantBeneficiary.ethnicGroup1) {
+    defaultChecked = EthnicityRadioOptions.WHITE;
+  } else if (grantBeneficiary.ethnicGroup2) {
+    defaultChecked = EthnicityRadioOptions.MIXED;
+  } else if (grantBeneficiary.ethnicGroup3) {
+    defaultChecked = EthnicityRadioOptions.ASIAN;
+  } else if (grantBeneficiary.ethnicGroup4) {
+    defaultChecked = EthnicityRadioOptions.BLACK;
+  } else if (grantBeneficiary.ethnicGroup5) {
+    defaultChecked = EthnicityRadioOptions.ARAB;
+  } else if (grantBeneficiary.ethnicGroupOther) {
+    defaultChecked = EthnicityRadioOptions.OTHER;
+    defaultEthnicityDetails = grantBeneficiary.ethnicOtherDetails;
+  } 
+}
 
   const { publicRuntimeConfig } = getConfig();
 

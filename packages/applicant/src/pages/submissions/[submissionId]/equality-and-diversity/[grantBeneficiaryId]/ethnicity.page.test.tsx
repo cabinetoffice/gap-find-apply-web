@@ -392,7 +392,7 @@ describe('Ethnicity page', () => {
         )) as NextGetServerSidePropsResponse;
 
         expect(response.props.defaultChecked).toStrictEqual(
-          'Mixed or multiple ethnic groups',
+          'White',
         );
       });
 
