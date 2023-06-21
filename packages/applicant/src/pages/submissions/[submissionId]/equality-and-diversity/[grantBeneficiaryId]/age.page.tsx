@@ -63,35 +63,35 @@ export const getServerSideProps: GetServerSideProps = async ({
       if (body.supportedAges) {
         const userHasCheckedAllTheAges =
           body.supportedAges.includes(AgeCheckboxes.ALL) ||
-          (body.supportedAges.includes(AgeCheckboxes.ZERO_TO_FOURTEEN) &&
-            body.supportedAges.includes(AgeCheckboxes.FIFTEEN_TO_TWENTY_FOUR) &&
-            body.supportedAges.includes(
-              AgeCheckboxes.FIFTY_FIVE_TO_SIXTY_FOUR
-            ) &&
-            body.supportedAges.includes(AgeCheckboxes.SIXTY_FIVE_PLUS) &&
-            body.supportedAges.includes(
-              AgeCheckboxes.TWENTY_FIVE_TO_FIFTY_FOUR
-            ) &&
-            body.supportedAges.includes(AgeCheckboxes.ZERO_TO_FOURTEEN));
-      
+          (Array.isArray(body.supportedAges) &&
+            Object.values(AgeCheckboxes).every((option) =>
+              (body.supportedAges as AgeCheckboxes[]).some(
+                (age) => age === option
+              )
+            ));
+
         await postGrantBeneficiaryResponse(
           {
             submissionId: submissionId,
             hasProvidedAdditionalAnswers: true,
             ageGroup1:
-              body.supportedAges.includes(AgeCheckboxes.ZERO_TO_FOURTEEN) && !userHasCheckedAllTheAges,
+              body.supportedAges.includes(AgeCheckboxes.ZERO_TO_FOURTEEN) &&
+              !userHasCheckedAllTheAges,
             ageGroup2:
               body.supportedAges.includes(
-                AgeCheckboxes.FIFTEEN_TO_TWENTY_FOUR) && !userHasCheckedAllTheAges,
+                AgeCheckboxes.FIFTEEN_TO_TWENTY_FOUR
+              ) && !userHasCheckedAllTheAges,
             ageGroup3:
               body.supportedAges.includes(
                 AgeCheckboxes.TWENTY_FIVE_TO_FIFTY_FOUR
               ) && !userHasCheckedAllTheAges,
             ageGroup4:
               body.supportedAges.includes(
-                AgeCheckboxes.FIFTY_FIVE_TO_SIXTY_FOUR ) && !userHasCheckedAllTheAges,
+                AgeCheckboxes.FIFTY_FIVE_TO_SIXTY_FOUR
+              ) && !userHasCheckedAllTheAges,
             ageGroup5:
-              body.supportedAges.includes(AgeCheckboxes.SIXTY_FIVE_PLUS) && !userHasCheckedAllTheAges,
+              body.supportedAges.includes(AgeCheckboxes.SIXTY_FIVE_PLUS) &&
+              !userHasCheckedAllTheAges,
             ageGroupAll: userHasCheckedAllTheAges,
           },
           getJwtFromCookies(req),
