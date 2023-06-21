@@ -46,7 +46,7 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
   const { submissionId, grantBeneficiaryId } = params;
   const { returnToSummaryPage } = query;
 
-  let defaultChecked: EthnicityPageProps['defaultChecked'];
+  let defaultChecked = null as EthnicityPageProps['defaultChecked'];
   let defaultEthnicityDetails =
     null as EthnicityPageProps['defaultEthnicityDetails'];
   let fieldErrors = [] as ValidationError[];
