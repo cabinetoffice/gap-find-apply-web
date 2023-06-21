@@ -34,7 +34,7 @@ const getDefaultChecked = (grantBeneficiary: GrantBeneficiary) => {
 };
 
 const formatAsRadioInputValue = (string: string) => 
-  string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+  string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('').replaceAll(/W+/g, '');
 
 export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
   params,
@@ -58,6 +58,15 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
     res,
     async (body: RequestBody) => {
       if (body.organisation) {
+        console.log(          {
+          submissionId: submissionId,
+          hasProvidedAdditionalAnswers: true,
+          organisationGroup1:
+            body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.VCSE),
+          organisationGroup2:
+            body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.SME),
+          organisationGroup3: body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.NEITHER),
+        })
         await postGrantBeneficiaryResponse(
           {
             submissionId: submissionId,

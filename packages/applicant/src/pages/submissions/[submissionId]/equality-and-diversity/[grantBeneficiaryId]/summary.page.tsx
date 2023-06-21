@@ -45,6 +45,7 @@ const SummaryPage = ({
   confirmationLink,
   backButtonLink,
 }: SummaryPageProps) => {
+  console.log(grantBeneficiary)
   return (
     <>
       <Meta title="Equality and diversity - Apply for a grant" />
