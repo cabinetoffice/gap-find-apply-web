@@ -14,6 +14,7 @@ import {
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
+import { EqualityAndDiversityParams } from '../types';
 
 type RequestBody = {
   sex: SexPageProps['defaultChecked'] | 'NoWeSupportBothSexes';
@@ -25,15 +26,15 @@ export enum SexRadioOptions {
   ALL = 'No, we support both sexes',
 }
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
   params,
   resolvedUrl,
   req,
   res,
   query,
 }) => {
-  const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
-  const { returnToSummaryPage } = query as Record<string, string>;
+  const { submissionId, grantBeneficiaryId } = params;
+  const { returnToSummaryPage } = query;
   let defaultChecked = null as SexPageProps['defaultChecked'];
 
   let grantBeneficiary: GrantBeneficiary;

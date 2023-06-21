@@ -17,14 +17,24 @@ import { EqualityAndDiversityParams } from '../types';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 
 export enum OrganisationRadioOptions {
-  VCSE = 'Voluntary, community and social enterprise',
-  SME = 'Small to medium enterprise',
-  NEITHER = 'Neither',
+  VCSE = 'Voluntary, community, or social enterprise (VCSE)',
+  SME = 'Small or medium-sized enterprise (SME)',
+  NEITHER = 'Neither of these',
 }
 
 type RequestBody = {
   organisation: `${OrganisationRadioOptions}`;
 };
+
+const getDefaultChecked = (grantBeneficiary: GrantBeneficiary) => {
+  if (grantBeneficiary.organisationGroup1) return OrganisationRadioOptions.VCSE;
+  else if (grantBeneficiary.organisationGroup2) return OrganisationRadioOptions.SME;
+  else if (grantBeneficiary.organisationGroup3) return OrganisationRadioOptions.NEITHER;
+  return null;
+};
+
+const formatAsRadioInputValue = (string: string) => 
+  string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
 
 export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
   params,
@@ -33,9 +43,8 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
   res,
   query,
 }) => {
-  const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
-  const { returnToSummaryPage } = query as Record<string, string>;
-  let defaultChecked = null;
+  const { submissionId, grantBeneficiaryId } = params;
+  const { returnToSummaryPage } = query;
 
   let grantBeneficiary: GrantBeneficiary;
   try {
@@ -43,10 +52,6 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
   } catch (_) {
     return errorPageRedirect(submissionId);
   }
-
-  if (grantBeneficiary.organisationGroup1) defaultChecked = OrganisationRadioOptions.VCSE;
-  else if (grantBeneficiary.organisationGroup2) defaultChecked = OrganisationRadioOptions.SME;
-  else if (grantBeneficiary.organisationGroup3) defaultChecked = OrganisationRadioOptions.NEITHER;
 
   const response = await callServiceMethod(
     req,
@@ -58,10 +63,10 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
             submissionId: submissionId,
             hasProvidedAdditionalAnswers: true,
             organisationGroup1:
-              body.organisation === OrganisationRadioOptions.VCSE,
+              body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.VCSE),
             organisationGroup2:
-              body.organisation === OrganisationRadioOptions.SME,
-            organisationGroup3: body.organisation === OrganisationRadioOptions.NEITHER,
+              body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.SME),
+            organisationGroup3: body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.NEITHER),
           },
           getJwtFromCookies(req),
           grantBeneficiaryId
@@ -88,7 +93,7 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
       }/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/${
         returnToSummaryPage ? 'summary' : 'sex'
       }`,
-      defaultChecked: defaultChecked,
+      defaultChecked: getDefaultChecked(grantBeneficiary),
       csrfToken: (req as any).csrfToken?.() || '',
     },
   };
@@ -111,7 +116,7 @@ const OrganisationPage = ({
           csrfToken={csrfToken}
         >
           <Radio
-            questionTitle="Which type of organisation are you applying for a grant on behalf of?"
+            questionTitle="Which of these options best describes your organisation?"
             fieldName="organisation"
             fieldErrors={[]}
             radioOptions={Object.values(OrganisationRadioOptions).map((option) => ({

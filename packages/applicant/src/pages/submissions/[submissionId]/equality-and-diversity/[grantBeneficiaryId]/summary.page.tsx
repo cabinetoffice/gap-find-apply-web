@@ -12,12 +12,13 @@ import { SexRadioOptions } from './sex.page';
 import { SexualOrientationCheckboxes } from './sexual-orientation.page';
 import { mapValuesToString } from './summaryPageHelper';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
+import { EqualityAndDiversityParams } from '../types';
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
   params,
   req,
 }) => {
-  const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
+  const { submissionId, grantBeneficiaryId } = params;
 
   let response: GrantBeneficiary;
   try {
@@ -63,7 +64,7 @@ const SummaryPage = ({
             <SummaryList
               rows={[
                 { 
-                  key: 'Which type of organisation are you applying for a grant on behalf of?',
+                  key: 'Which of these options best describes your organisation?',
                   value: mapValuesToString([
                     grantBeneficiary.organisationGroup1 && OrganisationRadioOptions.VCSE, 
                     grantBeneficiary.organisationGroup2 && OrganisationRadioOptions.SME, 

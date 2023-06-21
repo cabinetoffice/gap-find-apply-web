@@ -41,6 +41,9 @@ export const getServerSideProps: GetServerSideProps = async ({
     errorPageParams
   );
 
+  console.log(result);
+  console.log('hello!');
+
   if ('redirect' in result) {
     // If we successfully added the name to the session, redirect to the ggis-reference page
     // If adding the name to the session failed, and the cause was NOT a validation error, redirect to the service error page

@@ -19,6 +19,7 @@ import {
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
+import { EqualityAndDiversityParams } from '../types';
 
 type RequestBody = {
   supportedEthnicity?: EthnicityCheckboxes | EthnicityCheckboxes[];
@@ -35,15 +36,15 @@ export enum EthnicityCheckboxes {
   ALL = 'No, we support all ethnic groups',
 }
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
   params,
   resolvedUrl,
   req,
   res,
   query,
 }) => {
-  const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
-  const { returnToSummaryPage } = query as Record<string, string>;
+  const { submissionId, grantBeneficiaryId } = params;
+  const { returnToSummaryPage } = query;
 
   let defaultChecked: EthnicityPageProps['defaultChecked'];
   let defaultEthnicityDetails =

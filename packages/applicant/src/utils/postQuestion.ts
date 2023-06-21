@@ -53,6 +53,7 @@ export default async function postQuestion<B, R>(
     const isCancel = Object.keys(body).indexOf('cancel') !== -1;
     //if i press Cancel, i want to be redirected to the section without saving the response
     if (isCancel) {
+      console.log('isCancel');
       return {
         redirect: {
           destination: routes.submissions.section(submissionId, sectionId),
@@ -90,7 +91,7 @@ export default async function postQuestion<B, R>(
               nextNavigation.questionId
             )
           : routes.submissions.section(submissionId, sectionId);
-
+      console.log('isSaveAndContinue');
       return {
         redirect: {
           destination: redirectUrl,
@@ -100,6 +101,7 @@ export default async function postQuestion<B, R>(
     }
 
     if (isSaveAndExit) {
+      console.log('isSaveAndExit')
       return {
         redirect: {
           destination: routes.submissions.sections(submissionId),
@@ -108,6 +110,7 @@ export default async function postQuestion<B, R>(
       };
     }
   } catch (err: any) {
+    console.log('error found', err);
     if (err.response?.data) {
       const errorsArray: ValidationError[] = [];
       const { errors } = err.response.data;
