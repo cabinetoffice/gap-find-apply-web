@@ -16,6 +16,7 @@ import {
 import { EqualityAndDiversityParams } from '../types';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 import { NextIncomingMessage } from 'next/dist/server/request-meta';
+import InferProps from '../../../../../types/InferProps'
 
 export enum OrganisationRadioOptions {
   VCSE = 'Voluntary, community, or social enterprise (VCSE)',
@@ -34,6 +35,13 @@ type Req = NextIncomingMessage & {
   }>;
 }
 
+export type OrganisationPageProps = {
+  formAction: string;
+  skipURL: string;
+  defaultChecked?: `${OrganisationRadioOptions}`;
+  csrfToken: string;
+};
+
 const getDefaultChecked = (grantBeneficiary: GrantBeneficiary) => {
   if (grantBeneficiary.organisationGroup1) return OrganisationRadioOptions.VCSE;
   else if (grantBeneficiary.organisationGroup2) return OrganisationRadioOptions.SME;
@@ -41,7 +49,7 @@ const getDefaultChecked = (grantBeneficiary: GrantBeneficiary) => {
   return null;
 };
 
-export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
+export const getServerSideProps: GetServerSideProps<OrganisationPageProps, EqualityAndDiversityParams> = async ({
   params,
   resolvedUrl,
   req,
@@ -151,13 +159,6 @@ const OrganisationPage = ({
       </Layout>
     </>
   );
-};
-
-export type OrganisationPageProps = {
-  formAction: string;
-  skipURL: string;
-  defaultChecked?: `${OrganisationRadioOptions}`;
-  csrfToken: string;
 };
 
 export default OrganisationPage;

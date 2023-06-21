@@ -12,7 +12,7 @@ import {
 import { createMockRouter } from '../../../../../testUtils/createMockRouter';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
-import EqualityAndDiversityPage, {
+import OrganisationPage, {
   getServerSideProps,
   OrganisationPageProps,
   OrganisationRadioOptions
@@ -32,13 +32,13 @@ const renderWithRouter = (ui: React.ReactNode) => {
   );
 };
 
-describe('Sex page', () => {
+describe('Organisation page', () => {
   const customProps = {
     formAction: '/testFormAction',
     defaultChecked: null,
   } as OrganisationPageProps;
 
-  const component = <EqualityAndDiversityPage {...customProps} />;
+  const component = <OrganisationPage {...customProps} />;
 
   describe('UI', () => {
     it('Renders expected UI', () => {
