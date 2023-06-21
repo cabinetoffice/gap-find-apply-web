@@ -34,7 +34,7 @@ const getDefaultChecked = (grantBeneficiary: GrantBeneficiary) => {
 };
 
 const formatAsRadioInputValue = (string: string) => 
-  string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('').replaceAll(/W+/g, '');
+  string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
 
 export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
   params,
@@ -58,24 +58,15 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
     res,
     async (body: RequestBody) => {
       if (body.organisation) {
-        console.log(          {
-          submissionId: submissionId,
-          hasProvidedAdditionalAnswers: true,
-          organisationGroup1:
-            body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.VCSE),
-          organisationGroup2:
-            body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.SME),
-          organisationGroup3: body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.NEITHER),
-        })
         await postGrantBeneficiaryResponse(
           {
             submissionId: submissionId,
             hasProvidedAdditionalAnswers: true,
             organisationGroup1:
-              body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.VCSE),
+              body.organisation === OrganisationRadioOptions.VCSE,
             organisationGroup2:
-              body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.SME),
-            organisationGroup3: body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.NEITHER),
+              body.organisation === OrganisationRadioOptions.SME,
+            organisationGroup3: body.organisation === OrganisationRadioOptions.NEITHER,
           },
           getJwtFromCookies(req),
           grantBeneficiaryId
@@ -130,6 +121,7 @@ const OrganisationPage = ({
             fieldErrors={[]}
             radioOptions={Object.values(OrganisationRadioOptions).map((option) => ({
               label: option,
+              value: option
             }))}
             defaultChecked={defaultChecked}
             divideLastRadioOption={true}
