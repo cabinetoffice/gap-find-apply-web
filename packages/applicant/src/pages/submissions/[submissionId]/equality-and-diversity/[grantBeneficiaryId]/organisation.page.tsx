@@ -15,6 +15,7 @@ import {
 } from '../equality-and-diversity-service-errors';
 import { EqualityAndDiversityParams } from '../types';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
+import { NextIncomingMessage } from 'next/dist/server/request-meta';
 
 export enum OrganisationRadioOptions {
   VCSE = 'Voluntary, community, or social enterprise (VCSE)',
@@ -25,6 +26,13 @@ export enum OrganisationRadioOptions {
 type RequestBody = {
   organisation: `${OrganisationRadioOptions}`;
 };
+
+type Req = NextIncomingMessage & {
+  csrfToken: () => string;
+  cookies: Partial<{
+    [key: string]: string;
+  }>;
+}
 
 const getDefaultChecked = (grantBeneficiary: GrantBeneficiary) => {
   if (grantBeneficiary.organisationGroup1) return OrganisationRadioOptions.VCSE;
@@ -94,7 +102,7 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
         returnToSummaryPage ? 'summary' : 'sex'
       }`,
       defaultChecked: getDefaultChecked(grantBeneficiary),
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: (req as Req).csrfToken() || '',
     },
   };
 };

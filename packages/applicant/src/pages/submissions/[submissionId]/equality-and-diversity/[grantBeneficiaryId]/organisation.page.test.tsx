@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
-import { GetServerSidePropsContext, Redirect } from 'next';
+import { GetServerSidePropsContext, Redirect, PreviewData } from 'next';
 import { parseBody } from 'next/dist/server/api-utils/node';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import React from 'react';
@@ -17,6 +17,8 @@ import EqualityAndDiversityPage, {
   OrganisationPageProps,
   OrganisationRadioOptions
 } from './organisation.page';
+import { getContext } from '../../../../../utils/UnitTestHelpers';
+import { EqualityAndDiversityParams } from '../types';
 
 jest.mock('next/dist/server/api-utils/node');
 jest.mock('../../../../../services/GrantBeneficiaryService');
@@ -62,23 +64,24 @@ describe('Sex page', () => {
       } as Redirect,
     };
 
-    const getContext = (overrides: any = {}) =>
-      merge(
-        {
+    const getServerContext = (overrides: GetServerSidePropsContext | {} = {}) =>
+      getContext(
+        () => ({
           params: {
             submissionId: 'testSubmissionId',
             grantBeneficiaryId: 'testGrantBeneficiaryId',
-          } as Record<string, string>,
+          } ,
           query: {
             returnToSummaryPage: null,
-          } as Record<string, string>,
+          } ,
           req: {
             method: 'GET',
           },
           resolvedUrl: '/testResolvedURL',
-        } as GetServerSidePropsContext,
+        }),
         overrides
-      );
+        ) as GetServerSidePropsContext<EqualityAndDiversityParams, PreviewData>;
+
 
     describe('when handling a GET request', () => {
       beforeEach(() => {
@@ -89,7 +92,7 @@ describe('Sex page', () => {
 
       it('Should return expected props', async () => {
         const response = (await getServerSideProps(
-          getContext()
+          getServerContext()
         )) as NextGetServerSidePropsResponse;
 
         expect(response.props.formAction).toStrictEqual('/testResolvedURL');
@@ -101,7 +104,7 @@ describe('Sex page', () => {
 
       it('Should return a skipURL prop to summary when returnToSummaryPage query is truthy', async () => {
         const response = (await getServerSideProps(
-          getContext({ query: { returnToSummaryPage: 'anything' } })
+          getServerContext({ query: { returnToSummaryPage: 'anything' } })
         )) as NextGetServerSidePropsResponse;
 
         expect(response.props.skipURL).toStrictEqual(
@@ -117,7 +120,7 @@ describe('Sex page', () => {
         });
 
         const response = (await getServerSideProps(
-          getContext()
+          getServerContext()
         )) as NextGetServerSidePropsResponse;
 
         expect(response.props.defaultChecked).toStrictEqual(OrganisationRadioOptions.VCSE);
@@ -131,7 +134,7 @@ describe('Sex page', () => {
         });
 
         const response = (await getServerSideProps(
-          getContext()
+          getServerContext()
         )) as NextGetServerSidePropsResponse;
 
         expect(response.props.defaultChecked).toStrictEqual(OrganisationRadioOptions.SME);
@@ -145,7 +148,7 @@ describe('Sex page', () => {
         });
 
         const response = (await getServerSideProps(
-          getContext()
+          getServerContext()
         )) as NextGetServerSidePropsResponse;
 
         expect(response.props.defaultChecked).toStrictEqual(
@@ -154,7 +157,7 @@ describe('Sex page', () => {
       });
 
       it('Should NOT post a grant beneficiary response on page fetch', async () => {
-        await getServerSideProps(getContext());
+        await getServerSideProps(getServerContext());
 
         expect(
           postGrantBeneficiaryResponse as jest.Mock
@@ -164,7 +167,7 @@ describe('Sex page', () => {
       it('Should redirect to the error service page if fetching the grant beneficiary fails', async () => {
         (getGrantBeneficiary as jest.Mock).mockRejectedValue({});
 
-        const response = await getServerSideProps(getContext());
+        const response = await getServerSideProps(getServerContext());
 
         expect(response).toStrictEqual(expectedServiceErrorRedirectObject);
       });
@@ -183,8 +186,8 @@ describe('Sex page', () => {
         (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       });
 
-      const getPostContext = (overrides: any = {}) =>
-        getContext(merge({ req: { method: 'POST' } }, overrides));
+      const getPostContext = (overrides = {}) =>
+        getServerContext(merge({ req: { method: 'POST' } }, overrides));
 
       it('Should call postGrantBeneficiaryResponse when the response contains "organisation"', async () => {
         (parseBody as jest.Mock).mockResolvedValue({
