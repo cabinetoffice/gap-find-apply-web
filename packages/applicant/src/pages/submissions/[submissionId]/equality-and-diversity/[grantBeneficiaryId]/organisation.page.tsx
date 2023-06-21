@@ -41,9 +41,6 @@ const getDefaultChecked = (grantBeneficiary: GrantBeneficiary) => {
   return null;
 };
 
-const formatAsRadioInputValue = (string: string) => 
-  string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
-
 export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
   params,
   resolvedUrl,
@@ -71,10 +68,10 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
             submissionId: submissionId,
             hasProvidedAdditionalAnswers: true,
             organisationGroup1:
-              body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.VCSE),
+              body.organisation === OrganisationRadioOptions.VCSE,
             organisationGroup2:
-              body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.SME),
-            organisationGroup3: body.organisation === formatAsRadioInputValue(OrganisationRadioOptions.NEITHER),
+              body.organisation === OrganisationRadioOptions.SME,
+            organisationGroup3: body.organisation === OrganisationRadioOptions.NEITHER
           },
           getJwtFromCookies(req),
           grantBeneficiaryId

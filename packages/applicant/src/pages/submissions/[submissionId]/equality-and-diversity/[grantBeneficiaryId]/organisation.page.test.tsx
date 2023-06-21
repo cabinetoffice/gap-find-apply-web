@@ -44,7 +44,7 @@ describe('Sex page', () => {
     it('Renders expected UI', () => {
       renderWithRouter(component);
       screen.getByRole('heading', {
-        name: 'Which type of organisation are you applying for a grant on behalf of?',
+        name: 'Which of these options best describes your organisation?',
       });
       screen.getByRole('radio', {
         name: OrganisationRadioOptions.VCSE,
@@ -202,6 +202,7 @@ describe('Sex page', () => {
           1,
           {
             submissionId: 'testSubmissionId',
+            hasProvidedAdditionalAnswers: true,
             organisationGroup1: true,
             organisationGroup2: false,
             organisationGroup3: false

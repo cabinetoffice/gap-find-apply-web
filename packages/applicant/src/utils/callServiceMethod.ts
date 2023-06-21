@@ -63,7 +63,6 @@ export default async function callServiceMethod<
       },
     };
   } catch (err: any) {
-    console.log({ err })
     // If there is a validation error
     if (err.response?.data?.errors) {
       return {
