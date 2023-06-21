@@ -59,8 +59,6 @@ export const getServerSideProps: GetServerSideProps<
     getJwtFromCookies(req)
   );
 
-  console.log({ questionData });
-
   let isRefererCheckYourAnswerScreen;
   const isFromCYAPageQuery = query?.fromCYAPage;
   isRefererCheckYourAnswerScreen =
@@ -111,7 +109,7 @@ export const getServerSideProps: GetServerSideProps<
       questionId,
       questionData.question.responseType
     );
-    console.log({ result });
+
     if (!('body' in result)) {
       return result;
     }

@@ -64,6 +64,19 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
     res,
     async (body: RequestBody) => {
       if (body.supportedSexualOrientation) {
+        const userHasCheckedAllOrientations =
+          body.supportedSexualOrientation.includes(
+            SexualOrientationCheckboxes.ALL
+          ) ||
+          (Array.isArray(body.supportedSexualOrientation) &&
+            Object.values(SexualOrientationCheckboxes).every(
+              (option) =>
+                option === SexualOrientationCheckboxes.ALL ||
+                (
+                  body.supportedSexualOrientation as SexualOrientationCheckboxes[]
+                ).some((orientation) => orientation === option)
+            ));
+
         await postGrantBeneficiaryResponse(
           {
             submissionId: submissionId,
@@ -71,36 +84,26 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
             sexualOrientationGroup1:
               body.supportedSexualOrientation.includes(
                 SexualOrientationCheckboxes.STRAIGHT
-              ) ||
-              body.supportedSexualOrientation.includes(
-                SexualOrientationCheckboxes.ALL
-              ),
+              ) && !userHasCheckedAllOrientations,
             sexualOrientationGroup2:
               body.supportedSexualOrientation.includes(
                 SexualOrientationCheckboxes.GAY
-              ) ||
-              body.supportedSexualOrientation.includes(
-                SexualOrientationCheckboxes.ALL
-              ),
+              ) && !userHasCheckedAllOrientations,
             sexualOrientationGroup3:
               body.supportedSexualOrientation.includes(
                 SexualOrientationCheckboxes.BISEXUAL
-              ) ||
+              ) && !userHasCheckedAllOrientations,
+            sexualOrientationOther:
               body.supportedSexualOrientation.includes(
-                SexualOrientationCheckboxes.ALL
-              ),
-            sexualOrientationOther: body.supportedSexualOrientation.includes(
-              SexualOrientationCheckboxes.OTHER
-            ),
+                SexualOrientationCheckboxes.OTHER
+              ) && !userHasCheckedAllOrientations,
             sexualOrientationOtherDetails:
               body.supportedSexualOrientation.includes(
                 SexualOrientationCheckboxes.OTHER
               )
                 ? body.sexualOrientationOtherDetails
                 : '',
-            sexualOrientationGroupAll: body.supportedSexualOrientation.includes(
-              SexualOrientationCheckboxes.ALL
-            ),
+            sexualOrientationGroupAll: userHasCheckedAllOrientations,
           },
           getJwtFromCookies(req),
           grantBeneficiaryId
