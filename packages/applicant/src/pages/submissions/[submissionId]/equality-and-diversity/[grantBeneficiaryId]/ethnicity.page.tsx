@@ -19,7 +19,6 @@ import {
   errorPageParams,
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
-import radioFormatter from '../../../../../utils/radioFormatter';
 
 type RequestBody = {
   ethnicOtherDetails: string;
@@ -70,30 +69,30 @@ export const getServerSideProps: GetServerSideProps = async ({
             submissionId: submissionId,
             hasProvidedAdditionalAnswers: true,
             ethnicGroup1:
-              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.WHITE) ||
-              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL),
+              body.supportedEthnicity === EthnicityRadioOptions.WHITE ||
+              body.supportedEthnicity === EthnicityRadioOptions.ALL,
             ethnicGroup2:
-              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.MIXED) ||
-              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL),
+              body.supportedEthnicity === EthnicityRadioOptions.MIXED ||
+              body.supportedEthnicity === EthnicityRadioOptions.ALL,
             ethnicGroup3:
-              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ASIAN) ||
-              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL),
+              body.supportedEthnicity === EthnicityRadioOptions.ASIAN ||
+              body.supportedEthnicity === EthnicityRadioOptions.ALL,
             ethnicGroup4:
-              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.BLACK) ||
-              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL),
+              body.supportedEthnicity === EthnicityRadioOptions.BLACK ||
+              body.supportedEthnicity === EthnicityRadioOptions.ALL,
             ethnicGroup5:
-              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ARAB) ||
-              body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL),
+              body.supportedEthnicity === EthnicityRadioOptions.ARAB ||
+              body.supportedEthnicity === EthnicityRadioOptions.ALL,
             ethnicGroupOther: body.supportedEthnicity === (
-              radioFormatter.formatRadioOptions(EthnicityRadioOptions.OTHER)
+              EthnicityRadioOptions.OTHER
             ),
             ethnicOtherDetails: body.supportedEthnicity === (
-              radioFormatter.formatRadioOptions(EthnicityRadioOptions.OTHER)
+              EthnicityRadioOptions.OTHER
             )
               ? body.ethnicOtherDetails
               : '',
             ethnicGroupAll: body.supportedEthnicity === (
-              radioFormatter.formatRadioOptions(EthnicityRadioOptions.ALL)
+              EthnicityRadioOptions.ALL
             ),
           },
           getJwtFromCookies(req),
@@ -115,7 +114,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   } 
 
   if (fieldErrors.length != 0) {
-    body.supportedEthnicity === radioFormatter.formatRadioOptions(EthnicityRadioOptions.OTHER) 
+    body.supportedEthnicity === EthnicityRadioOptions.OTHER 
     ? defaultChecked = EthnicityRadioOptions.OTHER
     : defaultChecked = body.supportedEthnicity;
       defaultEthnicityDetails = body.ethnicOtherDetails;
@@ -191,6 +190,7 @@ const EthnicityPage = ({
               if (radio === EthnicityRadioOptions.OTHER) {
                 return {
                   label: EthnicityRadioOptions.OTHER,
+                  value: EthnicityRadioOptions.OTHER,
                   conditionalInput: (
                     <TextInput
                       questionTitle="Type the ethnic group here"
@@ -203,7 +203,7 @@ const EthnicityPage = ({
                   ),
                 };
               }
-              return { label: radio };
+              return { label: radio, value: radio };
             })}
             defaultChecked={defaultChecked}
             divideLastRadioOption={true}

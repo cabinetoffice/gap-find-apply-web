@@ -301,7 +301,7 @@ describe('Ethnicity page', () => {
 
       it('Should call postGrantBeneficiaryResponse when the response contains "supportedEthnicity", CASE: ALL', async () => {
         (parseBody as jest.Mock).mockResolvedValue({
-          supportedEthnicity: 'NoWeSupportAllEthnicGroups',
+          supportedEthnicity: 'No, we support all ethnic groups',
         });
 
         await getServerSideProps(getPostContext());
