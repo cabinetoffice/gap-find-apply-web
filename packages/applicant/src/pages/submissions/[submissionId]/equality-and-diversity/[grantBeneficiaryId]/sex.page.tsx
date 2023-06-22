@@ -154,7 +154,7 @@ const SexPage = ({
 
 export type SexPageProps = {
   formAction: string;
-  backButtonUrl: string;
+  backButtonURL: string;
   skipURL: string;
   defaultChecked?: SexRadioOptions;
   csrfToken: string;
