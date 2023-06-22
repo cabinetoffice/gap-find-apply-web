@@ -10,7 +10,6 @@ import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
 import {
-  getGrantBeneficiary,
   postGrantBeneficiaryResponse,
 } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
@@ -19,6 +18,8 @@ import {
   errorPageParams,
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
+import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
+import { EqualityAndDiversityParams } from '../types';
 
 type RequestBody = {
   supportedSexualOrientation?:
@@ -35,15 +36,15 @@ export enum SexualOrientationCheckboxes {
   ALL = 'No, we support people of any sexual orientation',
 }
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
   params,
   query,
   resolvedUrl,
   req,
   res,
 }) => {
-  const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
-  const { returnToSummaryPage } = query as Record<string, string>;
+  const { submissionId, grantBeneficiaryId } = params;
+  const { returnToSummaryPage } = query;
 
   let defaultChecked: SexualOrientationPageProps['defaultChecked'];
   let defaultSexualOrientationDetails =
@@ -53,11 +54,8 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   let grantBeneficiary: GrantBeneficiary;
   try {
-    grantBeneficiary = await getGrantBeneficiary(
-      submissionId,
-      getJwtFromCookies(req)
-    );
-  } catch (err) {
+    grantBeneficiary = await fetchGrantBeneficiary(submissionId, req);
+  } catch (_) {
     return errorPageRedirect(submissionId);
   }
 

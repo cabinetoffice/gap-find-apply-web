@@ -10,7 +10,6 @@ import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
 import {
-  getGrantBeneficiary,
   postGrantBeneficiaryResponse,
 } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
@@ -19,6 +18,8 @@ import {
   errorPageParams,
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
+import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
+import { EqualityAndDiversityParams } from '../types';
 
 type RequestBody = {
   ethnicOtherDetails: string;
@@ -35,27 +36,26 @@ export enum EthnicityRadioOptions {
   ALL = 'No, we support all ethnic groups',
 }
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
   params,
   resolvedUrl,
   req,
   res,
   query,
 }) => {
-  const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
-  const { returnToSummaryPage } = query as Record<string, string>;
+  const { submissionId, grantBeneficiaryId } = params;
+  const { returnToSummaryPage } = query;
+
   let defaultChecked = null as EthnicityPageProps['defaultChecked'];
-  let defaultEthnicityDetails = null as EthnicityPageProps['defaultEthnicityDetails'];
+  let defaultEthnicityDetails =
+    null as EthnicityPageProps['defaultEthnicityDetails'];
   let fieldErrors = [] as ValidationError[];
   let body: RequestBody;
 
   let grantBeneficiary: GrantBeneficiary;
   try {
-    grantBeneficiary = await getGrantBeneficiary(
-      submissionId,
-      getJwtFromCookies(req)
-    );
-  } catch (err) {
+    grantBeneficiary = await fetchGrantBeneficiary(submissionId, req);
+  } catch (_) {
     return errorPageRedirect(submissionId);
   } 
 

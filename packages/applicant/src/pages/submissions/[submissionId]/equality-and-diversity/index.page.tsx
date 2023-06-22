@@ -71,7 +71,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     },
     (hasProvidedAdditionalAnswers) => {
       if (hasProvidedAdditionalAnswers) {
-        return `/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/sex`;
+        return `/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/organisation`;
       }
       return `/submissions/${submissionId}/submission-confirmation`;
     },

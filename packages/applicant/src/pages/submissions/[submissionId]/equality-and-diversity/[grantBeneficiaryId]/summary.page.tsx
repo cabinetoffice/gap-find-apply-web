@@ -4,25 +4,26 @@ import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
-import { getGrantBeneficiary } from '../../../../../services/GrantBeneficiaryService';
-import { getJwtFromCookies } from '../../../../../utils/jwt';
 import { errorPageRedirect } from '../equality-and-diversity-service-errors';
 import { AgeCheckboxes } from './age.page';
+import { OrganisationRadioOptions } from './organisation.page';
 import { EthnicityRadioOptions } from './ethnicity.page';
 import { SexRadioOptions } from './sex.page';
 import { SexualOrientationCheckboxes } from './sexual-orientation.page';
 import { mapValuesToString } from './summaryPageHelper';
+import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
+import { EqualityAndDiversityParams } from '../types';
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
   params,
   req,
 }) => {
-  const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
+  const { submissionId, grantBeneficiaryId } = params;
 
   let response: GrantBeneficiary;
   try {
-    response = await getGrantBeneficiary(submissionId, getJwtFromCookies(req));
-  } catch (err) {
+    response = await fetchGrantBeneficiary(submissionId, req);
+  } catch (_) {
     return errorPageRedirect(submissionId);
   }
 
@@ -44,7 +45,6 @@ const SummaryPage = ({
   confirmationLink,
   backButtonLink,
 }: SummaryPageProps) => {
-
   return (
     <>
       <Meta title="Equality and diversity - Apply for a grant" />
@@ -63,6 +63,23 @@ const SummaryPage = ({
 
             <SummaryList
               rows={[
+                { 
+                  key: 'Which of these options best describes your organisation?',
+                  value: mapValuesToString([
+                    grantBeneficiary.organisationGroup1 && OrganisationRadioOptions.VCSE, 
+                    grantBeneficiary.organisationGroup2 && OrganisationRadioOptions.SME, 
+                    grantBeneficiary.organisationGroup3 && OrganisationRadioOptions.NEITHER
+                  ]),
+                  action: (
+                    <a
+                      href={`${baseChangeLink}/organisation?returnToSummaryPage=yes`}
+                      className="govuk-link"
+                      aria-label='Change: "Which type of organisation are you applying for a grant on behalf of?"'
+                    >
+                      Change
+                    </a>
+                  ),
+                },
                 {
                   key: 'Does your organisation primarily focus on supporting a particular sex?',
                   value: grantBeneficiary.sexGroupAll

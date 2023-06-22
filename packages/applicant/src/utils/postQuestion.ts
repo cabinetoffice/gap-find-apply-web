@@ -90,7 +90,6 @@ export default async function postQuestion<B, R>(
               nextNavigation.questionId
             )
           : routes.submissions.section(submissionId, sectionId);
-
       return {
         redirect: {
           destination: redirectUrl,

@@ -25,6 +25,9 @@ export type GrantBeneficiary = {
   ethnicGroupOther: boolean;
   ethnicOtherDetails: string;
   ethnicGroupAll: boolean;
+  organisationGroup1: boolean;
+  organisationGroup2: boolean;
+  organisationGroup3: boolean;
   supportingDisabilities: boolean;
   sexualOrientationGroup1: boolean;
   sexualOrientationGroup2: boolean;
