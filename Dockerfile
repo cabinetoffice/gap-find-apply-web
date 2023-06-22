@@ -34,7 +34,7 @@ COPY --from=build /usr/src/app/packages/gap-web-ui/package.json /usr/src/app/pac
 COPY --from=build /usr/src/app/packages/gap-web-ui/dist /usr/src/app/packages/gap-web-ui/dist
 
 COPY --from=build /usr/src/app/packages/${APP_NAME}/package.json /usr/src/app/packages/${APP_NAME}/package.json
-COPY --from=build /usr/src/app/packages/${APP_NAME}/.env /usr/src/app/packages/${APP_NAME}/.env
+COPY --from=build /usr/src/app/packages/${APP_NAME}/.env.example /usr/src/app/packages/${APP_NAME}/.env
 COPY --from=build /usr/src/app/packages/${APP_NAME}/next.config.js /usr/src/app/packages/${APP_NAME}/next.config.js
 COPY --from=build /usr/src/app/packages/${APP_NAME}/next-logger.config.js /usr/src/app/packages/${APP_NAME}/next-logger.config.js
 COPY --from=build /usr/src/app/packages/${APP_NAME}/.next /usr/src/app/packages/${APP_NAME}/.next
