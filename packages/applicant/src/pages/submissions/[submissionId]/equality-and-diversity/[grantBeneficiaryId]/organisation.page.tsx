@@ -16,7 +16,6 @@ import {
 import { EqualityAndDiversityParams } from '../types';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 import { NextIncomingMessage } from 'next/dist/server/request-meta';
-import InferProps from '../../../../../types/InferProps'
 
 export enum OrganisationRadioOptions {
   VCSE = 'Voluntary, community, or social enterprise (VCSE)',

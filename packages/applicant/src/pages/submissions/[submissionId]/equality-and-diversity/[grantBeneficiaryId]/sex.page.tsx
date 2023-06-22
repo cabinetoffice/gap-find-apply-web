@@ -89,6 +89,9 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
   return {
     props: {
       formAction: `${publicRuntimeConfig.subPath}${resolvedUrl}`,
+      backButtonURL: `/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/${
+        returnToSummaryPage ? 'summary' : 'organisation'
+      }`,
       skipURL: `${
         publicRuntimeConfig.subPath
       }/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/${
@@ -102,6 +105,7 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
 
 const SexPage = ({
   formAction,
+  backButtonURL,
   defaultChecked,
   skipURL,
   csrfToken,
@@ -110,7 +114,7 @@ const SexPage = ({
     <>
       <Meta title="Equality and diversity - Apply for a grant" />
 
-      <Layout>
+      <Layout backBtnUrl={backButtonURL}>
         <FlexibleQuestionPageLayout
           formAction={formAction}
           fieldErrors={[]}
@@ -150,6 +154,7 @@ const SexPage = ({
 
 export type SexPageProps = {
   formAction: string;
+  backButtonUrl: string;
   skipURL: string;
   defaultChecked?: SexRadioOptions;
   csrfToken: string;
