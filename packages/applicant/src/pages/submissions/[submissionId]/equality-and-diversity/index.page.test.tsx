@@ -302,7 +302,7 @@ describe('Equality and diversity start page', () => {
           redirect: {
             statusCode: 302,
             destination:
-              '/submissions/testSubmissionId/equality-and-diversity/testGrantBeneficiaryId/sex',
+              '/submissions/testSubmissionId/equality-and-diversity/testGrantBeneficiaryId/organisation',
           },
         });
       });

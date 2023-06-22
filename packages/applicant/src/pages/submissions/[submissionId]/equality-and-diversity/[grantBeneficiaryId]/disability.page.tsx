@@ -5,7 +5,6 @@ import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
 import {
-  getGrantBeneficiary,
   postGrantBeneficiaryResponse,
 } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
@@ -14,31 +13,31 @@ import {
   errorPageParams,
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
+import { EqualityAndDiversityParams } from '../types';
+import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 
 type RequestBody = {
   disability: DisabilityPageProps['defaultChecked'];
 };
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps: GetServerSideProps<{},EqualityAndDiversityParams> = async ({
   params,
   resolvedUrl,
   req,
   res,
   query,
 }) => {
-  const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
-  const { returnToSummaryPage } = query as Record<string, string>;
+  const { submissionId, grantBeneficiaryId } = params;
+  const { returnToSummaryPage } = query;
   let defaultChecked = null as DisabilityPageProps['defaultChecked'];
 
   let grantBeneficiary: GrantBeneficiary;
   try {
-    grantBeneficiary = await getGrantBeneficiary(
-      submissionId,
-      getJwtFromCookies(req)
-    );
-  } catch (err) {
+    grantBeneficiary = await fetchGrantBeneficiary(submissionId, req);
+  } catch (_) {
     return errorPageRedirect(submissionId);
   }
+
   if (grantBeneficiary.supportingDisabilities === true) {
     defaultChecked = 'Yes';
   } else if (grantBeneficiary.supportingDisabilities === false) {

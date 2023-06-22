@@ -109,6 +109,7 @@ export const getServerSideProps: GetServerSideProps<
       questionId,
       questionData.question.responseType
     );
+
     if (!('body' in result)) {
       return result;
     }
