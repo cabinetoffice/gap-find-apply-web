@@ -4,16 +4,23 @@ import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
-import {
-  getGrantBeneficiary,
-  postGrantBeneficiaryResponse,
-} from '../../../../../services/GrantBeneficiaryService';
+import { postGrantBeneficiaryResponse } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import {
   errorPageParams,
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
+import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
+import { EqualityAndDiversityParams } from '../types';
+
+export type SexPageProps = {
+  formAction: string;
+  backButtonURL: string;
+  skipURL: string;
+  defaultChecked?: SexRadioOptions;
+  csrfToken: string;
+};
 
 type RequestBody = {
   sex: SexPageProps['defaultChecked'] | 'NoWeSupportBothSexes';
@@ -25,26 +32,21 @@ export enum SexRadioOptions {
   ALL = 'No, we support both sexes',
 }
 
-export const getServerSideProps: GetServerSideProps = async ({
-  params,
-  resolvedUrl,
-  req,
-  res,
-  query,
-}) => {
-  const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
-  const { returnToSummaryPage } = query as Record<string, string>;
+export const getServerSideProps: GetServerSideProps<
+  SexPageProps,
+  EqualityAndDiversityParams
+> = async ({ params, resolvedUrl, req, res, query }) => {
+  const { submissionId, grantBeneficiaryId } = params;
+  const { returnToSummaryPage } = query;
   let defaultChecked = null as SexPageProps['defaultChecked'];
 
   let grantBeneficiary: GrantBeneficiary;
   try {
-    grantBeneficiary = await getGrantBeneficiary(
-      submissionId,
-      getJwtFromCookies(req)
-    );
-  } catch (err) {
+    grantBeneficiary = await fetchGrantBeneficiary(submissionId, req);
+  } catch (_) {
     return errorPageRedirect(submissionId);
   }
+
   if (grantBeneficiary.sexGroupAll) {
     defaultChecked = SexRadioOptions.ALL;
   } else if (grantBeneficiary.sexGroup1) {
@@ -90,6 +92,9 @@ export const getServerSideProps: GetServerSideProps = async ({
   return {
     props: {
       formAction: `${publicRuntimeConfig.subPath}${resolvedUrl}`,
+      backButtonURL: `/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/${
+        returnToSummaryPage ? 'summary' : 'organisation'
+      }`,
       skipURL: `${
         publicRuntimeConfig.subPath
       }/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/${
@@ -103,6 +108,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 
 const SexPage = ({
   formAction,
+  backButtonURL,
   defaultChecked,
   skipURL,
   csrfToken,
@@ -111,7 +117,7 @@ const SexPage = ({
     <>
       <Meta title="Equality and diversity - Apply for a grant" />
 
-      <Layout>
+      <Layout backBtnUrl={backButtonURL}>
         <FlexibleQuestionPageLayout
           formAction={formAction}
           fieldErrors={[]}
@@ -147,13 +153,6 @@ const SexPage = ({
       </Layout>
     </>
   );
-};
-
-export type SexPageProps = {
-  formAction: string;
-  skipURL: string;
-  defaultChecked?: SexRadioOptions;
-  csrfToken: string;
 };
 
 export default SexPage;

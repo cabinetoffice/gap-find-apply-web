@@ -4,25 +4,33 @@ import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
-import { getGrantBeneficiary } from '../../../../../services/GrantBeneficiaryService';
-import { getJwtFromCookies } from '../../../../../utils/jwt';
 import { errorPageRedirect } from '../equality-and-diversity-service-errors';
 import { AgeCheckboxes } from './age.page';
-import { EthnicityCheckboxes } from './ethnicity.page';
+import { OrganisationRadioOptions } from './organisation.page';
+import { EthnicityRadioOptions } from './ethnicity.page';
 import { SexRadioOptions } from './sex.page';
 import { SexualOrientationCheckboxes } from './sexual-orientation.page';
 import { mapValuesToString } from './summaryPageHelper';
+import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
+import { EqualityAndDiversityParams } from '../types';
 
-export const getServerSideProps: GetServerSideProps = async ({
-  params,
-  req,
-}) => {
-  const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
+type SummaryPageProps = {
+  grantBeneficiary: GrantBeneficiary;
+  baseChangeLink: string;
+  confirmationLink: string;
+  backButtonLink: string;
+};
+
+export const getServerSideProps: GetServerSideProps<
+  SummaryPageProps,
+  EqualityAndDiversityParams
+> = async ({ params, req }) => {
+  const { submissionId, grantBeneficiaryId } = params;
 
   let response: GrantBeneficiary;
   try {
-    response = await getGrantBeneficiary(submissionId, getJwtFromCookies(req));
-  } catch (err) {
+    response = await fetchGrantBeneficiary(submissionId, req);
+  } catch (_) {
     return errorPageRedirect(submissionId);
   }
 
@@ -62,6 +70,26 @@ const SummaryPage = ({
 
             <SummaryList
               rows={[
+                {
+                  key: 'Which of these options best describes your organisation?',
+                  value: mapValuesToString([
+                    grantBeneficiary.organisationGroup1 &&
+                      OrganisationRadioOptions.VCSE,
+                    grantBeneficiary.organisationGroup2 &&
+                      OrganisationRadioOptions.SME,
+                    grantBeneficiary.organisationGroup3 &&
+                      OrganisationRadioOptions.NEITHER,
+                  ]),
+                  action: (
+                    <a
+                      href={`${baseChangeLink}/organisation?returnToSummaryPage=yes`}
+                      className="govuk-link"
+                      aria-label='Change: "Which type of organisation are you applying for a grant on behalf of?"'
+                    >
+                      Change
+                    </a>
+                  ),
+                },
                 {
                   key: 'Does your organisation primarily focus on supporting a particular sex?',
                   value: grantBeneficiary.sexGroupAll
@@ -109,18 +137,18 @@ const SummaryPage = ({
                 {
                   key: 'Does your organisation primarily focus on supporting a particular ethnic group?',
                   value: grantBeneficiary.ethnicGroupAll
-                    ? EthnicityCheckboxes.ALL
+                    ? EthnicityRadioOptions.ALL
                     : mapValuesToString([
                         grantBeneficiary.ethnicGroup1 &&
-                          EthnicityCheckboxes.WHITE,
+                          EthnicityRadioOptions.WHITE,
                         grantBeneficiary.ethnicGroup2 &&
-                          EthnicityCheckboxes.MIXED,
+                          EthnicityRadioOptions.MIXED,
                         grantBeneficiary.ethnicGroup3 &&
-                          EthnicityCheckboxes.ASIAN,
+                          EthnicityRadioOptions.ASIAN,
                         grantBeneficiary.ethnicGroup4 &&
-                          EthnicityCheckboxes.BLACK,
+                          EthnicityRadioOptions.BLACK,
                         grantBeneficiary.ethnicGroup5 &&
-                          EthnicityCheckboxes.ARAB,
+                          EthnicityRadioOptions.ARAB,
                         grantBeneficiary.ethnicGroupOther &&
                           grantBeneficiary.ethnicOtherDetails,
                       ]),
@@ -193,10 +221,4 @@ const SummaryPage = ({
   );
 };
 
-type SummaryPageProps = {
-  grantBeneficiary: GrantBeneficiary;
-  baseChangeLink: string;
-  confirmationLink: string;
-  backButtonLink: string;
-};
 export default SummaryPage;

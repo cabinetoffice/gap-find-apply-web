@@ -8,16 +8,24 @@ import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
-import {
-  getGrantBeneficiary,
-  postGrantBeneficiaryResponse,
-} from '../../../../../services/GrantBeneficiaryService';
+import { postGrantBeneficiaryResponse } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import {
   errorPageParams,
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
+import { EqualityAndDiversityParams } from '../types';
+import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
+
+export type AgePageProps = {
+  formAction: string;
+  skipURL: string;
+  backButtonURL: string;
+  defaultChecked?: AgeCheckboxes[];
+  fieldErrors: ValidationError[];
+  csrfToken: string;
+};
 
 type RequestBody = {
   supportedAges?: AgeCheckboxes | AgeCheckboxes[];
@@ -32,15 +40,12 @@ export enum AgeCheckboxes {
   ALL = 'No, we support all age groups',
 }
 
-export const getServerSideProps: GetServerSideProps = async ({
-  params,
-  resolvedUrl,
-  req,
-  res,
-  query,
-}) => {
-  const { submissionId, grantBeneficiaryId } = params as Record<string, string>;
-  const { returnToSummaryPage } = query as Record<string, string>;
+export const getServerSideProps: GetServerSideProps<
+  AgePageProps,
+  EqualityAndDiversityParams
+> = async ({ params, resolvedUrl, req, res, query }) => {
+  const { submissionId, grantBeneficiaryId } = params;
+  const { returnToSummaryPage } = query;
 
   let defaultChecked: AgePageProps['defaultChecked'];
   let fieldErrors = [] as ValidationError[];
@@ -48,11 +53,8 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   let grantBeneficiary: GrantBeneficiary;
   try {
-    grantBeneficiary = await getGrantBeneficiary(
-      submissionId,
-      getJwtFromCookies(req)
-    );
-  } catch (err) {
+    grantBeneficiary = await fetchGrantBeneficiary(submissionId, req);
+  } catch (_) {
     return errorPageRedirect(submissionId);
   }
 
@@ -61,29 +63,40 @@ export const getServerSideProps: GetServerSideProps = async ({
     res,
     async (body: RequestBody) => {
       if (body.supportedAges) {
+        const userHasCheckedAllTheAges =
+          body.supportedAges.includes(AgeCheckboxes.ALL) ||
+          (Array.isArray(body.supportedAges) &&
+            Object.values(AgeCheckboxes).every(
+              (option) =>
+                option === AgeCheckboxes.ALL ||
+                (body.supportedAges as AgeCheckboxes[]).some(
+                  (age) => age === option
+                )
+            ));
+
         await postGrantBeneficiaryResponse(
           {
             submissionId: submissionId,
             hasProvidedAdditionalAnswers: true,
             ageGroup1:
-              body.supportedAges.includes(AgeCheckboxes.ZERO_TO_FOURTEEN) ||
-              body.supportedAges.includes(AgeCheckboxes.ALL),
+              body.supportedAges.includes(AgeCheckboxes.ZERO_TO_FOURTEEN) &&
+              !userHasCheckedAllTheAges,
             ageGroup2:
               body.supportedAges.includes(
                 AgeCheckboxes.FIFTEEN_TO_TWENTY_FOUR
-              ) || body.supportedAges.includes(AgeCheckboxes.ALL),
+              ) && !userHasCheckedAllTheAges,
             ageGroup3:
               body.supportedAges.includes(
                 AgeCheckboxes.TWENTY_FIVE_TO_FIFTY_FOUR
-              ) || body.supportedAges.includes(AgeCheckboxes.ALL),
+              ) && !userHasCheckedAllTheAges,
             ageGroup4:
               body.supportedAges.includes(
                 AgeCheckboxes.FIFTY_FIVE_TO_SIXTY_FOUR
-              ) || body.supportedAges.includes(AgeCheckboxes.ALL),
+              ) && !userHasCheckedAllTheAges,
             ageGroup5:
-              body.supportedAges.includes(AgeCheckboxes.SIXTY_FIVE_PLUS) ||
-              body.supportedAges.includes(AgeCheckboxes.ALL),
-            ageGroupAll: body.supportedAges.includes(AgeCheckboxes.ALL),
+              body.supportedAges.includes(AgeCheckboxes.SIXTY_FIVE_PLUS) &&
+              !userHasCheckedAllTheAges,
+            ageGroupAll: userHasCheckedAllTheAges,
           },
           getJwtFromCookies(req),
           grantBeneficiaryId
@@ -198,15 +211,6 @@ const AgePage = ({
       </Layout>
     </>
   );
-};
-
-export type AgePageProps = {
-  formAction: string;
-  skipURL: string;
-  backButtonURL: string;
-  defaultChecked?: AgeCheckboxes[];
-  fieldErrors: ValidationError[];
-  csrfToken: string;
 };
 
 export default AgePage;

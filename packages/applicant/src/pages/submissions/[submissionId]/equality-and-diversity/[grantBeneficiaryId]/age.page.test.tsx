@@ -289,11 +289,43 @@ describe('Age page', () => {
           {
             submissionId: 'testSubmissionId',
             hasProvidedAdditionalAnswers: true,
-            ageGroup1: true,
-            ageGroup2: true,
-            ageGroup3: true,
-            ageGroup4: true,
-            ageGroup5: true,
+            ageGroup1: false,
+            ageGroup2: false,
+            ageGroup3: false,
+            ageGroup4: false,
+            ageGroup5: false,
+            ageGroupAll: true,
+          },
+          'testJwt',
+          'testGrantBeneficiaryId'
+        );
+      });
+
+      it('Should call postGrantBeneficiaryResponse when the response contains "ageGroup", CASE: ALL', async () => {
+        (parseBody as jest.Mock).mockResolvedValue({
+          supportedAges: [
+            '0 to 14 year olds',
+            '15 to 24 year olds',
+            '25 to 54 year olds',
+            '55 to 64 year olds',
+            '65 year olds and over',
+          ],
+        });
+
+        await getServerSideProps(getPostContext());
+
+        expect(
+          postGrantBeneficiaryResponse as jest.Mock
+        ).toHaveBeenNthCalledWith(
+          1,
+          {
+            submissionId: 'testSubmissionId',
+            hasProvidedAdditionalAnswers: true,
+            ageGroup1: false,
+            ageGroup2: false,
+            ageGroup3: false,
+            ageGroup4: false,
+            ageGroup5: false,
             ageGroupAll: true,
           },
           'testJwt',
