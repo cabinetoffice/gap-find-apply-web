@@ -1,7 +1,5 @@
 // eslint-disable-next-line  @next/next/no-server-import-in-page
-import { NextFetchEvent, NextResponse } from 'next/server';
-// eslint-disable-next-line  @next/next/no-server-import-in-page
-import type { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // It will apply the middleware to all those paths
 // (if new folders at page root are created, they need to be included here)
