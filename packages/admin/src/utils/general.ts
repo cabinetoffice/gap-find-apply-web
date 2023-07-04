@@ -24,4 +24,8 @@ const getObjEntriesByKeySubstr = (substr: string, obj: Object) => {
   return Object.entries(obj).filter(([key]) => key.includes(substr));
 };
 
-export { isJSEnabled, downloadFile, getObjEntriesByKeySubstr };
+const getLoginUrl = () => {
+  return process.env.ONE_LOGIN_ENABLED ? process.env.V2_LOGIN_URL : process.env.LOGIN_URL;
+};
+
+export { isJSEnabled, downloadFile, getObjEntriesByKeySubstr, getLoginUrl };

@@ -4,6 +4,7 @@ import { NextRouter, useRouter } from 'next/router';
 import { FC } from 'react';
 import { isIE } from 'react-device-detect';
 import styles from './Header.module.scss';
+import { getLoginUrl } from '../../utils/general';
 
 interface NavItemType {
   pageId: string;
@@ -161,7 +162,7 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn = true }) => {
             </Link>
           ) : (
             <a
-              href={process.env.LOGIN_URL}
+              href={getLoginUrl()}
               className="govuk-link govuk-link--no-visited-state"
             >
               Sign in

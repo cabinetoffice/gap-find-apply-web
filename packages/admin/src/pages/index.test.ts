@@ -33,6 +33,7 @@ const getContext = (overrides: any = {}) =>
 describe('Auth index page', () => {
   beforeEach(() => {
     process.env.JWT_COOKIE_NAME = 'jwt_cookie';
+    process.env.ONE_LOGIN_ENABLED = 'false';
     process.env.LOGIN_URL =
       'https://auth-testing.cabinetoffice.gov.uk/v2/gap/login';
     process.env.SESSION_COOKIE_NAME = 'gap-test';
