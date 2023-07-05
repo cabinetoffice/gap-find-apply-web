@@ -166,7 +166,7 @@ export default function QuestionPage({
     attachmentId,
   } = question;
   const titleSizeType: 's' | 'l' | 'xl' = question?.questionSuffix ? 's' : 'l';
-  // eslint-disable-next-line no-undef
+
   let inputType: JSX.Element;
   let encType = 'application/x-www-form-urlencoded';
   let formAction =

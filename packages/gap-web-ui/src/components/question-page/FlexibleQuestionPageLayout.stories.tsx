@@ -9,7 +9,6 @@ import { WithDescription as TextArea } from './inputs/TextArea.stories';
 import { WithDescription as TextInput } from './inputs/TextInput.stories';
 import { WithDescription as RichText } from './inputs/RichText.stories';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const childrenComponents: { [key: string]: ComponentStory<any> } = {
   TextInput,
   TextArea,

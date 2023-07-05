@@ -9,9 +9,7 @@ export interface SummaryListProps {
 
 interface Row {
   key: string;
-  // eslint-disable-next-line no-undef
   value: string | JSX.Element;
-  // eslint-disable-next-line no-undef
   action?: JSX.Element;
 }
 
