@@ -14,7 +14,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     console.error('Failed to verify token', error);
     return {
       redirect: {
-        destination: getLoginUrl()!,
+        destination: getLoginUrl(),
         permanent: false,
       },
     };

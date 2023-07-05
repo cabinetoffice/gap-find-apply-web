@@ -43,6 +43,6 @@ export function middleware(req: NextRequest, ev: NextFetchEvent) {
 
     return res;
   } else {
-    return NextResponse.redirect(getLoginUrl()!);
+    return NextResponse.redirect(getLoginUrl());
   }
 }
