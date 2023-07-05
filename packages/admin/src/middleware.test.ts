@@ -1,9 +1,4 @@
-/**
- * @jest-environment node
- */
-// The above was added so that jest know it's not web. Throws a type error otherwise.
-import '@testing-library/jest-dom';
-import { middleware } from './_middleware.js';
+import { middleware } from './middleware.page';
 // eslint-disable-next-line  @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -16,7 +11,7 @@ describe('middleware', () => {
   });
 
   it('Should redirect to the logout page when the user is not authorized', () => {
-    const result = middleware(req, {} as any);
+    const result = middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
 
@@ -31,7 +26,7 @@ describe('middleware', () => {
     req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
     const reqCookie = req.cookies.getWithOptions('session_id');
 
-    const result = middleware(req, {} as any);
+    const result = middleware(req);
 
     const cookieOptions = result.cookies.getWithOptions('session_id').options;
     expect(result.cookies.get('session_id')).toStrictEqual('session_id_value');
@@ -43,7 +38,7 @@ describe('middleware', () => {
 
   it('Should redirect to the original requests URL when we are authorised', () => {
     req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
-    const result = middleware(req, {} as any);
+    const result = middleware(req);
 
     expect(result.headers.get('x-middleware-rewrite')).toStrictEqual(
       'http://localhost:3000/apply/test/destination'
@@ -59,7 +54,7 @@ describe('middleware', () => {
   it('Should allow the user to access the advert builder pages if the feature is enabled', () => {
     req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
     process.env.FEATURE_ADVERT_BUILDER = 'enabled';
-    const result = middleware(req, {} as any);
+    const result = middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
     expect(result.headers.get('x-middleware-rewrite')).toStrictEqual(
@@ -70,7 +65,7 @@ describe('middleware', () => {
   it('Should not allow the user to access the advert builder pages if the feature is enabled', () => {
     req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
     process.env.FEATURE_ADVERT_BUILDER = 'disabled';
-    const result = middleware(req, {} as any);
+    const result = middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
     expect(result.headers.get('location')).toStrictEqual(
