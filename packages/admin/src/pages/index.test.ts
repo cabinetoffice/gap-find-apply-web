@@ -18,10 +18,6 @@ jest.mock('next/config', () => () => {
 
 jest.mock('../services/AuthService');
 
-jest.mock('../utils/general.ts', () => ({
-  getLoginUrl: () => 'https://auth-testing.cabinetoffice.gov.uk/v2/gap/login',
-}));
-
 const getContext = (overrides: any = {}) =>
   merge(
     {
