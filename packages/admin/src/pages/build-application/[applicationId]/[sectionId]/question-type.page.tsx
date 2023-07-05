@@ -62,8 +62,7 @@ export const getServerSideProps: GetServerSideProps = async ({
           sessionCookie
         );
       } else {
-        let questionSummary: QuestionSummary;
-        questionSummary = (await getSummaryFromSession(
+        const questionSummary = (await getSummaryFromSession(
           'newQuestion',
           sessionCookie
         )) as QuestionSummary;
@@ -117,7 +116,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     return questionErrorPageRedirect(applicationId);
   }
 
-  let selectedRadio: string = '';
+  let selectedRadio = '';
   switch (responseType) {
     case ResponseType.Dropdown: {
       selectedRadio = 'Multiple choice';

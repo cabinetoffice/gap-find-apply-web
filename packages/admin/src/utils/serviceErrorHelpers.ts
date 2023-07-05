@@ -12,7 +12,7 @@ const generateErrorPageParams = (errorInformation: string, href: string) => ({
 const generateErrorPageRedirect = (
   errorInformation: string,
   href: string,
-  excludeSubPath: boolean = false
+  excludeSubPath = false
 ) => ({
   redirect: {
     statusCode: 302,
@@ -22,10 +22,7 @@ const generateErrorPageRedirect = (
   } as Redirect,
 });
 
-const generateErrorPageRedirectV2 = (
-  errorCode: string,
-  href: string
-) => ({
+const generateErrorPageRedirectV2 = (errorCode: string, href: string) => ({
   redirect: {
     statusCode: 302,
     destination: `/error-page/code/${errorCode}?href=${href}`,

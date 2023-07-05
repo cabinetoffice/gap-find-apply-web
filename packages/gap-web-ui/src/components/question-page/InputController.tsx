@@ -44,7 +44,6 @@ const InputController = ({
 };
 interface InputControllerProps {
   questionTitle: string;
-  // eslint-disable-next-line no-undef
   questionHintText?: string | JSX.Element;
   fieldName: string;
   fieldErrors: ValidationError[];

@@ -36,8 +36,8 @@ export function DateTime({
     question.multiResponse[4]
   ) {
     actionText = 'Change';
-    let [day, month, year, hour, minute] = question.multiResponse;
-    let date = moment([year, Number.parseInt(month) - 1, day, hour, minute]);
+    const [day, month, year, hour, minute] = question.multiResponse;
+    const date = moment([year, Number.parseInt(month) - 1, day, hour, minute]);
     outputMonth = date.format('D MMMM YYYY');
     outputTime = date.format('HH:mma');
   } else {

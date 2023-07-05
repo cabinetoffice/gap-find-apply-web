@@ -63,9 +63,7 @@ describe('Delete question page', () => {
   describe('UI', () => {
     it('Should render a meta title without "Error: " when fieldErrors is empty', () => {
       render(component);
-      expect(document.title).toBe(
-        'Delete a question - Manage a grant'
-      );
+      expect(document.title).toBe('Delete a question - Manage a grant');
     });
 
     it('Should render a meta title with "Error: " when fieldErrors is NOT empty', () => {
@@ -76,9 +74,7 @@ describe('Delete question page', () => {
         />
       );
 
-      expect(document.title).toBe(
-        'Error: Delete a question - Manage a grant'
-      );
+      expect(document.title).toBe('Error: Delete a question - Manage a grant');
     });
 
     it('Should render a back button with correct link on it', () => {

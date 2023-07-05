@@ -29,9 +29,7 @@ type RadioInput = {
 type RadioOption = {
   label: string;
   value?: string;
-  // eslint-disable-next-line no-undef
   hint?: string | JSX.Element;
-  // eslint-disable-next-line no-undef
   conditionalInput?: JSX.Element;
 };
 

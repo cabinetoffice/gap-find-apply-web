@@ -3,8 +3,8 @@ import { Select } from './SelectInputLib';
 
 type JSSelectProps = {
   label: string;
-  options: Array<Object>;
-  onChange?: Function;
+  options: Array<object>;
+  onChange?: () => void;
   initialValue?: string;
 };
 

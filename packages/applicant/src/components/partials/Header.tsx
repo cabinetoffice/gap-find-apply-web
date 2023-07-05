@@ -73,7 +73,7 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn = true }) => {
     );
   });
 
-  const feedbackContent: string = `https://docs.google.com/forms/d/e/1FAIpQLSeZnNVCqmtnzfZQJSBW_k9CklS2Y_ym2GRt-z0-1wf9pDEgPw/viewform`;
+  const feedbackContent = `https://docs.google.com/forms/d/e/1FAIpQLSeZnNVCqmtnzfZQJSBW_k9CklS2Y_ym2GRt-z0-1wf9pDEgPw/viewform`;
 
   return (
     <>

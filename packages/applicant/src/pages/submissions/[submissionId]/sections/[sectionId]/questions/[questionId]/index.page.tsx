@@ -166,9 +166,9 @@ export default function QuestionPage({
     attachmentId,
   } = question;
   const titleSizeType: 's' | 'l' | 'xl' = question?.questionSuffix ? 's' : 'l';
-  // eslint-disable-next-line no-undef
+
   let inputType: JSX.Element;
-  let encType: string = 'application/x-www-form-urlencoded';
+  let encType = 'application/x-www-form-urlencoded';
   let formAction =
     publicRuntimeConfig.subPath +
     routes.submissions.question(grantSubmissionId, sectionId, questionId);

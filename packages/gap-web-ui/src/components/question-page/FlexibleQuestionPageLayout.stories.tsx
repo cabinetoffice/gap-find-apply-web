@@ -9,7 +9,6 @@ import { WithDescription as TextArea } from './inputs/TextArea.stories';
 import { WithDescription as TextInput } from './inputs/TextInput.stories';
 import { WithDescription as RichText } from './inputs/RichText.stories';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const childrenComponents: { [key: string]: ComponentStory<any> } = {
   TextInput,
   TextArea,
@@ -33,7 +32,7 @@ export default {
 
 const Template: ComponentStory<typeof FlexibleQuestionPageLayout> = (args) => {
   const childrenKeys = args.children as string[];
-  let children = [<p>Please pick children you want to render</p>];
+  let children = [<p key="default">Please pick children you want to render</p>];
 
   if (childrenKeys) {
     children = childrenKeys.map((childKey, index: number) => {
