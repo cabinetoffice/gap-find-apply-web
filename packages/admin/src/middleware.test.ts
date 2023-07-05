@@ -6,7 +6,7 @@ import '@testing-library/jest-dom';
 import { middleware } from './middleware.page';
 import { NextRequest, NextResponse } from 'next/server';
 
-jest.mock('../utils/general.ts', () => ({
+jest.mock('./utils/general.ts', () => ({
   getLoginUrl: () => 'http://localhost:8082/login',
 }));
 
