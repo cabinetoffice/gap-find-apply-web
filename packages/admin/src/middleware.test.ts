@@ -1,3 +1,8 @@
+/**
+ * @jest-environment node
+ */
+// The above was added so that jest know it's not web. Throws a type error otherwise.
+import '@testing-library/jest-dom';
 import { middleware } from './middleware.page';
 // eslint-disable-next-line  @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
