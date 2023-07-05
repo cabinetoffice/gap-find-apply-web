@@ -240,8 +240,7 @@ describe('Download submissions page', () => {
       expect(response.props.emailAddress).toStrictEqual('');
     });
 
-    // Placeholder for checking if the export is in progress
-    it('Placeholder for checking if the export is in progress', async () => {});
+    it.todo('Placeholder for checking if the export is in progress');
 
     describe('POST method', () => {
       beforeEach(() => {

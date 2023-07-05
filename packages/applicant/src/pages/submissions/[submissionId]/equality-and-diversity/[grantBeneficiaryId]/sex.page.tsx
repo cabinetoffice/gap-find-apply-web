@@ -4,9 +4,7 @@ import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
-import {
-  postGrantBeneficiaryResponse,
-} from '../../../../../services/GrantBeneficiaryService';
+import { postGrantBeneficiaryResponse } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import {
@@ -15,6 +13,14 @@ import {
 } from '../equality-and-diversity-service-errors';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 import { EqualityAndDiversityParams } from '../types';
+
+export type SexPageProps = {
+  formAction: string;
+  backButtonURL: string;
+  skipURL: string;
+  defaultChecked?: SexRadioOptions;
+  csrfToken: string;
+};
 
 type RequestBody = {
   sex: SexPageProps['defaultChecked'] | 'NoWeSupportBothSexes';
@@ -26,13 +32,10 @@ export enum SexRadioOptions {
   ALL = 'No, we support both sexes',
 }
 
-export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
-  params,
-  resolvedUrl,
-  req,
-  res,
-  query,
-}) => {
+export const getServerSideProps: GetServerSideProps<
+  SexPageProps,
+  EqualityAndDiversityParams
+> = async ({ params, resolvedUrl, req, res, query }) => {
   const { submissionId, grantBeneficiaryId } = params;
   const { returnToSummaryPage } = query;
   let defaultChecked = null as SexPageProps['defaultChecked'];
@@ -150,14 +153,6 @@ const SexPage = ({
       </Layout>
     </>
   );
-};
-
-export type SexPageProps = {
-  formAction: string;
-  backButtonURL: string;
-  skipURL: string;
-  defaultChecked?: SexRadioOptions;
-  csrfToken: string;
 };
 
 export default SexPage;

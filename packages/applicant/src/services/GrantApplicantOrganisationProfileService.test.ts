@@ -5,20 +5,19 @@ import {
   GrantApplicantOrganisationProfileService,
   UpdateOrganisationDetailsDto,
 } from './GrantApplicantOrganisationProfileService';
-import getConfig from 'next/config'
+import getConfig from 'next/config';
 
 jest.mock('next/config', () => () => {
   return {
     serverRuntimeConfig: {
       backendHost: 'http://localhost:8080',
-      subPath: ''
+      subPath: '',
     },
     publicRuntimeConfig: {
       subPath: '',
     },
   };
 });
-
 
 const mock = new MockAdapter(axios);
 const subject = GrantApplicantOrganisationProfileService.getInstance();
@@ -49,7 +48,7 @@ describe('Axios call to get organisation data', () => {
       companiesHouseNumber: '66778899',
     };
     const { serverRuntimeConfig } = getConfig();
-    const BACKEND_HOST = serverRuntimeConfig.backendHost
+    const BACKEND_HOST = serverRuntimeConfig.backendHost;
     const expectedUrl = `${BACKEND_HOST}/grant-applicant-organisation-profile/${ORGANISATION_ID}`;
     mock.onGet(expectedUrl).reply(200, MockOrganisationData);
 
@@ -79,7 +78,7 @@ describe('updateOrganisation', () => {
     };
 
     const { serverRuntimeConfig } = getConfig();
-    const BACKEND_HOST = serverRuntimeConfig.backendHost
+    const BACKEND_HOST = serverRuntimeConfig.backendHost;
     const expectedUrl = `${BACKEND_HOST}/grant-applicant-organisation-profile/${ORGANISATION_ID}`;
     mock.onPatch(expectedUrl, organisationData).reply(200);
     await subject.updateOrganisation(organisationData, 'testJwt');

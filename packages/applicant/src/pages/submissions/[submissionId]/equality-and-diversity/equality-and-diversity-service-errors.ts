@@ -16,7 +16,7 @@ const errorPageRedirect = (submissionId: string): { redirect: Redirect } => ({
     destination: `/service-error?serviceErrorProps=${JSON.stringify(
       errorPageParams(submissionId)
     )}`,
-  }
+  },
 });
 
 export { errorPageParams, errorPageRedirect };

@@ -8,9 +8,9 @@ describe('downloadFile', () => {
       click: jest.fn(),
     };
 
-    // To allow us to pass a non-HtmlElement into mockImplementation and confirm that the function works as intended
-    // @ts-ignore
-    jest.spyOn(document, 'createElement').mockImplementation(() => link);
+    jest
+      .spyOn(document, 'createElement')
+      .mockImplementation(() => link as unknown as HTMLElement);
 
     downloadFile('fileName', '#');
 

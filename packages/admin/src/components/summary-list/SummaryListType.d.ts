@@ -1,6 +1,6 @@
 interface SummaryListProps {
   summaryListClassName?: string;
-  summaryListAttributes?: Object;
+  summaryListAttributes?: object;
   rows: Row[];
 }
 

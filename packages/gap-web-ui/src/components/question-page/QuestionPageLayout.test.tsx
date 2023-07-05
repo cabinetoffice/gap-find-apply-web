@@ -4,7 +4,7 @@ import React from 'react';
 import QuestionPageLayout, { QuestionPageProps } from './QuestionPageLayout';
 
 const customProps: QuestionPageProps = {
-  csrfToken: "csrfToken",
+  csrfToken: 'csrfToken',
   formAction: '/formAction',
   questionTitle: 'Page title',
   pageCaption: 'Some page caption',

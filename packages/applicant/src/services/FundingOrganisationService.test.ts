@@ -2,13 +2,13 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { FundingOrganisation } from '../models/FundingOrganisation';
 import { FundingOrganisationService } from './FundingOrganisationService';
-import getConfig from 'next/config'
+import getConfig from 'next/config';
 
 jest.mock('next/config', () => () => {
   return {
     serverRuntimeConfig: {
       backendHost: 'http://localhost:8080',
-      subPath: ''
+      subPath: '',
     },
     publicRuntimeConfig: {
       subPath: '',
@@ -32,7 +32,7 @@ describe('Funding organisation service', () => {
       organisationName: 'Some name',
     };
     const { serverRuntimeConfig } = getConfig();
-    const BACKEND_HOST = serverRuntimeConfig.backendHost
+    const BACKEND_HOST = serverRuntimeConfig.backendHost;
     const expectedUrl = `${BACKEND_HOST}/funding-organisations/${FUNDER_ID}`;
     mock.onGet(expectedUrl).reply(200, MOCK_FUNDING_ORGANISATION);
 

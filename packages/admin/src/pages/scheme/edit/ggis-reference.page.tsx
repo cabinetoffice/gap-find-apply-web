@@ -25,7 +25,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   res,
   resolvedUrl,
 }) => {
-  let { schemeId, defaultValue = null } = query;
+  const { schemeId } = query;
+  let { defaultValue = null } = query;
 
   let fieldErrors = [] as ValidationError[];
 

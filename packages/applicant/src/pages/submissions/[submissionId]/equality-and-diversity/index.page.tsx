@@ -30,7 +30,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   req,
   res,
 }) => {
-  let { submissionId, grantBeneficiaryId } = params as Record<string, string>;
+  const { submissionId } = params as Record<string, string>;
+  let { grantBeneficiaryId } = params as Record<string, string>;
   let defaultChecked: SubmissionConfirmationProps['defaultChecked'] = null;
   let fieldErrors: ValidationError[] = [];
 

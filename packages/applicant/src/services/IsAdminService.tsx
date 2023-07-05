@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { axiosConfig } from '../utils/jwt';
-import getConfig from 'next/config'
+import getConfig from 'next/config';
 
 const { serverRuntimeConfig } = getConfig();
-const BACKEND_HOST = serverRuntimeConfig.backendHost ;
+const BACKEND_HOST = serverRuntimeConfig.backendHost;
 
 //TODO add unit test
 export async function isAdmin(token: string) {

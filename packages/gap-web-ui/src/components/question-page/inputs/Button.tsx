@@ -21,7 +21,7 @@ const Button: FC<ButtonProps> = ({
   type,
   addNameAttribute = false,
   disabled = false,
-  ariaLabel
+  ariaLabel,
 }) => {
   return (
     <button

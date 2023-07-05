@@ -13,7 +13,6 @@ export interface TableProps {
 }
 
 export interface TheadColumn {
-  // eslint-disable-next-line no-undef
   name: string | JSX.Element;
   isVisuallyHidden?: boolean;
   isNumber?: boolean;
@@ -32,7 +31,6 @@ export interface Row {
 }
 
 interface Cell {
-  // eslint-disable-next-line no-undef
   content: string | number | JSX.Element;
   cellAttributes?: Record<string, unknown>;
 }

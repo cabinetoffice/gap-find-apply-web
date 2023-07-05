@@ -7,7 +7,7 @@ jest.mock('next/config', () => () => {
   return {
     serverRuntimeConfig: {
       backendHost: 'http://localhost:8080',
-      subPath: ''
+      subPath: '',
     },
     publicRuntimeConfig: {
       subPath: '',
