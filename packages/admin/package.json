@@ -30,7 +30,7 @@
     "date-fns": "^2.19.0",
     "dotenv": "^16.0.0",
     "gap-web-ui": "*",
-    "govuk-frontend": "^3.14.0",
+    "govuk-frontend": "4.7.0",
     "gray-matter": "4.0.3",
     "imap-simple": "^5.1.0",
     "jsonwebtoken": "^9.0.0",
