@@ -13,7 +13,6 @@ declare global {
       SPOTLIGHT_URL: string;
       TINYMCE_API_KEY: string;
       FEATURE_ADVERT_BUILDER: string;
-      ONE_LOGIN: string;
       V2_LOGIN_URL: string;
       V2_LOGOUT_URL: string;
       ONE_LOGIN_ENABLED: string;
