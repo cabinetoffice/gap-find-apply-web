@@ -9,7 +9,6 @@ export interface InputComponentProps {
   questionTitle?: string;
   boldHeading?: boolean;
   titleSize?: 's' | 'm' | 'l' | 'xl';
-  // eslint-disable-next-line no-undef
   questionHintText?: string | JSX.Element | null;
   fieldName: string;
   fieldErrors: ValidationError[];

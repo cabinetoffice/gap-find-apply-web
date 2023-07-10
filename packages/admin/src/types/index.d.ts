@@ -3,7 +3,7 @@ export {};
 declare global {
   interface Window {
     GOVUKFrontend: {
-      initAll: Function;
+      initAll: () => void;
     };
   }
 }

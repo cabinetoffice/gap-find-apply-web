@@ -34,6 +34,7 @@ const res = (overrides: any = {}) =>
 
 describe('Logout page', () => {
   beforeEach(() => {
+    process.env.ONE_LOGIN_ENABLED = 'false';
     process.env.LOGOUT = 'http://localhost:8082/logout';
   });
 

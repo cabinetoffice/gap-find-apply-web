@@ -4,9 +4,7 @@ import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
-import {
-  postGrantBeneficiaryResponse,
-} from '../../../../../services/GrantBeneficiaryService';
+import { postGrantBeneficiaryResponse } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import {
@@ -16,17 +14,22 @@ import {
 import { EqualityAndDiversityParams } from '../types';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 
+export type DisabilityPageProps = {
+  formAction: string;
+  skipURL: string;
+  backButtonURL: string;
+  defaultChecked?: 'Yes' | 'No';
+  csrfToken: string;
+};
+
 type RequestBody = {
   disability: DisabilityPageProps['defaultChecked'];
 };
 
-export const getServerSideProps: GetServerSideProps<{},EqualityAndDiversityParams> = async ({
-  params,
-  resolvedUrl,
-  req,
-  res,
-  query,
-}) => {
+export const getServerSideProps: GetServerSideProps<
+  DisabilityPageProps,
+  EqualityAndDiversityParams
+> = async ({ params, resolvedUrl, req, res, query }) => {
   const { submissionId, grantBeneficiaryId } = params;
   const { returnToSummaryPage } = query;
   let defaultChecked = null as DisabilityPageProps['defaultChecked'];
@@ -133,14 +136,6 @@ const DisabilityPage = ({
       </Layout>
     </>
   );
-};
-
-export type DisabilityPageProps = {
-  formAction: string;
-  skipURL: string;
-  backButtonURL: string;
-  defaultChecked?: 'Yes' | 'No';
-  csrfToken: string;
 };
 
 export default DisabilityPage;

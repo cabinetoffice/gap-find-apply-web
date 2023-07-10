@@ -2,9 +2,7 @@ import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import { IncomingMessage } from 'http';
 import { NextApiRequest } from 'next';
-// eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextApiRequestCookies } from 'next/dist/server/api-utils';
-// eslint-disable-next-line @next/next/no-server-import-in-page
 
 export const getJwtFromCookies = (
   req: (IncomingMessage & { cookies: NextApiRequestCookies }) | NextApiRequest

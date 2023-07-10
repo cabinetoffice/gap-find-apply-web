@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ApplicationFormStatus } from '../types/ApplicationForm';
-import getConfig from 'next/config'
+import getConfig from 'next/config';
 import { axiosSessionConfig } from '../utils/session';
 
 const { serverRuntimeConfig } = getConfig();
@@ -14,7 +14,11 @@ const postSection = (
     sectionTitle: string;
   }
 ): Promise<void> => {
-  return axios.post(`${BASE_APPLICATION_URL}/${applicationId}/sections`, body, axiosSessionConfig(sessionId));
+  return axios.post(
+    `${BASE_APPLICATION_URL}/${applicationId}/sections`,
+    body,
+    axiosSessionConfig(sessionId)
+  );
 };
 
 const deleteSection = (
@@ -36,8 +40,8 @@ const updateSectionStatus = (
 ) => {
   const config: any = {
     ...axiosSessionConfig(sessionId),
-  }
-  config.headers['Content-Type'] = "application/json"
+  };
+  config.headers['Content-Type'] = 'application/json';
 
   return axios.patch(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}`,

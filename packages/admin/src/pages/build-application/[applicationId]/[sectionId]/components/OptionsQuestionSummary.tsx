@@ -4,7 +4,7 @@ import { QuestionWithOptionsSummary } from '../../../../../types/QuestionSummary
 const OptionsQuestionSummary = ({
   questionSummary,
 }: OptionsQuestionSummaryProps) => {
-  let optionQuestionSummary: string = '';
+  let optionQuestionSummary = '';
 
   switch (questionSummary.responseType) {
     case ResponseType.Dropdown: {

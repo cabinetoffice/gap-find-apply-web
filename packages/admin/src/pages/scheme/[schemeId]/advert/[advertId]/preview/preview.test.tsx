@@ -187,6 +187,8 @@ describe('Advert Preview page', () => {
   });
 
   it('should render correct meta title', () => {
-    expect(document.title).toBe(`${props.grant.grantName} preview - Manage a grant`);
+    expect(document.title).toBe(
+      `${props.grant.grantName} preview - Manage a grant`
+    );
   });
 });

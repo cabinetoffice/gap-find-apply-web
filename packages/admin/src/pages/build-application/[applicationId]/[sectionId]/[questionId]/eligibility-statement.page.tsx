@@ -146,9 +146,7 @@ const EligibilityStatement = ({
   if (applicationStatus === 'PUBLISHED') {
     return (
       <>
-        <Meta
-          title={`Eligibility statement preview - Manage a grant`}
-        />
+        <Meta title={`Eligibility statement preview - Manage a grant`} />
 
         <CustomLink href={backButtonHref} isBackButton />
 

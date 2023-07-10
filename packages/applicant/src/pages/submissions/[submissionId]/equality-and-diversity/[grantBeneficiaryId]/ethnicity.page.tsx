@@ -9,9 +9,7 @@ import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
-import {
-  postGrantBeneficiaryResponse,
-} from '../../../../../services/GrantBeneficiaryService';
+import { postGrantBeneficiaryResponse } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import {
@@ -21,10 +19,22 @@ import {
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 import { EqualityAndDiversityParams } from '../types';
 
+export type EthnicityPageProps = {
+  formAction: string;
+  skipURL: string;
+  backButtonURL: string;
+  defaultChecked?: EthnicityRadioOptions;
+  defaultEthnicityDetails?: string;
+  fieldErrors: ValidationError[];
+  csrfToken: string;
+};
+
 type RequestBody = {
   ethnicOtherDetails: string;
-  supportedEthnicity: EthnicityPageProps['defaultChecked'] | EthnicityRadioOptions.ALL;
-}
+  supportedEthnicity:
+    | EthnicityPageProps['defaultChecked']
+    | EthnicityRadioOptions.ALL;
+};
 
 export enum EthnicityRadioOptions {
   WHITE = 'White',
@@ -36,13 +46,10 @@ export enum EthnicityRadioOptions {
   ALL = 'No, we support all ethnic groups',
 }
 
-export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
-  params,
-  resolvedUrl,
-  req,
-  res,
-  query,
-}) => {
+export const getServerSideProps: GetServerSideProps<
+  EthnicityPageProps,
+  EqualityAndDiversityParams
+> = async ({ params, resolvedUrl, req, res, query }) => {
   const { submissionId, grantBeneficiaryId } = params;
   const { returnToSummaryPage } = query;
 
@@ -57,7 +64,7 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
     grantBeneficiary = await fetchGrantBeneficiary(submissionId, req);
   } catch (_) {
     return errorPageRedirect(submissionId);
-  } 
+  }
 
   const response = await callServiceMethod(
     req,
@@ -83,17 +90,14 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
             ethnicGroup5:
               body.supportedEthnicity === EthnicityRadioOptions.ARAB ||
               body.supportedEthnicity === EthnicityRadioOptions.ALL,
-            ethnicGroupOther: body.supportedEthnicity === (
-              EthnicityRadioOptions.OTHER
-            ),
-            ethnicOtherDetails: body.supportedEthnicity === (
-              EthnicityRadioOptions.OTHER
-            )
-              ? body.ethnicOtherDetails
-              : '',
-            ethnicGroupAll: body.supportedEthnicity === (
-              EthnicityRadioOptions.ALL
-            ),
+            ethnicGroupOther:
+              body.supportedEthnicity === EthnicityRadioOptions.OTHER,
+            ethnicOtherDetails:
+              body.supportedEthnicity === EthnicityRadioOptions.OTHER
+                ? body.ethnicOtherDetails
+                : '',
+            ethnicGroupAll:
+              body.supportedEthnicity === EthnicityRadioOptions.ALL,
           },
           getJwtFromCookies(req),
           grantBeneficiaryId
@@ -111,32 +115,31 @@ export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityPara
   } else if ('body' in response) {
     fieldErrors = response.fieldErrors;
     body = response.body;
-  } 
+  }
 
   if (fieldErrors.length != 0) {
-    body.supportedEthnicity === EthnicityRadioOptions.OTHER 
-    ? defaultChecked = EthnicityRadioOptions.OTHER
-    : defaultChecked = body.supportedEthnicity;
-      defaultEthnicityDetails = body.ethnicOtherDetails;
-}
-  else {
-   if (grantBeneficiary.ethnicGroupAll) {
-    defaultChecked = EthnicityRadioOptions.ALL;
-  } else if (grantBeneficiary.ethnicGroup1) {
-    defaultChecked = EthnicityRadioOptions.WHITE;
-  } else if (grantBeneficiary.ethnicGroup2) {
-    defaultChecked = EthnicityRadioOptions.MIXED;
-  } else if (grantBeneficiary.ethnicGroup3) {
-    defaultChecked = EthnicityRadioOptions.ASIAN;
-  } else if (grantBeneficiary.ethnicGroup4) {
-    defaultChecked = EthnicityRadioOptions.BLACK;
-  } else if (grantBeneficiary.ethnicGroup5) {
-    defaultChecked = EthnicityRadioOptions.ARAB;
-  } else if (grantBeneficiary.ethnicGroupOther) {
-    defaultChecked = EthnicityRadioOptions.OTHER;
-    defaultEthnicityDetails = grantBeneficiary.ethnicOtherDetails;
-  } 
-}
+    body.supportedEthnicity === EthnicityRadioOptions.OTHER
+      ? (defaultChecked = EthnicityRadioOptions.OTHER)
+      : (defaultChecked = body.supportedEthnicity);
+    defaultEthnicityDetails = body.ethnicOtherDetails;
+  } else {
+    if (grantBeneficiary.ethnicGroupAll) {
+      defaultChecked = EthnicityRadioOptions.ALL;
+    } else if (grantBeneficiary.ethnicGroup1) {
+      defaultChecked = EthnicityRadioOptions.WHITE;
+    } else if (grantBeneficiary.ethnicGroup2) {
+      defaultChecked = EthnicityRadioOptions.MIXED;
+    } else if (grantBeneficiary.ethnicGroup3) {
+      defaultChecked = EthnicityRadioOptions.ASIAN;
+    } else if (grantBeneficiary.ethnicGroup4) {
+      defaultChecked = EthnicityRadioOptions.BLACK;
+    } else if (grantBeneficiary.ethnicGroup5) {
+      defaultChecked = EthnicityRadioOptions.ARAB;
+    } else if (grantBeneficiary.ethnicGroupOther) {
+      defaultChecked = EthnicityRadioOptions.OTHER;
+      defaultEthnicityDetails = grantBeneficiary.ethnicOtherDetails;
+    }
+  }
 
   const { publicRuntimeConfig } = getConfig();
 
@@ -228,16 +231,6 @@ const EthnicityPage = ({
       </Layout>
     </>
   );
-};
-
-export type EthnicityPageProps = {
-  formAction: string;
-  skipURL: string;
-  backButtonURL: string;
-  defaultChecked?: EthnicityRadioOptions;
-  defaultEthnicityDetails?: string;
-  fieldErrors: ValidationError[];
-  csrfToken: string;
 };
 
 export default EthnicityPage;
