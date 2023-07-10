@@ -2,11 +2,12 @@ import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import Layout from '../components/partials/Layout';
 import Meta from '../components/partials/Meta';
+import { getLoginUrl } from '../utils/general';
 
 export const getServerSideProps: GetServerSideProps = () => {
   return Promise.resolve({
     props: {
-      loginUrl: process.env.LOGIN_URL,
+      loginUrl: getLoginUrl(),
       registerUrl: `${process.env.USER_SERVICE_URL}/register`,
     },
   });

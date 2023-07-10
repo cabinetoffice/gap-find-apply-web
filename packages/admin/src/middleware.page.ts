@@ -1,5 +1,6 @@
 // eslint-disable-next-line  @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
+import { getLoginUrl } from './utils/general';
 
 // It will apply the middleware to all those paths
 // (if new folders at page root are created, they need to be included here)
@@ -42,6 +43,6 @@ export function middleware(req: NextRequest) {
 
     return res;
   } else {
-    return NextResponse.redirect(process.env.LOGIN_URL!);
+    return NextResponse.redirect(getLoginUrl());
   }
 }

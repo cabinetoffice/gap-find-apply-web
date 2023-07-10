@@ -3,13 +3,14 @@ import { render, screen } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { createMockRouter } from '../testUtils/createMockRouter';
 import Home, { getServerSideProps } from './index.page';
+import { getLoginUrl } from '../utils/general';
 
 describe('getServerSideProps', () => {
   it('should return page props', async () => {
     const response = await getServerSideProps(null);
     expect(response).toEqual({
       props: {
-        loginUrl: process.env.LOGIN_URL,
+        loginUrl: getLoginUrl(),
         registerUrl: `${process.env.USER_SERVICE_URL}/register`,
       },
     });

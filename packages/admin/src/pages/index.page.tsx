@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
 import { authenticateUser } from '../services/AuthService';
+import { getLoginUrl } from '../utils/general';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const cookieValue = req.cookies[process.env.JWT_COOKIE_NAME!];
@@ -13,7 +14,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     console.error('Failed to verify token', error);
     return {
       redirect: {
-        destination: process.env.LOGIN_URL!,
+        destination: getLoginUrl(),
         permanent: false,
       },
     };

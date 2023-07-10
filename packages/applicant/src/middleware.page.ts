@@ -1,9 +1,11 @@
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { verifyToken } from './services/JwtService';
+import { getLoginUrl } from './utils/general';
 
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
 const HOST = process.env.HOST;
+const LOGIN_URL = getLoginUrl();
 
 // //it will apply the middleware to all those paths
 export const config = {
@@ -64,7 +66,7 @@ export async function middleware(req: NextRequest) {
       console.error(err);
     }
 
-    const res = buildMiddlewareResponse(req, process.env.LOGIN_URL);
+    const res = buildMiddlewareResponse(req, LOGIN_URL);
     return res;
   }
 
@@ -73,7 +75,7 @@ export async function middleware(req: NextRequest) {
     const expiresAt = new Date(validJwtResponse.expiresAt);
 
     if (!validJwtResponse.valid) {
-      return buildMiddlewareResponse(req, process.env.LOGIN_URL);
+      return buildMiddlewareResponse(req, LOGIN_URL);
     }
 
     if (isWithinNumberOfMinsOfExpiry(expiresAt, 30)) {
@@ -85,7 +87,7 @@ export async function middleware(req: NextRequest) {
   } catch (err) {
     console.error('middleware error');
     console.error(err);
-    return NextResponse.redirect(process.env.LOGIN_URL);
+    return NextResponse.redirect(LOGIN_URL);
   }
 }
 
