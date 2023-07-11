@@ -1,0 +1,25 @@
+.sidebar > *:not(:first-child) {
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #b1b4b6;
+}
+
+.top-controls {
+   height: 3rem; 
+   margin-bottom: 1rem;
+}
+
+.bottom-controls {
+  padding: 0;
+  margin-bottom: 1rem;
+  
+  button {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  &button:first-child {
+    margin-top: 2rem;
+  }
+  
+}

@@ -24,6 +24,7 @@ export interface TheadColumn {
     | 'one-third'
     | 'one-quarter';
   theadColumnAttributes?: Record<string, unknown>;
+  wrapText?: boolean;
 }
 
 export interface Row {
@@ -96,6 +97,7 @@ const Table = ({
           >
             {row.cells.map((cell, cellIndex) => {
               const lastCell = row.cells.length - 1;
+              const column = tHeadColumns[cellIndex];
               return (
                 <td
                   key={cellIndex}
@@ -112,14 +114,15 @@ const Table = ({
                       ? ' govuk-!-text-align-right'
                       : ''
                   }${
-                    tHeadColumns[cellIndex].width &&
-                    tHeadColumns[cellIndex].isVisuallyHidden
+                    column.width && column.isVisuallyHidden
                       ? ' govuk-!-width-' + tHeadColumns[cellIndex].width
                       : ''
+                  } ${
+                    column.wrapText ? styles['gap-table-cell-wrap-text'] : ''
                   }`}
                   {...cell.cellAttributes}
                   data-cy={`cy_table_row-for-${
-                    caption ? caption : tHeadColumns[cellIndex].name
+                    caption ? caption : column.name
                   }-row-${rowIndex}-cell-${cellIndex}`}
                 >
                   {cell.content}

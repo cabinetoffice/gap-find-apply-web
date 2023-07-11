@@ -96,15 +96,18 @@ const Pagination = ({
   return (
     <nav
       className="moj-pagination"
-      id="pagination-label"
+      role="navigation"
+      aria-label="results"
       data-cy="cyPaginationComponent"
     >
       <p className="govuk-visually-hidden">Pagination navigation</p>
-
-      <ul className="moj-pagination__list">{paginationElements}</ul>
+      <ul className="govuk-pagination__list">{paginationElements}</ul>
       <p
         className="moj-pagination__results"
         data-cy="cyPaginationShowingGrants"
+        style={{
+          paddingTop: '0.6rem',
+        }}
       >
         Showing <b>{showingItemsFromCount(currentPage, itemsPerPage)}</b> to{' '}
         <b>

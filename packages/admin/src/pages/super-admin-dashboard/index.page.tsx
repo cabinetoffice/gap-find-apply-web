@@ -31,9 +31,9 @@ import { TextInput, Button, ValidationError, Table } from 'gap-web-ui';
 // };
 
 const SuperAdminDashboard = ({ schemes, userDetails }: DashboardProps) => {
-  let fieldErrors = [] as ValidationError[];
+  const fieldErrors = [] as ValidationError[];
 
-  let temp = false;
+  const temp = false;
 
   if (temp) {
     fieldErrors.push({
