@@ -7,6 +7,126 @@ import UserDetails, { Role } from '../../../../types/UserDetails';
 import Meta from '../../../../components/layout/Meta';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import { getAllRoles } from '../../../../services/RoleService';
+import { NextIncomingMessage } from 'next/dist/server/request-meta';
+import callServiceMethod from '../../../../utils/callServiceMethod';
+import axios from 'axios';
+import { loadGetInitialProps } from 'next/dist/shared/lib/utils';
+import getConfig from 'next/config';
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  params,
+  resolvedUrl,
+}) => {
+  const { id } = params as { id: string };
+  const response = await callServiceMethod(
+    req,
+    res,
+    async (body) => {
+      typeof body.newUserRoles === 'string' && (body.newUserRoles = [body.newUserRoles])
+      await axios.post(
+        `${process.env.USER_SERVICE_HOST}/spadmin/edit-role/${id}`,
+        body
+      )},
+    '',
+    ''
+  );
+  console.log({ response });
+
+  const sessionCookie = getSessionIdFromCookies(req);
+  const user: UserDetails = await getUserFromSub(sessionCookie, id);
+  console.log({user})
+
+  const formatRoleName = ({ name, ...rest }: Role) => ({
+    ...rest,
+    name: ROLE_MAP[name as keyof typeof ROLE_MAP],
+  });
+
+  return {
+    props: {
+      user,
+      resolvedUrl,
+      roles: (await getAllRoles(sessionCookie)).map(formatRoleName),
+      id,
+      csrfToken: (req as Req).csrfToken?.() || '',
+    },
+  };
+};
+
+type EditRoleWithIdProps = {
+  roles: Role[];
+  user: UserDetails;
+  csrfToken: string;
+  id: number;
+  resolvedUrl: string;
+};
+
+const EditRoleWithId = ({
+  roles,
+  csrfToken,
+  id,
+  user,
+  resolvedUrl,
+}: EditRoleWithIdProps) => {
+  const { publicRuntimeConfig } = getConfig();
+  return (
+    <>
+      <Meta title="Manage User - Change Roles" />
+      <div className="govuk-!-padding-top-2">
+        <div className="govuk-width-container">
+          <a
+            href={`${publicRuntimeConfig.SUB_PATH}/spadmin-dashboard`}
+            className="govuk-back-link"
+            data-cy="cy-back-button"
+          >
+            Back
+          </a>
+          <main className="govuk-main-wrapper govuk-main-wrapper--auto-spacing">
+            <div className="govuk-grid-row">
+              <div className="govuk-grid-column-two-thirds">
+                <span className="govuk-caption-l">{user.emailAddress}</span>
+                <h1 className="govuk-heading-l">Change the user&apos;s Role</h1>
+
+                <FlexibleQuestionPageLayout
+                  formAction={`/apply/admin/${resolvedUrl}`}
+                  fieldErrors={[]}
+                  csrfToken={csrfToken}
+                >
+                  <Checkboxes
+                    fieldErrors={[]}
+                    fieldName="newUserRoles"
+                    options={
+                      [...roles.map(mapOptions)] as CheckboxesProps['options']
+                    }
+                    defaultCheckboxes={user.roles.map(({ id }) => id)}
+                  />
+                  <div className="govuk-button-group">
+                    <button className="govuk-button" data-module="govuk-button">
+                      Change Roles
+                    </button>
+                  </div>
+                </FlexibleQuestionPageLayout>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const mapOptions = ({ id, name, description }: Role) => {
+  return {
+    value: id,
+    label: (
+      <>
+        <span>{name}</span>
+        <p className="govuk-hint">{description}</p>
+      </>
+    ),
+  };
+};
 
 const ROLE_MAP = {
   FIND: 'Find',
@@ -15,78 +135,11 @@ const ROLE_MAP = {
   APPLICANT: 'Applicant',
 };
 
-export const getServerSideProps: GetServerSideProps = async ({
-  req,
-  params,
-}) => {
-  const { id } = params as { id: string };
-  const sessionCookie = getSessionIdFromCookies(req);
-  const user: UserDetails = await getUserFromSub(sessionCookie, id);
-
-  const formatRoleName = ({ name, ...rest }: Role) => ({
-    ...rest,
-    name: ROLE_MAP[name as keyof typeof ROLE_MAP],
-  });
-  const roles = (await getAllRoles(sessionCookie)).map(formatRoleName);
-  return {
-    props: {
-      user,
-      roles,
-      id,
-      csrfToken: (req as any).csrfToken?.() || '',
-    },
-  };
-};
-
-const EditRoleWithId = ({
-  roles,
-  user,
-  csrfToken,
-  id,
-  backHref,
-}: {
-  roles: Role[];
-  user: UserDetails;
-  csrfToken: string;
-  id: number;
-  backHref: string;
-}) => (
-  <>
-    <Meta title="Admin Dashboard" />
-    <CustomLink href={backHref} isBackButton />
-    <br />
-    <p className="govuk-hint govuk-!-margin-bottom-0">{user.emailAddress}</p>
-    <FlexibleQuestionPageLayout
-      formAction={`${process.env.USER_SERVICE_HOST}/spadmin/edit-role/${id}`}
-      fieldErrors={[]}
-      csrfToken={csrfToken}
-    >
-      <Checkboxes
-        fieldErrors={[]}
-        questionTitle="Change the user's roles"
-        fieldName="newUserRoles"
-        options={[...roles.map(mapOptions)] as CheckboxesProps['options']}
-        defaultCheckboxes={user.roles.map(({ id }) => id)}
-      />
-      <div className="govuk-button-group">
-        <button className="govuk-button" data-module="govuk-button">
-          Change Roles
-        </button>
-      </div>
-    </FlexibleQuestionPageLayout>
-  </>
-);
-
-const mapOptions = ({ id, name, description }: Role) => {
-  return {
-    value: id,
-    label: (
-      <>
-        <span>{name}</span>
-        <p>{description}</p>
-      </>
-    ),
-  };
+type Req = NextIncomingMessage & {
+  csrfToken: () => string;
+  cookies: Partial<{
+    [key: string]: string;
+  }>;
 };
 
 export default EditRoleWithId;

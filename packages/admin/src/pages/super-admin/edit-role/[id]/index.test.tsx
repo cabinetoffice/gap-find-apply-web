@@ -36,7 +36,7 @@ const mockUser: UserDetails = {
 
 const component = (
   <EditRoleWithId
-    backHref=".."
+    resolvedUrl='.'
     roles={mockRoles}
     user={mockUser}
     csrfToken="csrf"

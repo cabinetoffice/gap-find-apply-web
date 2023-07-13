@@ -9,7 +9,9 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   );
   const excludeSubPath = query.excludeSubPath === 'true';
 
-  if (serviceError.linkAttributes.href === undefined)
+  console.log({serviceError})
+
+  if (serviceError?.linkAttributes?.href === undefined)
     serviceError.linkAttributes.href = '/dashboard';
 
   return {
