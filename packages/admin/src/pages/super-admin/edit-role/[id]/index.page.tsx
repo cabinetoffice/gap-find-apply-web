@@ -32,11 +32,9 @@ export const getServerSideProps: GetServerSideProps = async ({
     '',
     ''
   );
-  console.log({ response });
 
   const sessionCookie = getSessionIdFromCookies(req);
   const user: UserDetails = await getUserFromSub(sessionCookie, id);
-  console.log({user})
 
   const formatRoleName = ({ name, ...rest }: Role) => ({
     ...rest,
