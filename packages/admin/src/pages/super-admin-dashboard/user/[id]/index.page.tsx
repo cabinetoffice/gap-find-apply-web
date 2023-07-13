@@ -5,6 +5,8 @@ import { Button, SummaryList } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import { User } from '../../types';
 
+// @TODO: replace with data from backend when available
+
 let count = 0;
 
 export const users = new Array(10).fill(undefined).map(() => ({
@@ -48,7 +50,7 @@ const UserPage = ({ user }: UserPageProps) => {
       <div className="govuk-!-padding-top-2">
         <div className="govuk-width-container">
           <a
-            href={`${publicRuntimeConfig.SUB_PATH}/spadmin-dashboard`}
+            href={`${publicRuntimeConfig.SUB_PATH}/super-admin-dashboard`}
             className="govuk-back-link"
             data-cy="cy-back-button"
           >
@@ -69,7 +71,7 @@ const UserPage = ({ user }: UserPageProps) => {
                       value: user.department.name,
                       action: (
                         <Link
-                          href={`/spadmin-dashboard/user/${user.gap_user_id}/change-department`}
+                          href={`/super-admin-dashboard/user/${user.gap_user_id}/change-department`}
                         >
                           <a className="govuk-link">Change</a>
                         </Link>
@@ -86,7 +88,7 @@ const UserPage = ({ user }: UserPageProps) => {
                         .join(', '),
                       action: (
                         <Link
-                          href={`/spadmin-dashboard/user/${user.gap_user_id}/change-roles`}
+                          href={`/super-admin-dashboard/user/${user.gap_user_id}/change-roles`}
                         >
                           <a className="govuk-link">Change</a>
                         </Link>
