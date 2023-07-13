@@ -13,6 +13,8 @@ type Req = NextIncomingMessage & {
   }>;
 };
 
+// @TODO: replace with data from backend when available
+
 let count = 0;
 
 const users = new Array(10).fill(undefined).map(() => ({
@@ -47,7 +49,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     async () => {
       return {};
     },
-    (result: {}) => {
+    (result) => {
       return '';
     },
     ''

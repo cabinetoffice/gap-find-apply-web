@@ -1,44 +1,27 @@
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
-import getConfig from 'next/config';
 import { Button, Checkboxes, Table } from 'gap-web-ui';
 import Meta from '../../components/layout/Meta';
 import PaginationType from '../../types/Pagination';
-import {
-  axiosSessionConfig,
-  getSessionIdFromCookies,
-} from '../../utils/session';
+import { getSessionIdFromCookies } from '../../utils/session';
 import { Pagination } from '../../components/pagination/Pagination';
-import styles from './spadmin-dashboard.module.scss';
+import styles from './superadmin-dashboard.module.scss';
+import { getSuperAdminDashboard } from '../../services/SuperAdminService';
 import { Department, Role, User } from './types';
 import Navigation from './Nagivation';
-import axios from 'axios';
 
-const { serverRuntimeConfig } = getConfig();
-
-const getSpadminDashboard = async (
-  pagination: PaginationType,
-  sessionId: string
-) => {
-  const response = await axios.get(
-    `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
-    {
-      params: pagination,
-      ...axiosSessionConfig(sessionId),
-    }
-  );
-  return response.data;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  query,
+}) => {
   const paginationParams: PaginationType = {
     paginate: true,
-    page: 0,
-    size: 10,
+    page: Number(query.page),
+    size: Number(query.limit),
   };
 
   const sessionCookie = getSessionIdFromCookies(req);
-  const { departments, roles, users } = await getSpadminDashboard(
+  const { departments, roles, users, userCount } = await getSuperAdminDashboard(
     paginationParams,
     sessionCookie
   );
@@ -48,6 +31,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       departments,
       roles,
       users,
+      userCount,
     },
   };
 };
@@ -92,9 +76,12 @@ const convertEnumToCheckboxOptions = (
   value: id,
 });
 
-const SuperAdminDashboard = ({ departments, roles, users }: DashboardProps) => {
-  const noOfUsersFound = users.length;
-  console.log(users);
+const SuperAdminDashboard = ({
+  departments,
+  roles,
+  users,
+  userCount,
+}: DashboardProps) => {
   return (
     <>
       <Navigation />
@@ -107,7 +94,7 @@ const SuperAdminDashboard = ({ departments, roles, users }: DashboardProps) => {
                 <h2 className="govuk-heading-l">Manage users</h2>
                 {/* counter */}
                 <p className="govuk-body">
-                  We’ve found <strong>{users.length}</strong> users
+                  We’ve found <strong>{userCount}</strong> users
                 </p>
                 {/* filter button */}
                 <div className={styles['top-controls']}>
@@ -166,7 +153,7 @@ const SuperAdminDashboard = ({ departments, roles, users }: DashboardProps) => {
                   ]}
                   rows={convertUserDataToTableRows(users)}
                 />
-                <Pagination itemsPerPage={10} totalItems={noOfUsersFound} />
+                <Pagination itemsPerPage={10} totalItems={userCount} />
               </div>
             </div>
           </main>
@@ -180,6 +167,7 @@ interface DashboardProps {
   departments: Department[];
   roles: Role[];
   users: User[];
+  userCount: number;
 }
 
 export default SuperAdminDashboard;

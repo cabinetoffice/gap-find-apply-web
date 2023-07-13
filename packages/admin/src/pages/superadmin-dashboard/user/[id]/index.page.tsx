@@ -69,7 +69,7 @@ const UserPage = ({ user }: UserPageProps) => {
                       value: user.department.name,
                       action: (
                         <Link
-                          href={`/spadmin-dashboard/user/${user.id}/change-department`}
+                          href={`/spadmin-dashboard/user/${user.gap_user_id}/change-department`}
                         >
                           <a className="govuk-link">Change</a>
                         </Link>
@@ -86,7 +86,7 @@ const UserPage = ({ user }: UserPageProps) => {
                         .join(', '),
                       action: (
                         <Link
-                          href={`/spadmin-dashboard/user/${user.id}/change-roles`}
+                          href={`/spadmin-dashboard/user/${user.gap_user_id}/change-roles`}
                         >
                           <a className="govuk-link">Change</a>
                         </Link>
