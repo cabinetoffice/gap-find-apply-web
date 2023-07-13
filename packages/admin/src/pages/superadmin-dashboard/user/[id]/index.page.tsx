@@ -3,8 +3,30 @@ import Link from 'next/link';
 import getConfig from 'next/config';
 import { Button, SummaryList } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
-import { users } from '../../index.page';
 import { User } from '../../types';
+
+let count = 0;
+
+export const users = new Array(10).fill(undefined).map(() => ({
+  id: count,
+  email: `test${count++}@email.com`,
+  sub: '1234567',
+  roles:
+    Math.random() > 0.33
+      ? [
+          { id: 0, name: 'FIND' },
+          { id: 1, name: 'APPLY' },
+        ]
+      : [
+          { id: 0, name: 'FIND' },
+          { id: 1, name: 'APPLY' },
+          { id: 2, name: 'ADMIN' },
+        ],
+  department: {
+    id: 0,
+    name: 'Super cool dept',
+  },
+}));
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   return {

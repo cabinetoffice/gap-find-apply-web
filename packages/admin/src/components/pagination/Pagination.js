@@ -25,10 +25,7 @@ const Pagination = ({
 
   const totalPage = Math.ceil(totalItems / itemsPerPage);
 
-  //if items are less
-  if (totalItems <= itemsPerPage) {
-    return null;
-  }
+  const isMultiplePages = totalItems > itemsPerPage;
 
   const pageIndexArr = buildPaginationArr(currentPage, totalPage);
 
@@ -100,8 +97,12 @@ const Pagination = ({
       aria-label="results"
       data-cy="cyPaginationComponent"
     >
-      <p className="govuk-visually-hidden">Pagination navigation</p>
-      <ul className="govuk-pagination__list">{paginationElements}</ul>
+      {isMultiplePages && (
+        <>
+          <p className="govuk-visually-hidden">Pagination navigation</p>
+          <ul className="govuk-pagination__list">{paginationElements}</ul>
+        </>
+      )}
       <p
         className="moj-pagination__results"
         data-cy="cyPaginationShowingGrants"

@@ -4,6 +4,7 @@ module.exports = {
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
   serverRuntimeConfig: {
     backendHost: process.env.BACKEND_HOST,
+    userServiceHost: process.env.USER_SERVICE_HOST,
   },
   i18n: {
     locales: ['en'],

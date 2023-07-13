@@ -1,36 +1,34 @@
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
+import getConfig from 'next/config';
 import { Button, Checkboxes, Table } from 'gap-web-ui';
 import Meta from '../../components/layout/Meta';
 import PaginationType from '../../types/Pagination';
-import { getSessionIdFromCookies } from '../../utils/session';
+import {
+  axiosSessionConfig,
+  getSessionIdFromCookies,
+} from '../../utils/session';
 import { Pagination } from '../../components/pagination/Pagination';
 import styles from './spadmin-dashboard.module.scss';
 import { Department, Role, User } from './types';
 import Navigation from './Nagivation';
+import axios from 'axios';
 
-let count = 0;
+const { serverRuntimeConfig } = getConfig();
 
-export const users = new Array(10).fill(undefined).map(() => ({
-  id: count,
-  email: `test${count++}@email.com`,
-  sub: '1234567',
-  roles:
-    Math.random() > 0.33
-      ? [
-          { id: 0, name: 'FIND' },
-          { id: 1, name: 'APPLY' },
-        ]
-      : [
-          { id: 0, name: 'FIND' },
-          { id: 1, name: 'APPLY' },
-          { id: 2, name: 'ADMIN' },
-        ],
-  department: {
-    id: 0,
-    name: 'Super cool dept',
-  },
-}));
+const getSpadminDashboard = async (
+  pagination: PaginationType,
+  sessionId: string
+) => {
+  const response = await axios.get(
+    `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
+    {
+      params: pagination,
+      ...axiosSessionConfig(sessionId),
+    }
+  );
+  return response.data;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const paginationParams: PaginationType = {
@@ -40,32 +38,39 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   };
 
   const sessionCookie = getSessionIdFromCookies(req);
-  // const schemes = await getUserSchemes(paginationParams, sessionCookie);
-  // const userDetails: UserDetails = await getLoggedInUsersDetails(sessionCookie);
+  const { departments, roles, users } = await getSpadminDashboard(
+    paginationParams,
+    sessionCookie
+  );
 
   return {
     props: {
+      departments,
+      roles,
       users,
-      noOfUsersFound: 1234,
     },
   };
 };
 
-const convertUserDataToTableProps = (users: User[]) =>
+const toInitialCase = (string: string) =>
+  string
+    .split(/[^A-Za-z]/)
+    .map(
+      (word) => word.charAt(0).toUpperCase() + word.substring(1).toLowerCase()
+    )
+    .join(' ');
+
+const convertUserDataToTableRows = (users: User[]) =>
   users.map((user) => ({
     cells: [
       { content: user.email },
-      { content: user.department.name },
+      { content: user.department?.name || 'N/A' },
       {
-        content: user.roles
-          .map(
-            (role) => role.name.charAt(0) + role.name.substring(1).toLowerCase()
-          )
-          .join(', '),
+        content: user.roles?.map((role) => toInitialCase(role.name)).join(', '),
       },
       {
         content: (
-          <Link href={`/spadmin-dashboard/user/${user.id}/`}>
+          <Link href={`/superadmin-dashboard/user/${user.gap_user_id}/`}>
             <a className="govuk-link">Edit</a>
           </Link>
         ),
@@ -73,7 +78,23 @@ const convertUserDataToTableProps = (users: User[]) =>
     ],
   }));
 
-const SuperAdminDashboard = ({ noOfUsersFound, users }: DashboardProps) => {
+const convertEnumToCheckboxOptions = (
+  {
+    id,
+    name,
+  }: {
+    id: string;
+    name: string;
+  },
+  { useInitialCase = false } = {}
+) => ({
+  label: useInitialCase ? toInitialCase(name) : name,
+  value: id,
+});
+
+const SuperAdminDashboard = ({ departments, roles, users }: DashboardProps) => {
+  const noOfUsersFound = users.length;
+  console.log(users);
   return (
     <>
       <Navigation />
@@ -86,7 +107,7 @@ const SuperAdminDashboard = ({ noOfUsersFound, users }: DashboardProps) => {
                 <h2 className="govuk-heading-l">Manage users</h2>
                 {/* counter */}
                 <p className="govuk-body">
-                  We’ve found <strong>{noOfUsersFound}</strong> users
+                  We’ve found <strong>{users.length}</strong> users
                 </p>
                 {/* filter button */}
                 <div className={styles['top-controls']}>
@@ -96,7 +117,9 @@ const SuperAdminDashboard = ({ noOfUsersFound, users }: DashboardProps) => {
                   questionTitle="Role"
                   fieldName="role"
                   titleSize="m"
-                  options={['Super admin', 'Admin', 'Apply', 'Find']}
+                  options={roles.map((role) =>
+                    convertEnumToCheckboxOptions(role, { useInitialCase: true })
+                  )}
                   fieldErrors={[]}
                   small
                 />
@@ -104,11 +127,9 @@ const SuperAdminDashboard = ({ noOfUsersFound, users }: DashboardProps) => {
                   questionTitle="Department"
                   fieldName="department"
                   titleSize="m"
-                  options={[
-                    'Some dept',
-                    'Some other dept',
-                    'This data is made up',
-                  ]}
+                  options={departments.map((role) =>
+                    convertEnumToCheckboxOptions(role)
+                  )}
                   fieldErrors={[]}
                   small
                 />
@@ -138,12 +159,12 @@ const SuperAdminDashboard = ({ noOfUsersFound, users }: DashboardProps) => {
 
                 <Table
                   tHeadColumns={[
-                    { name: 'Email address', width: 'one-third' },
+                    { name: 'Email address', wrapText: true },
                     { name: 'Department' },
                     { name: 'Roles' },
                     { name: 'Actions' },
                   ]}
-                  rows={convertUserDataToTableProps(users)}
+                  rows={convertUserDataToTableRows(users)}
                 />
                 <Pagination itemsPerPage={10} totalItems={noOfUsersFound} />
               </div>
@@ -159,7 +180,6 @@ interface DashboardProps {
   departments: Department[];
   roles: Role[];
   users: User[];
-  noOfUsersFound: number;
 }
 
 export default SuperAdminDashboard;

@@ -10,7 +10,7 @@ export type Role = {
 };
 
 export type User = {
-  id: string;
+  gap_user_id: string;
   email: string;
   sub: string;
   roles: Role[];
