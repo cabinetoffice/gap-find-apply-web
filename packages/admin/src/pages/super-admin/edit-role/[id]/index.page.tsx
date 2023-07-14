@@ -5,12 +5,10 @@ import { getSessionIdFromCookies } from '../../../../utils/session';
 import { getUserFromSub } from '../../../../services/UserService';
 import UserDetails, { Role } from '../../../../types/UserDetails';
 import Meta from '../../../../components/layout/Meta';
-import CustomLink from '../../../../components/custom-link/CustomLink';
 import { getAllRoles } from '../../../../services/RoleService';
 import { NextIncomingMessage } from 'next/dist/server/request-meta';
 import callServiceMethod from '../../../../utils/callServiceMethod';
 import axios from 'axios';
-import { loadGetInitialProps } from 'next/dist/shared/lib/utils';
 import getConfig from 'next/config';
 
 export const getServerSideProps: GetServerSideProps = async ({
@@ -20,15 +18,16 @@ export const getServerSideProps: GetServerSideProps = async ({
   resolvedUrl,
 }) => {
   const { id } = params as { id: string };
-  const response = await callServiceMethod(
+   await callServiceMethod(
     req,
     res,
     async (body) => {
       typeof body.newUserRoles === 'string' && (body.newUserRoles = [body.newUserRoles])
-      await axios.post(
-        `${process.env.USER_SERVICE_HOST}/spadmin/edit-role/${id}`,
+      await axios.patch(
+        `${process.env.USER_SERVICE_HOST}/user/${id}/role`,
         body
-      )},
+      )
+    },
     '',
     ''
   );
@@ -97,7 +96,7 @@ const EditRoleWithId = ({
                     options={
                       [...roles.map(mapOptions)] as CheckboxesProps['options']
                     }
-                    defaultCheckboxes={user.roles.map(({ id }) => id)}
+                    defaultCheckboxes={user.roles.map(({ id }) => String(id))}
                   />
                   <div className="govuk-button-group">
                     <button className="govuk-button" data-module="govuk-button">

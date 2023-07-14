@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { axiosSessionConfig } from '../utils/session';
 
-const BASE_URL = process.env.USER_SERVICE_HOST + '/spadmin';
+const BASE_URL = process.env.USER_SERVICE_HOST;
 
 const getAllRoles = async (sessionCookie: string) => {
-  const response = await axios.get(`${BASE_URL}/get-all-roles`, axiosSessionConfig(sessionCookie));
+  const response = await axios.get(`${BASE_URL}/roles`, axiosSessionConfig(sessionCookie));
   return response.data;
 };
 
