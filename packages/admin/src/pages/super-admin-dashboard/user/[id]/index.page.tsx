@@ -4,36 +4,17 @@ import getConfig from 'next/config';
 import { Button, SummaryList } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import { User } from '../../types';
+import { getSessionIdFromCookies } from '../../../../utils/session';
+import { getUserById } from '../../../../services/SuperAdminService';
 
-// @TODO: replace with data from backend when available
-
-let count = 0;
-
-export const users = new Array(10).fill(undefined).map(() => ({
-  id: count,
-  email: `test${count++}@email.com`,
-  sub: '1234567',
-  roles:
-    Math.random() > 0.33
-      ? [
-          { id: 0, name: 'FIND' },
-          { id: 1, name: 'APPLY' },
-        ]
-      : [
-          { id: 0, name: 'FIND' },
-          { id: 1, name: 'APPLY' },
-          { id: 2, name: 'ADMIN' },
-        ],
-  department: {
-    id: 0,
-    name: 'Super cool dept',
-  },
-}));
-
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+  params,
+  req,
+}) => {
+  const sessionCookie = getSessionIdFromCookies(req);
   return {
     props: {
-      user: users.find(({ id }) => String(id) === (params?.id as string)),
+      user: await getUserById(params?.id as string, sessionCookie),
     },
   };
 };

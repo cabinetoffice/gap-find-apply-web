@@ -18,3 +18,11 @@ export const getSuperAdminDashboard = async (
   );
   return response.data;
 };
+
+export const getUserById = async (id: string, sessionId: string) => {
+  const response = await axios.get(
+    `${serverRuntimeConfig.userServiceHost}/user/${id}`,
+    axiosSessionConfig(sessionId)
+  );
+  return response.data;
+};
