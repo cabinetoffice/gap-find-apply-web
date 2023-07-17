@@ -6,6 +6,7 @@ import Meta from '../../../../components/layout/Meta';
 import { User } from '../../types';
 import { getSessionIdFromCookies } from '../../../../utils/session';
 import { getUserById } from '../../../../services/SuperAdminService';
+import { toSentenceCase } from '../../utils';
 
 export const getServerSideProps: GetServerSideProps = async ({
   params,
@@ -61,11 +62,7 @@ const UserPage = ({ user }: UserPageProps) => {
                     {
                       key: 'Roles',
                       value: user.roles
-                        .map(
-                          (role) =>
-                            role.name.charAt(0) +
-                            role.name.substring(1).toLowerCase()
-                        )
+                        .map((role) => toSentenceCase(role.name))
                         .join(', '),
                       action: (
                         <Link

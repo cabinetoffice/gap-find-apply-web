@@ -9,6 +9,7 @@ import styles from './superadmin-dashboard.module.scss';
 import { getSuperAdminDashboard } from '../../services/SuperAdminService';
 import { Department, Role, User } from './types';
 import Navigation from './Nagivation';
+import { toSentenceCase } from './utils';
 
 export const getServerSideProps: GetServerSideProps = async ({
   req,
@@ -16,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
   const paginationParams: PaginationType = {
     paginate: true,
-    page: Number(query.page),
+    page: Number(query.page) - 1,
     size: Number(query.limit),
   };
 
@@ -36,21 +37,15 @@ export const getServerSideProps: GetServerSideProps = async ({
   };
 };
 
-const toInitialCase = (string: string) =>
-  string
-    .split(/[^A-Za-z]/)
-    .map(
-      (word) => word.charAt(0).toUpperCase() + word.substring(1).toLowerCase()
-    )
-    .join(' ');
-
 const convertUserDataToTableRows = (users: User[]) =>
   users.map((user) => ({
     cells: [
       { content: user.email },
       { content: user.department?.name || 'N/A' },
       {
-        content: user.roles?.map((role) => toInitialCase(role.name)).join(', '),
+        content: user.roles
+          ?.map((role) => toSentenceCase(role.name))
+          .join(', '),
       },
       {
         content: (
@@ -70,9 +65,9 @@ const convertEnumToCheckboxOptions = (
     id: string;
     name: string;
   },
-  { useInitialCase = false } = {}
+  { useSentenceCase = false } = {}
 ) => ({
-  label: useInitialCase ? toInitialCase(name) : name,
+  label: useSentenceCase ? toSentenceCase(name) : name,
   value: id,
 });
 
@@ -105,7 +100,9 @@ const SuperAdminDashboard = ({
                   fieldName="role"
                   titleSize="m"
                   options={roles.map((role) =>
-                    convertEnumToCheckboxOptions(role, { useInitialCase: true })
+                    convertEnumToCheckboxOptions(role, {
+                      useSentenceCase: true,
+                    })
                   )}
                   fieldErrors={[]}
                   small
@@ -143,7 +140,6 @@ const SuperAdminDashboard = ({
                   />
                   <Button text="Search" />
                 </div>
-
                 <Table
                   tHeadColumns={[
                     { name: 'Email address', wrapText: true },
