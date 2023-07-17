@@ -33,7 +33,7 @@ describe('QuestionPageGetServerSideProps', () => {
   >[0] => ({
     context: getContext(),
     fetchPageData: mockGetDataFunction,
-    processPagePostResponse: mockUpdateDataFunction,
+    handleRequest: mockUpdateDataFunction,
     jwt: 'testSessionId',
     onErrorMessage: 'Test error message',
     onSuccessRedirectHref: '/testSuccess',
@@ -132,7 +132,7 @@ describe('QuestionPageGetServerSideProps', () => {
     >[0] => ({
       context: getContext(getDefaultContext),
       fetchPageData: mockGetDataFunction,
-      processPagePostResponse: mockUpdateDataFunction,
+      handleRequest: mockUpdateDataFunction,
       jwt: 'testSessionId',
       onErrorMessage: 'Test error message',
       onSuccessRedirectHref: '/testSuccess',
