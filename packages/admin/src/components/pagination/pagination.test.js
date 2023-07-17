@@ -93,7 +93,7 @@ describe('Testing Pagination component behaviour', () => {
     // );
   });
 
-  it('should render result count only when total items less than items per page', async () => {
+  it('should only render result count when total items less than items per page', async () => {
     const getByTextContent = (text) =>
       screen.getByText(
         (_, element) =>
