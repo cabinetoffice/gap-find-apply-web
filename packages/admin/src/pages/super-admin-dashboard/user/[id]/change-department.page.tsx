@@ -21,7 +21,7 @@ type PageBodyResponse = {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
 
-  function processPagePostResponse(body: PageBodyResponse, jwt: string) {
+  function handleRequest(body: PageBodyResponse, jwt: string) {
     return updateDepartment(jwt, userId, body.department);
   }
 
@@ -32,11 +32,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   return QuestionPageGetServerSideProps<
     PageBodyResponse,
     Awaited<ReturnType<typeof getChangeDepartmentPage>>,
-    typeof processPagePostResponse
+    typeof handleRequest
   >({
     context,
     fetchPageData,
-    processPagePostResponse,
+    handleRequest,
     jwt: getSessionIdFromCookies(context.req),
     onErrorMessage: 'Failed to update department, please try again later.',
     onSuccessRedirectHref: `/super-admin-dashboard/user/${userId}`,
