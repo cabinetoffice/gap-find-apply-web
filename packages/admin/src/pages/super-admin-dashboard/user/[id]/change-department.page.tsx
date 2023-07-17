@@ -14,8 +14,12 @@ import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import getConfig from 'next/config';
 
+type PageBodyResponse = {
+  department: string;
+};
+
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  function processPagePostResponse(body: { department: string }, jwt: string) {
+  function processPagePostResponse(body: PageBodyResponse, jwt: string) {
     return updateDepartment(jwt, context.params?.id as string, body.department);
   }
 
@@ -24,7 +28,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 
   return QuestionPageGetServerSideProps<
-    { department: string },
+    PageBodyResponse,
     Awaited<ReturnType<typeof getChangeDepartmentPage>>,
     typeof processPagePostResponse
   >({
