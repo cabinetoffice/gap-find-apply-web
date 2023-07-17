@@ -12,9 +12,11 @@ const getLoggedInUsersDetails = async (sessionCookie: string) => {
   return response.data;
 };
 
-
 const getUserFromSub = async (sessionCookie: string, id: string) => {
-  const response = await axios.get(`${BASE_URL}/user/${id}`, axiosSessionConfig(sessionCookie));
+  const response = await axios.get(
+    `${BASE_URL}/user/${id}`,
+    axiosSessionConfig(sessionCookie)
+  );
   return response.data;
 };
 

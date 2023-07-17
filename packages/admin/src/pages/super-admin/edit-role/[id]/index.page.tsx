@@ -18,15 +18,16 @@ export const getServerSideProps: GetServerSideProps = async ({
   resolvedUrl,
 }) => {
   const { id } = params as { id: string };
-   await callServiceMethod(
+  await callServiceMethod(
     req,
     res,
     async (body) => {
-      typeof body.newUserRoles === 'string' && (body.newUserRoles = [body.newUserRoles])
+      typeof body.newUserRoles === 'string' &&
+        (body.newUserRoles = [body.newUserRoles]);
       await axios.patch(
         `${process.env.USER_SERVICE_HOST}/user/${id}/role`,
         body
-      )
+      );
     },
     '',
     ''

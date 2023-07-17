@@ -117,8 +117,10 @@ const Table = ({
                     column.width && column.isVisuallyHidden
                       ? ' govuk-!-width-' + tHeadColumns[cellIndex].width
                       : ''
-                  } ${
-                    column.wrapText ? styles['gap-table-cell-wrap-text'] : ''
+                  }${
+                    column.wrapText
+                      ? ` ${styles['gap-table-cell-wrap-text']}`
+                      : ''
                   }`}
                   {...cell.cellAttributes}
                   data-cy={`cy_table_row-for-${

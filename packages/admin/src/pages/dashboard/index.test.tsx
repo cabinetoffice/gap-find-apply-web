@@ -41,7 +41,7 @@ const mockUserDetails: UserDetails = {
   firstName: 'Test',
   lastName: 'User',
   emailAddress: 'test',
-  roles: [{ id: "1", name: "APPLY", description: 'desc' }], 
+  roles: [{ id: '1', name: 'APPLY', description: 'desc' }],
   organisationName: 'Testing Org',
 };
 
