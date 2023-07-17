@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import EditRoleWithId from './index.page';
-import UserDetails, { Role } from '../../../../types/UserDetails';
+import UserDetails from '../../../../types/UserDetails';
 
 jest.mock('next/config', () => () => {
   return {
@@ -15,7 +15,7 @@ jest.mock('next/config', () => () => {
   };
 });
 
-const mockRoles = [
+const getMockRoles = () => [
   { id: '1', name: 'Find', description: 'this is a description' },
   {
     id: '2',
@@ -26,19 +26,19 @@ const mockRoles = [
   { id: '4', name: 'Apply', description: 'this is anopther description' },
 ];
 
-const mockUser: UserDetails = {
+const getMockUser = (): UserDetails => ({
   firstName: 'john',
   lastName: 'm',
   organisationName: 'tco',
   emailAddress: 'superAdmin@and.digital',
-  roles: [{ id: '1', name: 'Find', description: 'this is a description' }],
-};
+  roles: [getMockRoles()[0], getMockRoles()[1]],
+});
 
 const component = (
   <EditRoleWithId
     resolvedUrl="."
-    roles={mockRoles}
-    user={mockUser}
+    roles={getMockRoles()}
+    user={getMockUser()}
     csrfToken="csrf"
     id={1}
   />
