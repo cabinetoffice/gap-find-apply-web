@@ -19,12 +19,14 @@ type PageBodyResponse = {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const userId = context.params?.id as string;
+
   function processPagePostResponse(body: PageBodyResponse, jwt: string) {
-    return updateDepartment(jwt, context.params?.id as string, body.department);
+    return updateDepartment(jwt, userId, body.department);
   }
 
   function fetchPageData(jwt: string) {
-    return getChangeDepartmentPage(context.params?.id as string, jwt);
+    return getChangeDepartmentPage(userId, jwt);
   }
 
   return QuestionPageGetServerSideProps<
@@ -36,8 +38,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     fetchPageData,
     processPagePostResponse,
     jwt: getSessionIdFromCookies(context.req),
-    onErrorMessage: '',
-    onSuccessRedirectHref: `/super-admin-dashboard/user/${context.params?.id}`,
+    onErrorMessage: 'Failed to update department, please try again later.',
+    onSuccessRedirectHref: `/super-admin-dashboard/user/${userId}`,
   });
 }
 
@@ -45,25 +47,30 @@ const UserPage = ({
   csrfToken,
   pageData,
   formAction,
+  fieldErrors,
 }: InferProps<typeof getServerSideProps>) => {
   const { user, departments } = pageData;
   const { publicRuntimeConfig } = getConfig();
   return (
     <>
-      <Meta title="Manage User - Change Department" />
+      <Meta
+        title={`${
+          fieldErrors.length > 0 ? 'Error: ' : ''
+        }Manage User - Change Department`}
+      />
 
       <CustomLink
         isBackButton
-        href={`/super-admin-dashboard/user/${user.gap_user_id}`}
+        href={`/super-admin-dashboard/user/${user.gapUserId}`}
       />
 
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
           formAction={`${publicRuntimeConfig.SUB_PATH}${formAction}`}
           csrfToken={csrfToken}
-          fieldErrors={[]}
+          fieldErrors={fieldErrors}
         >
-          <span className="govuk-caption-l">{user.email}</span>
+          <span className="govuk-caption-l">{user.emailAddress}</span>
           <h1 className="govuk-heading-l">Change the user&apos;s department</h1>
 
           <Radio
@@ -72,7 +79,7 @@ const UserPage = ({
               label: department.name,
               value: department.id,
             }))}
-            fieldErrors={[]}
+            fieldErrors={fieldErrors}
             defaultChecked={user.department?.name}
           />
 

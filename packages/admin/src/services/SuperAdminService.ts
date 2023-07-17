@@ -3,13 +3,19 @@ import axios from 'axios';
 import { axiosSessionConfig } from '../utils/session';
 import Pagination from '../types/Pagination';
 import { Department, User } from '../pages/super-admin-dashboard/types';
+import { Role } from '../types/UserDetails';
 
 const { serverRuntimeConfig } = getConfig();
 
 export const getSuperAdminDashboard = async (
   pagination: Pagination,
   sessionId: string
-) => {
+): Promise<{
+  users: User[];
+  departments: Department[];
+  roles: Role[];
+  userCount: number;
+}> => {
   const response = await axios.get(
     `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
     {
@@ -51,9 +57,7 @@ export const updateDepartment = async (
     `${serverRuntimeConfig.userServiceHost}/user/${userId}/department`,
     {},
     {
-      params: {
-        departmentId,
-      },
+      params: { departmentId },
       ...axiosSessionConfig(sessionId),
     }
   );
