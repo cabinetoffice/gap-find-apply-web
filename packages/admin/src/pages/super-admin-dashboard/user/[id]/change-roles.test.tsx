@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import EditRoleWithId from './index.page';
+import EditRoleWithId from './change-roles.page';
 import UserDetails from '../../../../types/UserDetails';
 
 jest.mock('next/config', () => () => {
