@@ -14,5 +14,5 @@ export type User = {
   email: string;
   sub: string;
   roles: Role[];
-  department: Department;
+  department?: Department;
 };

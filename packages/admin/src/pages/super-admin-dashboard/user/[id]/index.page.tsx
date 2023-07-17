@@ -50,7 +50,7 @@ const UserPage = ({ user }: UserPageProps) => {
                     { key: 'Email', value: user.email, action: <></> },
                     {
                       key: 'Department',
-                      value: user.department.name,
+                      value: user.department?.name ?? '',
                       action: (
                         <Link
                           href={`/super-admin-dashboard/user/${user.gap_user_id}/change-department`}
