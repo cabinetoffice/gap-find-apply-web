@@ -4,6 +4,7 @@ $govuk-assets-path: $sub_path + '/assets/';
 @import '~govuk-frontend/govuk/all';
 
 //Custom global styles below
+@import 'navigation';
 @import 'components/moj-pagination';
 @import 'components/date-picker';
 
