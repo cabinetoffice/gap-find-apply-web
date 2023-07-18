@@ -22,7 +22,9 @@ describe('Auth index page', () => {
     process.env.SESSION_COOKIE_NAME = 'gap-test';
     mockServiceMethod(mockedAuthenticateUser, () => ({
       headers: {
-        'set-cookie': [''],
+        'set-cookie': [
+          `SESSION=test_session_id; Path=/; secure; HttpOnly; SameSite=Strict; Max-Age=900;`,
+        ],
       } as AxiosResponseHeaders,
     }));
   });
