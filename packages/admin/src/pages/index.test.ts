@@ -3,6 +3,7 @@ import NextGetServerSidePropsResponse from '../types/NextGetServerSidePropsRespo
 import { getServerSideProps } from './index.page';
 import { authenticateUser } from '../services/AuthService';
 import { expectObjectEquals, getContext, mockServiceMethod } from 'gap-web-ui';
+import { AxiosResponseHeaders } from 'axios';
 
 jest.mock('../services/AuthService');
 
@@ -17,13 +18,10 @@ describe('Auth index page', () => {
     process.env.LOGIN_URL =
       'https://auth-testing.cabinetoffice.gov.uk/v2/gap/login';
     process.env.SESSION_COOKIE_NAME = 'gap-test';
-
-    mockServiceMethod(authenticateUser as jest.Mock, () => ({
+    mockServiceMethod(jest.mocked(authenticateUser), () => ({
       headers: {
-        'set-cookie': [
-          `SESSION=test_session_id; Path=/; secure; HttpOnly; SameSite=Strict; Max-Age=900;`,
-        ],
-      },
+        'set-cookie': [''],
+      } as AxiosResponseHeaders,
     }));
   });
 
