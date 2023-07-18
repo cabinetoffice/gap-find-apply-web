@@ -1,11 +1,15 @@
 import React from 'react';
-import axios from 'axios';
 import { GetServerSideProps } from 'next';
 import { authenticateUser } from '../services/AuthService';
 import { getLoginUrl } from '../utils/general';
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
   const cookieValue = req.cookies[process.env.JWT_COOKIE_NAME!];
+  const redirectUrl = query?.redirectUrl as string | undefined;
 
   let response;
   try {
@@ -20,7 +24,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     };
   }
 
-  // Checks if already have athorisation headers set
+  // Checks if already have authorisation headers set
   if (response.headers['set-cookie']) {
     const sessionCookie = response.headers['set-cookie'][0].split(';')[0];
 
@@ -36,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
   return {
     redirect: {
-      destination: '/dashboard',
+      destination: redirectUrl || '/dashboard',
       permanent: false,
     },
   };
