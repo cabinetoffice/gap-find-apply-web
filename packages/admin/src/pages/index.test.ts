@@ -11,6 +11,8 @@ const getDefaultContext = () => ({
   res: { setHeader: jest.fn() },
 });
 
+const mockedAuthenticateUser = jest.mocked(authenticateUser);
+
 describe('Auth index page', () => {
   beforeEach(() => {
     process.env.JWT_COOKIE_NAME = 'jwt_cookie';
@@ -18,7 +20,7 @@ describe('Auth index page', () => {
     process.env.LOGIN_URL =
       'https://auth-testing.cabinetoffice.gov.uk/v2/gap/login';
     process.env.SESSION_COOKIE_NAME = 'gap-test';
-    mockServiceMethod(jest.mocked(authenticateUser), () => ({
+    mockServiceMethod(mockedAuthenticateUser, () => ({
       headers: {
         'set-cookie': [''],
       } as AxiosResponseHeaders,
@@ -26,7 +28,7 @@ describe('Auth index page', () => {
   });
 
   it('Should redirect to login page when user authentication fails', async () => {
-    (authenticateUser as jest.Mock).mockRejectedValue({});
+    mockedAuthenticateUser.mockRejectedValue({});
 
     const result = await getServerSideProps(getContext(getDefaultContext));
 
