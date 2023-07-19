@@ -20,11 +20,11 @@ export const getUserTokenFromCookies = (
   return req.cookies[process.env.JWT_COOKIE_NAME] || '';
 };
 
-export const axiosSessionConfig = (sessionId: string, userToken?: string) => {
+export const axiosSessionConfig = (sessionId: string) => {
   return {
     withCredentials: true,
     headers: {
-      Cookie: `SESSION=${sessionId}; ${process.env.JWT_COOKIE_NAME}=${userToken};`,
+      Cookie: `SESSION=${sessionId};`,
     },
   };
 };
