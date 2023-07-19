@@ -28,7 +28,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     res,
     async (body) => updateUserRoles(id, body.newUserRoles, userToken),
     '',
-    ''
+    `/super-admin-dashboard/user/${id}`
   );
 
   const user: UserDetails = await getUserById(id, userToken);
@@ -71,7 +71,7 @@ const EditRoleWithId = ({
       <div className="govuk-!-padding-top-2">
         <div className="govuk-width-container">
           <a
-            href={`${publicRuntimeConfig.SUB_PATH}/spadmin-dashboard`}
+            href={`${publicRuntimeConfig.SUB_PATH}/super-admin-dashboard`}
             className="govuk-back-link"
             data-cy="cy-back-button"
           >

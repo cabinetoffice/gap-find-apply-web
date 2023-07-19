@@ -79,8 +79,6 @@ export const updateUserRoles = async (
 ) =>
   await axios.patch(
     `${process.env.USER_SERVICE_HOST}/user/${id}/role`,
-    {
-      newUserRoles: [newUserRoles],
-    },
+    newUserRoles,
     axiosUserServiceConfig(userToken)
   );
