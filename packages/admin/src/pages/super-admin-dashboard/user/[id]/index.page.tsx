@@ -4,7 +4,7 @@ import getConfig from 'next/config';
 import { Button, SummaryList } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import { User } from '../../types';
-import { getSessionIdFromCookies } from '../../../../utils/session';
+import { getUserTokenFromCookies } from '../../../../utils/session';
 import { getUserById } from '../../../../services/SuperAdminService';
 import { toSentenceCase } from '../../utils';
 
@@ -12,10 +12,10 @@ export const getServerSideProps: GetServerSideProps = async ({
   params,
   req,
 }) => {
-  const sessionCookie = getSessionIdFromCookies(req);
+  const userToken = getUserTokenFromCookies(req);
   return {
     props: {
-      user: await getUserById(params?.id as string, sessionCookie),
+      user: await getUserById(params?.id as string, userToken),
     },
   };
 };

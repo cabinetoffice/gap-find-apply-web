@@ -1,6 +1,6 @@
 import getConfig from 'next/config';
 import axios from 'axios';
-import { axiosSessionConfig } from '../utils/session';
+import { axiosUserServiceConfig } from '../utils/session';
 import Pagination from '../types/Pagination';
 import { Department, User } from '../pages/super-admin-dashboard/types';
 import { Role } from '../types/UserDetails';
@@ -9,7 +9,6 @@ const { serverRuntimeConfig } = getConfig();
 
 export const getSuperAdminDashboard = async (
   pagination: Pagination,
-  sessionId: string,
   userToken: string
 ): Promise<{
   users: User[];
@@ -21,45 +20,45 @@ export const getSuperAdminDashboard = async (
     `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
     {
       params: pagination,
-      ...axiosSessionConfig(sessionId, userToken),
+      ...axiosUserServiceConfig(userToken),
     }
   );
   return response.data;
 };
 
-export const getUserById = async (id: string, sessionId: string) => {
+export const getUserById = async (id: string, userToken: string) => {
   const response = await axios.get(
     `${serverRuntimeConfig.userServiceHost}/user/${id}`,
-    axiosSessionConfig(sessionId)
+    axiosUserServiceConfig(userToken)
   );
   return response.data;
 };
 
 export const getChangeDepartmentPage = async (
   userId: string,
-  sessionId: string
+  userToken: string
 ): Promise<{
   user: User;
   departments: Department[];
 }> => {
   const response = await axios.get(
     `${serverRuntimeConfig.userServiceHost}/page/user/${userId}/change-department`,
-    axiosSessionConfig(sessionId)
+    axiosUserServiceConfig(userToken)
   );
   return response.data;
 };
 
 export const updateDepartment = async (
-  sessionId: string,
   userId: string,
-  departmentId: string
+  departmentId: string,
+  userToken: string
 ) => {
   const response = await axios.patch(
     `${serverRuntimeConfig.userServiceHost}/user/${userId}/department`,
     {},
     {
       params: { departmentId },
-      ...axiosSessionConfig(sessionId),
+      ...axiosUserServiceConfig(userToken),
     }
   );
   return response.data;

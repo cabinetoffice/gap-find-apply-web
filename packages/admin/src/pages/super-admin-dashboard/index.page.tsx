@@ -24,11 +24,9 @@ export const getServerSideProps: GetServerSideProps = async ({
     size: Number(query.limit),
   };
 
-  const sessionCookie = getSessionIdFromCookies(req);
   const userToken = getUserTokenFromCookies(req);
   const { departments, roles, users, userCount } = await getSuperAdminDashboard(
     paginationParams,
-    sessionCookie,
     userToken
   );
 

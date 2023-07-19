@@ -11,6 +11,14 @@ const { publicRuntimeConfig } = getConfig();
 const getRoleCheckService = () =>
   publicRuntimeConfig.oneLoginEnabled ? getUserRoles : isAdmin;
 
+const getDestination = (user: UserRolesResponse) => {
+  if (user.isSuperAdmin)
+    return `${process.env.ADMIN_FRONTEND_URL}/?redirect=/super-admin-dashboard`;
+  if (user.isAdmin) return process.env.ADMIN_FRONTEND_URL;
+  if (user.isApplicant) return routes.api.isNewApplicant; //checks if the user exist, if not creates it
+  return `${process.env.USER_SERVICE_URL}/register`;
+};
+
 //TODO add unit test, and move this to be an api
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   let result: UserRolesResponse;
@@ -28,31 +36,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     };
   }
   await initiateCSRFCookie(req, res);
-  if (result.isSuperAdmin)
-    return {
-      redirect: {
-        destination: `${process.env.ADMIN_FRONTEND_URL}/?redirect=/super-admin-dashboard`,
-        permanent: false,
-      },
-    };
-  if (result.isAdmin)
-    return {
-      redirect: {
-        destination: process.env.ADMIN_FRONTEND_URL,
-        permanent: false,
-      },
-    };
-  if (result.isApplicant)
-    return {
-      redirect: {
-        destination: routes.api.isNewApplicant, //checks if the user exist, if not creates it
-        permanent: false,
-      },
-    };
-
+  const destination = getDestination(result);
   return {
     redirect: {
-      destination: `${process.env.USER_SERVICE_URL}/register`,
+      destination,
       permanent: false,
     },
   };

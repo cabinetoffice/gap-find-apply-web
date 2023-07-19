@@ -28,3 +28,10 @@ export const axiosSessionConfig = (sessionId: string, userToken?: string) => {
     },
   };
 };
+
+export const axiosUserServiceConfig = (userToken: string) => ({
+  withCredentials: true,
+  headers: {
+    Cookie: `${process.env.JWT_COOKIE_NAME}=${userToken}`,
+  },
+});
