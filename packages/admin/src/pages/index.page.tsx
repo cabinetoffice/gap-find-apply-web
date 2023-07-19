@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 import { GetServerSideProps } from 'next';
 import { authenticateUser } from '../services/AuthService';
 import { getLoginUrl } from '../utils/general';

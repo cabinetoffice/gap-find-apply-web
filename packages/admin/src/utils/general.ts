@@ -1,3 +1,5 @@
+import getConfig from 'next/config';
+
 const isJSEnabled = () => {
   return typeof window !== 'undefined';
 };
@@ -24,8 +26,10 @@ const getObjEntriesByKeySubstr = (substr: string, obj: object) => {
   return Object.entries(obj).filter(([key]) => key.includes(substr));
 };
 
+const { publicRuntimeConfig } = getConfig();
+
 const getLoginUrl = () => {
-  return process.env.ONE_LOGIN_ENABLED === 'enabled'
+  return publicRuntimeConfig.oneLoginEnabled
     ? process.env.V2_LOGIN_URL!
     : process.env.LOGIN_URL!;
 };

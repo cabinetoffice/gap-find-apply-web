@@ -9,6 +9,7 @@ module.exports = {
   },
   publicRuntimeConfig: {
     subPath: process.env.SUB_PATH || '/apply/applicant',
+    oneLoginEnabled: process.env.ONE_LOGIN_ENABLED,
   },
   i18n: {
     locales: ['en'],
