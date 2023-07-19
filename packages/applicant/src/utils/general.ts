@@ -1,5 +1,8 @@
+import getConfig from 'next/config';
+
 const getLoginUrl = () => {
-  return process.env.ONE_LOGIN_ENABLED === 'enabled'
+  const { publicRuntimeConfig } = getConfig();
+  return publicRuntimeConfig.oneLoginEnabled
     ? process.env.V2_LOGIN_URL!
     : process.env.LOGIN_URL!;
 };
