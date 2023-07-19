@@ -23,13 +23,17 @@ export const getServerSideProps: GetServerSideProps = async ({
   const { id } = params as { id: string };
   const userToken = getUserTokenFromCookies(req);
 
-  await callServiceMethod(
+  const response = await callServiceMethod(
     req,
     res,
     async (body) => updateUserRoles(id, body.newUserRoles, userToken),
     `/super-admin-dashboard/user/${id}`,
     'Failed to update user roles.'
   );
+
+  if ('redirect' in response) {
+    return response;
+  }
 
   const user: UserDetails = await getUserById(id, userToken);
 
