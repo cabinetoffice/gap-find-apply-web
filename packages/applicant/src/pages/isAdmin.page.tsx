@@ -24,8 +24,9 @@ const getDestination = (user: UserRolesResponse) => {
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   let result: UserRolesResponse;
   try {
-    const roleCheckSevice = getRoleCheckService();
-    result = await roleCheckSevice(getJwtFromCookies(req));
+    const userServiceJwt = getJwtFromCookies(req);
+    const roleCheckService = getRoleCheckService();
+    result = await roleCheckService(userServiceJwt);
   } catch (error) {
     console.error('Error determining user roles');
     console.error(error);

@@ -6,6 +6,7 @@ module.exports = {
     backendHost: process.env.BACKEND_HOST,
     frontendHost: process.env.HOST,
     subPath: process.env.SUB_PATH || '/apply/applicant',
+    userServiceHost: process.env.USER_SERVICE_HOST,
   },
   publicRuntimeConfig: {
     subPath: process.env.SUB_PATH || '/apply/applicant',
