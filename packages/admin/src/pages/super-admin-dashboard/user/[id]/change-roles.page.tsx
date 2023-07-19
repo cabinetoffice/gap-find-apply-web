@@ -27,8 +27,8 @@ export const getServerSideProps: GetServerSideProps = async ({
     req,
     res,
     async (body) => updateUserRoles(id, body.newUserRoles, userToken),
-    '',
-    `/super-admin-dashboard/user/${id}`
+    `/super-admin-dashboard/user/${id}`,
+    'Failed to update user roles.'
   );
 
   const user: UserDetails = await getUserById(id, userToken);
