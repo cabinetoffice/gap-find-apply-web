@@ -11,7 +11,6 @@ import UserDetails, { Role } from '../../../../types/UserDetails';
 import Meta from '../../../../components/layout/Meta';
 import { NextIncomingMessage } from 'next/dist/server/request-meta';
 import callServiceMethod from '../../../../utils/callServiceMethod';
-import axios from 'axios';
 import getConfig from 'next/config';
 
 export const getServerSideProps: GetServerSideProps = async ({
