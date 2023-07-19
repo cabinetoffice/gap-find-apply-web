@@ -45,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 const convertUserDataToTableRows = (users: User[]) =>
   users.map((user) => ({
     cells: [
-      { content: user.email },
+      { content: user.emailAddress },
       { content: user.department?.name || 'N/A' },
       {
         content: user.roles
@@ -54,7 +54,7 @@ const convertUserDataToTableRows = (users: User[]) =>
       },
       {
         content: (
-          <Link href={`/super-admin-dashboard/user/${user.gap_user_id}/`}>
+          <Link href={`/super-admin-dashboard/user/${user.gapUserId}/`}>
             <a className="govuk-link">Edit</a>
           </Link>
         ),
