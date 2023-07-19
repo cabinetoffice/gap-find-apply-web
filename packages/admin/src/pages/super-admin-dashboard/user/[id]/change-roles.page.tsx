@@ -26,9 +26,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   await callServiceMethod(
     req,
     res,
-    async (body) => {
-      updateUserRoles(id, body.newUserRoles, userToken);
-    },
+    async (body) => updateUserRoles(id, body.newUserRoles, userToken),
     '',
     ''
   );
