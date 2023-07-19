@@ -14,7 +14,8 @@ const getRoleCheckService = () =>
 const getDestination = (user: UserRolesResponse) => {
   if (user.isSuperAdmin)
     return `${process.env.ADMIN_FRONTEND_URL}/?redirect=/super-admin-dashboard`;
-  if (user.isAdmin) return process.env.ADMIN_FRONTEND_URL;
+  if (user.isAdmin)
+    return `${process.env.ADMIN_FRONTEND_URL}/?redirect=/dashboard`;
   if (user.isApplicant) return routes.api.isNewApplicant; //checks if the user exist, if not creates it
   return `${process.env.USER_SERVICE_URL}/register`;
 };

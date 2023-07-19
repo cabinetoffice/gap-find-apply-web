@@ -9,10 +9,7 @@ import {
   getChangeDepartmentPage,
   updateDepartment,
 } from '../../../../services/SuperAdminService';
-import {
-  getSessionIdFromCookies,
-  getUserTokenFromCookies,
-} from '../../../../utils/session';
+import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import getConfig from 'next/config';

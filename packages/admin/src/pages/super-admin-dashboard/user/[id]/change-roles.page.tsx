@@ -1,7 +1,10 @@
 import { Checkboxes, FlexibleQuestionPageLayout } from 'gap-web-ui';
 import { CheckboxesProps } from 'gap-web-ui/dist/cjs/components/question-page/inputs/Checkboxes';
 import { GetServerSideProps } from 'next';
-import { getSessionIdFromCookies } from '../../../../utils/session';
+import {
+  getSessionIdFromCookies,
+  getUserTokenFromCookies,
+} from '../../../../utils/session';
 import { getUserFromSub } from '../../../../services/UserService';
 import UserDetails, { Role } from '../../../../types/UserDetails';
 import Meta from '../../../../components/layout/Meta';
@@ -33,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     ''
   );
 
-  const sessionCookie = getSessionIdFromCookies(req);
+  const userToken = getUserTokenFromCookies(req);
   const user: UserDetails = await getUserFromSub(sessionCookie, id);
 
   const formatRoleName = ({ name, ...rest }: Role) => ({

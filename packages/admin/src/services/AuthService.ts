@@ -3,11 +3,16 @@ import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import getConfig from 'next/config';
 import { axiosSessionConfig } from '../utils/session';
-import { getLoginUrl } from '../utils/general';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
 const BASE_URL = BACKEND_HOST;
+
+const getAdminBackendHost = () => {
+  return serverRuntimeConfig.oneLoginEnabled
+    ? process.env.V2_BACKEND_HOST!
+    : process.env.BACKEND_HOST!;
+};
 
 const authenticateUser = async (cookieValue: string | undefined) => {
   const COOKIE_SECRET = process.env.COOKIE_SECRET!;
@@ -31,7 +36,7 @@ const authenticateUser = async (cookieValue: string | undefined) => {
     },
   };
 
-  return axios.post(`${getLoginUrl()}/login`, {}, config);
+  return axios.post(`${getAdminBackendHost()}/login`, {}, config);
 };
 
 const logoutUser = async (sessionCookie: string) => {
