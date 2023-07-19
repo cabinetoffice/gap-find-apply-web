@@ -3,7 +3,10 @@ import Link from 'next/link';
 import { Button, Checkboxes, Table } from 'gap-web-ui';
 import Meta from '../../components/layout/Meta';
 import PaginationType from '../../types/Pagination';
-import { getSessionIdFromCookies } from '../../utils/session';
+import {
+  getSessionIdFromCookies,
+  getUserTokenFromCookies,
+} from '../../utils/session';
 import { Pagination } from '../../components/pagination/Pagination';
 import styles from './superadmin-dashboard.module.scss';
 import { getSuperAdminDashboard } from '../../services/SuperAdminService';
@@ -22,9 +25,11 @@ export const getServerSideProps: GetServerSideProps = async ({
   };
 
   const sessionCookie = getSessionIdFromCookies(req);
+  const userToken = getUserTokenFromCookies(req);
   const { departments, roles, users, userCount } = await getSuperAdminDashboard(
     paginationParams,
-    sessionCookie
+    sessionCookie,
+    userToken
   );
 
   return {

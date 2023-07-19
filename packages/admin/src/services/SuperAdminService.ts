@@ -7,13 +7,14 @@ const { serverRuntimeConfig } = getConfig();
 
 export const getSuperAdminDashboard = async (
   pagination: Pagination,
-  sessionId: string
+  sessionId: string,
+  userToken: string
 ) => {
   const response = await axios.get(
     `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
     {
       params: pagination,
-      ...axiosSessionConfig(sessionId),
+      ...axiosSessionConfig(sessionId, userToken),
     }
   );
   return response.data;
