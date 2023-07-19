@@ -5,6 +5,7 @@ import { getUserTokenFromCookies } from '../../../../utils/session';
 import {
   getUserById,
   getAllRoles,
+  updateUserRoles,
 } from '../../../../services/SuperAdminService';
 import UserDetails, { Role } from '../../../../types/UserDetails';
 import Meta from '../../../../components/layout/Meta';
@@ -20,22 +21,18 @@ export const getServerSideProps: GetServerSideProps = async ({
   resolvedUrl,
 }) => {
   const { id } = params as { id: string };
+  const userToken = getUserTokenFromCookies(req);
+
   await callServiceMethod(
     req,
     res,
     async (body) => {
-      typeof body.newUserRoles === 'string' &&
-        (body.newUserRoles = [body.newUserRoles]);
-      await axios.patch(
-        `${process.env.USER_SERVICE_HOST}/user/${id}/role`,
-        body
-      );
+      updateUserRoles(id, body.newUserRoles, userToken);
     },
     '',
     ''
   );
 
-  const userToken = getUserTokenFromCookies(req);
   const user: UserDetails = await getUserById(id, userToken);
 
   const formatRoleName = ({ name, ...rest }: Role) => ({

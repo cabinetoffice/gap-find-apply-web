@@ -71,3 +71,16 @@ export const getAllRoles = async (userToken: string) => {
   );
   return response.data;
 };
+
+export const updateUserRoles = async (
+  id: string,
+  newUserRoles: string,
+  userToken: string
+) =>
+  await axios.patch(
+    `${process.env.USER_SERVICE_HOST}/user/${id}/role`,
+    {
+      newUserRoles: [newUserRoles],
+    },
+    axiosUserServiceConfig(userToken)
+  );
