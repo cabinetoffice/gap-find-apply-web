@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { axiosConfig } from '../utils/jwt';
+import { axiosUserServiceConfig } from '../utils/jwt';
 import getConfig from 'next/config';
 
 const { serverRuntimeConfig } = getConfig();
@@ -7,8 +7,8 @@ const { serverRuntimeConfig } = getConfig();
 //TODO add unit test
 export async function getUserRoles(token: string) {
   const { data } = await axios.get<UserRolesResponse>(
-    `${serverRuntimeConfig.backendHost}/jwt/userRoles`,
-    axiosConfig(token)
+    `${serverRuntimeConfig.userServiceHost}/user/roles`,
+    axiosUserServiceConfig(token)
   );
   return data;
 }

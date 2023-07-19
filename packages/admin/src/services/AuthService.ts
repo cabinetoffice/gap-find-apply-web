@@ -3,6 +3,7 @@ import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import getConfig from 'next/config';
 import { axiosSessionConfig } from '../utils/session';
+import { getLoginUrl } from '../utils/general';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -30,17 +31,11 @@ const authenticateUser = async (cookieValue: string | undefined) => {
     },
   };
 
-  return axios.post(`${getAdminLoginUrl()}/login`, {}, config);
+  return axios.post(`${getLoginUrl()}/login`, {}, config);
 };
 
 const logoutUser = async (sessionCookie: string) => {
   return axios.delete(`${BASE_URL}/logout`, axiosSessionConfig(sessionCookie));
-};
-
-const getAdminLoginUrl = () => {
-  return process.env.ONE_LOGIN_ENABLED === 'enabled'
-    ? process.env.V2_BACKEND_HOST!
-    : process.env.BACKEND_HOST!;
 };
 
 export { authenticateUser, logoutUser };

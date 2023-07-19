@@ -36,3 +36,12 @@ export const axiosConfig = (token: string) => {
     },
   };
 };
+
+export const axiosUserServiceConfig = (userToken: string) => {
+  return {
+    withCredentials: true,
+    headers: {
+      Cookie: `${process.env.JWT_COOKIE_NAME}=${userToken};`,
+    },
+  };
+};

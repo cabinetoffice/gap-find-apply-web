@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   if (result.isSuperAdmin)
     return {
       redirect: {
-        destination: process.env.SUPER_ADMIN_FRONTEND_URL,
+        destination: `${process.env.ADMIN_FRONTEND_URL}/?redirect=/super-admin-dashboard`,
         permanent: false,
       },
     };
