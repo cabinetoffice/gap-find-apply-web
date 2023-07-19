@@ -63,3 +63,11 @@ export const updateDepartment = async (
   );
   return response.data;
 };
+
+export const getAllRoles = async (userToken: string) => {
+  const response = await axios.get(
+    `${serverRuntimeConfig.userServiceHost}/role`,
+    axiosUserServiceConfig(userToken)
+  );
+  return response.data;
+};

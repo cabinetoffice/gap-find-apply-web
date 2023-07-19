@@ -1,14 +1,13 @@
 import { Checkboxes, FlexibleQuestionPageLayout } from 'gap-web-ui';
 import { CheckboxesProps } from 'gap-web-ui/dist/cjs/components/question-page/inputs/Checkboxes';
 import { GetServerSideProps } from 'next';
+import { getUserTokenFromCookies } from '../../../../utils/session';
 import {
-  getSessionIdFromCookies,
-  getUserTokenFromCookies,
-} from '../../../../utils/session';
-import { getUserFromSub } from '../../../../services/UserService';
+  getUserById,
+  getAllRoles,
+} from '../../../../services/SuperAdminService';
 import UserDetails, { Role } from '../../../../types/UserDetails';
 import Meta from '../../../../components/layout/Meta';
-import { getAllRoles } from '../../../../services/RoleService';
 import { NextIncomingMessage } from 'next/dist/server/request-meta';
 import callServiceMethod from '../../../../utils/callServiceMethod';
 import axios from 'axios';
@@ -37,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   );
 
   const userToken = getUserTokenFromCookies(req);
-  const user: UserDetails = await getUserFromSub(sessionCookie, id);
+  const user: UserDetails = await getUserById(id, userToken);
 
   const formatRoleName = ({ name, ...rest }: Role) => ({
     ...rest,
@@ -48,7 +47,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     props: {
       user,
       resolvedUrl,
-      roles: (await getAllRoles(sessionCookie)).map(formatRoleName),
+      roles: (await getAllRoles(userToken)).map(formatRoleName),
       id,
       csrfToken: (req as Req).csrfToken?.() || '',
     },
