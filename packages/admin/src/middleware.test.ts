@@ -14,6 +14,7 @@ describe('middleware', () => {
     process.env.MAX_COOKIE_AGE = '21600';
     process.env.ONE_LOGIN_ENABLED = 'false';
     process.env.LOGIN_URL = 'http://localhost:8082/login';
+    process.env.V2_LOGIN_URL = 'http://localhost:8082/login';
   });
 
   it('Should redirect to the logout page when the user is not authorized', () => {

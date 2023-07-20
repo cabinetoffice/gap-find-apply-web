@@ -19,6 +19,8 @@ describe('Auth index page', () => {
     process.env.ONE_LOGIN_ENABLED = 'false';
     process.env.LOGIN_URL =
       'https://auth-testing.cabinetoffice.gov.uk/v2/gap/login';
+    process.env.V2_LOGIN_URL =
+      'https://auth-testing.cabinetoffice.gov.uk/v2/gap/login';
     process.env.SESSION_COOKIE_NAME = 'gap-test';
     mockServiceMethod(mockedAuthenticateUser, () => ({
       headers: {
