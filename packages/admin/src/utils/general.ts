@@ -1,5 +1,3 @@
-import getConfig from 'next/config';
-
 const isJSEnabled = () => {
   return typeof window !== 'undefined';
 };
@@ -27,9 +25,9 @@ const getObjEntriesByKeySubstr = (substr: string, obj: object) => {
 };
 
 const getLoginUrl = () => {
-  return process.env.ONE_LOGIN_ENABLED
-    ? process.env.V2_LOGIN_URL!
-    : process.env.LOGIN_URL!;
+  return process.env.ONE_LOGIN_ENABLED === 'enabled'
+    ? process.env.V2_LOGIN_URL
+    : process.env.LOGIN_URL;
 };
 
 export { isJSEnabled, downloadFile, getObjEntriesByKeySubstr, getLoginUrl };
