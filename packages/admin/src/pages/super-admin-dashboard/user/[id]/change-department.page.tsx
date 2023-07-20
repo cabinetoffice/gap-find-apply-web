@@ -9,7 +9,7 @@ import {
   getChangeDepartmentPage,
   updateDepartment,
 } from '../../../../services/SuperAdminService';
-import { getSessionIdFromCookies } from '../../../../utils/session';
+import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import getConfig from 'next/config';
@@ -22,7 +22,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
 
   function handleRequest(body: PageBodyResponse, jwt: string) {
-    return updateDepartment(jwt, userId, body.department);
+    return updateDepartment(userId, body.department, jwt);
   }
 
   function fetchPageData(jwt: string) {
@@ -37,7 +37,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     context,
     fetchPageData,
     handleRequest,
-    jwt: getSessionIdFromCookies(context.req),
+    jwt: getUserTokenFromCookies(context.req),
     onErrorMessage: 'Failed to update department, please try again later.',
     onSuccessRedirectHref: `/super-admin-dashboard/user/${userId}`,
   });

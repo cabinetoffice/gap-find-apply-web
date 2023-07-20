@@ -4,7 +4,7 @@ module.exports = {
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
   serverRuntimeConfig: {
     backendHost: process.env.BACKEND_HOST,
-    userServiceHost: process.env.USER_SERVICE_HOST,
+    userServiceHost: process.env.USER_SERVICE_URL,
   },
   i18n: {
     locales: ['en'],
@@ -27,5 +27,6 @@ module.exports = {
     FIND_A_GRANT_URL:
       process.env.FIND_A_GRANT_URL ||
       'https://www.find-government-grants.service.gov.uk',
+    oneLoginEnabled: process.env.ONE_LOGIN_ENABLED === 'enabled',
   },
 };

@@ -6,9 +6,11 @@ module.exports = {
     backendHost: process.env.BACKEND_HOST,
     frontendHost: process.env.HOST,
     subPath: process.env.SUB_PATH || '/apply/applicant',
+    userServiceHost: process.env.USER_SERVICE_URL,
   },
   publicRuntimeConfig: {
     subPath: process.env.SUB_PATH || '/apply/applicant',
+    oneLoginEnabled: process.env.ONE_LOGIN_ENABLED,
   },
   i18n: {
     locales: ['en'],
