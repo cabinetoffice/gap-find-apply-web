@@ -27,8 +27,7 @@ const getObjEntriesByKeySubstr = (substr: string, obj: object) => {
 };
 
 const getLoginUrl = () => {
-  const { publicRuntimeConfig } = getConfig();
-  return publicRuntimeConfig.oneLoginEnabled
+  return process.env.ONE_LOGIN_ENABLED
     ? process.env.V2_LOGIN_URL!
     : process.env.LOGIN_URL!;
 };

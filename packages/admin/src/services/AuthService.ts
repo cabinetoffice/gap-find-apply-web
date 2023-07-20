@@ -30,7 +30,7 @@ const authenticateUser = async (cookieValue: string | undefined) => {
     },
   };
 
-  return axios.post(`${BACKEND_HOST}/login`, {}, config);
+  return axios.post(`${BASE_URL}/login`, {}, config);
 };
 
 const logoutUser = async (sessionCookie: string) => {
