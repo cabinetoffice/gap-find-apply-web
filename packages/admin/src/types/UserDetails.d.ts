@@ -6,10 +6,4 @@ type UserDetails = {
   roles: Role[];
 };
 
-export type Role = {
-  name: string;
-  id: string;
-  description: string;
-};
-
 export default UserDetails;
