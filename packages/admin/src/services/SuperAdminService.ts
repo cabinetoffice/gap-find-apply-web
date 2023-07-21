@@ -53,7 +53,7 @@ export const updateDepartment = async (
   departmentId: string,
   userToken: string
 ) => {
-  const response = await axios.patch(
+  await axios.patch(
     `${serverRuntimeConfig.userServiceHost}/user/${userId}/department`,
     {},
     {
@@ -61,7 +61,6 @@ export const updateDepartment = async (
       ...axiosUserServiceConfig(userToken),
     }
   );
-  return response.data;
 };
 
 export const getAllRoles = async (userToken: string) => {
@@ -77,10 +76,9 @@ export const updateUserRoles = async (
   newUserRoles: string | string[],
   userToken: string
 ) => {
-  const response = await axios.patch(
+  await axios.patch(
     `${process.env.USER_SERVICE_URL}/user/${id}/role`,
     typeof newUserRoles === 'string' ? [newUserRoles] : newUserRoles,
     axiosUserServiceConfig(userToken)
   );
-  return response.data;
 };
