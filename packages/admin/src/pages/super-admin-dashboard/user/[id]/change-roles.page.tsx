@@ -19,13 +19,6 @@ type PageBodyResponse = {
   newUserRoles: string | string[];
 };
 
-const ROLE_MAP = {
-  FIND: 'Find',
-  ADMIN: 'Administrator',
-  SUPER_ADMIN: 'Super admin',
-  APPLICANT: 'Applicant',
-};
-
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
 
@@ -39,12 +32,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
     return {
       user,
-      roles: roles
-        .filter(({ name }) => name !== 'APPLICANT' && name !== 'FIND')
-        .map(({ name, ...rest }) => ({
-          ...rest,
-          name: ROLE_MAP[name as keyof typeof ROLE_MAP],
-        })),
+      roles: roles.filter(
+        ({ name }) => name !== 'APPLICANT' && name !== 'FIND'
+      ),
       userId,
     };
   }
