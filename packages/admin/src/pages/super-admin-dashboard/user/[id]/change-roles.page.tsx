@@ -48,7 +48,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     fetchPageData,
     handleRequest,
     jwt: getUserTokenFromCookies(context.req),
-    onErrorMessage: 'Failed to update department, please try again later.',
+    onErrorMessage: 'Failed to update roles, please try again later.',
     onSuccessRedirectHref: `/super-admin-dashboard/user/${userId}`,
   });
 }
