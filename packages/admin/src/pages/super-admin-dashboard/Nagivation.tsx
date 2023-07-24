@@ -16,12 +16,12 @@ const Navigation = () => {
     },
     {
       pageId: 'adminDash',
-      href: '/',
+      href: '/dashboard',
       title: 'Admin dashboard',
     },
     {
       pageId: 'applicantDash',
-      href: publicRuntimeConfig.APPLICANT_DOMAIN,
+      href: publicRuntimeConfig.APPLICANT_DOMAIN + '/dashboard',
       title: 'Applicant dashboard',
     },
   ];

@@ -6,7 +6,6 @@ import Meta from '../../../../components/layout/Meta';
 import { User } from '../../types';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import { getUserById } from '../../../../services/SuperAdminService';
-import { toSentenceCase } from '../../utils';
 
 export const getServerSideProps: GetServerSideProps = async ({
   params,
@@ -29,6 +28,7 @@ const UserPage = ({ user }: UserPageProps) => {
   return (
     <>
       <Meta title="Manage User" />
+
       <div className="govuk-!-padding-top-2">
         <div className="govuk-width-container">
           <a
@@ -61,9 +61,7 @@ const UserPage = ({ user }: UserPageProps) => {
                     },
                     {
                       key: 'Roles',
-                      value: user.roles
-                        .map((role) => toSentenceCase(role.name))
-                        .join(', '),
+                      value: user.role?.label || 'Applicant',
                       action: (
                         <Link
                           href={`/super-admin-dashboard/user/${user.gapUserId}/change-roles`}

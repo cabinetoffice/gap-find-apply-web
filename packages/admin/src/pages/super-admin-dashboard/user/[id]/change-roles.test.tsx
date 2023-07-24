@@ -3,27 +3,31 @@ import { render, screen } from '@testing-library/react';
 import EditRoleWithId from './change-roles.page';
 import UserDetails from '../../../../types/UserDetails';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
-
 const getMockRoles = () => [
-  { id: '1', name: 'Find', description: 'this is a description' },
+  {
+    id: '1',
+    name: 'FIND',
+    description: 'this is a description',
+    label: 'Find',
+  },
   {
     id: '2',
-    name: 'Super admin',
+    name: 'SUPER_ADMIN',
     description: 'this is a super admin description',
+    label: 'Super administrator',
   },
-  { id: '3', name: 'Admin', description: 'this is anopther description' },
-  { id: '4', name: 'Apply', description: 'this is anopther description' },
+  {
+    id: '3',
+    name: 'ADMIN',
+    description: 'this is another description',
+    label: 'Administrator',
+  },
+  {
+    id: '4',
+    name: 'APPLICANT',
+    description: 'this is another description',
+    label: 'Applicant',
+  },
 ];
 
 const getMockUser = (): UserDetails => ({
@@ -36,11 +40,15 @@ const getMockUser = (): UserDetails => ({
 
 const component = (
   <EditRoleWithId
-    resolvedUrl="."
-    roles={getMockRoles()}
-    user={getMockUser()}
+    formAction="."
+    pageData={{
+      roles: getMockRoles(),
+      user: getMockUser(),
+      userId: '1',
+    }}
     csrfToken="csrf"
-    id={1}
+    fieldErrors={[]}
+    previousValues={{ newUserRoles: ['FIND', 'SUPER_ADMIN'] }}
   />
 );
 
@@ -51,13 +59,13 @@ describe('Edit role page', () => {
       screen.getByText('Find').parentElement?.previousSibling
     ).toBeChecked();
     expect(
-      screen.getByText('Super admin').parentElement?.previousSibling
+      screen.getByText('Super administrator').parentElement?.previousSibling
     ).toBeChecked();
     expect(
-      screen.getByText('Admin').parentElement?.previousSibling
+      screen.getByText('Administrator').parentElement?.previousSibling
     ).not.toBeChecked();
     expect(
-      screen.getByText('Apply').parentElement?.previousSibling
+      screen.getByText('Applicant').parentElement?.previousSibling
     ).not.toBeChecked();
   });
 });

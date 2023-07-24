@@ -1,143 +1,116 @@
-import { Checkboxes, FlexibleQuestionPageLayout } from 'gap-web-ui';
-import { CheckboxesProps } from 'gap-web-ui/dist/cjs/components/question-page/inputs/Checkboxes';
-import { GetServerSideProps } from 'next';
+import {
+  Checkboxes,
+  FlexibleQuestionPageLayout,
+  QuestionPageGetServerSideProps,
+} from 'gap-web-ui';
+import { GetServerSidePropsContext } from 'next';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import {
   getUserById,
   getAllRoles,
   updateUserRoles,
 } from '../../../../services/SuperAdminService';
-import UserDetails, { Role } from '../../../../types/UserDetails';
 import Meta from '../../../../components/layout/Meta';
-import { NextIncomingMessage } from 'next/dist/server/request-meta';
-import callServiceMethod from '../../../../utils/callServiceMethod';
 import getConfig from 'next/config';
+import InferProps from '../../../../types/InferProps';
+import CustomLink from '../../../../components/custom-link/CustomLink';
 
-export const getServerSideProps: GetServerSideProps = async ({
-  req,
-  res,
-  params,
-  resolvedUrl,
-}) => {
-  const { id } = params as { id: string };
-  const userToken = getUserTokenFromCookies(req);
+type PageBodyResponse = {
+  newUserRoles: string | string[];
+};
 
-  const response = await callServiceMethod(
-    req,
-    res,
-    async (body) => updateUserRoles(id, body.newUserRoles, userToken),
-    `/super-admin-dashboard/user/${id}`,
-    'Failed to update user roles.'
-  );
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const userId = context.params?.id as string;
 
-  if ('redirect' in response) {
-    return response;
+  async function handleRequest(body: PageBodyResponse, jwt: string) {
+    return updateUserRoles(userId, body.newUserRoles || [], jwt);
   }
 
-  const user: UserDetails = await getUserById(id, userToken);
+  async function fetchPageData(jwt: string) {
+    const user = await getUserById(userId, jwt);
+    const roles = await getAllRoles(jwt);
 
-  const formatRoleName = ({ name, ...rest }: Role) => ({
-    ...rest,
-    name: ROLE_MAP[name as keyof typeof ROLE_MAP],
-  });
-
-  return {
-    props: {
+    return {
       user,
-      resolvedUrl,
-      roles: (await getAllRoles(userToken)).map(formatRoleName),
-      id,
-      csrfToken: (req as Req).csrfToken?.() || '',
-    },
-  };
-};
+      roles: roles.filter(
+        ({ name }) => name !== 'APPLICANT' && name !== 'FIND'
+      ),
+      userId,
+    };
+  }
 
-type EditRoleWithIdProps = {
-  roles: Role[];
-  user: UserDetails;
-  csrfToken: string;
-  id: number;
-  resolvedUrl: string;
-};
+  return QuestionPageGetServerSideProps<
+    PageBodyResponse,
+    Awaited<ReturnType<typeof fetchPageData>>,
+    Awaited<ReturnType<typeof handleRequest>>
+  >({
+    context,
+    fetchPageData,
+    handleRequest,
+    jwt: getUserTokenFromCookies(context.req),
+    onErrorMessage: 'Failed to update roles, please try again later.',
+    onSuccessRedirectHref: `/super-admin-dashboard/user/${userId}`,
+  });
+}
 
 const EditRoleWithId = ({
-  roles,
+  pageData,
   csrfToken,
-  id,
-  user,
-  resolvedUrl,
-}: EditRoleWithIdProps) => {
+  formAction,
+  fieldErrors,
+}: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
+  const { user, roles } = pageData;
   return (
     <>
-      <Meta title="Manage User - Change Roles" />
-      <div className="govuk-!-padding-top-2">
-        <div className="govuk-width-container">
-          <a
-            href={`${publicRuntimeConfig.SUB_PATH}/super-admin-dashboard`}
-            className="govuk-back-link"
-            data-cy="cy-back-button"
-          >
-            Back
-          </a>
-          <main className="govuk-main-wrapper govuk-main-wrapper--auto-spacing">
-            <div className="govuk-grid-row">
-              <div className="govuk-grid-column-two-thirds">
-                <span className="govuk-caption-l">{user.emailAddress}</span>
-                <h1 className="govuk-heading-l">Change the user&apos;s Role</h1>
+      <Meta
+        title={`${
+          fieldErrors.length > 0 ? 'Error: ' : ''
+        }Manage User - Change Roles`}
+      />
 
-                <FlexibleQuestionPageLayout
-                  formAction={`/apply/admin/${resolvedUrl}`}
-                  fieldErrors={[]}
-                  csrfToken={csrfToken}
-                >
-                  <Checkboxes
-                    fieldErrors={[]}
-                    fieldName="newUserRoles"
-                    options={
-                      [...roles.map(mapOptions)] as CheckboxesProps['options']
-                    }
-                    defaultCheckboxes={user.roles.map(({ id }) => String(id))}
-                  />
-                  <div className="govuk-button-group">
-                    <button className="govuk-button" data-module="govuk-button">
-                      Change Roles
-                    </button>
-                  </div>
-                </FlexibleQuestionPageLayout>
-              </div>
+      <div className="govuk-width-container">
+        <CustomLink
+          isBackButton
+          href={`/super-admin-dashboard/user/${pageData.userId}`}
+        />
+
+        <div className="govuk-!-padding-top-7">
+          <FlexibleQuestionPageLayout
+            formAction={`${publicRuntimeConfig.SUB_PATH}${formAction}`}
+            fieldErrors={fieldErrors}
+            csrfToken={csrfToken}
+          >
+            <span className="govuk-caption-l">{user.emailAddress}</span>
+            <h1 className="govuk-heading-l">Change the user&apos;s Role</h1>
+
+            <Checkboxes
+              fieldErrors={fieldErrors}
+              fieldName="newUserRoles"
+              options={[
+                ...roles.map(({ id, label, description }) => ({
+                  value: id,
+                  label: (
+                    <>
+                      <span>{label}</span>
+                      <p className="govuk-hint">{description}</p>
+                    </>
+                  ),
+                })),
+              ]}
+              defaultCheckboxes={user.roles.map(({ id }) => String(id))}
+            />
+
+            <div className="govuk-button-group">
+              <button className="govuk-button" data-module="govuk-button">
+                Change Roles
+              </button>
             </div>
-          </main>
+          </FlexibleQuestionPageLayout>
         </div>
       </div>
     </>
   );
-};
-
-const mapOptions = ({ id, name, description }: Role) => {
-  return {
-    value: id,
-    label: (
-      <>
-        <span>{name}</span>
-        <p className="govuk-hint">{description}</p>
-      </>
-    ),
-  };
-};
-
-const ROLE_MAP = {
-  FIND: 'Find',
-  ADMIN: 'Admin',
-  SUPER_ADMIN: 'Super Admin',
-  APPLICANT: 'Applicant',
-};
-
-type Req = NextIncomingMessage & {
-  csrfToken: () => string;
-  cookies: Partial<{
-    [key: string]: string;
-  }>;
 };
 
 export default EditRoleWithId;

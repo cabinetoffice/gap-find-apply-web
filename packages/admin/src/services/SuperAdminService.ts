@@ -2,8 +2,8 @@ import getConfig from 'next/config';
 import axios from 'axios';
 import { axiosUserServiceConfig } from '../utils/session';
 import Pagination from '../types/Pagination';
-import { Department, User } from '../pages/super-admin-dashboard/types';
-import { Role } from '../types/UserDetails';
+import { Department, Role, User } from '../pages/super-admin-dashboard/types';
+import UserDetails from '../types/UserDetails';
 
 const { serverRuntimeConfig } = getConfig();
 
@@ -27,7 +27,7 @@ export const getSuperAdminDashboard = async (
 };
 
 export const getUserById = async (id: string, userToken: string) => {
-  const response = await axios.get(
+  const response = await axios.get<UserDetails>(
     `${serverRuntimeConfig.userServiceHost}/user/${id}`,
     axiosUserServiceConfig(userToken)
   );
@@ -53,7 +53,7 @@ export const updateDepartment = async (
   departmentId: string,
   userToken: string
 ) => {
-  const response = await axios.patch(
+  await axios.patch(
     `${serverRuntimeConfig.userServiceHost}/user/${userId}/department`,
     {},
     {
@@ -61,11 +61,10 @@ export const updateDepartment = async (
       ...axiosUserServiceConfig(userToken),
     }
   );
-  return response.data;
 };
 
 export const getAllRoles = async (userToken: string) => {
-  const response = await axios.get(
+  const response = await axios.get<Role[]>(
     `${serverRuntimeConfig.userServiceHost}/role`,
     axiosUserServiceConfig(userToken)
   );
@@ -74,7 +73,7 @@ export const getAllRoles = async (userToken: string) => {
 
 export const updateUserRoles = async (
   id: string,
-  newUserRoles: string,
+  newUserRoles: string | string[],
   userToken: string
 ) => {
   await axios.patch(

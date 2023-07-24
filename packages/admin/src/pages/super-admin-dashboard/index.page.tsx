@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import { Button, Checkboxes, Table } from 'gap-web-ui';
 import Meta from '../../components/layout/Meta';
@@ -7,18 +7,18 @@ import { getUserTokenFromCookies } from '../../utils/session';
 import { Pagination } from '../../components/pagination/Pagination';
 import styles from './superadmin-dashboard.module.scss';
 import { getSuperAdminDashboard } from '../../services/SuperAdminService';
-import { Department, Role, User } from './types';
+import { User } from './types';
 import Navigation from './Nagivation';
-import { toSentenceCase } from './utils';
+import InferProps from '../../types/InferProps';
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps = async ({
   req,
   query,
-}) => {
+}: GetServerSidePropsContext) => {
   const paginationParams: PaginationType = {
     paginate: true,
-    page: Number(query.page) - 1,
-    size: Number(query.limit),
+    page: Number(query.page || 1) - 1,
+    size: Number(query.limit || 10),
   };
 
   const userToken = getUserTokenFromCookies(req);
@@ -42,11 +42,7 @@ const convertUserDataToTableRows = (users: User[]) =>
     cells: [
       { content: user.emailAddress },
       { content: user.department?.name || 'N/A' },
-      {
-        content: user.roles
-          ?.map((role) => toSentenceCase(role.name))
-          .join(', '),
-      },
+      { content: user.role?.label || 'N/A' },
       {
         content: (
           <Link href={`/super-admin-dashboard/user/${user.gapUserId}/`}>
@@ -57,26 +53,12 @@ const convertUserDataToTableRows = (users: User[]) =>
     ],
   }));
 
-const convertEnumToCheckboxOptions = (
-  {
-    id,
-    name,
-  }: {
-    id: string;
-    name: string;
-  },
-  { useSentenceCase = false } = {}
-) => ({
-  label: useSentenceCase ? toSentenceCase(name) : name,
-  value: id,
-});
-
 const SuperAdminDashboard = ({
   departments,
   roles,
   users,
   userCount,
-}: DashboardProps) => {
+}: InferProps<typeof getServerSideProps>) => {
   return (
     <>
       <Navigation />
@@ -95,33 +77,39 @@ const SuperAdminDashboard = ({
                 <div className={styles['top-controls']}>
                   <Button text="Clear all filters" isSecondary />
                 </div>
+
                 <Checkboxes
                   questionTitle="Role"
                   fieldName="role"
                   titleSize="m"
-                  options={roles.map((role) =>
-                    convertEnumToCheckboxOptions(role, {
-                      useSentenceCase: true,
-                    })
-                  )}
+                  options={roles
+                    .filter((role) => role.name !== 'FIND')
+                    .map((role) => ({
+                      label: role.label,
+                      value: role.id,
+                    }))}
                   fieldErrors={[]}
                   small
                 />
+
                 <Checkboxes
                   questionTitle="Department"
                   fieldName="department"
                   titleSize="m"
-                  options={departments.map((role) =>
-                    convertEnumToCheckboxOptions(role)
-                  )}
+                  options={departments.map((department) => ({
+                    label: department.name,
+                    value: department.id,
+                  }))}
                   fieldErrors={[]}
                   small
                 />
+
                 <div className={styles['bottom-controls']}>
                   <Button text="Apply filters" />
                   <Button text="Clear all filters" isSecondary />
                 </div>
               </div>
+
               <div className="govuk-grid-column-two-thirds">
                 <div
                   className="govuk-input__wrapper"
@@ -140,6 +128,7 @@ const SuperAdminDashboard = ({
                   />
                   <Button text="Search" />
                 </div>
+
                 <Table
                   tHeadColumns={[
                     { name: 'Email address', wrapText: true },
@@ -149,6 +138,7 @@ const SuperAdminDashboard = ({
                   ]}
                   rows={convertUserDataToTableRows(users)}
                 />
+
                 <Pagination itemsPerPage={10} totalItems={userCount} />
               </div>
             </div>
@@ -158,12 +148,5 @@ const SuperAdminDashboard = ({
     </>
   );
 };
-
-interface DashboardProps {
-  departments: Department[];
-  roles: Role[];
-  users: User[];
-  userCount: number;
-}
 
 export default SuperAdminDashboard;

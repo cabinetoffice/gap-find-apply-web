@@ -7,6 +7,8 @@ export type Department = {
 export type Role = {
   id: string;
   name: string;
+  description: string;
+  label: string;
 };
 
 export type User = {
@@ -14,5 +16,6 @@ export type User = {
   emailAddress: string;
   sub: string;
   roles: Role[];
+  role?: Role;
   department?: Department;
 };
