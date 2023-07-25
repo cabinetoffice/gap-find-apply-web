@@ -1,3 +1,7 @@
+import getConfig from 'next/config';
+
+const { publicRuntimeConfig } = getConfig();
+
 export interface RelatedContentLink {
   title: string;
   href: string;
@@ -19,35 +23,35 @@ export const RelatedContentLinks = new Map<
     RelatedLinksNames.ABOUT_US,
     {
       title: 'About us',
-      href: 'https://www.find-government-grants.service.gov.uk/info/about-us',
+      href: publicRuntimeConfig.FIND_A_GRANT_URL + '/info/about-us',
     },
   ],
   [
     RelatedLinksNames.ACCESSIBILITY,
     {
       title: 'Accessibility statement',
-      href: 'https://www.find-government-grants.service.gov.uk/info/accessibility',
+      href: publicRuntimeConfig.FIND_A_GRANT_URL + '/info/accessibility',
     },
   ],
   [
     RelatedLinksNames.TERMS_AND_CONDITIONS,
     {
       title: 'Terms and conditions',
-      href: 'https://www.find-government-grants.service.gov.uk/info/terms-and-conditions',
+      href: publicRuntimeConfig.FIND_A_GRANT_URL + '/info/terms-and-conditions',
     },
   ],
   [
     RelatedLinksNames.PRIVACY_NOTICE,
     {
       title: 'Privacy notice',
-      href: 'https://www.find-government-grants.service.gov.uk/info/privacy',
+      href: publicRuntimeConfig.FIND_A_GRANT_URL + '/info/privacy',
     },
   ],
   [
     RelatedLinksNames.COOKIES,
     {
       title: 'Cookies',
-      href: 'https://www.find-government-grants.service.gov.uk/info/cookies',
+      href: publicRuntimeConfig.FIND_A_GRANT_URL + '/info/cookies',
     },
   ],
 ]);
