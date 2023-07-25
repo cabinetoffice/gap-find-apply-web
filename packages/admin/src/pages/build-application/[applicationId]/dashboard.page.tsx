@@ -12,6 +12,7 @@ import PublishButton from './components/PublishButton';
 import UnpublishSummary from './components/UnpublishSummary';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import { getSessionIdFromCookies } from '../../../utils/session';
+import getConfig from 'next/config';
 
 export const getServerSideProps: GetServerSideProps = async ({
   params,
@@ -68,11 +69,9 @@ const Dashboard = ({
   applicationStatus,
   recentlyUnpublished,
 }: DashboardProps) => {
+  const { publicRuntimeConfig } = getConfig();
   const findAGrantLink = (
-    <a
-      href="https://www.find-government-grants.service.gov.uk/"
-      className="govuk-link"
-    >
+    <a href={publicRuntimeConfig.FIND_A_GRANT_URL} className="govuk-link">
       Find a grant
     </a>
   );

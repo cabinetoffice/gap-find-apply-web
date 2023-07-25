@@ -1,3 +1,7 @@
+import getConfig from 'next/config';
+
+const { publicRuntimeConfig } = getConfig();
+
 export const routes = {
   homePage: '/',
   dashboard: '/dashboard',
@@ -27,7 +31,7 @@ export const routes = {
     submissionConfirmation: (grantSubmissionId: string) =>
       `/submissions/${grantSubmissionId}/submission-confirmation`,
   },
-  findAGrant: 'https://www.find-government-grants.service.gov.uk/',
+  findAGrant: publicRuntimeConfig.FIND_A_GRANT_URL,
   api: {
     submissions: {
       section: (grantSubmissionId: string, sectionId: string) =>

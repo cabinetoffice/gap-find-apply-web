@@ -1,7 +1,9 @@
+import getConfig from 'next/config';
 import Layout from '../components/partials/Layout';
 import Meta from '../components/partials/Meta';
 
 export default function GrantIsClosedPage() {
+  const { publicRuntimeConfig } = getConfig();
   return (
     <>
       <Meta title="Grant is closed - Apply for a grant" />
@@ -16,7 +18,7 @@ export default function GrantIsClosedPage() {
             </p>
             <div className="govuk-button-group">
               <a
-                href="https://www.find-government-grants.service.gov.uk/grants"
+                href={publicRuntimeConfig.FIND_A_GRANT_URL + '/grants'}
                 role="button"
                 draggable="false"
                 className="govuk-button"

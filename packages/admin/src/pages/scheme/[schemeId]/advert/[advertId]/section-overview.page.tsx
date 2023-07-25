@@ -22,6 +22,7 @@ import { PreviewSideBar } from './components/PreviewSideBar';
 import { ReviewAndPublishButtonGroup } from './components/ReviewAndPublishButtonGroup';
 import { STATUS_TAGS } from './section-overview-utils';
 import { advertIsPublishedOrScheduled } from './summary/components/util';
+import getConfig from 'next/config';
 
 export const getServerSideProps = async ({
   req,
@@ -81,6 +82,7 @@ const SectionOverview = ({
   recentlyUnpublished,
   csrfToken,
 }: InferProps<typeof getServerSideProps>) => {
+  const { publicRuntimeConfig } = getConfig();
   const list = sections.map(({ id, title, pages }: AdvertSection) => {
     const subList = pages.map((page) => {
       const taskName = (
@@ -229,7 +231,7 @@ const SectionOverview = ({
             <p className="govuk-body" data-cy="cy-summary-overview-help-text-2">
               This advert will be published on{' '}
               <a
-                href="https://www.find-government-grants.service.gov.uk/"
+                href={publicRuntimeConfig.FIND_A_GRANT_URL}
                 target="_blank"
                 className="govuk-link"
                 rel="noreferrer noopener"

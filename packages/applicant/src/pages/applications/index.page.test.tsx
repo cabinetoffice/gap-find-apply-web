@@ -9,6 +9,7 @@ import ExistingApplications, { getServerSideProps } from './index.page';
 
 jest.mock('../../services/ApplicationService');
 jest.mock('../../utils/jwt');
+
 const MockApplicationData = [
   {
     grantSchemeId: 'string',
@@ -77,6 +78,7 @@ const context = {
 const props = {
   applicationData: MockApplicationData,
 };
+
 describe('getServerSideProps', () => {
   it('should return the correct props', async () => {
     (getApplicationsListById as jest.Mock).mockReturnValue(MockApplicationData);
@@ -212,7 +214,7 @@ describe('No data for existing applications', () => {
       })[1]
     ).toHaveAttribute(
       'href',
-      'https://www.find-government-grants.service.gov.uk/'
+      'https://www.find-government-grants.service.gov.uk'
     );
   });
 });

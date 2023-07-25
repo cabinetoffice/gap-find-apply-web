@@ -5,6 +5,7 @@ import { FC } from 'react';
 import { isIE } from 'react-device-detect';
 import styles from './Header.module.scss';
 import { getLoginUrl } from '../../utils/general';
+import getConfig from 'next/config';
 
 interface NavItemType {
   pageId: string;
@@ -17,13 +18,14 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = ({ isUserLoggedIn = true }) => {
+  const { publicRuntimeConfig } = getConfig();
   const router: NextRouter = useRouter();
 
   const navItems: NavItemType[] = [
     {
       pageId: 'browseGrants',
-      link: 'https://www.find-government-grants.service.gov.uk/grants',
-      as: 'https://www.find-government-grants.service.gov.uk/grants',
+      link: publicRuntimeConfig.FIND_A_GRANT_URL + '/grants',
+      as: publicRuntimeConfig.FIND_A_GRANT_URL + '/grants',
       title: 'Find a grant',
     },
     {

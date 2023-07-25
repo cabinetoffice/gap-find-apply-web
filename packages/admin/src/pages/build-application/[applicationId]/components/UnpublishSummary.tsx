@@ -8,10 +8,7 @@ const UnpublishSummary = ({
   const { publicRuntimeConfig } = getConfig();
   const linkToApplicantApplicationForm = `${publicRuntimeConfig.APPLICANT_DOMAIN}/applications/${applicationId}`;
   const findAGrantLink = (
-    <a
-      href="https://www.find-government-grants.service.gov.uk/"
-      className="govuk-link"
-    >
+    <a href={publicRuntimeConfig.FIND_A_GRANT_URL} className="govuk-link">
       Find a grant
     </a>
   );
