@@ -87,17 +87,15 @@ const EditRoleWithId = ({
             <Checkboxes
               fieldErrors={fieldErrors}
               fieldName="newUserRoles"
-              options={[
-                ...roles.map(({ id, label, description }) => ({
-                  value: id,
-                  label: (
-                    <>
-                      <span>{label}</span>
-                      <p className="govuk-hint">{description}</p>
-                    </>
-                  ),
-                })),
-              ]}
+              options={roles.map(({ id, label, description }) => ({
+                value: id,
+                label: (
+                  <>
+                    <span>{label}</span>
+                    <p className="govuk-hint">{description}</p>
+                  </>
+                ),
+              }))}
               defaultCheckboxes={user.roles.map(({ id }) => String(id))}
             />
 

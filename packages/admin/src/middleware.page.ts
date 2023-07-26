@@ -11,6 +11,7 @@ export const config = {
     '/new-scheme/:path*',
     '/scheme/:path*',
     '/scheme-list/:path*',
+    '/super-admin-dashboard/:path*',
   ],
 };
 

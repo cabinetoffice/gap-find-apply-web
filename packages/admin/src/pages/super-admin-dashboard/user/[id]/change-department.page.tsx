@@ -13,6 +13,11 @@ import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import getConfig from 'next/config';
+import {
+  FetchPageData,
+  QuestionPageGetServerSidePropsType,
+} from 'gap-web-ui/dist/cjs/components/question-page/QuestionPageGetServerSidePropsTypes';
+import { User, Department } from '../../types';
 
 type PageBodyResponse = {
   department: string;
@@ -88,8 +93,10 @@ const UserPage = ({
               Change department
             </button>
 
-            {/* TODO implement link GAP-1931 */}
-            <a href="/TODO" className="govuk-link">
+            <a
+              href={`${publicRuntimeConfig.SUB_PATH}/super-admin-dashboard/manage-departments?userId=${user.gapUserId}`}
+              className="govuk-link"
+            >
               Manage departments
             </a>
           </div>

@@ -27,6 +27,8 @@ export const getSuperAdminDashboard = async (
 };
 
 export const getUserById = async (id: string, userToken: string) => {
+  console.log(serverRuntimeConfig.userServiceHost);
+
   const response = await axios.get<UserDetails>(
     `${serverRuntimeConfig.userServiceHost}/user/${id}`,
     axiosUserServiceConfig(userToken)
@@ -71,6 +73,14 @@ export const getAllRoles = async (userToken: string) => {
   return response.data;
 };
 
+export const getAllDepartments = async (userToken: string) => {
+  const response = await axios.get<Department[]>(
+    `${serverRuntimeConfig.userServiceHost}/department`,
+    axiosUserServiceConfig(userToken)
+  );
+  return response.data;
+};
+
 export const updateUserRoles = async (
   id: string,
   newUserRoles: string | string[],
@@ -82,3 +92,22 @@ export const updateUserRoles = async (
     axiosUserServiceConfig(userToken)
   );
 };
+
+export const getUserRoles = async (
+  id: string,
+  newUserRoles: string | string[],
+  userToken: string
+) => {
+  await axios.patch(
+    `${process.env.USER_SERVICE_URL}/user/${id}/role`,
+    typeof newUserRoles === 'string' ? [newUserRoles] : newUserRoles,
+    axiosUserServiceConfig(userToken)
+  );
+};
+
+export const getDepartment = async (id: number, userToken: string) =>
+  axios.patch(
+    `${process.env.USER_SERVICE_URL}/department`,
+    id,
+    axiosUserServiceConfig(userToken)
+  );

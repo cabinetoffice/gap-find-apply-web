@@ -7,10 +7,10 @@ export interface SummaryListProps {
   displayRegularKeyFont?: boolean;
 }
 
-interface Row {
+export interface Row {
   key: string;
   value: string | JSX.Element;
-  action?: JSX.Element;
+  action?: string | JSX.Element;
 }
 
 const SummaryList = ({
