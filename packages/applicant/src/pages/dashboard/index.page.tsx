@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps<
 
   const descriptionList: DescriptionListProps = {
     data: [
-      { term: 'Name', detail: grantApplicant?.fullName },
+      { term: 'Email', detail: grantApplicant?.email },
       {
         term: 'Organisation',
         detail: grantApplicant?.organisation?.legalName || null,
