@@ -105,9 +105,21 @@ export const getUserRoles = async (
   );
 };
 
-export const getDepartment = async (id: number, userToken: string) =>
+export const getDepartment = async (id: string, userToken: string) => {
+  const res = await axios.get<Department>(
+    `${process.env.USER_SERVICE_URL}/department/${id}`,
+    axiosUserServiceConfig(userToken)
+  );
+  return res.data;
+};
+
+export const updateDepartmentInformation = async (
+  body: Omit<Department, 'id'>,
+  id: string,
+  userToken: string
+) =>
   axios.patch(
-    `${process.env.USER_SERVICE_URL}/department`,
-    id,
+    `${process.env.USER_SERVICE_URL}/department/${id}`,
+    body,
     axiosUserServiceConfig(userToken)
   );

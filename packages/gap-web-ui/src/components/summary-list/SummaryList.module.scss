@@ -3,3 +3,11 @@
 .gap-summary-list--key-weight-regular {
   font-weight: $govuk-font-weight-regular;
 }
+
+@media (min-width: 40.0625em) {
+  .govuk-summary-list.key-width-50percent-sm {
+      .govuk-summary-list__key {
+        width: 50%;
+      }
+  }
+}

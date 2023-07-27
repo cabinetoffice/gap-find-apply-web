@@ -5,6 +5,7 @@ export interface SummaryListProps {
   summaryListAttributes?: Record<string, unknown>;
   rows: Row[];
   displayRegularKeyFont?: boolean;
+  summaryListClassName?: string;
 }
 
 export interface Row {
@@ -17,10 +18,11 @@ const SummaryList = ({
   summaryListAttributes,
   rows,
   displayRegularKeyFont = false,
+  summaryListClassName = '',
 }: SummaryListProps) => {
   return (
     <dl
-      className="govuk-summary-list"
+      className={`govuk-summary-list ${summaryListClassName}`}
       data-testid="summary-list"
       {...summaryListAttributes}
     >

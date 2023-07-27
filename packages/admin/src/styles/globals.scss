@@ -86,9 +86,15 @@ $govuk-assets-path: $sub_path + '/assets/';
 
 //CSS to override TinyMCE toolbar icons when selected
 .tox-tbtn--enabled {
-  background-color:govuk-colour("blue") !important;
-  color: govuk-colour("white") !important;
+  background-color: govuk-colour('blue') !important;
+  color: govuk-colour('white') !important;
 }
 .tox-tbtn--enabled svg {
-  fill: govuk-colour("white") !important;
+  fill: govuk-colour('white') !important;
+}
+
+@media (min-width: 40.0625em) {
+  .float-left-sm {
+    float: left;
+  }
 }

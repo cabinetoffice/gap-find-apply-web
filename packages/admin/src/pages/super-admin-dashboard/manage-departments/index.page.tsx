@@ -16,14 +16,14 @@ import { Row } from 'gap-web-ui/dist/cjs/components/summary-list/SummaryList';
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async (jwt: string) => ({
     departments: await getAllDepartments(jwt),
-    userId: context.query?.userId,
+    userId: context.query?.userId || '',
   });
 
   const res = await QuestionPageGetServerSideProps({
     context,
     fetchPageData,
     jwt: getUserTokenFromCookies(context.req),
-    onErrorMessage: 'Failed to update roles, please try again later.',
+    onErrorMessage: 'Failed to load departments, please try again later.',
   });
 
   return res;
@@ -54,6 +54,7 @@ const ManageDepartmentsPage = ({
             <h1 className="govuk-heading-l">Manage a user</h1>
             <h2 className="govuk-heading-m">User Information</h2>
             <SummaryList
+              summaryListClassName="key-width-40percent-sm"
               rows={departments.map((dept, idx) =>
                 getDepartmentRow(idx, dept, publicRuntimeConfig.SUB_PATH)
               )}
@@ -65,7 +66,6 @@ const ManageDepartmentsPage = ({
             >
               Add new department
             </CustomLink>
-            {/* <span className="govuk-caption-l">{user.emailAddress}</span> */}
           </div>
         </div>
       </main>
@@ -82,18 +82,19 @@ const getDepartmentRow = (
     ? {
         key: 'Department',
         value: 'GGIS ID',
-        action: 'Actions',
+        action: <span className="float-left-sm">Actions</span>,
       }
     : {
         key: name,
         value: ggisID,
         action: (
-          <CustomLink
-            // href={`/super-admin-dashboard/manage-departments/edit/${id}`}
-            href={`${subPath}/super-admin-dashboard/manage-departments/edit/${id}`}
-          >
-            Edit
-          </CustomLink>
+          <div className="float-left-sm">
+            <CustomLink
+              href={`/super-admin-dashboard/manage-departments/edit/${id}`}
+            >
+              Edit
+            </CustomLink>
+          </div>
         ),
       };
 
