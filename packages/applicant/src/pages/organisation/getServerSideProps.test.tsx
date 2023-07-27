@@ -26,7 +26,7 @@ const spiedGrantApplicantOrganisationProfileService = jest.spyOn(
 describe('getServerSideProps', () => {
   const getDefaultGrantApplicant = (): GrantApplicant => ({
     id: 'testApplicantId',
-    fullName: 'Jack Dale',
+    email: 'test@email.com',
     organisation: {
       id: 'testOrganisationId',
       legalName: 'Chris charity',
