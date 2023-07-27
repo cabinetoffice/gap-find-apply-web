@@ -13,6 +13,7 @@ import {
   getDepartment,
   updateDepartmentInformation,
 } from '../../../../../services/SuperAdminService';
+import { Department } from '../../../types';
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async (jwt: string) => {
@@ -26,7 +27,7 @@ export function getServerSideProps(context: GetServerSidePropsContext) {
     };
   };
 
-  const handleRequest = async (body: any, jwt: string) =>
+  const handleRequest = async (body: Omit<Department, 'id'>, jwt: string) =>
     updateDepartmentInformation(body, context.params?.id as string, jwt);
 
   return QuestionPageGetServerSideProps({
@@ -60,7 +61,6 @@ const EditDepartmentPage = ({
                 fieldErrors={fieldErrors}
                 csrfToken={csrfToken}
                 formAction={publicRuntimeConfig.SUB_PATH + formAction}
-                // formAction="http://localhost:3001/apply/admin/super-admin-dashboard/manage-departments/edit/2"
               >
                 <TextInput
                   questionTitle={`Department name`}
