@@ -33,8 +33,6 @@ const ManageDepartmentsPage = ({
   pageData: { departments, userId },
   fieldErrors,
 }: InferProps<typeof getServerSideProps>) => {
-  const { publicRuntimeConfig } = getConfig();
-
   return (
     <>
       <Meta
@@ -55,9 +53,7 @@ const ManageDepartmentsPage = ({
             <h2 className="govuk-heading-m">User Information</h2>
             <SummaryList
               summaryListClassName="key-width-40percent-sm"
-              rows={departments.map((dept, idx) =>
-                getDepartmentRow(idx, dept, publicRuntimeConfig.SUB_PATH)
-              )}
+              rows={departments.map((dept, idx) => getDepartmentRow(idx, dept))}
             />
             <CustomLink
               href={`/manage-departments/create`}
@@ -75,8 +71,7 @@ const ManageDepartmentsPage = ({
 
 const getDepartmentRow = (
   index: number,
-  { id, name, ggisID = '' }: Department,
-  subPath: string
+  { id, name, ggisID = '' }: Department
 ): Row =>
   index === 0
     ? {
