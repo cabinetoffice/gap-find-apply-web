@@ -27,8 +27,6 @@ export const getSuperAdminDashboard = async (
 };
 
 export const getUserById = async (id: string, userToken: string) => {
-  console.log(serverRuntimeConfig.userServiceHost);
-
   const response = await axios.get<UserDetails>(
     `${serverRuntimeConfig.userServiceHost}/user/${id}`,
     axiosUserServiceConfig(userToken)
