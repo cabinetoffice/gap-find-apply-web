@@ -11,7 +11,6 @@ import {
   updateUserRoles,
 } from '../../../../services/SuperAdminService';
 import Meta from '../../../../components/layout/Meta';
-import getConfig from 'next/config';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 
@@ -59,7 +58,6 @@ const EditRoleWithId = ({
   formAction,
   fieldErrors,
 }: InferProps<typeof getServerSideProps>) => {
-  const { publicRuntimeConfig } = getConfig();
   const { user, roles } = pageData;
   return (
     <>
@@ -77,7 +75,7 @@ const EditRoleWithId = ({
 
         <div className="govuk-!-padding-top-7">
           <FlexibleQuestionPageLayout
-            formAction={`${publicRuntimeConfig.SUB_PATH}${formAction}`}
+            formAction={formAction}
             fieldErrors={fieldErrors}
             csrfToken={csrfToken}
           >

@@ -12,7 +12,6 @@ import {
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
-import getConfig from 'next/config';
 
 type PageBodyResponse = {
   department: string;
@@ -50,7 +49,6 @@ const UserPage = ({
   fieldErrors,
 }: InferProps<typeof getServerSideProps>) => {
   const { user, departments } = pageData;
-  const { publicRuntimeConfig } = getConfig();
   return (
     <>
       <Meta
@@ -66,7 +64,7 @@ const UserPage = ({
 
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
-          formAction={`${publicRuntimeConfig.SUB_PATH}${formAction}`}
+          formAction={formAction}
           csrfToken={csrfToken}
           fieldErrors={fieldErrors}
         >
