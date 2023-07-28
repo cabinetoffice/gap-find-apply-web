@@ -121,3 +121,22 @@ export const updateDepartmentInformation = async (
     body,
     axiosUserServiceConfig(userToken)
   );
+
+export const deleteDepartmentInformation = async (
+  id: Record<string, string>,
+  userToken: string
+) =>
+  axios.delete(
+    `${process.env.USER_SERVICE_URL}/department/${id}`,
+    axiosUserServiceConfig(userToken)
+  );
+
+export const createDepartmentInformation = async (
+  body: Omit<Department, 'id'>,
+  userToken: string
+) =>
+  axios.post(
+    `${process.env.USER_SERVICE_URL}/department`,
+    body,
+    axiosUserServiceConfig(userToken)
+  );
