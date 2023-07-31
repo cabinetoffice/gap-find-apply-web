@@ -12,32 +12,23 @@ import CustomLink from '../../../components/custom-link/CustomLink';
 import { GetServerSidePropsContext } from 'next';
 import { Department } from '../types';
 import { Row } from 'gap-web-ui/dist/cjs/components/summary-list/SummaryList';
+import styles from './manage-departments.module.scss';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async (jwt: string) => ({
     departments: await getAllDepartments(jwt),
     userId: context.query?.userId || '',
   });
-
-  const res = await QuestionPageGetServerSideProps({
-    context,
-    fetchPageData,
-    jwt: getUserTokenFromCookies(context.req),
-    onErrorMessage: 'Failed to load departments, please try again later.',
-  });
-
-  return res;
+  return { props: await fetchPageData(getUserTokenFromCookies(context.req)) };
 }
 
 const ManageDepartmentsPage = ({
-  pageData: { departments, userId },
-  fieldErrors,
+  departments,
+  userId,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
-      <Meta
-        title={`${fieldErrors.length > 0 ? 'Error: ' : ''}Manage Departments`}
-      />
+      <Meta title="Manage Departments" />
       <CustomLink
         isBackButton
         href={
@@ -46,25 +37,21 @@ const ManageDepartmentsPage = ({
             : '/super-admin-dashboard/'
         }
       />
-      <main className="govuk-main-wrapper govuk-main-wrapper--auto-spacing">
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-full">
-            <h1 className="govuk-heading-l">Manage a user</h1>
-            <h2 className="govuk-heading-m">User Information</h2>
-            <SummaryList
-              summaryListClassName="key-width-40percent-sm"
-              rows={departments.map((dept, idx) => getDepartmentRow(idx, dept))}
-            />
-            <CustomLink
-              href={`/manage-departments/create`}
-              isButton
-              isSecondaryButton
-            >
-              Add new department
-            </CustomLink>
-          </div>
-        </div>
-      </main>
+      <div className="govuk-grid-row govuk-!-padding-top-2">
+        <h1 className="govuk-heading-l">Manage a user</h1>
+        <h2 className="govuk-heading-m">User Information</h2>
+        <SummaryList
+          hasWiderKeyColumn
+          rows={departments.map((dept, idx) => getDepartmentRow(idx, dept))}
+        />
+        <CustomLink
+          href={`/manage-departments/create`}
+          isButton
+          isSecondaryButton
+        >
+          Add new department
+        </CustomLink>
+      </div>
     </>
   );
 };
@@ -77,13 +64,13 @@ const getDepartmentRow = (
     ? {
         key: 'Department',
         value: 'GGIS ID',
-        action: <span className="float-left-sm">Actions</span>,
+        action: <span className={styles['float-left-sm']}>Actions</span>,
       }
     : {
         key: name,
         value: ggisID,
         action: (
-          <div className="float-left-sm">
+          <div className={styles['float-left-sm']}>
             <CustomLink
               href={`/super-admin-dashboard/manage-departments/edit/${id}`}
             >

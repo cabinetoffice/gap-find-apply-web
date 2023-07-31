@@ -1,5 +1,6 @@
 import CustomLink from '../custom-link/CustomLink';
 import SummaryListProps from './SummaryListType';
+import styles from './SummaryList.module.scss';
 
 const SummaryList = ({
   summaryListClassName = '',
@@ -8,7 +9,7 @@ const SummaryList = ({
 }: SummaryListProps) => {
   return (
     <dl
-      className={`govuk-summary-list ${summaryListClassName}`}
+      className={`govuk-summary-list ${styles['key-width-40percent-sm']}`}
       data-testid="summary-list"
       {...summaryListAttributes}
     >

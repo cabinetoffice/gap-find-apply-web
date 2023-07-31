@@ -77,7 +77,7 @@ const EditRoleWithId = ({
 
         <div className="govuk-!-padding-top-7">
           <FlexibleQuestionPageLayout
-            formAction={`${publicRuntimeConfig.SUB_PATH}${formAction}`}
+            formAction={`${formAction}`}
             fieldErrors={fieldErrors}
             csrfToken={csrfToken}
           >

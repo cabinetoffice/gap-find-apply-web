@@ -5,7 +5,7 @@ export interface SummaryListProps {
   summaryListAttributes?: Record<string, unknown>;
   rows: Row[];
   displayRegularKeyFont?: boolean;
-  summaryListClassName?: string;
+  hasWiderKeyColumn?: boolean;
 }
 
 export interface Row {
@@ -18,22 +18,27 @@ const SummaryList = ({
   summaryListAttributes,
   rows,
   displayRegularKeyFont = false,
-  summaryListClassName = '',
+  hasWiderKeyColumn = false,
 }: SummaryListProps) => {
   return (
     <dl
-      className={`govuk-summary-list ${summaryListClassName}`}
+      className={`govuk-summary-list`}
       data-testid="summary-list"
       {...summaryListAttributes}
     >
       {rows.map((row) => (
         <div className="govuk-summary-list__row" key={row.key}>
           <dt
-            className={`govuk-summary-list__key${
+            className={`govuk-summary-list__key 
+            ${
               displayRegularKeyFont
-                ? ' ' + styles['gap-summary-list--key-weight-regular']
+                ? ' ' + styles['gap-summary-list--key-weight-regular'] + ' '
                 : ''
-            }`}
+            }
+               ${
+                 hasWiderKeyColumn ? ' ' + styles['key-width-40percent-sm'] : ''
+               }
+            `}
           >
             {row.key}
           </dt>

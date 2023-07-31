@@ -5,9 +5,7 @@
 }
 
 @media (min-width: 40.0625em) {
-  .govuk-summary-list.key-width-50percent-sm {
-      .govuk-summary-list__key {
-        width: 50%;
-      }
+  .key-width-40percent-sm {
+        width: 40% !important;
   }
 }
