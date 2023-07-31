@@ -12,7 +12,13 @@ import { getUserTokenFromCookies } from '../../../../utils/session';
 import { createDepartmentInformation } from '../../../../services/SuperAdminService';
 import { Department } from '../../types';
 
-export function getServerSideProps(context: GetServerSidePropsContext) {
+type Context = GetServerSidePropsContext & {
+  req: {
+    csrfToken: () => string;
+  };
+};
+
+export function getServerSideProps(context: Context) {
   const fetchPageData = async (jwt: string) => {
     return { jwt };
   };
@@ -35,8 +41,6 @@ const AddDepartmentPage = ({
   csrfToken,
   fieldErrors,
 }: InferProps<typeof getServerSideProps>) => {
-  const { publicRuntimeConfig } = getConfig();
-
   return (
     <>
       <Meta title="Add a Department" />

@@ -5,7 +5,10 @@ type PageBodyResponse = Record<string, string | string[]>;
 type FetchPageData = Record<string, any>;
 
 type QuestionPageGetServerSidePropsType<T, K, V> = {
-  context: GetServerSidePropsContext;
+  context: GetServerSidePropsContext & {
+    req: { csrfToken: () => string };
+  };
+
   fetchPageData: (jwt: string) => Promise<K>;
   handleRequest: (body: T, jwt: string) => Promise<V>;
   jwt: string;

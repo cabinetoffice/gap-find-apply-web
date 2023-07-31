@@ -18,7 +18,13 @@ type PageBodyResponse = {
   newUserRoles: string | string[];
 };
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+type Context = GetServerSidePropsContext & {
+  req: {
+    csrfToken: () => string;
+  };
+};
+
+export async function getServerSideProps(context: Context) {
   const userId = context.params?.id as string;
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {

@@ -17,7 +17,13 @@ import { Department } from '../../../types';
 
 type PageBodyResponse = Omit<Department, 'id'>;
 
-export function getServerSideProps(context: GetServerSidePropsContext) {
+type Context = GetServerSidePropsContext & {
+  req: {
+    csrfToken: () => string;
+  };
+};
+
+export function getServerSideProps(context: Context) {
   const fetchPageData = async (jwt: string) => {
     const { name: departmentName, ggisID } = await getDepartment(
       context.params?.id as string,

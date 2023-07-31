@@ -11,7 +11,13 @@ import { getUserTokenFromCookies } from '../../../../../utils/session';
 import { deleteDepartmentInformation } from '../../../../../services/SuperAdminService';
 import { Department } from '../../../types';
 
-export function getServerSideProps(context: GetServerSidePropsContext) {
+type Context = GetServerSidePropsContext & {
+  req: {
+    csrfToken: () => string;
+  };
+};
+
+export function getServerSideProps(context: Context) {
   const fetchPageData = async () => {
     return { id: context.params?.id as string };
   };
