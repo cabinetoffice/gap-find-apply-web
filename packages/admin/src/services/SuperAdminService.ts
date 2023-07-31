@@ -127,7 +127,7 @@ export const deleteDepartmentInformation = async (
   userToken: string
 ) =>
   axios.delete(
-    `${process.env.USER_SERVICE_URL}/department/${id}`,
+    `${process.env.USER_SERVICE_URL}/department/${Number(id)}`,
     axiosUserServiceConfig(userToken)
   );
 

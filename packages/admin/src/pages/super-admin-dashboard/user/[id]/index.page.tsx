@@ -28,7 +28,6 @@ const UserPage = ({ user }: UserPageProps) => {
   return (
     <>
       <Meta title="Manage User" />
-
       <div className="govuk-!-padding-top-2">
         <div className="govuk-width-container">
           <a

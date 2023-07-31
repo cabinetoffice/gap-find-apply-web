@@ -44,7 +44,11 @@ const ManageDepartmentsPage = ({
           hasWiderKeyColumn
           rows={departments.map((dept, idx) => getDepartmentRow(idx, dept))}
         />
-        <CustomLink href={`/manage-departments/add`} isButton isSecondaryButton>
+        <CustomLink
+          href={`/super-admin-dashboard/manage-departments/add`}
+          isButton
+          isSecondaryButton
+        >
           Add new department
         </CustomLink>
       </div>

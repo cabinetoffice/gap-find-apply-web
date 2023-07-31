@@ -25,6 +25,7 @@ import {
  *
  * @returns A redirect to the relevant location, or a set of props needed to load a page
  */
+
 export default async function QuestionPageGetServerSideProps<
   T extends PageBodyResponse,
   K extends FetchPageData,
@@ -56,7 +57,7 @@ export default async function QuestionPageGetServerSideProps<
 
   return {
     props: {
-      csrfToken: ((req as any).csrfToken?.() || '') as string,
+      csrfToken: (req as any).csrfToken?.() || '',
       formAction: resolvedUrl,
       fieldErrors,
       pageData,

@@ -53,54 +53,49 @@ const EditDepartmentPage = ({
 
   return (
     <>
-      <div className="govuk-grid-row govuk-!-padding-top-2">
-        <Meta title="Edit Department" />
-        <CustomLink isBackButton href={'/super-admin-dashboard/'} />
-        <div className="govuk-width-container">
-          <main className="govuk-main-wrapper govuk-main-wrapper--auto-spacing">
-            <div className="govuk-grid-row">
-              <h1 className="govuk-heading-l">Edit department</h1>
-              <FlexibleQuestionPageLayout
-                fieldErrors={fieldErrors}
-                csrfToken={csrfToken}
-                formAction={publicRuntimeConfig.SUB_PATH + formAction}
-              >
-                <TextInput
-                  questionTitle={`Department name`}
-                  titleSize="m"
-                  fieldName="departmentName"
-                  defaultValue={departmentName}
-                  fieldErrors={fieldErrors}
-                  TitleTag="h2"
-                />
-                <TextInput
-                  questionHintText={
-                    'This should be the departments GGIS ID, not the ID of a grant within it.'
-                  }
-                  width="10"
-                  questionTitle={`GGGIS ID number`}
-                  titleSize="m"
-                  fieldName="ggisId"
-                  defaultValue={ggisID}
-                  fieldErrors={fieldErrors}
-                  TitleTag="h2"
-                />
-                <div className="govuk-button-group">
-                  <button className="govuk-button" data-module="govuk-button">
-                    Save changes
-                  </button>
+      <Meta title="Edit Department" />
+      <CustomLink isBackButton href={'/super-admin-dashboard/'} />
 
-                  <a
-                    href={`${publicRuntimeConfig.SUB_PATH}/super-admin-dashboard/manage-departments/delete/${id}`}
-                    className="govuk-button govuk-button--warning"
-                  >
-                    Delete department
-                  </a>
-                </div>
-              </FlexibleQuestionPageLayout>
-            </div>
-          </main>
-        </div>
+      <div className="govuk-!-padding-top-7">
+        <h1 className="govuk-heading-l">Edit department</h1>
+        <FlexibleQuestionPageLayout
+          fieldErrors={fieldErrors}
+          csrfToken={csrfToken}
+          formAction={formAction}
+        >
+          <TextInput
+            questionTitle={`Department name`}
+            titleSize="m"
+            fieldName="departmentName"
+            defaultValue={departmentName}
+            fieldErrors={fieldErrors}
+            TitleTag="h2"
+          />
+          <TextInput
+            questionHintText={
+              'This should be the departments GGIS ID, not the ID of a grant within it.'
+            }
+            width="10"
+            questionTitle={`GGGIS ID number`}
+            titleSize="m"
+            fieldName="ggisId"
+            defaultValue={ggisID}
+            fieldErrors={fieldErrors}
+            TitleTag="h2"
+          />
+          <div className="govuk-button-group">
+            <button className="govuk-button" data-module="govuk-button">
+              Save changes
+            </button>
+
+            <a
+              href={`${publicRuntimeConfig.SUB_PATH}/super-admin-dashboard/manage-departments/delete/${id}`}
+              className="govuk-button govuk-button--warning"
+            >
+              Delete department
+            </a>
+          </div>
+        </FlexibleQuestionPageLayout>
       </div>
     </>
   );

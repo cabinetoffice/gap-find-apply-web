@@ -16,10 +16,8 @@ export function getServerSideProps(context: GetServerSidePropsContext) {
     return { id: context.params?.id as string };
   };
 
-  const handleRequest = async (
-    body: Omit<Department, 'name' | 'ggisID'>,
-    jwt: string
-  ) => deleteDepartmentInformation(body.id, jwt);
+  const handleRequest = async (_body: { _csrf: string }, jwt: string) =>
+    deleteDepartmentInformation(context.params?.id as string, jwt);
 
   return QuestionPageGetServerSideProps({
     context,
@@ -27,7 +25,7 @@ export function getServerSideProps(context: GetServerSidePropsContext) {
     handleRequest,
     jwt: getUserTokenFromCookies(context.req),
     onErrorMessage: 'Failed to delete department, please try again later.',
-    onSuccessRedirectHref: `/super-admin-dashboard/manage-departments/edit/${context.params?.id}`,
+    onSuccessRedirectHref: `/super-admin-dashboard/manage-departments/`,
   });
 }
 
@@ -37,8 +35,6 @@ const DeleteDepartmentPage = ({
   csrfToken,
   fieldErrors,
 }: InferProps<typeof getServerSideProps>) => {
-  const { publicRuntimeConfig } = getConfig();
-
   return (
     <>
       <Meta title="Delete Department" />
@@ -47,9 +43,13 @@ const DeleteDepartmentPage = ({
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
-          formAction={publicRuntimeConfig.SUB_PATH + formAction}
+          formAction={formAction}
         >
           <h1 className="govuk-heading-l">Delete department</h1>
+          <p className="govuk-body">
+            If you delete this department, all of its information will be lost.
+            You cannot undo this action.
+          </p>
           <div className="govuk-button-group">
             <button
               className="govuk-button govuk-button--warning"
@@ -58,7 +58,8 @@ const DeleteDepartmentPage = ({
               Delete department
             </button>
             <a
-              href={`${publicRuntimeConfig.SUB_PATH}/super-admin-dashboard/manage-departments/edit/${id}`}
+              className="govuk-link"
+              href={`/super-admin-dashboard/manage-departments/edit/${id}`}
             >
               Cancel
             </a>

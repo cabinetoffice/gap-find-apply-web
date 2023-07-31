@@ -26,7 +26,7 @@ export function getServerSideProps(context: GetServerSidePropsContext) {
     handleRequest,
     jwt: getUserTokenFromCookies(context.req),
     onErrorMessage: 'Failed to create department, please try again later.',
-    onSuccessRedirectHref: `/super-admin-dashboard/manage-departments/edit/${context.params?.id}`,
+    onSuccessRedirectHref: `/super-admin-dashboard/manage-departments/`,
   });
 }
 
@@ -45,7 +45,7 @@ const AddDepartmentPage = ({
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
-          formAction={publicRuntimeConfig.SUB_PATH + formAction}
+          formAction={formAction}
         >
           <h1 className="govuk-heading-l">Add a department</h1>
           <TextInput
