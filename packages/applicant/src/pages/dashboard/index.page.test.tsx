@@ -38,7 +38,7 @@ const context = {
 const APPLICANT_ID = '75ab5fbd-0682-4d3d-a467-01c7a447f07c';
 const MOCK_GRANT_APPLICANT: GrantApplicant = {
   id: APPLICANT_ID,
-  fullName: 'Jack Dale',
+  email: 'test@email.com',
   organisation: {
     id: 'a048d000003Sk39AAC',
     legalName: 'Boat Service',
@@ -55,7 +55,7 @@ const MOCK_GRANT_APPLICANT: GrantApplicant = {
 
 const MOCK_GRANT_APPLICANT_NO_LEGAL_NAME: GrantApplicant = {
   id: APPLICANT_ID,
-  fullName: 'Jack Dale',
+  email: 'test@email.com',
   organisation: {
     id: 'a048d000003Sk39AAC',
     legalName: null,
@@ -71,7 +71,7 @@ const MOCK_GRANT_APPLICANT_NO_LEGAL_NAME: GrantApplicant = {
 };
 const descriptionList: DescriptionListProps = {
   data: [
-    { term: 'Name', detail: MOCK_GRANT_APPLICANT.fullName },
+    { term: 'Email', detail: MOCK_GRANT_APPLICANT.email },
     {
       term: 'Organisation',
       detail: MOCK_GRANT_APPLICANT.organisation.legalName,
@@ -152,7 +152,7 @@ describe('getServerSideProps', () => {
       props: {
         descriptionList: {
           data: [
-            { term: 'Name', detail: MOCK_GRANT_APPLICANT.fullName },
+            { term: 'Email', detail: MOCK_GRANT_APPLICANT_NO_LEGAL_NAME.email },
             {
               term: 'Organisation',
               detail: null,
@@ -213,11 +213,11 @@ describe('ApplicantDashboardPage component', () => {
         name: /your account/i,
       });
     });
-    it('should render table personal name element', () => {
+    it('should render table email element', () => {
       screen.getByRole('term', {
-        name: /name/i,
+        name: /email/i,
       });
-      screen.getByText(/Jack Dale/i);
+      screen.getByText(/test@email.com/i);
     });
 
     it('should render table organisation name element', () => {

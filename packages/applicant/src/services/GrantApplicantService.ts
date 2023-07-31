@@ -4,8 +4,6 @@ import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
 
 export interface RegisterAnApplicant {
-  firstName: string;
-  lastName: string;
   email: string;
   emailConfirmed: string;
   telephone: string;

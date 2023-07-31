@@ -40,7 +40,7 @@ const mockSchemeList: Scheme[] = [
 const mockUserDetails: UserDetails = {
   firstName: 'Test',
   lastName: 'User',
-  emailAddress: 'test',
+  emailAddress: 'test@email.com',
   roles: [{ id: '1', name: 'APPLY', description: 'desc' }],
   organisationName: 'Testing Org',
 };
@@ -78,11 +78,11 @@ describe('Dashboard', () => {
       screen.getByRole('heading', { name: 'Manage a grant' });
     });
 
-    it('Should render the user name', () => {
+    it('Should render the user email', () => {
       render(
         <Dashboard schemes={mockSchemeList} userDetails={mockUserDetails} />
       );
-      screen.getByText('Test User');
+      screen.getByText('test@email.com');
     });
 
     it('Should render the organisation name', () => {

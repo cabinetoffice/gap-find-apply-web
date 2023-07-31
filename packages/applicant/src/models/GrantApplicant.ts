@@ -2,6 +2,6 @@ import { GrantApplicantOrganisationProfile } from './GrantApplicantOrganisationP
 
 export interface GrantApplicant {
   id: string;
-  fullName: string;
+  email: string;
   organisation: GrantApplicantOrganisationProfile;
 }

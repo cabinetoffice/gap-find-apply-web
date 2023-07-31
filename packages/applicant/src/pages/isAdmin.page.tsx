@@ -18,7 +18,7 @@ const getDestination = (user: UserRolesResponse) => {
     return `${process.env.ADMIN_FRONTEND_URL}/?redirect=/dashboard`;
   if (user.isApplicant) return routes.api.isNewApplicant; //checks if the user exist, if not creates it
   // TODO go to an error page?
-  return `https://www.find-government-grants.service.gov.uk/`;
+  return `${publicRuntimeConfig.FIND_A_GRANT_URL}`;
 };
 
 //TODO add unit test, and move this to be an api

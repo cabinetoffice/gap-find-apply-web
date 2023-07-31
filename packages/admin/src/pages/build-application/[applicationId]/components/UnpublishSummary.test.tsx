@@ -53,7 +53,7 @@ describe('UnpublishSummary component', () => {
     screen.getAllByRole('link', { name: 'Find a grant' }).forEach((link) => {
       expect(link).toHaveAttribute(
         'href',
-        'https://www.find-government-grants.service.gov.uk/'
+        'https://www.find-government-grants.service.gov.uk'
       );
     });
   });

@@ -15,8 +15,8 @@ const AccountDetails = ({ userDetails }: AccountDetailsProps) => {
       <h2 className="govuk-heading-m">Your details</h2>
       <dl className="govuk-summary-list govuk-summary-list--no-border">
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Admin Name</dt>
-          <dd className="govuk-summary-list__value">{`${userDetails.firstName} ${userDetails.lastName}`}</dd>
+          <dt className="govuk-summary-list__key">Email</dt>
+          <dd className="govuk-summary-list__value">{`${userDetails.emailAddress}`}</dd>
         </div>
         <div className="govuk-summary-list__row">
           <dt className="govuk-summary-list__key">Organisation</dt>
