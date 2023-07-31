@@ -60,7 +60,7 @@ const AddDepartmentPage = ({
               'This should be the departments GGIS ID, not the ID of a grant within it.'
             }
             width="10"
-            questionTitle={`GGGIS ID number`}
+            questionTitle={`GGIS ID number`}
             titleSize="m"
             fieldName="ggisId"
             fieldErrors={fieldErrors}
