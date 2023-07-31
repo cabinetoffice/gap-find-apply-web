@@ -33,7 +33,11 @@ export function getServerSideProps(context: GetServerSidePropsContext) {
   const handleRequest = async (body: PageBodyResponse, jwt: string) =>
     updateDepartmentInformation(body, context.params?.id as string, jwt);
 
-  return QuestionPageGetServerSideProps({
+  return QuestionPageGetServerSideProps<
+    PageBodyResponse,
+    Awaited<ReturnType<typeof fetchPageData>>,
+    Awaited<ReturnType<typeof handleRequest>>
+  >({
     context,
     fetchPageData,
     handleRequest,
@@ -48,13 +52,17 @@ const EditDepartmentPage = ({
   pageData: { departmentName, ggisID, id },
   csrfToken,
   fieldErrors,
+  previousValues,
 }: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
 
   return (
     <>
       <Meta title="Edit Department" />
-      <CustomLink isBackButton href={'/super-admin-dashboard/'} />
+      <CustomLink
+        isBackButton
+        href={'/super-admin-dashboard/manage-departments'}
+      />
 
       <div className="govuk-!-padding-top-7">
         <h1 className="govuk-heading-l">Edit department</h1>
@@ -66,8 +74,8 @@ const EditDepartmentPage = ({
           <TextInput
             questionTitle={`Department name`}
             titleSize="m"
-            fieldName="departmentName"
-            defaultValue={departmentName}
+            fieldName="name"
+            defaultValue={previousValues?.name || departmentName}
             fieldErrors={fieldErrors}
             TitleTag="h2"
           />
@@ -78,8 +86,8 @@ const EditDepartmentPage = ({
             width="10"
             questionTitle={`GGGIS ID number`}
             titleSize="m"
-            fieldName="ggisId"
-            defaultValue={ggisID}
+            fieldName="ggisID"
+            defaultValue={previousValues?.ggisID || ggisID}
             fieldErrors={fieldErrors}
             TitleTag="h2"
           />
