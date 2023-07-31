@@ -9,16 +9,17 @@ import getConfig from 'next/config';
 import InferProps from '../../../../../types/InferProps';
 import { getUserTokenFromCookies } from '../../../../../utils/session';
 import { deleteDepartmentInformation } from '../../../../../services/SuperAdminService';
+import { Department } from '../../../types';
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async () => {
     return { id: context.params?.id as string };
   };
 
-  const handleRequest = async (id: any, jwt: string) => {
-    console.log('id', id);
-    deleteDepartmentInformation({ id }, jwt);
-  };
+  const handleRequest = async (
+    body: Omit<Department, 'name' | 'ggisID'>,
+    jwt: string
+  ) => deleteDepartmentInformation(body.id, jwt);
 
   return QuestionPageGetServerSideProps({
     context,

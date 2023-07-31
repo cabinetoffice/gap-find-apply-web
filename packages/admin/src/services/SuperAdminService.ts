@@ -123,7 +123,7 @@ export const updateDepartmentInformation = async (
   );
 
 export const deleteDepartmentInformation = async (
-  id: Record<string, string>,
+  id: string,
   userToken: string
 ) =>
   axios.delete(
