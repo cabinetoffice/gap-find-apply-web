@@ -54,7 +54,7 @@ const EditDepartmentPage = ({
     <>
       <Meta title="Edit Department" />
       <CustomLink isBackButton href={'/super-admin-dashboard/'} />
-      <div className="govuk-grid-row govuk-!-padding-top-2">
+      <div className="govuk-!-padding-top-7">
         <h1 className="govuk-heading-l">Edit department</h1>
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}
