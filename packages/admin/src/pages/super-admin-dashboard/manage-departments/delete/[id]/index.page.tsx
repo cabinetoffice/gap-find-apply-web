@@ -5,11 +5,9 @@ import {
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../components/layout/Meta';
-import getConfig from 'next/config';
 import InferProps from '../../../../../types/InferProps';
 import { getUserTokenFromCookies } from '../../../../../utils/session';
 import { deleteDepartmentInformation } from '../../../../../services/SuperAdminService';
-import { Department } from '../../../types';
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async () => {
