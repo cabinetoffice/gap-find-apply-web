@@ -36,7 +36,7 @@ const DeleteDepartmentPage = ({
   return (
     <>
       <Meta title="Delete Department" />
-      <CustomLink isBackButton href={'/super-admin-dashboard/'} />
+      <CustomLink isBackButton href={`/super-admin-dashboard/edit/${id}`} />
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}

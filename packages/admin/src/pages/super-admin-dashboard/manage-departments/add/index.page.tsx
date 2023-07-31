@@ -13,8 +13,8 @@ import { createDepartmentInformation } from '../../../../services/SuperAdminServ
 import { Department } from '../../types';
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
-  const fetchPageData = async (jwt: string) => {
-    return { jwt };
+  const fetchPageData = async () => {
+    return { id: context.params?.id as string };
   };
 
   const handleRequest = async (body: Omit<Department, 'id'>, jwt: string) =>
@@ -31,16 +31,18 @@ export function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 const AddDepartmentPage = ({
+  pageData: { id },
   formAction,
   csrfToken,
   fieldErrors,
+  previousValues,
 }: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
 
   return (
     <>
       <Meta title="Add a Department" />
-      <CustomLink isBackButton href={'/super-admin-dashboard/'} />
+      <CustomLink isBackButton href={`/super-admin-dashboard/edit/${id}`} />
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}
@@ -54,6 +56,7 @@ const AddDepartmentPage = ({
             fieldName="departmentName"
             fieldErrors={fieldErrors}
             TitleTag="h2"
+            defaultValue={previousValues?.name}
           />
           <TextInput
             questionHintText={
@@ -65,6 +68,7 @@ const AddDepartmentPage = ({
             fieldName="ggisId"
             fieldErrors={fieldErrors}
             TitleTag="h2"
+            defaultValue={previousValues?.ggisID}
           />
           <div className="govuk-button-group">
             <button className="govuk-button" data-module="govuk-button">
