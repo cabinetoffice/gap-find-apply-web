@@ -20,13 +20,7 @@ const getMockDepartmentData = () => [
 describe('Edit department information page', () => {
   test('Should navigate to change user department when provided a userId', async () => {
     render(
-      <ManageDepartmentsPage
-        formAction="."
-        pageData={{ departments: getMockDepartmentData(), userId: '1' }}
-        previousValues={getMockDepartmentData()[0]}
-        csrfToken="csrf"
-        fieldErrors={[]}
-      />
+      <ManageDepartmentsPage departments={getMockDepartmentData()} userId="1" />
     );
     expect(screen.getByText('Back').getAttribute('href')).toBe(
       '/apply/super-admin-dashboard/user/1/change-department'
@@ -34,13 +28,7 @@ describe('Edit department information page', () => {
   });
   test('Should navigate to dashboard when not provided a userId', async () => {
     render(
-      <ManageDepartmentsPage
-        formAction="."
-        pageData={{ departments: getMockDepartmentData(), userId: '' }}
-        previousValues={getMockDepartmentData()[0]}
-        csrfToken="csrf"
-        fieldErrors={[]}
-      />
+      <ManageDepartmentsPage departments={getMockDepartmentData()} userId="" />
     );
     expect(screen.getByText('Back').getAttribute('href')).toBe(
       '/apply/super-admin-dashboard/'
