@@ -57,7 +57,7 @@ export default async function QuestionPageGetServerSideProps<
 
   return {
     props: {
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: (req as any).csrfToken?.() || ('' as string),
       formAction: resolvedUrl,
       fieldErrors,
       pageData,
