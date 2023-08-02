@@ -11,6 +11,7 @@ import { ApplicantDashboard } from './Dashboard';
 export interface ApplicantDashBoardPageProps {
   descriptionList: DescriptionListProps;
   hasApplications: boolean;
+  oneLoginMatchingAccountBannerEnabled: boolean;
 }
 
 export const getServerSideProps: GetServerSideProps<
@@ -51,12 +52,23 @@ export const getServerSideProps: GetServerSideProps<
     needAddOrChangeButtons: false,
     needBorder: false,
   };
-  return { props: { descriptionList, hasApplications } };
+
+  const oneLoginMatchingAccountBannerEnabled =
+    process.env.ONE_LOGIN_MIGRATION_JOURNEY === 'enabled';
+
+  return {
+    props: {
+      descriptionList,
+      hasApplications,
+      oneLoginMatchingAccountBannerEnabled,
+    },
+  };
 };
 
 export default function ApplicantDashboardPage({
   descriptionList,
   hasApplications,
+  oneLoginMatchingAccountBannerEnabled,
 }: ApplicantDashBoardPageProps) {
   return (
     <>
@@ -65,6 +77,9 @@ export default function ApplicantDashboardPage({
         <ApplicantDashboard
           descriptionList={descriptionList}
           hasApplications={hasApplications}
+          oneLoginMatchingAccountBannerEnabled={
+            oneLoginMatchingAccountBannerEnabled
+          }
         />
       </Layout>
     </>
