@@ -38,8 +38,7 @@ const ManageDepartmentsPage = ({
         }
       />
       <div className="govuk-!-padding-top-7">
-        <h1 className="govuk-heading-l">Manage a user</h1>
-        <h2 className="govuk-heading-m">User Information</h2>
+        <h1 className="govuk-heading-l">Manage departments</h1>
         <SummaryList
           hasWiderKeyColumn
           rows={departments.map((dept, idx) => getDepartmentRow(idx, dept))}
