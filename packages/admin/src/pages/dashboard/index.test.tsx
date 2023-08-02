@@ -45,6 +45,8 @@ const mockUserDetails: UserDetails = {
   organisationName: 'Testing Org',
 };
 
+const mockOneLoginTransferErrorEnabled = false;
+
 describe('Dashboard', () => {
   describe('getServerSideProps', () => {
     const mockedGetUserSchemes = getUserSchemes as jest.MockedFn<
@@ -65,36 +67,118 @@ describe('Dashboard', () => {
       } as any);
 
       expect(result).toStrictEqual({
-        props: { schemes: mockSchemeList, userDetails: mockUserDetails },
+        props: {
+          schemes: mockSchemeList,
+          userDetails: mockUserDetails,
+          oneLoginTransferErrorEnabled: false,
+        },
+      });
+    });
+
+    it('Should return oneLoginTransferErrorEnabled = true', async () => {
+      mockedGetUserSchemes.mockResolvedValue(mockSchemeList);
+      mockedGetLoggedInUsersDetails.mockResolvedValue(mockUserDetails);
+
+      process.env.SESSION_COOKIE_NAME = 'gap-test';
+      process.env.ONE_LOGIN_MIGRATION_JOURNEY = 'enabled';
+
+      const result = await getServerSideProps({
+        req: { cookies: { 'gap-test': 'testSessionId' } },
+      } as any);
+
+      expect(result).toStrictEqual({
+        props: {
+          schemes: mockSchemeList,
+          userDetails: mockUserDetails,
+          oneLoginTransferErrorEnabled: true,
+        },
+      });
+    });
+
+    it('Should return oneLoginTransferErrorEnabled = false', async () => {
+      mockedGetUserSchemes.mockResolvedValue(mockSchemeList);
+      mockedGetLoggedInUsersDetails.mockResolvedValue(mockUserDetails);
+
+      process.env.SESSION_COOKIE_NAME = 'gap-test';
+      process.env.ONE_LOGIN_MIGRATION_JOURNEY = 'disabled';
+
+      const result = await getServerSideProps({
+        req: { cookies: { 'gap-test': 'testSessionId' } },
+      } as any);
+
+      expect(result).toStrictEqual({
+        props: {
+          schemes: mockSchemeList,
+          userDetails: mockUserDetails,
+          oneLoginTransferErrorEnabled: false,
+        },
       });
     });
   });
 
   describe('Dashboard page render', () => {
+    it('Should render the error banner', () => {
+      render(
+        <Dashboard
+          schemes={mockSchemeList}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={true}
+        />
+      );
+      screen.getByRole('heading', { name: 'PLACEHOLDER FOR ERROR BANNER' });
+    });
+
+    it('Should not render the error banner', () => {
+      render(
+        <Dashboard
+          schemes={mockSchemeList}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={false}
+        />
+      );
+      expect(screen.queryByText('PLACEHOLDER FOR ERROR BANNER')).toBeFalsy();
+    });
+
     it('Should render a page title', () => {
       render(
-        <Dashboard schemes={mockSchemeList} userDetails={mockUserDetails} />
+        <Dashboard
+          schemes={mockSchemeList}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
       );
       screen.getByRole('heading', { name: 'Manage a grant' });
     });
 
     it('Should render the user email', () => {
       render(
-        <Dashboard schemes={mockSchemeList} userDetails={mockUserDetails} />
+        <Dashboard
+          schemes={mockSchemeList}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
       );
       screen.getByText('test@email.com');
     });
 
     it('Should render the organisation name', () => {
       render(
-        <Dashboard schemes={mockSchemeList} userDetails={mockUserDetails} />
+        <Dashboard
+          schemes={mockSchemeList}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
       );
       screen.getByText('Testing Org');
     });
 
     it('Should render the "manage your grant scheme table" headings when there are schemes', () => {
       render(
-        <Dashboard schemes={mockSchemeList} userDetails={mockUserDetails} />
+        <Dashboard
+          schemes={mockSchemeList}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
       );
       screen.getByRole('columnheader', { name: 'Name' });
       screen.getByRole('columnheader', { name: 'Date created' });
@@ -102,7 +186,11 @@ describe('Dashboard', () => {
 
     it('Should render the "manage your grant scheme table" scheme names when there are schemes', () => {
       render(
-        <Dashboard schemes={mockSchemeList} userDetails={mockUserDetails} />
+        <Dashboard
+          schemes={mockSchemeList}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
       );
       screen.getByRole('cell', { name: 'Scheme name 1' });
       screen.getByRole('cell', { name: 'Scheme name 2' });
@@ -110,7 +198,11 @@ describe('Dashboard', () => {
 
     it('Should render the "manage your grant scheme table" scheme created at dates when there are schemes', () => {
       render(
-        <Dashboard schemes={mockSchemeList} userDetails={mockUserDetails} />
+        <Dashboard
+          schemes={mockSchemeList}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
       );
       screen.getByRole('cell', { name: '10 December 2011' });
       screen.getByRole('cell', { name: '10 October 2011' });
@@ -118,7 +210,11 @@ describe('Dashboard', () => {
 
     it('Should render the "manage your grant scheme table" scheme view links when there are schemes', () => {
       render(
-        <Dashboard schemes={mockSchemeList} userDetails={mockUserDetails} />
+        <Dashboard
+          schemes={mockSchemeList}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
       );
       expect(
         screen.getByRole('link', { name: 'View scheme Scheme name 1' })
@@ -130,7 +226,11 @@ describe('Dashboard', () => {
 
     it('Should render a View all schemes link to the schemes page when there are schemes', () => {
       render(
-        <Dashboard schemes={mockSchemeList} userDetails={mockUserDetails} />
+        <Dashboard
+          schemes={mockSchemeList}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
       );
       const viewAllSchemesElement = screen.getByRole('link', {
         name: 'View all grants',
@@ -140,7 +240,11 @@ describe('Dashboard', () => {
 
     it('Should NOT render the "create new grant scheme" section when there are schemes', () => {
       render(
-        <Dashboard schemes={mockSchemeList} userDetails={mockUserDetails} />
+        <Dashboard
+          schemes={mockSchemeList}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
       );
       expect(
         screen.queryByTestId('create-new-grant-scheme-section')
@@ -148,7 +252,13 @@ describe('Dashboard', () => {
     });
 
     it('Should NOT render the "manage your grant scheme table" when there are no schemes', () => {
-      render(<Dashboard schemes={[]} userDetails={mockUserDetails} />);
+      render(
+        <Dashboard
+          schemes={[]}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
+      );
       const manageGrantSchemeTable = screen.queryByTestId(
         'manage-grant-scheme-table'
       );
@@ -156,14 +266,26 @@ describe('Dashboard', () => {
     });
 
     it('Should render the "create new grant scheme" section when there are no schemes', () => {
-      render(<Dashboard schemes={[]} userDetails={mockUserDetails} />);
+      render(
+        <Dashboard
+          schemes={[]}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
+      );
       screen.getByRole('heading', { name: 'Add grant details' });
       screen.getByText('Start by adding the details of your grant.');
       screen.getByRole('button', { name: 'Add a grant' });
     });
 
     it('Should NOT render the "create new grant scheme" side bar when there are no schemes', () => {
-      render(<Dashboard schemes={[]} userDetails={mockUserDetails} />);
+      render(
+        <Dashboard
+          schemes={[]}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
+      );
       expect(
         screen.queryByText('Create new grant schemes to advertise your grants.')
       ).toBeFalsy();
@@ -173,7 +295,13 @@ describe('Dashboard', () => {
     });
 
     it('Should NOT render a View all schemes link to the schemes page when there are no schemes', () => {
-      render(<Dashboard schemes={[]} userDetails={mockUserDetails} />);
+      render(
+        <Dashboard
+          schemes={[]}
+          userDetails={mockUserDetails}
+          oneLoginTransferErrorEnabled={mockOneLoginTransferErrorEnabled}
+        />
+      );
       expect(
         screen.queryByRole('link', { name: 'View all schemes' })
       ).toBeFalsy();
