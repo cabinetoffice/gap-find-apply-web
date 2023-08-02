@@ -87,11 +87,11 @@ const UserPage = ({
               Change department
             </button>
 
-            <Link
+            <CustomLink
               href={`/super-admin-dashboard/manage-departments?userId=${user.gapUserId}`}
             >
-              <a className="govuk-link">Manage departments</a>
-            </Link>
+              Manage departments
+            </CustomLink>
           </div>
         </FlexibleQuestionPageLayout>
       </div>
