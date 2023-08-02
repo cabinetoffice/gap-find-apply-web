@@ -12,6 +12,7 @@ import {
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
+import Link from 'next/link';
 
 type PageBodyResponse = {
   department: string;
@@ -86,10 +87,11 @@ const UserPage = ({
               Change department
             </button>
 
-            {/* TODO implement link GAP-1931 */}
-            <a href="/TODO" className="govuk-link">
+            <CustomLink
+              href={`/super-admin-dashboard/manage-departments?userId=${user.gapUserId}`}
+            >
               Manage departments
-            </a>
+            </CustomLink>
           </div>
         </FlexibleQuestionPageLayout>
       </div>

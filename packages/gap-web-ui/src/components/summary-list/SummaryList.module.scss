@@ -3,3 +3,9 @@
 .gap-summary-list--key-weight-regular {
   font-weight: $govuk-font-weight-regular;
 }
+
+@media (min-width: 40.0625em) {
+  .key-width-45percent-sm {
+        width: 45% !important;
+  }
+}

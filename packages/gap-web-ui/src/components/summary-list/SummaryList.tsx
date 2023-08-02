@@ -5,33 +5,40 @@ export interface SummaryListProps {
   summaryListAttributes?: Record<string, unknown>;
   rows: Row[];
   displayRegularKeyFont?: boolean;
+  hasWiderKeyColumn?: boolean;
 }
 
-interface Row {
+export interface Row {
   key: string;
   value: string | JSX.Element;
-  action?: JSX.Element;
+  action?: string | JSX.Element;
 }
 
 const SummaryList = ({
   summaryListAttributes,
   rows,
   displayRegularKeyFont = false,
+  hasWiderKeyColumn = false,
 }: SummaryListProps) => {
   return (
     <dl
-      className="govuk-summary-list"
+      className={`govuk-summary-list`}
       data-testid="summary-list"
       {...summaryListAttributes}
     >
       {rows.map((row) => (
         <div className="govuk-summary-list__row" key={row.key}>
           <dt
-            className={`govuk-summary-list__key${
+            className={`govuk-summary-list__key 
+            ${
               displayRegularKeyFont
-                ? ' ' + styles['gap-summary-list--key-weight-regular']
+                ? ' ' + styles['gap-summary-list--key-weight-regular'] + ' '
                 : ''
-            }`}
+            }
+               ${
+                 hasWiderKeyColumn ? ' ' + styles['key-width-45percent-sm'] : ''
+               }
+            `}
           >
             {row.key}
           </dt>
