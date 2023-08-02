@@ -65,12 +65,12 @@ const EditDepartmentPage = ({
       />
 
       <div className="govuk-!-padding-top-7">
-        <h1 className="govuk-heading-l">Edit department</h1>
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
           formAction={formAction}
         >
+          <h1 className="govuk-heading-l">Edit department</h1>
           <TextInput
             questionTitle={`Department name`}
             titleSize="m"
