@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { DescriptionListProps } from '../../components/description-list/DescriptionList';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
@@ -7,16 +7,12 @@ import { getApplicationsListById } from '../../services/ApplicationService';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { ApplicantDashboard } from './Dashboard';
+import InferProps from '../../types/InferProps';
 
-export interface ApplicantDashBoardPageProps {
-  descriptionList: DescriptionListProps;
-  hasApplications: boolean;
-  oneLoginMatchingAccountBannerEnabled: boolean;
-}
-
-export const getServerSideProps: GetServerSideProps<
-  ApplicantDashBoardPageProps
-> = async ({ req, res }) => {
+export const getServerSideProps = async ({
+  req,
+  res,
+}: GetServerSidePropsContext) => {
   const findRedirectCookie = process.env.APPLYING_FOR_REDIRECT_COOKIE;
 
   if (req.cookies[findRedirectCookie]) {
@@ -69,7 +65,7 @@ export default function ApplicantDashboardPage({
   descriptionList,
   hasApplications,
   oneLoginMatchingAccountBannerEnabled,
-}: ApplicantDashBoardPageProps) {
+}: InferProps<typeof getServerSideProps>) {
   return (
     <>
       <Meta title="My account - Apply for a grant" />

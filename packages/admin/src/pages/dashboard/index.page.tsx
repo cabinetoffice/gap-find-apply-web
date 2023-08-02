@@ -7,10 +7,13 @@ import Pagination from '../../types/Pagination';
 import { getLoggedInUsersDetails } from '../../services/UserService';
 import UserDetails from '../../types/UserDetails';
 import { getSessionIdFromCookies } from '../../utils/session';
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../components/custom-link/CustomLink';
+import InferProps from '../../types/InferProps';
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+export const getServerSideProps = async ({
+  req,
+}: GetServerSidePropsContext) => {
   const paginationParams: Pagination = {
     paginate: true,
     page: 0,
@@ -37,7 +40,7 @@ const Dashboard = ({
   schemes,
   userDetails,
   oneLoginTransferErrorEnabled,
-}: DashboardProps) => {
+}: InferProps<typeof getServerSideProps>) => {
   return (
     <div className="govuk-grid-row govuk-!-padding-top-7">
       <Meta title="Dashboard - Manage a grant" />
@@ -62,11 +65,5 @@ const Dashboard = ({
     </div>
   );
 };
-
-interface DashboardProps {
-  schemes: Scheme[];
-  userDetails: UserDetails;
-  oneLoginTransferErrorEnabled: boolean;
-}
 
 export default Dashboard;
