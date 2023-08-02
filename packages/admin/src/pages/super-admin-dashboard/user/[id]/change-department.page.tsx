@@ -12,6 +12,7 @@ import {
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
+import Link from 'next/link';
 
 type PageBodyResponse = {
   department: string;
@@ -86,12 +87,11 @@ const UserPage = ({
               Change department
             </button>
 
-            <a
+            <Link
               href={`/super-admin-dashboard/manage-departments?userId=${user.gapUserId}`}
-              className="govuk-link"
             >
-              Manage departments
-            </a>
+              <a className="govuk-link">Manage departments</a>
+            </Link>
           </div>
         </FlexibleQuestionPageLayout>
       </div>

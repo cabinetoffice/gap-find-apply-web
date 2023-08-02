@@ -36,7 +36,7 @@ const SummaryList = ({
                 : ''
             }
                ${
-                 hasWiderKeyColumn ? ' ' + styles['key-width-40percent-sm'] : ''
+                 hasWiderKeyColumn ? ' ' + styles['key-width-45percent-sm'] : ''
                }
             `}
           >

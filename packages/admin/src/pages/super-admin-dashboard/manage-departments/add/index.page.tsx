@@ -6,16 +6,13 @@ import {
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';
-import getConfig from 'next/config';
 import InferProps from '../../../../types/InferProps';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import { createDepartmentInformation } from '../../../../services/SuperAdminService';
 import { Department } from '../../types';
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
-  const fetchPageData = async () => {
-    return { id: context.params?.id as string };
-  };
+  const fetchPageData = async () => ({}); //TODO - make this argument optional
 
   const handleRequest = async (body: Omit<Department, 'id'>, jwt: string) =>
     createDepartmentInformation(body, jwt);
@@ -31,18 +28,18 @@ export function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 const AddDepartmentPage = ({
-  pageData: { id },
   formAction,
   csrfToken,
   fieldErrors,
   previousValues,
 }: InferProps<typeof getServerSideProps>) => {
-  const { publicRuntimeConfig } = getConfig();
-
   return (
     <>
       <Meta title="Add a Department" />
-      <CustomLink isBackButton href={`/super-admin-dashboard/edit/${id}`} />
+      <CustomLink
+        isBackButton
+        href={`/super-admin-dashboard/manage-departments`}
+      />
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}
@@ -53,7 +50,7 @@ const AddDepartmentPage = ({
           <TextInput
             questionTitle={`Department name`}
             titleSize="m"
-            fieldName="departmentName"
+            fieldName="name"
             fieldErrors={fieldErrors}
             TitleTag="h2"
             defaultValue={previousValues?.name}
@@ -65,7 +62,7 @@ const AddDepartmentPage = ({
             width="10"
             questionTitle={`GGIS ID number`}
             titleSize="m"
-            fieldName="ggisId"
+            fieldName="ggisID"
             fieldErrors={fieldErrors}
             TitleTag="h2"
             defaultValue={previousValues?.ggisID}

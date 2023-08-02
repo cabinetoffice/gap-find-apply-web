@@ -8,6 +8,7 @@ import Meta from '../../../../../components/layout/Meta';
 import InferProps from '../../../../../types/InferProps';
 import { getUserTokenFromCookies } from '../../../../../utils/session';
 import { deleteDepartmentInformation } from '../../../../../services/SuperAdminService';
+import Link from 'next/link';
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async () => {
@@ -36,7 +37,10 @@ const DeleteDepartmentPage = ({
   return (
     <>
       <Meta title="Delete Department" />
-      <CustomLink isBackButton href={`/super-admin-dashboard/edit/${id}`} />
+      <CustomLink
+        isBackButton
+        href={`/super-admin-dashboard/manage-departments/edit/${id}`}
+      />
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}
@@ -55,12 +59,9 @@ const DeleteDepartmentPage = ({
             >
               Delete department
             </button>
-            <a
-              className="govuk-link"
-              href={`/super-admin-dashboard/manage-departments/edit/${id}`}
-            >
-              Cancel
-            </a>
+            <Link href={`/super-admin-dashboard/manage-departments/edit/${id}`}>
+              <a className="govuk-link">Cancel</a>
+            </Link>
           </div>
         </FlexibleQuestionPageLayout>
       </div>
