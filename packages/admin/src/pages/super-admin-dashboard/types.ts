@@ -19,3 +19,12 @@ export type User = {
   role?: Role;
   department?: Department;
 };
+
+export type SuperAdminDashboardFilterData = {
+  role: string | Array<string>;
+  department: string | Array<string>;
+  searchTerm: string;
+  _csrf: string;
+  'clear-all-filters'?: '';
+  clearAllFilters?: boolean;
+};

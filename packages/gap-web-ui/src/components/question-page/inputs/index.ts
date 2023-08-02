@@ -10,5 +10,4 @@ export { default as TextInput } from './TextInput';
 export { default as UploadFile } from './UploadFile';
 export { default as RichText } from './RichText';
 export { default as Button } from './Button';
-export { ButtonTypePropertyEnum } from './Button';
 export { ExampleText } from './InputComponentProps';

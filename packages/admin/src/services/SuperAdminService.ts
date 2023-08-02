@@ -2,7 +2,12 @@ import getConfig from 'next/config';
 import axios from 'axios';
 import { axiosUserServiceConfig } from '../utils/session';
 import Pagination from '../types/Pagination';
-import { Department, Role, User } from '../pages/super-admin-dashboard/types';
+import {
+  Department,
+  Role,
+  SuperAdminDashboardFilterData,
+  User,
+} from '../pages/super-admin-dashboard/types';
 import UserDetails from '../types/UserDetails';
 
 const { serverRuntimeConfig } = getConfig();
@@ -140,3 +145,25 @@ export const createDepartmentInformation = async (
     body,
     axiosUserServiceConfig(userToken)
   );
+
+export const filterUsers = async (
+  body: SuperAdminDashboardFilterData,
+  userToken: string
+) => {
+  if (body['clear-all-filters'] === '') {
+    body.clearAllFilters = true;
+  } else {
+    body.clearAllFilters = false;
+  }
+  delete body['clear-all-filters'];
+  if (typeof body.role === 'string') body.role = [body.role];
+  if (typeof body.department === 'string') body.department = [body.department];
+
+  const res = await axios.post(
+    `${process.env.USER_SERVICE_URL}/user/filter`,
+    body,
+    axiosUserServiceConfig(userToken)
+  );
+
+  return res.data;
+};
