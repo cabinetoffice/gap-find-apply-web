@@ -8,7 +8,6 @@ import Meta from '../../../../../components/layout/Meta';
 import InferProps from '../../../../../types/InferProps';
 import { getUserTokenFromCookies } from '../../../../../utils/session';
 import { deleteDepartmentInformation } from '../../../../../services/SuperAdminService';
-import Link from 'next/link';
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async () => {
@@ -59,9 +58,11 @@ const DeleteDepartmentPage = ({
             >
               Delete department
             </button>
-            <Link href={`/super-admin-dashboard/manage-departments/edit/${id}`}>
-              <a className="govuk-link">Cancel</a>
-            </Link>
+            <CustomLink
+              href={`/super-admin-dashboard/manage-departments/edit/${id}`}
+            >
+              Cancel
+            </CustomLink>
           </div>
         </FlexibleQuestionPageLayout>
       </div>
