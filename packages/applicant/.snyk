@@ -2,38 +2,16 @@
 version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  SNYK-JS-XML2JS-5414874:
-    - '*':
-        reason: >-
-          vulnerability in internal AWS communication so attacker would have to
-          compromise AWS, no upgrade to affected dependency currently available
-        expires: 2023-07-07T10:44:52.403Z
-        created: 2023-06-07T10:44:52.405Z
-  SNYK-JS-JSON5-3182856:
-    - '*':
-        reason: 'dependency used during local dev, no upgrade currently available'
-        expires: 2023-07-07T10:45:52.287Z
-        created: 2023-06-07T10:45:52.294Z
-  SNYK-JS-LOADERUTILS-3042992:
-    - '*':
-        reason: 'dependency used during build, no upgrade currently available'
-        expires: 2023-07-07T10:46:50.010Z
-        created: 2023-06-07T10:46:50.015Z
-  SNYK-JS-LOADERUTILS-3105943:
-    - '*':
-        reason: 'dependency used during build, no upgrade currently available'
-        expires: 2023-07-07T10:47:19.004Z
-        created: 2023-06-07T10:47:19.009Z
   SNYK-JS-WORDWRAP-3149973:
     - '*':
         reason: 'dependency used during local dev, no upgrade currently available'
-        expires: 2023-07-07T10:51:19.334Z
+        expires: 2023-08-31T10:51:19.334Z
         created: 2023-06-07T10:51:19.355Z
   SNYK-JS-SEMVER-3247795:
     - '*':
         reason: >-
           dependency only used during dev and build, no upgrade currently
           available
-        expires: 2023-07-21T14:47:46.319Z
+        expires: 2023-08-31T14:47:46.319Z
         created: 2023-06-21T14:47:46.321Z
 patch: {}
