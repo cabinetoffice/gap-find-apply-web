@@ -7,7 +7,6 @@ import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';
 import InferProps from '../../../../types/InferProps';
 import { getUserTokenFromCookies } from '../../../../utils/session';
-import Link from 'next/link';
 import {
   updateUserRoles,
   getUserById,
@@ -71,9 +70,9 @@ const BlockUserPage = ({
             >
               Block user
             </button>
-            <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
+            <CustomLink href={`/super-admin-dashboard/user/${pageData.userId}`}>
               <a className="govuk-link">Cancel</a>
-            </Link>
+            </CustomLink>
           </div>
         </FlexibleQuestionPageLayout>
       </div>

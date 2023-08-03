@@ -42,7 +42,7 @@ const convertUserDataToTableRows = (users: User[]) =>
     cells: [
       { content: user.emailAddress },
       { content: user.department?.name || 'N/A' },
-      { content: user.role?.label || 'N/A' },
+      { content: user.role?.label || 'Blocked' },
       {
         content: (
           <Link href={`/super-admin-dashboard/user/${user.gapUserId}/`}>

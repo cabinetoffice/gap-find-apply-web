@@ -1,11 +1,12 @@
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import getConfig from 'next/config';
-import { Button, SummaryList } from 'gap-web-ui';
+import { SummaryList } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import { User } from '../../types';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import { getUserById } from '../../../../services/SuperAdminService';
+import CustomLink from '../../../../components/custom-link/CustomLink';
 
 export const getServerSideProps: GetServerSideProps = async ({
   params,
@@ -60,30 +61,44 @@ const UserPage = ({ user }: UserPageProps) => {
                     },
                     {
                       key: 'Roles',
-                      value: user.role?.label || 'Applicant',
-                      action: (
+                      value: user.role?.label || 'Blocked',
+                      action: user.role?.label ? (
                         <Link
-                          href={`/super-admin-dashboard/user/${user.gapUserId}/change-roles`}
+                          href={`/super-admin-dashboard/user/${user.gapUserId}/block-user`}
                         >
                           <a className="govuk-link">Change</a>
                         </Link>
+                      ) : (
+                        <></>
                       ),
                     },
                   ]}
                 />
                 <div className="govuk-button-group">
-                  <Link
-                    href={`/super-admin-dashboard/user/${user.gapUserId}`}
-                    className="govuk-link"
+                  <CustomLink
+                    href={`/super-admin-dashboard/user/${user.gapUserId}/delete-user`}
+                    customStyle="govuk-button govuk-button--warning"
+                    data-module="govuk-button"
                   >
                     Delete User
-                  </Link>
-                  <a
-                    href={`/super-admin-dashboard/user/${user.gapUserId}`}
-                    className="govuk-link"
-                  >
-                    Block User
-                  </a>
+                  </CustomLink>
+                  {!user.role?.label && (
+                    <CustomLink
+                      href={`/api/unblockUser?id=${user.gapUserId}`}
+                      customStyle="govuk-button govuk-button--secondary"
+                    >
+                      Unblock User
+                    </CustomLink>
+                  )}
+
+                  {user.role?.label && (
+                    <CustomLink
+                      href={`/super-admin-dashboard/user/${user.gapUserId}/block-user`}
+                      customStyle="govuk-button govuk-button--secondary"
+                    >
+                      Block User
+                    </CustomLink>
+                  )}
                 </div>
               </div>
             </div>
