@@ -72,8 +72,18 @@ const UserPage = ({ user }: UserPageProps) => {
                   ]}
                 />
                 <div className="govuk-button-group">
-                  <Button text="Delete user" isWarning />
-                  <Button text="Block user" isSecondary />
+                  <Link
+                    href={`/super-admin-dashboard/user/${user.gapUserId}`}
+                    className="govuk-link"
+                  >
+                    Delete User
+                  </Link>
+                  <a
+                    href={`/super-admin-dashboard/user/${user.gapUserId}`}
+                    className="govuk-link"
+                  >
+                    Block User
+                  </a>
                 </div>
               </div>
             </div>

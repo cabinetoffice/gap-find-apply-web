@@ -91,6 +91,13 @@ export const updateUserRoles = async (
   );
 };
 
+export const deleteUserInformation = async (id: string, userToken: string) => {
+  await axios.delete(
+    `${process.env.USER_SERVICE_URL}/user/${id}`,
+    axiosUserServiceConfig(userToken)
+  );
+};
+
 export const getUserRoles = async (
   id: string,
   newUserRoles: string | string[],
