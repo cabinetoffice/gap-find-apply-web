@@ -80,7 +80,7 @@ describe('Dashboard', () => {
       mockedGetLoggedInUsersDetails.mockResolvedValue(mockUserDetails);
 
       process.env.SESSION_COOKIE_NAME = 'gap-test';
-      process.env.ONE_LOGIN_MIGRATION_JOURNEY = 'enabled';
+      process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED = 'true';
 
       const result = await getServerSideProps({
         req: { cookies: { 'gap-test': 'testSessionId' } },
@@ -100,7 +100,9 @@ describe('Dashboard', () => {
       mockedGetLoggedInUsersDetails.mockResolvedValue(mockUserDetails);
 
       process.env.SESSION_COOKIE_NAME = 'gap-test';
-      process.env.ONE_LOGIN_MIGRATION_JOURNEY = 'disabled';
+
+      const oneLoginTransferErrorEnabled =
+        process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
 
       const result = await getServerSideProps({
         req: { cookies: { 'gap-test': 'testSessionId' } },
@@ -110,7 +112,7 @@ describe('Dashboard', () => {
         props: {
           schemes: mockSchemeList,
           userDetails: mockUserDetails,
-          oneLoginTransferErrorEnabled: false,
+          oneLoginTransferErrorEnabled: oneLoginTransferErrorEnabled,
         },
       });
     });

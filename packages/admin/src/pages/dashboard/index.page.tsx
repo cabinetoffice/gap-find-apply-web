@@ -25,13 +25,13 @@ export const getServerSideProps = async ({
   const schemes = await getUserSchemes(paginationParams, sessionCookie);
   const userDetails: UserDetails = await getLoggedInUsersDetails(sessionCookie);
   const oneLoginTransferErrorEnabled =
-    process.env.ONE_LOGIN_MIGRATION_JOURNEY === 'enabled';
+    process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
 
   return {
     props: {
       schemes: schemes,
       userDetails,
-      oneLoginTransferErrorEnabled,
+      oneLoginTransferErrorEnabled: Boolean(oneLoginTransferErrorEnabled),
     },
   };
 };
