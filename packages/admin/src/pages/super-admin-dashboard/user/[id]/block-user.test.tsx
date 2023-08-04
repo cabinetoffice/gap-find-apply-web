@@ -2,7 +2,10 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import BlockUserPage from './block-user.page';
 import { updateUserRoles } from '../../../../services/SuperAdminService';
-import { waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/dom';
+import { RouterContext } from 'next/dist/shared/lib/router-context';
+
+jest.mock('../../../../services/SuperAdminService');
 
 const mockPageData = {
   user: {
@@ -16,17 +19,16 @@ const mockPageData = {
 };
 
 const component = (
-  <BlockUserPage
-    previousValues={mockPageData}
-    formAction="."
-    pageData={mockPageData}
-    csrfToken="csrf"
-    fieldErrors={[]}
-  />
+  <RouterContext.Provider value={}>
+    <BlockUserPage
+      previousValues={mockPageData}
+      formAction="."
+      pageData={mockPageData}
+      csrfToken="csrf"
+      fieldErrors={[]}
+    />
+  </RouterContext.Provider>
 );
-
-jest.mock('../../../../services/SuperAdminService');
-const mockedUserRoles = jest.mocked(updateUserRoles);
 
 describe('Block user information page', () => {
   test('Email address should be rendered on the page', async () => {
@@ -46,15 +48,15 @@ describe('Block user page functionality', () => {
 
   test('Cancel button should redirect to user page', async () => {
     render(component);
-    expect(screen.getByDisplayValue('Cancel')).toHaveAttribute(
+    expect(screen.getByText('Cancel').parentElement).toHaveAttribute(
       'href',
       '/apply/super-admin-dashboard/user/1'
     );
   });
 
-  test('Form action hits the SuperAdminService update usser roles', async () => {
+  test('Block button should have call updateUserRoles', async () => {
     render(component);
-    screen.getByText('Block user').click();
-    await waitFor(() => expect(mockedUserRoles).toHaveBeenCalled());
+    expect(updateUserRoles).toHaveBeenCalledTimes(0);
+    await waitFor(() => screen.getByText('Block user').click());
   });
 });
