@@ -69,7 +69,7 @@ const AddDepartmentPage = ({
           />
           <div className="govuk-button-group">
             <button className="govuk-button" data-module="govuk-button">
-              Add Department
+              Add department
             </button>
           </div>
         </FlexibleQuestionPageLayout>

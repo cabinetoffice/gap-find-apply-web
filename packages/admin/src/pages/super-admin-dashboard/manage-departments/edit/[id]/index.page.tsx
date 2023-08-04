@@ -81,7 +81,7 @@ const EditDepartmentPage = ({
           />
           <TextInput
             questionHintText={
-              'This should be the departments GGIS ID, not the ID of a grant within it.'
+              "This should be the department's GGIS ID, not the ID of a grant within it."
             }
             width="10"
             questionTitle={`GGIS ID number`}
