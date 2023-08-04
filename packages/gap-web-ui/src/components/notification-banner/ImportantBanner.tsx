@@ -45,10 +45,10 @@ const ImportantBanner = ({
   );
 };
 
-export interface ImportantBannerProps {
+export type ImportantBannerProps = {
   bannerHeading: string;
   bannerContent?: JSX.Element | string;
   successBanner?: boolean;
-}
+};
 
 export default ImportantBanner;

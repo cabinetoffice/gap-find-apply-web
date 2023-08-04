@@ -57,7 +57,7 @@ const Dashboard = ({
 
         {oneLoginTransferErrorEnabled && migrationSucceeded === 'false' && (
           <ImportantBanner
-            bannerHeading="Your data has been successfully added to your One Login account."
+            bannerHeading="Something went wrong while transferring your data. "
             bannerContent={
               <p className="govuk-body">
                 Please get in contact with our support team at{' '}

@@ -8,12 +8,12 @@ import {
 import { routes } from '../../utils/routes';
 import { ImportantBanner } from 'gap-web-ui';
 
-interface ApplicantDashBoardProps {
+export type ApplicantDashBoardProps = {
   descriptionList: DescriptionListProps;
   hasApplications: boolean;
   oneLoginMatchingAccountBannerEnabled: boolean;
   migrationSucceeded?: string;
-}
+};
 
 export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
   descriptionList,

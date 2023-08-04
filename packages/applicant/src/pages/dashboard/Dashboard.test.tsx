@@ -2,7 +2,8 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { DescriptionListProps } from '../../components/description-list/DescriptionList';
 import { routes } from '../../utils/routes';
-import { ApplicantDashboard } from './Dashboard';
+import { ApplicantDashBoardProps, ApplicantDashboard } from './Dashboard';
+import { getProps } from 'gap-web-ui';
 
 const descriptionList: DescriptionListProps = {
   data: [
@@ -13,30 +14,35 @@ const descriptionList: DescriptionListProps = {
   needBorder: false,
 };
 
-describe('Dashboard', () => {
-  beforeEach(() => {
-    render(
-      <ApplicantDashboard
-        descriptionList={descriptionList}
-        hasApplications={true}
-        oneLoginMatchingAccountBannerEnabled={true}
-      />
-    );
-  });
+function getDefaultProps(): ApplicantDashBoardProps {
+  return {
+    descriptionList: descriptionList,
+    hasApplications: true,
+    oneLoginMatchingAccountBannerEnabled: false,
+  };
+}
 
+describe('Dashboard', () => {
   test('should render 2 <hr/>', () => {
+    render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
+
     const line = screen.getAllByRole('separator');
     expect(line.length).toBe(2);
   });
 
   describe('should render first section', () => {
     test('should render heading', () => {
+      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
+
       const heading = screen.getByRole('heading', {
         name: /your account/i,
       });
       expect(heading).toBeInTheDocument();
     });
+
     test('should render table element', () => {
+      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
+
       const nameKey = screen.getByRole('term', {
         name: /name/i,
       });
@@ -57,6 +63,8 @@ describe('Dashboard', () => {
 
   describe('should render second section', () => {
     test('should render heading', () => {
+      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
+
       const heading = screen.getByRole('heading', {
         name: /view your applications/i,
       });
@@ -64,11 +72,15 @@ describe('Dashboard', () => {
     });
 
     test('should render table element', () => {
+      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
+
       const text = screen.getByText(/see your past and current applications/i);
       expect(text).toBeInTheDocument();
     });
 
     test('should render the link element and have the right href', () => {
+      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
+
       expect(
         screen.getByRole('link', { name: /view your applications/i })
       ).toHaveAttribute('href', '/applications');
@@ -76,17 +88,13 @@ describe('Dashboard', () => {
   });
 
   describe('should render second section when applicant has no applications', () => {
-    beforeEach(() => {
+    test('should render paragraphs', () => {
       render(
         <ApplicantDashboard
-          descriptionList={descriptionList}
-          hasApplications={false}
-          oneLoginMatchingAccountBannerEnabled={true}
+          {...getProps(getDefaultProps, { hasApplications: false })}
         />
       );
-    });
 
-    test('should render paragraphs', () => {
       screen.getByText(/You have not started any applications\./i);
       screen.getByText(
         /To get started, you need to find a grant that you want to apply for\./i
@@ -94,6 +102,12 @@ describe('Dashboard', () => {
     });
 
     test('should find a grant button with correct href', () => {
+      render(
+        <ApplicantDashboard
+          {...getProps(getDefaultProps, { hasApplications: false })}
+        />
+      );
+
       expect(
         screen.getByRole('button', { name: /find a grant/i })
       ).toHaveAttribute('href', routes.findAGrant);
@@ -102,6 +116,12 @@ describe('Dashboard', () => {
 
   describe('should render third section', () => {
     test('should render heading', () => {
+      render(
+        <ApplicantDashboard
+          {...getProps(getDefaultProps, { hasApplications: false })}
+        />
+      );
+
       const heading = screen.getByRole('heading', {
         name: /your details/i,
       });
@@ -109,40 +129,69 @@ describe('Dashboard', () => {
     });
 
     test('should render the 2 cards', () => {
+      render(
+        <ApplicantDashboard
+          {...getProps(getDefaultProps, { hasApplications: false })}
+        />
+      );
+
       const organisationCard = screen.getByText(
         /Change your organisation details/i
       );
       expect(organisationCard).toBeInTheDocument();
     });
   });
-});
 
-describe('migration journey feature flag', () => {
-  test('should render matching account banner', () => {
-    render(
-      <ApplicantDashboard
-        descriptionList={descriptionList}
-        hasApplications={false}
-        oneLoginMatchingAccountBannerEnabled={true}
-      />
-    );
-    const banner = screen.getByRole('heading', {
-      name: 'MATCHING ACCOUNT BANNER PLACEHOLDER',
+  describe('migration journey feature flag', () => {
+    test('Should render the error banner', () => {
+      render(
+        <ApplicantDashboard
+          {...getProps(getDefaultProps, {
+            oneLoginMatchingAccountBannerEnabled: true,
+            migrationSucceeded: 'false',
+          })}
+        />
+      );
+
+      screen.getByRole('heading', { level: 2, name: 'Important' });
+      screen.getByText('Something went wrong while transferring your data.');
+      expect(
+        screen.getByRole('link', {
+          name: 'findagrant@cabinetoffice.gov.uk',
+        })
+      ).toHaveAttribute('href', 'mailto:findagrant@cabinetoffice.gov.uk');
     });
 
-    expect(banner).toBeInTheDocument();
-  });
+    test('Should not render the error banner', () => {
+      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
 
-  test('should not render matching account banner', () => {
-    render(
-      <ApplicantDashboard
-        descriptionList={descriptionList}
-        hasApplications={false}
-        oneLoginMatchingAccountBannerEnabled={false}
-      />
-    );
-    expect(
-      screen.queryByText('MATCHING ACCOUNT BANNER PLACEHOLDER')
-    ).toBeFalsy();
+      expect(
+        screen.queryByRole('heading', { level: 2, name: 'Important' })
+      ).toBeFalsy();
+    });
+
+    test('Should render the success banner', () => {
+      render(
+        <ApplicantDashboard
+          {...getProps(getDefaultProps, {
+            oneLoginMatchingAccountBannerEnabled: true,
+            migrationSucceeded: 'true',
+          })}
+        />
+      );
+
+      screen.getByRole('heading', { level: 2, name: 'Success' });
+      screen.getByText(
+        'Your data has been successfully added to your One Login account.'
+      );
+    });
+
+    test('Should not render the success banner', () => {
+      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
+
+      expect(
+        screen.queryByRole('heading', { level: 2, name: 'Success' })
+      ).toBeFalsy();
+    });
   });
 });
