@@ -50,13 +50,15 @@ export const getServerSideProps = async ({
   };
 
   const oneLoginMatchingAccountBannerEnabled =
-    process.env.ONE_LOGIN_MIGRATION_JOURNEY === 'enabled';
+    process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
 
   return {
     props: {
       descriptionList,
       hasApplications,
-      oneLoginMatchingAccountBannerEnabled,
+      oneLoginMatchingAccountBannerEnabled: Boolean(
+        oneLoginMatchingAccountBannerEnabled
+      ),
     },
   };
 };

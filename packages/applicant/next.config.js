@@ -10,7 +10,7 @@ module.exports = {
   },
   publicRuntimeConfig: {
     subPath: process.env.SUB_PATH || '/apply/applicant',
-    oneLoginEnabled: process.env.ONE_LOGIN_ENABLED,
+    oneLoginEnabled: process.env.ONE_LOGIN_ENABLED === 'true',
     FIND_A_GRANT_URL:
       process.env.FIND_A_GRANT_URL ||
       'https://www.find-government-grants.service.gov.uk',
