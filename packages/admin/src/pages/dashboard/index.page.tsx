@@ -1,7 +1,6 @@
 import Meta from '../../components/layout/Meta';
 import AccountDetails from './AccountDetails';
 import ManageGrantSchemes from './ManageGrantSchemes';
-import Scheme from '../../types/Scheme';
 import { getUserSchemes } from '../../services/SchemeService';
 import Pagination from '../../types/Pagination';
 import { getLoggedInUsersDetails } from '../../services/UserService';
@@ -10,9 +9,11 @@ import { getSessionIdFromCookies } from '../../utils/session';
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../components/custom-link/CustomLink';
 import InferProps from '../../types/InferProps';
+import { ImportantBanner } from 'gap-web-ui';
 
 export const getServerSideProps = async ({
   req,
+  query,
 }: GetServerSidePropsContext) => {
   const paginationParams: Pagination = {
     paginate: true,
@@ -20,7 +21,7 @@ export const getServerSideProps = async ({
     size: 2,
     sort: 'createdDate,DESC',
   };
-
+  const migrationSucceeded = query?.migrationSucceeded as string | undefined;
   const sessionCookie = getSessionIdFromCookies(req);
   const schemes = await getUserSchemes(paginationParams, sessionCookie);
   const userDetails: UserDetails = await getLoggedInUsersDetails(sessionCookie);
@@ -31,7 +32,8 @@ export const getServerSideProps = async ({
     props: {
       schemes: schemes,
       userDetails,
-      oneLoginTransferErrorEnabled: Boolean(oneLoginTransferErrorEnabled),
+      oneLoginTransferErrorEnabled,
+      migrationSucceeded,
     },
   };
 };
@@ -40,17 +42,37 @@ const Dashboard = ({
   schemes,
   userDetails,
   oneLoginTransferErrorEnabled,
+  migrationSucceeded,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <div className="govuk-grid-row govuk-!-padding-top-7">
       <Meta title="Dashboard - Manage a grant" />
       <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-        {oneLoginTransferErrorEnabled && (
-          /* TODO: Placeholder for GAP-2013 */
-          <div>
-            <h1>PLACEHOLDER FOR ERROR BANNER</h1>
-          </div>
+        {oneLoginTransferErrorEnabled && migrationSucceeded === 'true' && (
+          <ImportantBanner
+            bannerHeading="Your data has been successfully added to your One Login account."
+            successBanner
+          />
         )}
+
+        {oneLoginTransferErrorEnabled && migrationSucceeded === 'false' && (
+          <ImportantBanner
+            bannerHeading="Your data has been successfully added to your One Login account."
+            bannerContent={
+              <p className="govuk-body">
+                Please get in contact with our support team at
+                <a
+                  className="govuk-notification-banner__link"
+                  href="mailto:findagrant@cabinetoffice.gov.uk"
+                >
+                  findagrant@cabinetoffice.gov.uk
+                </a>
+                {'.'}
+              </p>
+            }
+          />
+        )}
+
         <AccountDetails userDetails={userDetails} />
         <ManageGrantSchemes schemes={schemes} />
 

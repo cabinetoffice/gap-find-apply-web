@@ -3,7 +3,7 @@ import React from 'react';
 import ImportantBanner from './ImportantBanner';
 
 export default {
-  title: 'gap-web-ui/ImportnantBanner',
+  title: 'gap-web-ui/ImportantBanner',
   component: ImportantBanner,
 } as ComponentMeta<typeof ImportantBanner>;
 
@@ -14,5 +14,5 @@ const Template: ComponentStory<typeof ImportantBanner> = (args) => (
 export const importantBanner = Template.bind({});
 
 importantBanner.args = {
-  bannerContent: 'This is some important banner content',
+  bannerHeading: 'This is some important banner content',
 };

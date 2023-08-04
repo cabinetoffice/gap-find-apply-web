@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import ImportantBanner, { ImportantBannerProps } from './ImportantBanner';
 import React from 'react';
 
-const props: ImportantBannerProps = { bannerContent: 'Banner content text' };
+const props: ImportantBannerProps = { bannerHeading: 'Banner content text' };
 const ImportantBannerComponent = () => {
   render(<ImportantBanner {...props} />);
 };
