@@ -2,9 +2,6 @@ import React from 'react';
 
 /**
  * Generic component to be used when adding a GDS important notification banner.
- * Currently we provide bannerContent prop for single line notifications,
- * if this component needs to use more than a single line,
- *  it is recommended to restructure it to use a h3 and a p tag
  */
 const ImportantBanner = ({
   bannerHeading,

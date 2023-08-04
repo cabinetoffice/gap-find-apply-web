@@ -12,6 +12,7 @@ import InferProps from '../../types/InferProps';
 export const getServerSideProps = async ({
   req,
   res,
+  query,
 }: GetServerSidePropsContext) => {
   const findRedirectCookie = process.env.APPLYING_FOR_REDIRECT_COOKIE;
 
@@ -51,14 +52,14 @@ export const getServerSideProps = async ({
 
   const oneLoginMatchingAccountBannerEnabled =
     process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
+  const migrationSucceeded = query?.migrationSucceeded as string | undefined;
 
   return {
     props: {
       descriptionList,
       hasApplications,
-      oneLoginMatchingAccountBannerEnabled: Boolean(
-        oneLoginMatchingAccountBannerEnabled
-      ),
+      oneLoginMatchingAccountBannerEnabled,
+      migrationSucceeded,
     },
   };
 };
@@ -67,6 +68,7 @@ export default function ApplicantDashboardPage({
   descriptionList,
   hasApplications,
   oneLoginMatchingAccountBannerEnabled,
+  migrationSucceeded,
 }: InferProps<typeof getServerSideProps>) {
   return (
     <>
@@ -78,6 +80,7 @@ export default function ApplicantDashboardPage({
           oneLoginMatchingAccountBannerEnabled={
             oneLoginMatchingAccountBannerEnabled
           }
+          migrationSucceeded={migrationSucceeded}
         />
       </Layout>
     </>

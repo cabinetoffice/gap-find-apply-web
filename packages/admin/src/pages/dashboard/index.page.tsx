@@ -60,7 +60,7 @@ const Dashboard = ({
             bannerHeading="Your data has been successfully added to your One Login account."
             bannerContent={
               <p className="govuk-body">
-                Please get in contact with our support team at
+                Please get in contact with our support team at{' '}
                 <a
                   className="govuk-notification-banner__link"
                   href="mailto:findagrant@cabinetoffice.gov.uk"
