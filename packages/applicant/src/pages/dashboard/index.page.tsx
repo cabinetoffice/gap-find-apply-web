@@ -52,8 +52,8 @@ export const getServerSideProps = async ({
 
   const oneLoginMatchingAccountBannerEnabled =
     process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
-  const migrationSucceeded = query?.migrationSucceeded as string | undefined;
-
+  const migrationSucceeded =
+    (query?.migrationSucceeded as string | undefined) ?? null;
   return {
     props: {
       descriptionList,

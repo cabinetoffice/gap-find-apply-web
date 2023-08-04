@@ -21,7 +21,8 @@ export const getServerSideProps = async ({
     size: 2,
     sort: 'createdDate,DESC',
   };
-  const migrationSucceeded = query?.migrationSucceeded as string | undefined;
+  const migrationSucceeded =
+    (query?.migrationSucceeded as string | undefined) ?? null;
   const sessionCookie = getSessionIdFromCookies(req);
   const schemes = await getUserSchemes(paginationParams, sessionCookie);
   const userDetails: UserDetails = await getLoggedInUsersDetails(sessionCookie);
