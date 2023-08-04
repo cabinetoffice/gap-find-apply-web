@@ -6,6 +6,7 @@ export interface SummaryListProps {
   rows: Row[];
   displayRegularKeyFont?: boolean;
   hasWiderKeyColumn?: boolean;
+  boldHeaderRow?: boolean;
 }
 
 export interface Row {
@@ -19,6 +20,7 @@ const SummaryList = ({
   rows,
   displayRegularKeyFont = false,
   hasWiderKeyColumn = false,
+  boldHeaderRow,
 }: SummaryListProps) => {
   return (
     <dl
@@ -26,10 +28,12 @@ const SummaryList = ({
       data-testid="summary-list"
       {...summaryListAttributes}
     >
-      {rows.map((row) => (
-        <div className="govuk-summary-list__row" key={row.key}>
-          <dt
-            className={`govuk-summary-list__key 
+      {rows.map((row, index) => {
+        const useBoldFont = boldHeaderRow && index === 0;
+        return (
+          <div className="govuk-summary-list__row" key={row.key}>
+            <dt
+              className={`govuk-summary-list__key 
             ${
               displayRegularKeyFont
                 ? ' ' + styles['gap-summary-list--key-weight-regular'] + ' '
@@ -39,20 +43,29 @@ const SummaryList = ({
                  hasWiderKeyColumn ? ' ' + styles['key-width-45percent-sm'] : ''
                }
             `}
-          >
-            {row.key}
-          </dt>
-          <dd
-            className="govuk-summary-list__value"
-            data-cy={`cy_summaryListValue_${row.key}`}
-          >
-            {row.value}
-          </dd>
-          {row.action && (
-            <dd className="govuk-summary-list__actions">{row.action}</dd>
-          )}
-        </div>
-      ))}
+            >
+              {row.key}
+            </dt>
+            <dd
+              className={`govuk-summary-list__value${
+                useBoldFont ? ' govuk-!-font-weight-bold' : ''
+              }`}
+              data-cy={`cy_summaryListValue_${row.key}`}
+            >
+              {row.value}
+            </dd>
+            {row.action && (
+              <dd
+                className={`govuk-summary-list__actions${
+                  useBoldFont ? ' govuk-!-font-weight-bold' : ''
+                }`}
+              >
+                {row.action}
+              </dd>
+            )}
+          </div>
+        );
+      })}
     </dl>
   );
 };
