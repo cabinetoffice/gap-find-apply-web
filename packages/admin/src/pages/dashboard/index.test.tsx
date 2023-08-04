@@ -50,6 +50,7 @@ describe('Dashboard', () => {
       mockedGetUserSchemes.mockResolvedValue(mockSchemeList);
       mockedGetLoggedInUsersDetails.mockResolvedValue(mockUserDetails);
       process.env.SESSION_COOKIE_NAME = 'gap-test';
+      process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED = 'false';
     });
 
     it('Should return a list of schemes', async () => {
@@ -60,7 +61,7 @@ describe('Dashboard', () => {
           schemes: mockSchemeList,
           userDetails: mockUserDetails,
           oneLoginTransferErrorEnabled: false,
-          migrationSucceeded: undefined,
+          migrationSucceeded: null,
         },
       });
     });
@@ -75,7 +76,7 @@ describe('Dashboard', () => {
           schemes: mockSchemeList,
           userDetails: mockUserDetails,
           oneLoginTransferErrorEnabled: true,
-          migrationSucceeded: undefined,
+          migrationSucceeded: null,
         },
       });
     });

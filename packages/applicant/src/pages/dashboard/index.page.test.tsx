@@ -116,7 +116,7 @@ describe('getServerSideProps', () => {
         descriptionList,
         hasApplications: true,
         oneLoginMatchingAccountBannerEnabled: false,
-        migrationSucceeded: undefined,
+        migrationSucceeded: null,
       },
     });
   });
@@ -147,7 +147,7 @@ describe('getServerSideProps', () => {
         },
         hasApplications: true,
         oneLoginMatchingAccountBannerEnabled: false,
-        migrationSucceeded: undefined,
+        migrationSucceeded: null,
       },
     });
   });
