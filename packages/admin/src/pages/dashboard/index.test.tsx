@@ -124,7 +124,7 @@ describe('Dashboard', () => {
       ).toBeFalsy();
     });
 
-    it('Should render the success banner', () => {
+    it(`renders success banner when migrationSucceeded is 'true'`, () => {
       render(
         <Dashboard
           {...getProps(getDefaultProps, {
