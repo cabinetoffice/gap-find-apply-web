@@ -72,7 +72,7 @@ export const getServerSideProps = async (
     handleRequest,
     jwt: getUserTokenFromCookies(context.req),
     onErrorMessage: 'Failed to filter users, please try again later.',
-    usePostRequestForPageData: true,
+    useHandleRequestForPageData: true,
     onSuccessRedirectHref: `/super-admin-dashboard`,
   });
 };
