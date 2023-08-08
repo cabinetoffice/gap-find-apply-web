@@ -52,14 +52,17 @@ export const getServerSideProps = async ({
 
   const oneLoginMatchingAccountBannerEnabled =
     process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
-  const migrationSucceeded =
-    (query?.migrationSucceeded as string | undefined) ?? null;
+  const migrationStatus = query?.migrationStatus ?? null;
+  const showMigrationSuccessBanner =
+    oneLoginMatchingAccountBannerEnabled && migrationStatus === 'success';
+  const showMigrationErrorBanner =
+    oneLoginMatchingAccountBannerEnabled && migrationStatus === 'error';
   return {
     props: {
       descriptionList,
       hasApplications,
-      oneLoginMatchingAccountBannerEnabled,
-      migrationSucceeded,
+      showMigrationErrorBanner,
+      showMigrationSuccessBanner,
     },
   };
 };
@@ -67,8 +70,8 @@ export const getServerSideProps = async ({
 export default function ApplicantDashboardPage({
   descriptionList,
   hasApplications,
-  oneLoginMatchingAccountBannerEnabled,
-  migrationSucceeded,
+  showMigrationErrorBanner,
+  showMigrationSuccessBanner,
 }: InferProps<typeof getServerSideProps>) {
   return (
     <>
@@ -77,10 +80,8 @@ export default function ApplicantDashboardPage({
         <ApplicantDashboard
           descriptionList={descriptionList}
           hasApplications={hasApplications}
-          oneLoginMatchingAccountBannerEnabled={
-            oneLoginMatchingAccountBannerEnabled
-          }
-          migrationSucceeded={migrationSucceeded}
+          showMigrationErrorBanner={showMigrationErrorBanner}
+          showMigrationSuccessBanner={showMigrationSuccessBanner}
         />
       </Layout>
     </>

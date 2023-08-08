@@ -11,45 +11,43 @@ import { ImportantBanner } from 'gap-web-ui';
 export type ApplicantDashBoardProps = {
   descriptionList: DescriptionListProps;
   hasApplications: boolean;
-  oneLoginMatchingAccountBannerEnabled: boolean;
-  migrationSucceeded?: string;
+  showMigrationErrorBanner: boolean;
+  showMigrationSuccessBanner: boolean;
 };
 
 export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
   descriptionList,
   hasApplications,
-  oneLoginMatchingAccountBannerEnabled,
-  migrationSucceeded,
+  showMigrationErrorBanner,
+  showMigrationSuccessBanner,
 }) => {
   return (
     <div className="govuk-grid-row">
       <div className="govuk-grid-column-two-thirds">
-        {oneLoginMatchingAccountBannerEnabled &&
-          migrationSucceeded === 'true' && (
-            <ImportantBanner
-              bannerHeading="Your data has been successfully added to your One Login account."
-              isSuccess
-            />
-          )}
+        {showMigrationSuccessBanner && (
+          <ImportantBanner
+            bannerHeading="Your data has been successfully added to your One Login account."
+            isSuccess
+          />
+        )}
 
-        {oneLoginMatchingAccountBannerEnabled &&
-          migrationSucceeded === 'false' && (
-            <ImportantBanner
-              bannerHeading="Something went wrong while transferring your data."
-              bannerContent={
-                <p className="govuk-body">
-                  Please get in contact with our support team at{' '}
-                  <a
-                    className="govuk-notification-banner__link"
-                    href="mailto:findagrant@cabinetoffice.gov.uk"
-                  >
-                    findagrant@cabinetoffice.gov.uk
-                  </a>
-                  {'.'}
-                </p>
-              }
-            />
-          )}
+        {showMigrationErrorBanner && (
+          <ImportantBanner
+            bannerHeading="Something went wrong while transferring your data."
+            bannerContent={
+              <p className="govuk-body">
+                Please get in contact with our support team at{' '}
+                <a
+                  className="govuk-notification-banner__link"
+                  href="mailto:findagrant@cabinetoffice.gov.uk"
+                >
+                  findagrant@cabinetoffice.gov.uk
+                </a>
+                {'.'}
+              </p>
+            }
+          />
+        )}
 
         <section>
           <h1

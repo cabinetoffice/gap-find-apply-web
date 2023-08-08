@@ -18,7 +18,8 @@ function getDefaultProps(): ApplicantDashBoardProps {
   return {
     descriptionList: descriptionList,
     hasApplications: true,
-    oneLoginMatchingAccountBannerEnabled: false,
+    showMigrationErrorBanner: false,
+    showMigrationSuccessBanner: false,
   };
 }
 
@@ -73,8 +74,7 @@ describe('Dashboard', () => {
       render(
         <ApplicantDashboard
           {...getProps(getDefaultProps, {
-            oneLoginMatchingAccountBannerEnabled: true,
-            migrationSucceeded: 'false',
+            showMigrationErrorBanner: true,
           })}
         />
       );
@@ -100,8 +100,7 @@ describe('Dashboard', () => {
       render(
         <ApplicantDashboard
           {...getProps(getDefaultProps, {
-            oneLoginMatchingAccountBannerEnabled: true,
-            migrationSucceeded: 'true',
+            showMigrationSuccessBanner: true,
           })}
         />
       );

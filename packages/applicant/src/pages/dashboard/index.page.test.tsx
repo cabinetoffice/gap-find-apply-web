@@ -115,8 +115,8 @@ describe('getServerSideProps', () => {
       props: {
         descriptionList,
         hasApplications: true,
-        oneLoginMatchingAccountBannerEnabled: false,
-        migrationSucceeded: null,
+        showMigrationErrorBanner: false,
+        showMigrationSuccessBanner: false,
       },
     });
   });
@@ -146,8 +146,8 @@ describe('getServerSideProps', () => {
           needBorder: false,
         },
         hasApplications: true,
-        oneLoginMatchingAccountBannerEnabled: false,
-        migrationSucceeded: null,
+        showMigrationErrorBanner: false,
+        showMigrationSuccessBanner: false,
       },
     });
   });
