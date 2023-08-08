@@ -101,7 +101,7 @@ async function postPagesResult<T extends PageBodyResponse, V>({
   onSuccessRedirectHref,
   onErrorMessage,
   resolvedUrl,
-  usePostRequestForPageData,
+  useHandleRequestForPageData,
 }: PostPageResultProps<T, V>) {
   return CallServiceMethod<T, V>(
     req,
@@ -109,7 +109,7 @@ async function postPagesResult<T extends PageBodyResponse, V>({
     (body) => handleRequest(body, jwt),
     onSuccessRedirectHref,
     generateServiceErrorProps(onErrorMessage, resolvedUrl),
-    usePostRequestForPageData
+    useHandleRequestForPageData
   );
 }
 
