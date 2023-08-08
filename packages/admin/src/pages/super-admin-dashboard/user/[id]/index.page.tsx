@@ -80,14 +80,14 @@ const UserPage = ({ user }: UserPageProps) => {
                     customStyle="govuk-button govuk-button--warning"
                     data-module="govuk-button"
                   >
-                    Delete User
+                    Delete user
                   </CustomLink>
                   {!user.role?.label && (
                     <CustomLink
                       href={`/api/unblockUser?id=${user.gapUserId}`}
                       customStyle="govuk-button govuk-button--secondary"
                     >
-                      Unblock User
+                      Unblock user
                     </CustomLink>
                   )}
 
@@ -96,7 +96,7 @@ const UserPage = ({ user }: UserPageProps) => {
                       href={`/super-admin-dashboard/user/${user.gapUserId}/block-user`}
                       customStyle="govuk-button govuk-button--secondary"
                     >
-                      Block User
+                      Block user
                     </CustomLink>
                   )}
                 </div>
