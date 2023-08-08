@@ -147,7 +147,7 @@ const SuperAdminDashboard = ({
                         label: role.label,
                         value: role.id,
                       }))}
-                    fieldErrors={[]}
+                    fieldErrors={fieldErrors}
                     small
                   />
 
@@ -161,7 +161,7 @@ const SuperAdminDashboard = ({
                       label: department.name,
                       value: department.id,
                     }))}
-                    fieldErrors={[]}
+                    fieldErrors={fieldErrors}
                     small
                   />
 
