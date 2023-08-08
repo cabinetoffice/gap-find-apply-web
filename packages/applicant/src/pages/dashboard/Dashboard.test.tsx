@@ -126,10 +126,9 @@ describe('OneLogin feature flag', () => {
   test('should render Sign In Details card when OneLogin feature flag is enabled', () => {
     render(
       <ApplicantDashboard
-        descriptionList={descriptionList}
-        hasApplications={false}
-        oneLoginMatchingAccountBannerEnabled={true}
-        oneLoginEnabled={true}
+        {...getProps(getDefaultProps, {
+          oneLoginEnabled: true,
+        })}
       />
     );
     const card = screen.getByRole('link', {
@@ -142,10 +141,9 @@ describe('OneLogin feature flag', () => {
   test('should not render Sign In Details card when OneLogin feature flag is disabled', () => {
     render(
       <ApplicantDashboard
-        descriptionList={descriptionList}
-        hasApplications={false}
-        oneLoginMatchingAccountBannerEnabled={false}
-        oneLoginEnabled={false}
+        {...getProps(getDefaultProps, {
+          oneLoginEnabled: false,
+        })}
       />
     );
     expect(screen.queryByText('Your sign in details')).toBeFalsy();

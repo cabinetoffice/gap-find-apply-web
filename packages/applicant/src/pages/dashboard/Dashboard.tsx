@@ -7,7 +7,6 @@ import {
 } from '../../components/description-list/DescriptionList';
 import { routes } from '../../utils/routes';
 import { ImportantBanner } from 'gap-web-ui';
-import getConfig from 'next/config';
 
 export type ApplicantDashBoardProps = {
   descriptionList: DescriptionListProps;
@@ -16,8 +15,6 @@ export type ApplicantDashBoardProps = {
   showMigrationSuccessBanner: boolean;
   oneLoginEnabled: boolean;
 };
-
-const { publicRuntimeConfig } = getConfig();
 
 export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
   descriptionList,
