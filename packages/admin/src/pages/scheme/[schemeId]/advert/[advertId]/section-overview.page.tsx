@@ -194,7 +194,7 @@ const SectionOverview = ({
           <div className="govuk-grid-row">
             <div className="govuk-grid-column-two-thirds">
               <ImportantBanner
-                bannerContent="You need to review and publish your advert again, even if
+                bannerHeading="You need to review and publish your advert again, even if
                     you do not make any changes."
               />
             </div>
