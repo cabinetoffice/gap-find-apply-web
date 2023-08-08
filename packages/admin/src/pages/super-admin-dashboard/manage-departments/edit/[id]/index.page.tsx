@@ -33,13 +33,17 @@ export function getServerSideProps(context: GetServerSidePropsContext) {
   const handleRequest = async (body: PageBodyResponse, jwt: string) =>
     updateDepartmentInformation(body, context.params?.id as string, jwt);
 
-  return QuestionPageGetServerSideProps({
+  return QuestionPageGetServerSideProps<
+    PageBodyResponse,
+    Awaited<ReturnType<typeof fetchPageData>>,
+    Awaited<ReturnType<typeof handleRequest>>
+  >({
     context,
     fetchPageData,
     handleRequest,
     jwt: getUserTokenFromCookies(context.req),
     onErrorMessage: 'Failed to edit department, please try again later.',
-    onSuccessRedirectHref: `/super-admin-dashboard/manage-departments/edit/${context.params?.id}`,
+    onSuccessRedirectHref: `/super-admin-dashboard/manage-departments`,
   });
 }
 
@@ -48,38 +52,42 @@ const EditDepartmentPage = ({
   pageData: { departmentName, ggisID, id },
   csrfToken,
   fieldErrors,
+  previousValues,
 }: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
 
   return (
     <>
       <Meta title="Edit Department" />
-      <CustomLink isBackButton href={'/super-admin-dashboard/'} />
+      <CustomLink
+        isBackButton
+        href={'/super-admin-dashboard/manage-departments'}
+      />
 
       <div className="govuk-!-padding-top-7">
-        <h1 className="govuk-heading-l">Edit department</h1>
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
           formAction={formAction}
         >
+          <h1 className="govuk-heading-l">Edit department</h1>
           <TextInput
             questionTitle={`Department name`}
             titleSize="m"
-            fieldName="departmentName"
-            defaultValue={departmentName}
+            fieldName="name"
+            defaultValue={previousValues?.name || departmentName}
             fieldErrors={fieldErrors}
             TitleTag="h2"
           />
           <TextInput
             questionHintText={
-              'This should be the departments GGIS ID, not the ID of a grant within it.'
+              "This should be the department's GGIS ID, not the ID of a grant within it."
             }
             width="10"
-            questionTitle={`GGGIS ID number`}
+            questionTitle={`GGIS ID number`}
             titleSize="m"
-            fieldName="ggisId"
-            defaultValue={ggisID}
+            fieldName="ggisID"
+            defaultValue={previousValues?.ggisID || ggisID}
             fieldErrors={fieldErrors}
             TitleTag="h2"
           />

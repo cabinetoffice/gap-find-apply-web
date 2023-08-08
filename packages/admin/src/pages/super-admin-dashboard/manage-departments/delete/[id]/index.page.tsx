@@ -5,11 +5,9 @@ import {
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../components/layout/Meta';
-import getConfig from 'next/config';
 import InferProps from '../../../../../types/InferProps';
 import { getUserTokenFromCookies } from '../../../../../utils/session';
 import { deleteDepartmentInformation } from '../../../../../services/SuperAdminService';
-import { Department } from '../../../types';
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async () => {
@@ -38,7 +36,10 @@ const DeleteDepartmentPage = ({
   return (
     <>
       <Meta title="Delete Department" />
-      <CustomLink isBackButton href={'/super-admin-dashboard/'} />
+      <CustomLink
+        isBackButton
+        href={`/super-admin-dashboard/manage-departments/edit/${id}`}
+      />
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}
@@ -57,12 +58,11 @@ const DeleteDepartmentPage = ({
             >
               Delete department
             </button>
-            <a
-              className="govuk-link"
+            <CustomLink
               href={`/super-admin-dashboard/manage-departments/edit/${id}`}
             >
               Cancel
-            </a>
+            </CustomLink>
           </div>
         </FlexibleQuestionPageLayout>
       </div>

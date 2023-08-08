@@ -101,6 +101,7 @@ const MockApplicationsList = [
 const applicantDashboardProps: ApplicantDashBoardPageProps = {
   descriptionList: descriptionList,
   hasApplications: true,
+  oneLoginMatchingAccountBannerEnabled: false,
 };
 //TODO once we fetch the Applicant Name and the Organisation Name this test will completely change
 describe('getServerSideProps', () => {
@@ -134,6 +135,7 @@ describe('getServerSideProps', () => {
       props: {
         descriptionList,
         hasApplications: true,
+        oneLoginMatchingAccountBannerEnabled: false,
       },
     });
   });
@@ -162,6 +164,7 @@ describe('getServerSideProps', () => {
           needBorder: false,
         },
         hasApplications: true,
+        oneLoginMatchingAccountBannerEnabled: false,
       },
     });
   });
