@@ -27,9 +27,8 @@ function isWithinNumberOfMinsOfExpiry(expiresAt: Date, numberOfMins: number) {
   return expiresAt >= now && expiresAt <= nowPlusMins;
 }
 
-function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
+export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
   const res = NextResponse.redirect(redirectUri);
-
   if (newApplicationPattern.test({ pathname: req.nextUrl.pathname })) {
     res.cookies.set(
       process.env.APPLYING_FOR_REDIRECT_COOKIE,
@@ -66,7 +65,7 @@ export async function middleware(req: NextRequest) {
       console.error(err);
     }
 
-    const res = buildMiddlewareResponse(req, LOGIN_URL);
+    const res = buildMiddlewareResponse(req, HOST);
     return res;
   }
 
@@ -75,7 +74,7 @@ export async function middleware(req: NextRequest) {
     const expiresAt = new Date(validJwtResponse.expiresAt);
 
     if (!validJwtResponse.valid) {
-      return buildMiddlewareResponse(req, LOGIN_URL);
+      return buildMiddlewareResponse(req, HOST);
     }
 
     if (isWithinNumberOfMinsOfExpiry(expiresAt, 30)) {
@@ -87,7 +86,7 @@ export async function middleware(req: NextRequest) {
   } catch (err) {
     console.error('middleware error');
     console.error(err);
-    return NextResponse.redirect(LOGIN_URL);
+    return NextResponse.redirect(HOST);
   }
 }
 
