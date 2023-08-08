@@ -64,7 +64,7 @@ const UserPage = ({ user }: UserPageProps) => {
                       value: user.role?.label || 'Blocked',
                       action: user.role?.label ? (
                         <Link
-                          href={`/super-admin-dashboard/user/${user.gapUserId}/block-user`}
+                          href={`/super-admin-dashboard/user/${user.gapUserId}/change-roles`}
                         >
                           <a className="govuk-link">Change</a>
                         </Link>
