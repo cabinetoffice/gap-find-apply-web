@@ -53,7 +53,7 @@ const AddDepartmentPage = ({
             fieldName="name"
             fieldErrors={fieldErrors}
             TitleTag="h2"
-            defaultValue={previousValues?.name}
+            defaultValue={previousValues?.name as string}
           />
           <TextInput
             questionHintText={
@@ -65,7 +65,7 @@ const AddDepartmentPage = ({
             fieldName="ggisID"
             fieldErrors={fieldErrors}
             TitleTag="h2"
-            defaultValue={previousValues?.ggisID}
+            defaultValue={previousValues?.ggisID as string}
           />
           <div className="govuk-button-group">
             <button className="govuk-button" data-module="govuk-button">

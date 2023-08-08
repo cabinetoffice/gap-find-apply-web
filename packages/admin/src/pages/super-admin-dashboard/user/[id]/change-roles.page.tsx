@@ -13,6 +13,7 @@ import {
 import Meta from '../../../../components/layout/Meta';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
+import { Role, User } from '../../types';
 
 type PageBodyResponse = {
   newUserRoles: string | string[];
@@ -57,7 +58,9 @@ const EditRoleWithId = ({
   csrfToken,
   formAction,
   fieldErrors,
-}: InferProps<typeof getServerSideProps>) => {
+}: InferProps<typeof getServerSideProps> & {
+  pageData: { user: User; roles: Role[]; userId: string };
+}) => {
   const { user, roles } = pageData;
   return (
     <>
