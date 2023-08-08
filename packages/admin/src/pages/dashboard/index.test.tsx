@@ -140,7 +140,7 @@ describe('Dashboard', () => {
       );
     });
 
-    it('Should not render the success banner', () => {
+    it('does not render success banner when migrationSucceeded not passed', () => {
       render(<Dashboard {...getProps(getDefaultProps)} />);
 
       expect(
