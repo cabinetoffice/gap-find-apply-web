@@ -5,6 +5,7 @@ import { getLoginUrl } from './utils/general';
 
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
 const HOST = process.env.HOST;
+const ONE_LOGIN_ENABLED = process.env.ONE_LOGIN_ENABLED === 'true';
 const LOGIN_URL = getLoginUrl();
 
 // //it will apply the middleware to all those paths
@@ -16,6 +17,7 @@ export const config = {
     '/personal-details/:path*',
     '/submissions/:path*',
     '/grant-is-closed',
+    '/sign-in-details',
   ],
 };
 
@@ -48,6 +50,16 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
 }
 
 export async function middleware(req: NextRequest) {
+  if (signInDetailsPage.test({ pathname: req.nextUrl.pathname })) {
+    if (!ONE_LOGIN_ENABLED) {
+      const url = req.nextUrl.clone();
+      url.pathname = '/404';
+      return NextResponse.redirect(url);
+    } else {
+      return NextResponse.next();
+    }
+  }
+
   const cookie = req.cookies.get(USER_TOKEN_NAME);
 
   const response = await fetch(`${HOST}/api/getJwt`, {
@@ -92,4 +104,8 @@ export async function middleware(req: NextRequest) {
 
 const newApplicationPattern = new URLPattern({
   pathname: '/applications/:applicationId([0-9]+)',
+});
+
+const signInDetailsPage = new URLPattern({
+  pathname: '/sign-in-details',
 });

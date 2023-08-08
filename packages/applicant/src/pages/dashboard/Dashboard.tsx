@@ -6,17 +6,22 @@ import {
   DescriptionListProps,
 } from '../../components/description-list/DescriptionList';
 import { routes } from '../../utils/routes';
+import getConfig from 'next/config';
 
 interface ApplicantDashBoardProps {
   descriptionList: DescriptionListProps;
   hasApplications: boolean;
   oneLoginMatchingAccountBannerEnabled: boolean;
+  oneLoginEnabled: boolean;
 }
+
+const { publicRuntimeConfig } = getConfig();
 
 export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
   descriptionList,
   hasApplications,
   oneLoginMatchingAccountBannerEnabled,
+  oneLoginEnabled,
 }) => {
   return (
     <div className="govuk-grid-row">
@@ -105,6 +110,13 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
               linkDescription={'Your organisation details'}
               description={'Change your organisation details'}
             />
+            {oneLoginEnabled && (
+              <Card
+                link={routes.signInDetails}
+                linkDescription={'Your sign in details'}
+                description={'Change your sign in details'}
+              />
+            )}
           </div>
         </section>
       </div>

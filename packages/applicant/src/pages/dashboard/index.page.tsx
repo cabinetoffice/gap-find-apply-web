@@ -52,13 +52,15 @@ export const getServerSideProps = async ({
   const oneLoginMatchingAccountBannerEnabled =
     process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
 
+  const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
+
   return {
     props: {
       descriptionList,
       hasApplications,
-      oneLoginMatchingAccountBannerEnabled: Boolean(
-        oneLoginMatchingAccountBannerEnabled
-      ),
+      oneLoginMatchingAccountBannerEnabled:
+        oneLoginMatchingAccountBannerEnabled,
+      oneLoginEnabled: oneLoginEnabled,
     },
   };
 };
@@ -67,6 +69,7 @@ export default function ApplicantDashboardPage({
   descriptionList,
   hasApplications,
   oneLoginMatchingAccountBannerEnabled,
+  oneLoginEnabled,
 }: InferProps<typeof getServerSideProps>) {
   return (
     <>
@@ -78,6 +81,7 @@ export default function ApplicantDashboardPage({
           oneLoginMatchingAccountBannerEnabled={
             oneLoginMatchingAccountBannerEnabled
           }
+          oneLoginEnabled={oneLoginEnabled}
         />
       </Layout>
     </>

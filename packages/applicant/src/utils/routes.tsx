@@ -7,6 +7,7 @@ export const routes = {
   dashboard: '/dashboard',
   grants: '/grants',
   personalDetails: '/personal-details',
+  signInDetails: '/sign-in-details',
   organisation: {
     index: '/organisation',
     address: '/organisation/address',
