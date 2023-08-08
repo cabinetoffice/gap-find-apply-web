@@ -153,7 +153,6 @@ export const filterUsers = async (
     departments: filterData.departments.join(','),
     searchTerm: filterData.searchTerm,
     clearAllFilters: filterData.clearAllFilters,
-    shouldRedirect: true,
   };
 
   const res = await axios.get<SuperAdminDashboardResponse>(
