@@ -19,6 +19,7 @@ describe('Dashboard', () => {
       <ApplicantDashboard
         descriptionList={descriptionList}
         hasApplications={true}
+        oneLoginMatchingAccountBannerEnabled={true}
       />
     );
   });
@@ -80,6 +81,7 @@ describe('Dashboard', () => {
         <ApplicantDashboard
           descriptionList={descriptionList}
           hasApplications={false}
+          oneLoginMatchingAccountBannerEnabled={true}
         />
       );
     });
@@ -112,5 +114,35 @@ describe('Dashboard', () => {
       );
       expect(organisationCard).toBeInTheDocument();
     });
+  });
+});
+
+describe('migration journey feature flag', () => {
+  test('should render matching account banner', () => {
+    render(
+      <ApplicantDashboard
+        descriptionList={descriptionList}
+        hasApplications={false}
+        oneLoginMatchingAccountBannerEnabled={true}
+      />
+    );
+    const banner = screen.getByRole('heading', {
+      name: 'MATCHING ACCOUNT BANNER PLACEHOLDER',
+    });
+
+    expect(banner).toBeInTheDocument();
+  });
+
+  test('should not render matching account banner', () => {
+    render(
+      <ApplicantDashboard
+        descriptionList={descriptionList}
+        hasApplications={false}
+        oneLoginMatchingAccountBannerEnabled={false}
+      />
+    );
+    expect(
+      screen.queryByText('MATCHING ACCOUNT BANNER PLACEHOLDER')
+    ).toBeFalsy();
   });
 });

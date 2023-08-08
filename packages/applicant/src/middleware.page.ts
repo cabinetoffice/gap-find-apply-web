@@ -1,9 +1,11 @@
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { verifyToken } from './services/JwtService';
+import { getLoginUrl } from './utils/general';
 
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
 const HOST = process.env.HOST;
+const LOGIN_URL = getLoginUrl();
 
 // //it will apply the middleware to all those paths
 export const config = {

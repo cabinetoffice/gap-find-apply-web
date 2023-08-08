@@ -4,8 +4,6 @@ import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
 
 export interface RegisterAnApplicant {
-  firstName: string;
-  lastName: string;
   email: string;
   emailConfirmed: string;
   telephone: string;
@@ -36,16 +34,16 @@ export class GrantApplicantService {
     return data;
   }
 
-  public async doesApplicantExist(jwt: string): Promise<Boolean> {
-    const { data } = await axios.get<Boolean>(
+  public async doesApplicantExist(jwt: string): Promise<boolean> {
+    const { data } = await axios.get<boolean>(
       `${this.BACKEND_HOST}/grant-applicant/does-exist`,
       axiosConfig(jwt)
     );
     return data;
   }
 
-  public async createAnApplicant(jwt: string): Promise<String> {
-    const { data } = await axios.post<String>(
+  public async createAnApplicant(jwt: string): Promise<string> {
+    const { data } = await axios.post<string>(
       `${this.BACKEND_HOST}/grant-applicant/create`,
       null,
       axiosConfig(jwt)

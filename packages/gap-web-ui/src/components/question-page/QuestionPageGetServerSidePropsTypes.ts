@@ -7,7 +7,7 @@ type FetchPageData = Record<string, any>;
 type QuestionPageGetServerSidePropsType<T, K, V> = {
   context: GetServerSidePropsContext;
   fetchPageData: (jwt: string) => Promise<K>;
-  processPagePostResponse: (body: T, jwt: string) => Promise<V>;
+  handleRequest: (body: T, jwt: string) => Promise<V>;
   jwt: string;
   onSuccessRedirectHref: string | ((result: V) => string);
   onErrorMessage: string;
@@ -16,7 +16,7 @@ type QuestionPageGetServerSidePropsType<T, K, V> = {
 type PostPageResultProps<T extends PageBodyResponse, V> = {
   req: GetServerSidePropsContext['req'];
   res: GetServerSidePropsContext['res'];
-  processPagePostResponse: (body: T, jwt: string) => Promise<V>;
+  handleRequest: (body: T, jwt: string) => Promise<V>;
   onSuccessRedirectHref: string | ((result: V) => string);
   jwt: string;
   onErrorMessage: string;

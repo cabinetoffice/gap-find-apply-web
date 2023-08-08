@@ -9,9 +9,7 @@ import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
-import {
-  postGrantBeneficiaryResponse,
-} from '../../../../../services/GrantBeneficiaryService';
+import { postGrantBeneficiaryResponse } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import {
@@ -20,6 +18,16 @@ import {
 } from '../equality-and-diversity-service-errors';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 import { EqualityAndDiversityParams } from '../types';
+
+export type SexualOrientationPageProps = {
+  formAction: string;
+  skipURL: string;
+  backButtonURL: string;
+  defaultChecked?: SexualOrientationCheckboxes[];
+  defaultSexualOrientationDetails?: string;
+  fieldErrors: ValidationError[];
+  csrfToken: string;
+};
 
 type RequestBody = {
   supportedSexualOrientation?:
@@ -36,13 +44,10 @@ export enum SexualOrientationCheckboxes {
   ALL = 'No, we support people of any sexual orientation',
 }
 
-export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
-  params,
-  query,
-  resolvedUrl,
-  req,
-  res,
-}) => {
+export const getServerSideProps: GetServerSideProps<
+  SexualOrientationPageProps,
+  EqualityAndDiversityParams
+> = async ({ params, query, resolvedUrl, req, res }) => {
   const { submissionId, grantBeneficiaryId } = params;
   const { returnToSummaryPage } = query;
 
@@ -237,16 +242,6 @@ const SexualOrientationPage = ({
       </Layout>
     </>
   );
-};
-
-export type SexualOrientationPageProps = {
-  formAction: string;
-  skipURL: string;
-  backButtonURL: string;
-  defaultChecked?: SexualOrientationCheckboxes[];
-  defaultSexualOrientationDetails?: string;
-  fieldErrors: ValidationError[];
-  csrfToken: string;
 };
 
 export default SexualOrientationPage;

@@ -3,17 +3,6 @@ import { render, screen } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { createMockRouter } from '../testUtils/createMockRouter';
 import GrantIsClosedPage from './grant-is-closed.page';
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-      subPath: ''
-    },
-    publicRuntimeConfig: {
-      subPath: '',
-    },
-  };
-});
 
 describe('Grant is closed page', () => {
   beforeEach(() => {

@@ -1,4 +1,4 @@
-import ResponseTypeEnum from "../enums/ResponseType";
+import ResponseTypeEnum from '../enums/ResponseType';
 
 type QuestionSummary = {
   fieldTitle: string;

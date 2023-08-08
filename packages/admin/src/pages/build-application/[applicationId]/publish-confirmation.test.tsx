@@ -36,7 +36,9 @@ describe('Publish confirmation page', () => {
 
   it('Should render a meta title without "Error: " when fieldErrors is empty', () => {
     render(<PublishConfirmationPage {...getProps()} />);
-    expect(document.title).toBe('Publish your application form - Manage a grant');
+    expect(document.title).toBe(
+      'Publish your application form - Manage a grant'
+    );
   });
 
   it('Should render a meta title with "Error: " when fieldErrors is NOT empty', () => {
@@ -50,7 +52,9 @@ describe('Publish confirmation page', () => {
       />
     );
 
-    expect(document.title).toBe('Error: Publish your application form - Manage a grant');
+    expect(document.title).toBe(
+      'Error: Publish your application form - Manage a grant'
+    );
   });
 
   it('Should render a back button', () => {

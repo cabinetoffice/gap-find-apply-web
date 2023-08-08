@@ -16,7 +16,7 @@ jest.mock('next/config', () => () => {
     },
     publicRuntimeConfig: {
       SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080'
+      APPLICANT_DOMAIN: 'http://localhost:8080',
     },
   };
 });

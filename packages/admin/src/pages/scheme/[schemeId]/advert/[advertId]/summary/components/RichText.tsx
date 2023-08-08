@@ -51,7 +51,9 @@ export function RichText({
   status,
 }: RichTextProps) {
   let response, actionText;
-  const doesRichTextHaveContent = !!question?.multiResponse?.at(1) && !!JSON.parse(question?.multiResponse![1])?.content.length
+  const doesRichTextHaveContent =
+    !!question?.multiResponse?.at(1) &&
+    !!JSON.parse(question?.multiResponse![1])?.content.length;
 
   if (doesRichTextHaveContent) {
     response = documentToReactComponents(

@@ -36,9 +36,7 @@ describe('PreviewQuestion', () => {
       });
 
       it('Should render a meta title', () => {
-        expect(document.title).toBe(
-          'Preview a question - Manage a grant'
-        );
+        expect(document.title).toBe('Preview a question - Manage a grant');
       });
 
       it('Should render a back button with correct link on it', () => {

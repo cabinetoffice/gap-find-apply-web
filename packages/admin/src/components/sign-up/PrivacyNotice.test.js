@@ -5,7 +5,7 @@ import PrivacyNotice from './PrivacyNotice';
 describe('Rendering Privacy Notice', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-  })
+  });
   it('Should display privacy notice field', () => {
     render(<PrivacyNotice errors={[]} checked={false} />);
 
@@ -16,7 +16,7 @@ describe('Rendering Privacy Notice', () => {
     const linkToNotice = screen.getByRole('link', { name: 'privacy notice' });
     expect(linkToNotice).toBeDefined();
     expect(linkToNotice).toHaveAttribute('href', '/apply/info/privacy');
-     //TODO: We don't use this coponent
+    //TODO: We don't use this coponent
     // expect(linkToNotice).toHaveAttribute('target', '_blank');
   });
 

@@ -1,4 +1,4 @@
-import Link from '../../components/custom-link/CustomLink';
+import Link from 'next/link';
 
 const NEIGHBOR_COUNT_EDGE_ELEMENT = 2;
 const NEIGHBOR_COUNT_MIDDLE_ELEMENT = 1;
@@ -86,10 +86,7 @@ export const buildPaginationListItems = (
   const PAGINATION_ELEMENTS_OBJECT = {
     // adding previous button
     [PAGINATION_PREVIOUS_ELEMENT]: (
-      <li
-        key={PAGINATION_PREVIOUS_ELEMENT}
-        className="moj-pagination__item  moj-pagination__item--prev"
-      >
+      <li key={PAGINATION_PREVIOUS_ELEMENT} className="govuk-pagination__prev">
         <Link
           href={{
             pathname: route,
@@ -101,12 +98,19 @@ export const buildPaginationListItems = (
             },
           }}
         >
-          <a
-            className="moj-pagination__link"
-            data-cy="cyPaginationPreviousButton"
-          >
+          <a className="govuk-link govuk-pagination__link">
+            <svg
+              className="govuk-pagination__icon govuk-pagination__icon--prev"
+              xmlns="http://www.w3.org/2000/svg"
+              height="13"
+              width="15"
+              aria-hidden="true"
+              focusable="false"
+              viewBox="0 0 15 13"
+            >
+              <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+            </svg>
             {PAGINATION_PREVIOUS_ELEMENT}
-            <span className="govuk-visually-hidden"> set of pages</span>
           </a>
         </Link>
       </li>
@@ -114,10 +118,7 @@ export const buildPaginationListItems = (
 
     //adding next button
     [PAGINATION_NEXT_ELEMENT]: (
-      <li
-        key={PAGINATION_NEXT_ELEMENT}
-        className="moj-pagination__item  moj-pagination__item--next"
-      >
+      <li key={PAGINATION_NEXT_ELEMENT} className="govuk-pagination__next">
         <Link
           href={{
             pathname: route,
@@ -129,9 +130,19 @@ export const buildPaginationListItems = (
             },
           }}
         >
-          <a className="moj-pagination__link" data-cy="cyPaginationNextButton">
+          <a className="govuk-link govuk-pagination__link">
             {PAGINATION_NEXT_ELEMENT}
-            <span className="govuk-visually-hidden"> set of pages</span>
+            <svg
+              className="govuk-pagination__icon govuk-pagination__icon--next"
+              xmlns="http://www.w3.org/2000/svg"
+              height="13"
+              width="15"
+              aria-hidden="true"
+              focusable="false"
+              viewBox="0 0 15 13"
+            >
+              <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+            </svg>
           </a>
         </Link>
       </li>
@@ -141,7 +152,7 @@ export const buildPaginationListItems = (
     [PAGINATION_ELLIPSIS_ELEMENT]: (
       <li
         key={`${currentPage}_ellipsis`}
-        className="moj-pagination__item moj-pagination__item--dots"
+        className="govuk-pagination__item govuk-pagination__item--ellipses"
         aria-label={`Skipping pages ${ellipsisStartAt + 1} to ${
           ellipsisEndAt - 1
         }`}
@@ -154,14 +165,20 @@ export const buildPaginationListItems = (
     [PAGINATION_ACTIVE_ELEMENT]: (
       <li
         key={PAGINATION_ACTIVE_ELEMENT}
-        className="moj-pagination__item moj-pagination__item--active"
+        className="govuk-pagination__item govuk-pagination__item--current"
         aria-label={`Current Page, Page ${currentPage}`}
       >
-        {currentPage}
+        <a
+          className="govuk-link govuk-pagination__link"
+          href="#"
+          aria-current="page"
+        >
+          {currentPage}
+        </a>
       </li>
     ),
     [PAGINATION_NUMERIC_ELEMENT]: (
-      <li key={currentPage} className="moj-pagination__item">
+      <li key={currentPage} className="govuk-pagination__item">
         <Link
           href={{
             pathname: route,
@@ -173,13 +190,7 @@ export const buildPaginationListItems = (
             },
           }}
         >
-          <a
-            className="moj-pagination__link"
-            data-cy={`cyPaginationPageNumber${currentPage}`}
-            aria-label={`Goto, Results page ${currentPage}`}
-          >
-            {currentPage}
-          </a>
+          <a className="govuk-link govuk-pagination__link">{currentPage}</a>
         </Link>
       </li>
     ),

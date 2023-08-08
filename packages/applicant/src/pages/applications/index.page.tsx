@@ -8,6 +8,7 @@ import {
 } from '../../services/ApplicationService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
+import getConfig from 'next/config';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
@@ -22,6 +23,7 @@ export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
 };
 
 const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
+  const { publicRuntimeConfig } = getConfig();
   const hasApplicationData = applicationData.length > 0;
 
   return (
@@ -114,7 +116,7 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                 <hr className="govuk-section-break govuk-section-break--m" />
                 <a
                   className="govuk-link govuk-!-font-size-19"
-                  href="https://www.find-government-grants.service.gov.uk/"
+                  href={publicRuntimeConfig.FIND_A_GRANT_URL}
                 >
                   Find a grant
                 </a>

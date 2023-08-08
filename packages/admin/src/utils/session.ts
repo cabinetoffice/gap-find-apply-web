@@ -8,14 +8,30 @@ export const getSessionIdFromCookies = (
   if (!process.env.SESSION_COOKIE_NAME) {
     throw new Error('The SESSION_COOKIE_NAME env var has not been set.');
   }
-  return req.cookies[process.env.SESSION_COOKIE_NAME] || "";
+  return req.cookies[process.env.SESSION_COOKIE_NAME] || '';
+};
+
+export const getUserTokenFromCookies = (
+  req: (IncomingMessage & { cookies: NextApiRequestCookies }) | NextApiRequest
+) => {
+  if (!process.env.JWT_COOKIE_NAME) {
+    throw new Error('The JWT_COOKIE_NAME env var has not been set.');
+  }
+  return req.cookies[process.env.JWT_COOKIE_NAME] || '';
 };
 
 export const axiosSessionConfig = (sessionId: string) => {
-  return     {
+  return {
     withCredentials: true,
     headers: {
-      Cookie: `SESSION=${sessionId};`
-    }
-  }
+      Cookie: `SESSION=${sessionId};`,
+    },
+  };
 };
+
+export const axiosUserServiceConfig = (userToken: string) => ({
+  withCredentials: true,
+  headers: {
+    Cookie: `${process.env.JWT_COOKIE_NAME}=${userToken}`,
+  },
+});

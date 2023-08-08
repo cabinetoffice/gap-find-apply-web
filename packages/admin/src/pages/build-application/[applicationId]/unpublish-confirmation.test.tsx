@@ -36,7 +36,9 @@ describe('Unpublish confirmation page', () => {
 
   it('Should render a meta title without "Error: " when fieldErrors is empty', () => {
     render(<UnpublishConfirmationPage {...getProps()} />);
-    expect(document.title).toBe('Unpublish your application form - Manage a grant');
+    expect(document.title).toBe(
+      'Unpublish your application form - Manage a grant'
+    );
   });
 
   it('Should render a meta title with "Error: " when fieldErrors is NOT empty', () => {

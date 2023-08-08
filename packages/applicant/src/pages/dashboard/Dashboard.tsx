@@ -10,15 +10,23 @@ import { routes } from '../../utils/routes';
 interface ApplicantDashBoardProps {
   descriptionList: DescriptionListProps;
   hasApplications: boolean;
+  oneLoginMatchingAccountBannerEnabled: boolean;
 }
 
 export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
   descriptionList,
   hasApplications,
+  oneLoginMatchingAccountBannerEnabled,
 }) => {
   return (
     <div className="govuk-grid-row">
       <div className="govuk-grid-column-two-thirds">
+        {oneLoginMatchingAccountBannerEnabled && (
+          /* TODO: Placeholder for GAP-1923 */
+          <div>
+            <h1>MATCHING ACCOUNT BANNER PLACEHOLDER</h1>
+          </div>
+        )}
         <section>
           <h1
             className="govuk-heading-l"

@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from '../custom-link/CustomLink';
 import { isIE } from 'react-device-detect';
 import getConfig from 'next/config';
 import CustomLink from '../custom-link/CustomLink';

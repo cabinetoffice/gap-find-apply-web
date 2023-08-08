@@ -5,14 +5,14 @@ interface TableProps {
   firstCellIsHeader?: boolean;
   tableHeadColumns?: TheadColumn[];
   rows: Row[];
-  tableAttributes?: Object;
+  tableAttributes?: object;
   isLastCellAStatusTag?: boolean;
 }
 
 interface TheadColumn {
   name: string;
   classNames?: string;
-  theadColumnAttributes?: Object;
+  theadColumnAttributes?: object;
 }
 
 interface Row {
@@ -22,7 +22,7 @@ interface Row {
 interface Cell {
   content: string | number | JSX.Element;
   classNames?: string;
-  cellAttributes?: Object;
+  cellAttributes?: object;
 }
 
 export { TableProps, TheadColumn, Row, Cell };

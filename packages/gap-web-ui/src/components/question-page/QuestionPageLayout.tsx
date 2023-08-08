@@ -77,7 +77,6 @@ export interface QuestionPageProps {
   formAction: string;
   questionTitle: string;
   pageCaption?: string;
-  // eslint-disable-next-line no-undef
   questionHintText?: string | JSX.Element;
   fieldName: string;
   inputType: InputType;

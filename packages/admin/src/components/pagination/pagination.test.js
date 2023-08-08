@@ -66,7 +66,7 @@ describe('Testing Pagination component behaviour', () => {
     //   '/?skip=0&limit=10&page=1'
     // );
     expect(screen.queryByText('2')).toHaveClass(
-      'moj-pagination__item moj-pagination__item--active'
+      'govuk-link govuk-pagination__link'
     );
   });
 
@@ -83,7 +83,7 @@ describe('Testing Pagination component behaviour', () => {
     render(<Pagination {...mockProps} />);
     expect(screen.queryByText(/Next/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Previous/)).toBeInTheDocument();
-     //TODO: We don't use this coponent
+    //TODO: We don't use this coponent
     // expect(screen.queryByText(/Previous/)).toHaveAttribute(
     //   'href',
     //   '/?skip=20&limit=10&page=3'
@@ -93,15 +93,23 @@ describe('Testing Pagination component behaviour', () => {
     // );
   });
 
-  it('random check: pagination should not be rendered when total records is less than records per page', async () => {
+  it('should only render result count when total items less than items per page', async () => {
+    const getByTextContent = (text) =>
+      screen.getByText(
+        (_, element) =>
+          element.textContent === text &&
+          Array.from(element.children || []).every(
+            (node) => node.textContent !== text
+          )
+      );
+
     useRouter.mockReturnValue({
       pathname: 'test',
       query: {},
       push: pushMock,
     });
-    const { container } = render(<Pagination {...mockProps} totalItems={9} />);
-    // checking if component returns null when pagination is not required
-    expect(container.firstChild).toBeNull();
+    render(<Pagination {...mockProps} totalItems={9} />);
+    expect(getByTextContent('Showing 1 to 9 of 9 items')).toBeVisible();
   });
 
   it('random check: pagination if it has ellipsis or not: PAGE count: 10, current page: 5', async () => {
@@ -124,7 +132,7 @@ describe('Testing Pagination component behaviour', () => {
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
         Array [
-          "Previous set of pages",
+          "Previous",
           "1",
           "...",
           "4",
@@ -132,7 +140,7 @@ describe('Testing Pagination component behaviour', () => {
           "6",
           "...",
           "10",
-          "Next set of pages",
+          "Next",
         ]
       `);
   });
@@ -162,7 +170,7 @@ describe('Testing Pagination component behaviour', () => {
           "3",
           "4",
           "5",
-          "Next set of pages",
+          "Next",
         ]
       `);
   });
@@ -188,7 +196,7 @@ describe('Testing Pagination component behaviour', () => {
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
         Array [
-          "Previous set of pages",
+          "Previous",
           "1",
           "...",
           "4",
@@ -196,7 +204,7 @@ describe('Testing Pagination component behaviour', () => {
           "6",
           "...",
           "10",
-          "Next set of pages",
+          "Next",
         ]
       `);
   });
@@ -236,7 +244,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
           "3",
           "...",
           "7",
-          "Next set of pages",
+          "Next",
         ]
       `);
   });
@@ -256,7 +264,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
         Array [
-          "Previous set of pages",
+          "Previous",
           "1",
           "2",
           "3",
@@ -264,7 +272,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
           "5",
           "6",
           "7",
-          "Next set of pages",
+          "Next",
         ]
       `);
   });
@@ -284,7 +292,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
         Array [
-          "Previous set of pages",
+          "Previous",
           "1",
           "...",
           "5",

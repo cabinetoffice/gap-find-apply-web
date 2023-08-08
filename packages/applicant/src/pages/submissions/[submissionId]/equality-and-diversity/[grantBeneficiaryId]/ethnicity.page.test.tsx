@@ -194,7 +194,7 @@ describe('Ethnicity page', () => {
         )) as NextGetServerSidePropsResponse;
 
         expect(response.props.defaultChecked).toStrictEqual(
-          'Mixed or multiple ethnic groups',
+          'Mixed or multiple ethnic groups'
         );
       });
 
@@ -224,7 +224,7 @@ describe('Ethnicity page', () => {
         )) as NextGetServerSidePropsResponse;
 
         expect(response.props.defaultChecked).toStrictEqual(
-          'No, we support all ethnic groups',
+          'No, we support all ethnic groups'
         );
       });
 
@@ -275,8 +275,7 @@ describe('Ethnicity page', () => {
         (parseBody as jest.Mock).mockResolvedValue({
           supportedEthnicity: 'White',
         }),
-        
-        await getServerSideProps(getPostContext());
+          await getServerSideProps(getPostContext());
 
         expect(
           postGrantBeneficiaryResponse as jest.Mock
@@ -391,9 +390,7 @@ describe('Ethnicity page', () => {
           getPostContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(response.props.defaultChecked).toStrictEqual(
-          'White',
-        );
+        expect(response.props.defaultChecked).toStrictEqual('White');
       });
 
       it('Should return the previously entered response prop as the default value when a validation error is thrown', async () => {

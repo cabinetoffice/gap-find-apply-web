@@ -2,11 +2,13 @@ import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import Layout from '../components/partials/Layout';
 import Meta from '../components/partials/Meta';
+import { getLoginUrl } from '../utils/general';
+import getConfig from 'next/config';
 
 export const getServerSideProps: GetServerSideProps = () => {
   return Promise.resolve({
     props: {
-      loginUrl: process.env.LOGIN_URL,
+      loginUrl: getLoginUrl(),
       registerUrl: `${process.env.USER_SERVICE_URL}/register`,
     },
   });
@@ -18,6 +20,7 @@ type HomePageProps = {
 };
 
 function HomePage({ loginUrl, registerUrl }: HomePageProps) {
+  const { publicRuntimeConfig } = getConfig();
   return (
     <>
       <Meta title="Register to apply - Apply for a grant" />
@@ -82,7 +85,7 @@ function HomePage({ loginUrl, registerUrl }: HomePageProps) {
               to apply for.
             </p>
             <a
-              href="https://www.find-government-grants.service.gov.uk/"
+              href={publicRuntimeConfig.FIND_A_GRANT_URL}
               className="govuk-link govuk-link--no-visited-state govuk-!-font-size-19"
               data-testid="find-a-grant-link"
               data-cy="cy-find-a-grant-link"

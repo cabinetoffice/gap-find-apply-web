@@ -1,6 +1,7 @@
 import React from 'react';
 import { ErrorMessage } from '../../display-errors';
 import { InputComponentProps } from './InputComponentProps';
+import styles from './Checkboxes.module.scss';
 
 const Checkboxes = ({
   questionTitle,
@@ -15,6 +16,7 @@ const Checkboxes = ({
   divideCheckboxIndex = options ? options.length - 1 : 1,
   TitleTag = 'h1',
   newLineAccepted = false,
+  small = false,
 }: CheckboxesProps) => {
   const hasError = fieldErrors.some((fieldError) =>
     fieldError.fieldName.startsWith(fieldName)
@@ -33,12 +35,16 @@ const Checkboxes = ({
         aria-describedby={questionHintText ? `${fieldName}-hint` : undefined}
       >
         <legend
-          className={`govuk-fieldset__legend govuk-fieldset__legend--${titleSize}`}
+          className={`govuk-fieldset__legend govuk-fieldset__legend--${titleSize} ${
+            small ? styles['no-margin-bottom'] : ''
+          }`}
           data-testid="title-legend"
         >
           <TitleTag className="govuk-label-wrapper">
             <label
-              className={`govuk-label govuk-label--${titleSize}`}
+              className={`govuk-label govuk-label--${titleSize} ${
+                small ? styles['no-margin-bottom'] : ''
+              }`}
               data-cy={`cy-${fieldName}-question-title`}
             >
               {questionTitle}
@@ -58,7 +64,14 @@ const Checkboxes = ({
         {hasError && (
           <ErrorMessage fieldErrors={fieldErrors} fieldName={fieldName} />
         )}
-        <div className="govuk-checkboxes" data-module="govuk-checkboxes">
+        <div
+          className={
+            small
+              ? 'govuk-checkboxes govuk-checkboxes--small'
+              : 'govuk-checkboxes'
+          }
+          data-module="govuk-checkboxes"
+        >
           {options &&
             options.map((option, index) => {
               const value =
@@ -163,6 +176,7 @@ export interface CheckboxesProps extends InputComponentProps {
   divideLastCheckboxOption?: boolean;
   divideCheckboxIndex?: number;
   newLineAccepted?: boolean;
+  small?: boolean;
 }
 
 export default Checkboxes;

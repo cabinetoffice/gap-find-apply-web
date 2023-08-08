@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { FundingOrganisation } from '../models/FundingOrganisation';
 import { axiosConfig } from '../utils/jwt';
-import getConfig from 'next/config'
+import getConfig from 'next/config';
 
 export class FundingOrganisationService {
   private static instance: FundingOrganisationService;
@@ -21,7 +21,7 @@ export class FundingOrganisationService {
   }
 
   public async getFundingOrganisationById(
-    founderId: String,
+    founderId: string,
     jwt: string
   ): Promise<FundingOrganisation> {
     const { data } = await axios.get<FundingOrganisation>(

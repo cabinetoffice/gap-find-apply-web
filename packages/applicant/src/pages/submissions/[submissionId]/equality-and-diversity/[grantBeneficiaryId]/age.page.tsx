@@ -8,9 +8,7 @@ import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
-import {
-  postGrantBeneficiaryResponse,
-} from '../../../../../services/GrantBeneficiaryService';
+import { postGrantBeneficiaryResponse } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import {
@@ -19,6 +17,15 @@ import {
 } from '../equality-and-diversity-service-errors';
 import { EqualityAndDiversityParams } from '../types';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
+
+export type AgePageProps = {
+  formAction: string;
+  skipURL: string;
+  backButtonURL: string;
+  defaultChecked?: AgeCheckboxes[];
+  fieldErrors: ValidationError[];
+  csrfToken: string;
+};
 
 type RequestBody = {
   supportedAges?: AgeCheckboxes | AgeCheckboxes[];
@@ -33,13 +40,10 @@ export enum AgeCheckboxes {
   ALL = 'No, we support all age groups',
 }
 
-export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
-  params,
-  resolvedUrl,
-  req,
-  res,
-  query,
-}) => {
+export const getServerSideProps: GetServerSideProps<
+  AgePageProps,
+  EqualityAndDiversityParams
+> = async ({ params, resolvedUrl, req, res, query }) => {
   const { submissionId, grantBeneficiaryId } = params;
   const { returnToSummaryPage } = query;
 
@@ -207,15 +211,6 @@ const AgePage = ({
       </Layout>
     </>
   );
-};
-
-export type AgePageProps = {
-  formAction: string;
-  skipURL: string;
-  backButtonURL: string;
-  defaultChecked?: AgeCheckboxes[];
-  fieldErrors: ValidationError[];
-  csrfToken: string;
 };
 
 export default AgePage;

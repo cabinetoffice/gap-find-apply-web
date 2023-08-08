@@ -37,7 +37,9 @@ describe('Publish success page', () => {
   });
 
   it('Should render a meta title', () => {
-    expect(document.title).toBe('Publish your application form - Manage a grant');
+    expect(document.title).toBe(
+      'Publish your application form - Manage a grant'
+    );
   });
 
   it('Should render a confirmation panel', () => {

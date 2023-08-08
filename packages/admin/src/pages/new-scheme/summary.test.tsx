@@ -122,7 +122,9 @@ describe('Scheme summary page', () => {
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(result.props.summaryData.rows[0].key).toStrictEqual('Grant name');
+        expect(result.props.summaryData.rows[0].key).toStrictEqual(
+          'Grant name'
+        );
         expect(result.props.summaryData.rows[1].key).toStrictEqual(
           'GGIS Scheme Reference Number'
         );

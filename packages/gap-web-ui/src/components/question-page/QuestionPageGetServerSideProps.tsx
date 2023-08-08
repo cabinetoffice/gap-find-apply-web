@@ -14,17 +14,18 @@ import {
  *
  * @template T - The type of the pages body when posting all the fields in its form
  * @template K - The response of the 'fetchPageData' function
- * @template V - The response of the 'processPagePostResponse' function
+ * @template V - The response of the 'handleRequest' function
  *
  * @param context - GetServerSidePropsContext
  * @param fetchPageData - A function that takes in a jwt and returns data asynchronously
- * @param processPagePostResponse - A function that takes in a jwt and the body the page returns, then updates/posts this data
+ * @param handleRequest - A function that takes in a jwt and the body the page returns, then updates/posts this data
  * @param jwt - A JWT needed for calls to the backend
  * @param onSuccessRedirectHref - Where to redirect to after successfully updating data
  * @param onErrorMessage - An error message to display if getting/updating data fails
  *
  * @returns A redirect to the relevant location, or a set of props needed to load a page
  */
+
 export default async function QuestionPageGetServerSideProps<
   T extends PageBodyResponse,
   K extends FetchPageData,
@@ -56,7 +57,7 @@ export default async function QuestionPageGetServerSideProps<
 
   return {
     props: {
-      csrfToken: ((req as any).csrfToken?.() || '') as string,
+      csrfToken: (req as any).csrfToken?.() || ('' as string),
       formAction: resolvedUrl,
       fieldErrors,
       pageData,
@@ -88,7 +89,7 @@ async function fetchAndHandlePageData<K extends FetchPageData>(
 async function postPagesResult<T extends PageBodyResponse, V>({
   req,
   res,
-  processPagePostResponse,
+  handleRequest,
   jwt,
   onSuccessRedirectHref,
   onErrorMessage,
@@ -97,7 +98,7 @@ async function postPagesResult<T extends PageBodyResponse, V>({
   return CallServiceMethod<T, V>(
     req,
     res,
-    (body) => processPagePostResponse(body, jwt),
+    (body) => handleRequest(body, jwt),
     onSuccessRedirectHref,
     generateServiceErrorProps(onErrorMessage, resolvedUrl)
   );

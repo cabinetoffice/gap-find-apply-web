@@ -64,7 +64,9 @@ describe('SchemeList', () => {
 
   it('Should render a page description', () => {
     render(schemesPageComponent);
-    screen.getByText('The list below shows all of the grants for your account.');
+    screen.getByText(
+      'The list below shows all of the grants for your account.'
+    );
   });
 
   describe('generateSchemeTableRows', () => {
