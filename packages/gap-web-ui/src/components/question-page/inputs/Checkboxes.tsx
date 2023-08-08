@@ -17,6 +17,7 @@ const Checkboxes = ({
   TitleTag = 'h1',
   newLineAccepted = false,
   small = false,
+  useOptionValueAsInputValue,
 }: CheckboxesProps) => {
   const hasError = fieldErrors.some((fieldError) =>
     fieldError.fieldName.startsWith(fieldName)
@@ -77,7 +78,8 @@ const Checkboxes = ({
               const value =
                 typeof option === 'string'
                   ? option
-                  : typeof option.label === 'string'
+                  : typeof option.label === 'string' &&
+                    !useOptionValueAsInputValue
                   ? option.label
                   : (option.value as string);
 
@@ -177,6 +179,7 @@ export interface CheckboxesProps extends InputComponentProps {
   divideCheckboxIndex?: number;
   newLineAccepted?: boolean;
   small?: boolean;
+  useOptionValueAsInputValue?: boolean;
 }
 
 export default Checkboxes;

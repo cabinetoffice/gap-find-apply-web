@@ -32,15 +32,18 @@ export default async function CallServiceMethod<B extends PageBodyResponse, R>(
   res: GetServerSidePropsContext['res'],
   serviceFunc: (body: B) => Promise<R>,
   redirectTo: string | ((result: R) => string),
-  errorPageParams: ServiceError | string
+  errorPageParams: ServiceError | string,
+  usePostRequestForPageData?: boolean
 ): Promise<
-  { body: B; fieldErrors: ValidationError[] } | { redirect: Redirect } | void
+  | { body: B; fieldErrors: ValidationError[] }
+  | { redirect: Redirect }
+  | void
+  | Awaited<R>
 > {
   if (req.method !== 'POST') {
     await initialiseCSRFCookie(req, res);
     return;
   }
-
   let body: Body<B> = await parseBody(req, '1mb');
   try {
     body = removeAllCarriageReturns(body);
@@ -48,6 +51,10 @@ export default async function CallServiceMethod<B extends PageBodyResponse, R>(
     await validateCSRFCookie(req, res, body);
 
     const result = await serviceFunc(body);
+
+    if (usePostRequestForPageData) {
+      return result;
+    }
 
     return generateRedirect(
       typeof redirectTo === 'string' ? redirectTo : redirectTo(result)
@@ -121,7 +128,7 @@ function getValidationErrors<B extends PageBodyResponse>(
   const fieldErrors = data?.errors || data?.fieldErrors;
   if (fieldErrors) {
     return {
-      body: body,
+      body,
       fieldErrors: fieldErrors as ValidationError[],
     };
   }

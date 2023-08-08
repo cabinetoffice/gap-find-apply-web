@@ -1,5 +1,7 @@
 import { ValidationError } from '../../types';
 import CallServiceMethod from './CallServiceMethod';
+import { Redirect } from 'next';
+
 import {
   QuestionPageGetServerSidePropsType,
   PostPageResultProps,
@@ -49,18 +51,22 @@ export default async function QuestionPageGetServerSideProps<
     ...context,
   });
 
-  if (postResponse && 'redirect' in postResponse) {
+  if ((postResponse as { redirect: Redirect })?.redirect) {
     return postResponse;
   }
 
-  const { fieldErrors, previousValues } = generateValidationProps(postResponse);
+  const { fieldErrors, previousValues } = generateValidationProps(
+    postResponse as { body: PageBodyResponse; fieldErrors: ValidationError[] }
+  );
+
+  const shouldUsePostResponseData = !fieldErrors.length && postResponse;
 
   return {
     props: {
       csrfToken: (req as any).csrfToken?.() || ('' as string),
       formAction: resolvedUrl,
       fieldErrors,
-      pageData,
+      pageData: shouldUsePostResponseData ? postResponse : pageData,
       previousValues,
     },
   };
@@ -94,13 +100,15 @@ async function postPagesResult<T extends PageBodyResponse, V>({
   onSuccessRedirectHref,
   onErrorMessage,
   resolvedUrl,
+  usePostRequestForPageData,
 }: PostPageResultProps<T, V>) {
   return CallServiceMethod<T, V>(
     req,
     res,
     (body) => handleRequest(body, jwt),
     onSuccessRedirectHref,
-    generateServiceErrorProps(onErrorMessage, resolvedUrl)
+    generateServiceErrorProps(onErrorMessage, resolvedUrl),
+    usePostRequestForPageData
   );
 }
 

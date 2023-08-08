@@ -1,3 +1,4 @@
+import { SuperAdminDashboardResponse } from './../pages/super-admin-dashboard/types';
 import getConfig from 'next/config';
 import axios from 'axios';
 import { axiosUserServiceConfig } from '../utils/session';
@@ -15,14 +16,9 @@ const { serverRuntimeConfig } = getConfig();
 export const getSuperAdminDashboard = async (
   pagination: Pagination,
   userToken: string
-): Promise<{
-  users: User[];
-  departments: Department[];
-  roles: Role[];
-  userCount: number;
-}> => {
+): Promise<SuperAdminDashboardResponse> => {
   const response = await axios.get(
-    `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
+    `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard2`,
     {
       params: pagination,
       ...axiosUserServiceConfig(userToken),
@@ -147,22 +143,25 @@ export const createDepartmentInformation = async (
   );
 
 export const filterUsers = async (
-  body: SuperAdminDashboardFilterData,
+  pagination: Pagination,
+  filterData: SuperAdminDashboardFilterData,
   userToken: string
 ) => {
-  if (body['clear-all-filters'] === '') {
-    body.clearAllFilters = true;
-  } else {
-    body.clearAllFilters = false;
-  }
-  delete body['clear-all-filters'];
-  if (typeof body.role === 'string') body.role = [body.role];
-  if (typeof body.department === 'string') body.department = [body.department];
+  const params = {
+    pagination,
+    roles: filterData.roles.join(','),
+    departments: filterData.departments.join(','),
+    searchTerm: filterData.searchTerm,
+    clearAllFilters: filterData.clearAllFilters,
+    shouldRedirect: true,
+  };
 
-  const res = await axios.post(
-    `${process.env.USER_SERVICE_URL}/user/filter`,
-    body,
-    axiosUserServiceConfig(userToken)
+  const res = await axios.get<SuperAdminDashboardResponse>(
+    `${process.env.USER_SERVICE_URL}/super-admin-dashboard2`,
+    {
+      params,
+      ...axiosUserServiceConfig(userToken),
+    }
   );
 
   return res.data;

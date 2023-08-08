@@ -11,6 +11,7 @@ type QuestionPageGetServerSidePropsType<T, K, V> = {
   jwt: string;
   onSuccessRedirectHref: string | ((result: V) => string);
   onErrorMessage: string;
+  usePostRequestForPageData?: boolean;
 };
 
 type PostPageResultProps<T extends PageBodyResponse, V> = {
@@ -21,6 +22,7 @@ type PostPageResultProps<T extends PageBodyResponse, V> = {
   jwt: string;
   onErrorMessage: string;
   resolvedUrl: string;
+  usePostRequestForPageData?: boolean;
 };
 
 type generateValidationPropsType<T> = void | {

@@ -21,10 +21,18 @@ export type User = {
 };
 
 export type SuperAdminDashboardFilterData = {
-  role: string | Array<string>;
-  department: string | Array<string>;
+  roles: Array<string>;
+  departments: Array<string>;
   searchTerm: string;
   _csrf: string;
   'clear-all-filters'?: '';
   clearAllFilters?: boolean;
+};
+
+export type SuperAdminDashboardResponse = {
+  users: User[];
+  departments: Department[];
+  roles: Role[];
+  userCount: number;
+  previousFilterData: string[][];
 };
