@@ -33,7 +33,7 @@ export default async function CallServiceMethod<B extends PageBodyResponse, R>(
   serviceFunc: (body: B) => Promise<R>,
   redirectTo: string | ((result: R) => string),
   errorPageParams: ServiceError | string,
-  usePostRequestForPageData?: boolean
+  useHandleRequestForPageData?: boolean
 ): Promise<
   | { body: B; fieldErrors: ValidationError[] }
   | { redirect: Redirect }
@@ -52,7 +52,7 @@ export default async function CallServiceMethod<B extends PageBodyResponse, R>(
 
     const result = await serviceFunc(body);
 
-    if (usePostRequestForPageData) {
+    if (useHandleRequestForPageData) {
       return result;
     }
 
