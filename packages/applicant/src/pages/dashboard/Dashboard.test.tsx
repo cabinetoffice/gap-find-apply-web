@@ -143,7 +143,7 @@ describe('Dashboard', () => {
   });
 
   describe('migration journey feature flag', () => {
-    test('Should render the error banner', () => {
+    test(`renders error banner when migrationSucceeded is 'false'`, () => {
       render(
         <ApplicantDashboard
           {...getProps(getDefaultProps, {
