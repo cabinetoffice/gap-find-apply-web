@@ -98,8 +98,7 @@ const SuperAdminDashboard = ({
   csrfToken,
   fieldErrors,
   pageData,
-}: // formAction,
-InferProps<typeof getServerSideProps>) => {
+}: InferProps<typeof getServerSideProps>) => {
   const { departments, roles, userCount, users, previousFilterData } =
     pageData as SuperAdminDashboardResponse;
 
