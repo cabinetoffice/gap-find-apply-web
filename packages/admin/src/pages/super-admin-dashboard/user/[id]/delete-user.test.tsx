@@ -19,7 +19,7 @@ const mockPageData = {
 };
 
 const component = (
-  <RouterContext.Provider value={}>
+  <RouterContext.Provider>
     <DeleteUserPage
       previousValues={mockPageData}
       formAction="."
@@ -30,14 +30,14 @@ const component = (
   </RouterContext.Provider>
 );
 
-describe('Block user information page', () => {
+describe('Delete user information page', () => {
   test('Email address should be rendered on the page', async () => {
     render(component);
     expect(screen.getByText('test@test.com'));
   });
 });
 
-describe('Block user page functionality', () => {
+describe('Delete user page functionality', () => {
   test('Back button should redirect to user page', async () => {
     render(component);
     expect(screen.getByText('Back')).toHaveAttribute(
@@ -54,7 +54,7 @@ describe('Block user page functionality', () => {
     );
   });
 
-  test('Delete button should have call updateUserRoles', async () => {
+  test('Delete button should have call deleteUser', async () => {
     render(component);
     expect(deleteUserInformation).toHaveBeenCalledTimes(0);
     await waitFor(() => screen.getByText('Delete user').click());
