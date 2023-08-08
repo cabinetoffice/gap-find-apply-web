@@ -18,7 +18,7 @@ export const getSuperAdminDashboard = async (
   userToken: string
 ): Promise<SuperAdminDashboardResponse> => {
   const response = await axios.get(
-    `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard2`,
+    `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
     {
       params: pagination,
       ...axiosUserServiceConfig(userToken),
@@ -157,7 +157,7 @@ export const filterUsers = async (
   };
 
   const res = await axios.get<SuperAdminDashboardResponse>(
-    `${process.env.USER_SERVICE_URL}/super-admin-dashboard2`,
+    `${process.env.USER_SERVICE_URL}/super-admin-dashboard`,
     {
       params,
       ...axiosUserServiceConfig(userToken),
