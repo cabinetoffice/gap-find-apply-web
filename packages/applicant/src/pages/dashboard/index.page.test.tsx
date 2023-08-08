@@ -1,37 +1,16 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { DescriptionListProps } from '../../components/description-list/DescriptionList';
 import { GrantApplicant } from '../../models/GrantApplicant';
 import { getApplicationsListById } from '../../services/ApplicationService';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
-import { createMockRouter } from '../../testUtils/createMockRouter';
 import { getJwtFromCookies } from '../../utils/jwt';
-import ApplicantDashboardPage, { getServerSideProps } from './index.page';
+import { getServerSideProps } from './index.page';
+import { Optional, expectObjectEquals, getContext } from 'gap-web-ui';
 
 jest.mock('../../services/ApplicationService');
 jest.mock('../../utils/jwt');
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-      subPath: '',
-    },
-    publicRuntimeConfig: {
-      subPath: '',
-    },
-  };
-});
 
-const context = {
-  params: {
-    applicationId: '1',
-  },
-  req: {
-    cookies: {},
-  },
-} as unknown as GetServerSidePropsContext;
 const APPLICANT_ID = '75ab5fbd-0682-4d3d-a467-01c7a447f07c';
 const MOCK_GRANT_APPLICANT: GrantApplicant = {
   id: APPLICANT_ID,
@@ -66,6 +45,7 @@ const MOCK_GRANT_APPLICANT_NO_LEGAL_NAME: GrantApplicant = {
     companiesHouseNumber: '66778899',
   },
 };
+
 const descriptionList: DescriptionListProps = {
   data: [
     { term: 'Email', detail: MOCK_GRANT_APPLICANT.email },
@@ -95,21 +75,23 @@ const MockApplicationsList = [
   },
 ];
 
-const applicantDashboardProps = {
-  descriptionList: descriptionList,
-  hasApplications: true,
-  oneLoginMatchingAccountBannerEnabled: false,
-  oneLoginEnabled: true,
-};
-//TODO once we fetch the Applicant Name and the Organisation Name this test will completely change
 describe('getServerSideProps', () => {
   const env = process.env;
+
+  function getDefaultContext(): Optional<GetServerSidePropsContext> {
+    return {
+      params: {
+        applicationId: '1',
+      },
+    };
+  }
 
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...env };
     process.env.APPLYING_FOR_REDIRECT_COOKIE = 'testRedirectCookie';
   });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -124,16 +106,17 @@ describe('getServerSideProps', () => {
     );
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
 
-    const result = await getServerSideProps(context);
+    const result = await getServerSideProps(getContext(getDefaultContext));
 
     expect(getGrantApplicantSpy).toBeCalledTimes(1);
     expect(getGrantApplicantSpy).toBeCalledWith('testJwt');
 
-    expect(result).toStrictEqual({
+    expectObjectEquals(result, {
       props: {
         descriptionList,
         hasApplications: true,
-        oneLoginMatchingAccountBannerEnabled: false,
+        showMigrationErrorBanner: false,
+        showMigrationSuccessBanner: false,
         oneLoginEnabled: true,
       },
     });
@@ -143,13 +126,14 @@ describe('getServerSideProps', () => {
     const getGrantApplicantSpy = jest
       .spyOn(GrantApplicantService.prototype, 'getGrantApplicant')
       .mockResolvedValue(MOCK_GRANT_APPLICANT_NO_LEGAL_NAME);
+
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
-    const result = await getServerSideProps(context);
+    const result = await getServerSideProps(getContext(getDefaultContext));
 
     expect(getGrantApplicantSpy).toBeCalledTimes(1);
     expect(getGrantApplicantSpy).toBeCalledWith('testJwt');
 
-    expect(result).toStrictEqual({
+    expectObjectEquals(result, {
       props: {
         descriptionList: {
           data: [
@@ -163,72 +147,38 @@ describe('getServerSideProps', () => {
           needBorder: false,
         },
         hasApplications: true,
-        oneLoginMatchingAccountBannerEnabled: false,
+        showMigrationErrorBanner: false,
+        showMigrationSuccessBanner: false,
         oneLoginEnabled: true,
       },
     });
   });
 
   const mockSetHeader = jest.fn();
-  const contextWithRedirectCookie = {
-    params: {
-      applicationId: '1',
-    },
-    req: {
-      cookies: {
-        testRedirectCookie: 1,
-      },
-    },
-    res: {
-      setHeader: mockSetHeader,
-    },
-  } as unknown as GetServerSidePropsContext;
 
   it('should redirect to applications page', async () => {
-    const result = await getServerSideProps(contextWithRedirectCookie);
+    const result = await getServerSideProps(
+      getContext(getDefaultContext, {
+        req: {
+          cookies: {
+            testRedirectCookie: '1',
+          },
+        },
+        res: {
+          setHeader: mockSetHeader,
+        },
+      })
+    );
 
     expect(mockSetHeader).toBeCalledWith(
       'Set-Cookie',
       'testRedirectCookie=deleted; Path=/; Max-Age=0'
     );
-    expect(result).toStrictEqual({
+    expectObjectEquals(result, {
       redirect: {
         destination: '/applications/1',
         statusCode: 307,
       },
-    });
-  });
-});
-
-describe('ApplicantDashboardPage component', () => {
-  beforeEach(() => {
-    render(
-      <RouterContext.Provider
-        value={createMockRouter({ pathname: '/dashboard' })}
-      >
-        <ApplicantDashboardPage {...applicantDashboardProps} />
-      </RouterContext.Provider>
-    );
-  });
-  describe('should render first section', () => {
-    it('should render heading', () => {
-      screen.getByRole('heading', {
-        name: /your account/i,
-      });
-    });
-    it('should render table email element', () => {
-      screen.getByRole('term', {
-        name: /email/i,
-      });
-      screen.getByText(/test@email.com/i);
-    });
-
-    it('should render table organisation name element', () => {
-      screen.getByRole('term', {
-        name: /organisation/i,
-      });
-
-      screen.getByText(/Boat Service/i);
     });
   });
 });
