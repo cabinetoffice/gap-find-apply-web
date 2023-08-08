@@ -6,14 +6,14 @@ import React from 'react';
 const ImportantBanner = ({
   bannerHeading,
   bannerContent,
-  successBanner = false,
+  isSuccess = false,
 }: ImportantBannerProps) => {
   return (
     <div
       className={`govuk-notification-banner ${
-        successBanner ? 'govuk-notification-banner--success' : ''
+        isSuccess ? 'govuk-notification-banner--success' : ''
       }`}
-      role={successBanner ? 'alert' : 'region'}
+      role={isSuccess ? 'alert' : 'region'}
       aria-labelledby="govuk-notification-banner-title"
       data-module="govuk-notification-banner"
     >
@@ -23,7 +23,7 @@ const ImportantBanner = ({
           id="govuk-notification-banner-title"
           data-cy="cyImportantBannerTitle"
         >
-          {successBanner ? 'Success' : 'Important'}
+          {isSuccess ? 'Success' : 'Important'}
         </h2>
       </div>
       <div className="govuk-notification-banner__content">
@@ -48,7 +48,7 @@ const ImportantBanner = ({
 export type ImportantBannerProps = {
   bannerHeading: string;
   bannerContent?: JSX.Element | string;
-  successBanner?: boolean;
+  isSuccess?: boolean;
 };
 
 export default ImportantBanner;

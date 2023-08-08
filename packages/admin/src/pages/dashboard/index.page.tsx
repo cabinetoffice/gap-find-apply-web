@@ -21,20 +21,24 @@ export const getServerSideProps = async ({
     size: 2,
     sort: 'createdDate,DESC',
   };
-  const migrationSucceeded =
-    (query?.migrationSucceeded as string | undefined) ?? null;
   const sessionCookie = getSessionIdFromCookies(req);
   const schemes = await getUserSchemes(paginationParams, sessionCookie);
   const userDetails: UserDetails = await getLoggedInUsersDetails(sessionCookie);
+
+  const migrationStatus = query?.migrationStatus ?? null;
   const oneLoginTransferErrorEnabled =
     process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
+  const showMigrationSuccessBanner =
+    oneLoginTransferErrorEnabled && migrationStatus === 'success';
+  const showMigrationErrorBanner =
+    oneLoginTransferErrorEnabled && migrationStatus === 'error';
 
   return {
     props: {
       schemes: schemes,
       userDetails,
-      oneLoginTransferErrorEnabled,
-      migrationSucceeded,
+      showMigrationSuccessBanner,
+      showMigrationErrorBanner,
     },
   };
 };
@@ -42,21 +46,21 @@ export const getServerSideProps = async ({
 const Dashboard = ({
   schemes,
   userDetails,
-  oneLoginTransferErrorEnabled,
-  migrationSucceeded,
+  showMigrationSuccessBanner,
+  showMigrationErrorBanner,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <div className="govuk-grid-row govuk-!-padding-top-7">
       <Meta title="Dashboard - Manage a grant" />
       <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-        {oneLoginTransferErrorEnabled && migrationSucceeded === 'true' && (
+        {showMigrationSuccessBanner && (
           <ImportantBanner
             bannerHeading="Your data has been successfully added to your One Login account."
-            successBanner
+            isSuccess
           />
         )}
 
-        {oneLoginTransferErrorEnabled && migrationSucceeded === 'false' && (
+        {showMigrationErrorBanner && (
           <ImportantBanner
             bannerHeading="Something went wrong while transferring your data. "
             bannerContent={

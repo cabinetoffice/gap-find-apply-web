@@ -28,7 +28,7 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
           migrationSucceeded === 'true' && (
             <ImportantBanner
               bannerHeading="Your data has been successfully added to your One Login account."
-              successBanner
+              isSuccess
             />
           )}
 

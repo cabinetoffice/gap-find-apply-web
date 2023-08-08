@@ -29,9 +29,7 @@ describe('Important Banner Component', () => {
 
   it('Should render success banner', () => {
     render(
-      <ImportantBanner
-        {...getProps(getDefaultProps, { successBanner: true })}
-      />
+      <ImportantBanner {...getProps(getDefaultProps, { isSuccess: true })} />
     );
 
     expect(

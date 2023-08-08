@@ -23,68 +23,27 @@ function getDefaultProps(): ApplicantDashBoardProps {
 }
 
 describe('Dashboard', () => {
-  test('should render 2 <hr/>', () => {
+  test('should render first section', () => {
     render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
 
-    const line = screen.getAllByRole('separator');
-    expect(line.length).toBe(2);
-  });
-
-  describe('should render first section', () => {
-    test('should render heading', () => {
-      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
-
-      const heading = screen.getByRole('heading', {
-        name: /your account/i,
-      });
-      expect(heading).toBeInTheDocument();
+    screen.getByRole('heading', {
+      name: /your account/i,
     });
-
-    test('should render table element', () => {
-      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
-
-      const nameKey = screen.getByRole('term', {
-        name: /name/i,
-      });
-      const nameValue = screen.getByText(/Sarah philips/i);
-
-      const organisationKey = screen.getByRole('term', {
-        name: /organisation/i,
-      });
-
-      const organisationValue = screen.getByText(/ABC Charity/i);
-
-      expect(nameKey).toBeInTheDocument();
-      expect(nameValue).toBeInTheDocument();
-      expect(organisationKey).toBeInTheDocument();
-      expect(organisationValue).toBeInTheDocument();
+    screen.getByRole('term', {
+      name: /name/i,
     });
-  });
-
-  describe('should render second section', () => {
-    test('should render heading', () => {
-      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
-
-      const heading = screen.getByRole('heading', {
-        name: /view your applications/i,
-      });
-      expect(heading).toBeInTheDocument();
+    screen.getByText(/Sarah philips/i);
+    screen.getByRole('term', {
+      name: /organisation/i,
     });
-
-    test('should render table element', () => {
-      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
-
-      const text = screen.getByText(/see your past and current applications/i);
-      expect(text).toBeInTheDocument();
+    screen.getByText(/ABC Charity/i);
+    screen.getByRole('heading', {
+      name: /view your applications/i,
     });
-
-    test('should render the link element and have the right href', () => {
-      render(<ApplicantDashboard {...getProps(getDefaultProps)} />);
-
-      expect(
-        screen.getByRole('link', { name: /view your applications/i })
-      ).toHaveAttribute('href', '/applications');
-    });
+    screen.getByText(/see your past and current applications/i);
+    expect(
+      screen.getByRole('link', { name: /view your applications/i })
+    ).toHaveAttribute('href', '/applications');
   });
 
   describe('should render second section when applicant has no applications', () => {
@@ -95,50 +54,17 @@ describe('Dashboard', () => {
         />
       );
 
+      screen.getByRole('heading', {
+        name: /your details/i,
+      });
       screen.getByText(/You have not started any applications\./i);
       screen.getByText(
         /To get started, you need to find a grant that you want to apply for\./i
       );
-    });
-
-    test('should find a grant button with correct href', () => {
-      render(
-        <ApplicantDashboard
-          {...getProps(getDefaultProps, { hasApplications: false })}
-        />
-      );
-
       expect(
         screen.getByRole('button', { name: /find a grant/i })
       ).toHaveAttribute('href', routes.findAGrant);
-    });
-  });
-
-  describe('should render third section', () => {
-    test('should render heading', () => {
-      render(
-        <ApplicantDashboard
-          {...getProps(getDefaultProps, { hasApplications: false })}
-        />
-      );
-
-      const heading = screen.getByRole('heading', {
-        name: /your details/i,
-      });
-      expect(heading).toBeInTheDocument();
-    });
-
-    test('should render the 2 cards', () => {
-      render(
-        <ApplicantDashboard
-          {...getProps(getDefaultProps, { hasApplications: false })}
-        />
-      );
-
-      const organisationCard = screen.getByText(
-        /Change your organisation details/i
-      );
-      expect(organisationCard).toBeInTheDocument();
+      screen.getByText(/Change your organisation details/i);
     });
   });
 

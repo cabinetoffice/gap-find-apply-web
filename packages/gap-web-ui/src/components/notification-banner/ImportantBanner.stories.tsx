@@ -19,7 +19,7 @@ importantBanner.args = {
 export const successBanner = Template.bind({});
 successBanner.args = {
   bannerHeading: 'This is some success banner content',
-  successBanner: true,
+  isSuccess: true,
 };
 
 export const importantBannerWithEmail = Template.bind({});

@@ -60,23 +60,8 @@ describe('Dashboard', () => {
         props: {
           schemes: mockSchemeList,
           userDetails: mockUserDetails,
-          oneLoginTransferErrorEnabled: false,
-          migrationSucceeded: null,
-        },
-      });
-    });
-
-    it('Should return oneLoginTransferErrorEnabled = true', async () => {
-      process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED = 'true';
-
-      const result = await getServerSideProps(getContext(getDefaultContext));
-
-      expectObjectEquals(result, {
-        props: {
-          schemes: mockSchemeList,
-          userDetails: mockUserDetails,
-          oneLoginTransferErrorEnabled: true,
-          migrationSucceeded: null,
+          showMigrationSuccessBanner: false,
+          showMigrationErrorBanner: false,
         },
       });
     });
@@ -86,9 +71,9 @@ describe('Dashboard', () => {
     function getDefaultProps(): InferProps<typeof getServerSideProps> {
       return {
         schemes: mockSchemeList,
-        oneLoginTransferErrorEnabled: false,
+        showMigrationSuccessBanner: false,
+        showMigrationErrorBanner: false,
         userDetails: mockUserDetails,
-        migrationSucceeded: 'false',
       };
     }
 
@@ -102,7 +87,7 @@ describe('Dashboard', () => {
       render(
         <Dashboard
           {...getProps(getDefaultProps, {
-            oneLoginTransferErrorEnabled: true,
+            showMigrationErrorBanner: true,
           })}
         />
       );
@@ -128,8 +113,7 @@ describe('Dashboard', () => {
       render(
         <Dashboard
           {...getProps(getDefaultProps, {
-            oneLoginTransferErrorEnabled: true,
-            migrationSucceeded: 'true',
+            showMigrationSuccessBanner: true,
           })}
         />
       );
