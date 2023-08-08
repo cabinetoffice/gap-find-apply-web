@@ -25,10 +25,12 @@ const SignInDetails = () => {
             </p>
             <p className="govuk-body">
               You can change these details in your GOV.UK One Login:
+            </p>
+            <ul className="govuk-body">
               <li>email address</li>
               <li>password</li>
               <li>how you get security codes to sign in</li>
-            </p>
+            </ul>
             <p className="govuk-body">
               <a href={oneLoginURL}>
                 Change your sign in details in your GOV.UK One Login

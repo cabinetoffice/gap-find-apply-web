@@ -8,10 +8,7 @@ import { getApplicationsListById } from '../../services/ApplicationService';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { createMockRouter } from '../../testUtils/createMockRouter';
 import { getJwtFromCookies } from '../../utils/jwt';
-import ApplicantDashboardPage, {
-  ApplicantDashBoardPageProps,
-  getServerSideProps,
-} from './index.page';
+import ApplicantDashboardPage, { getServerSideProps } from './index.page';
 
 jest.mock('../../services/ApplicationService');
 jest.mock('../../utils/jwt');
@@ -98,10 +95,11 @@ const MockApplicationsList = [
   },
 ];
 
-const applicantDashboardProps: ApplicantDashBoardPageProps = {
+const applicantDashboardProps = {
   descriptionList: descriptionList,
   hasApplications: true,
   oneLoginMatchingAccountBannerEnabled: false,
+  oneLoginEnabled: true,
 };
 //TODO once we fetch the Applicant Name and the Organisation Name this test will completely change
 describe('getServerSideProps', () => {
@@ -136,6 +134,7 @@ describe('getServerSideProps', () => {
         descriptionList,
         hasApplications: true,
         oneLoginMatchingAccountBannerEnabled: false,
+        oneLoginEnabled: true,
       },
     });
   });
@@ -165,6 +164,7 @@ describe('getServerSideProps', () => {
         },
         hasApplications: true,
         oneLoginMatchingAccountBannerEnabled: false,
+        oneLoginEnabled: true,
       },
     });
   });

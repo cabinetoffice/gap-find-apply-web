@@ -20,6 +20,7 @@ describe('Dashboard', () => {
         descriptionList={descriptionList}
         hasApplications={true}
         oneLoginMatchingAccountBannerEnabled={true}
+        oneLoginEnabled={true}
       />
     );
   });
@@ -82,6 +83,7 @@ describe('Dashboard', () => {
           descriptionList={descriptionList}
           hasApplications={false}
           oneLoginMatchingAccountBannerEnabled={true}
+          oneLoginEnabled={true}
         />
       );
     });
@@ -124,6 +126,7 @@ describe('migration journey feature flag', () => {
         descriptionList={descriptionList}
         hasApplications={false}
         oneLoginMatchingAccountBannerEnabled={true}
+        oneLoginEnabled={true}
       />
     );
     const banner = screen.getByRole('heading', {
@@ -139,10 +142,41 @@ describe('migration journey feature flag', () => {
         descriptionList={descriptionList}
         hasApplications={false}
         oneLoginMatchingAccountBannerEnabled={false}
+        oneLoginEnabled={true}
       />
     );
     expect(
       screen.queryByText('MATCHING ACCOUNT BANNER PLACEHOLDER')
     ).toBeFalsy();
+  });
+});
+
+describe('OneLogin feature flag', () => {
+  test('should render Sign In Details card when OneLogin feature flag is enabled', () => {
+    render(
+      <ApplicantDashboard
+        descriptionList={descriptionList}
+        hasApplications={false}
+        oneLoginMatchingAccountBannerEnabled={true}
+        oneLoginEnabled={true}
+      />
+    );
+    const card = screen.getByRole('link', {
+      name: 'Your sign in details',
+    });
+
+    expect(card).toBeInTheDocument();
+  });
+
+  test('should not render Sign In Details card when OneLogin feature flag is disabled', () => {
+    render(
+      <ApplicantDashboard
+        descriptionList={descriptionList}
+        hasApplications={false}
+        oneLoginMatchingAccountBannerEnabled={false}
+        oneLoginEnabled={false}
+      />
+    );
+    expect(screen.queryByText('Your sign in details')).toBeFalsy();
   });
 });
