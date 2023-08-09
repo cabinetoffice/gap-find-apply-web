@@ -45,7 +45,7 @@ const DeleteUserPage = ({
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
-      <Meta title="Delete Department" />
+      <Meta title="Delete User" />
       <CustomLink
         isBackButton
         href={`/super-admin-dashboard/user/${pageData.userId}`}

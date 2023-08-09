@@ -2,13 +2,16 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { updateUserRoles } from '../../services/SuperAdminService';
 import { getUserTokenFromCookies } from '../../utils/session';
 
+const FIND = '1';
+const APPLICANT = '2';
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const id = req.query.id as string;
   const jwt = getUserTokenFromCookies(req);
-  const newUserRoles = ['1', '2'];
+  const newUserRoles = [FIND, APPLICANT];
 
   await updateUserRoles(id, newUserRoles, jwt);
 
