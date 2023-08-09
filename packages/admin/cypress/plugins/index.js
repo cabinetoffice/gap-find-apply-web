@@ -30,12 +30,12 @@ module.exports = (on, config) => {
       });
       return null;
     },
-    'db:addTestUsers': () => {
-      createTestUsers();
+    'db:addTestUsers': async () => {
+      await createTestUsers();
       return null;
     },
-    'db:deleteTestUsers': () => {
-      deleteTestUsers();
+    'db:deleteTestUsers': async () => {
+      await deleteTestUsers();
       return null;
     },
     log(message) {

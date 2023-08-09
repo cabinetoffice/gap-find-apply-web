@@ -1,6 +1,10 @@
 import { Client } from 'pg';
 import fs from 'fs/promises';
 
+const databaseUrl =
+  process.env.CYPRESS_DATABASE_URL ||
+  'postgres://postgres:postgres@localhost:5432';
+
 export const runSQL = async (filePath, dbName) => {
   try {
     const connectionString = getConnectionStringByDbName(dbName);
@@ -18,9 +22,5 @@ export const runSQL = async (filePath, dbName) => {
 };
 
 export const getConnectionStringByDbName = (dbName) => {
-  return `postgres://postgres:postgres@localhost:5432/${dbName}`;
-};
-
-export const databases = {
-  userServiceDbName: 'gapuserlocaldb',
+  return `${databaseUrl}/${dbName}`;
 };

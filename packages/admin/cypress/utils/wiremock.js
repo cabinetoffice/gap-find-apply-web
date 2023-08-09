@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const wireMockBaseUrl = 'http://localhost:8888/__admin';
+const wireMockBaseUrl =
+  process.env.CYPRESS_WIREMOCK_BASE_URL || 'http://localhost:8888/__admin';
 
 const userStubResponseMappings = {
   applicant: 'onelogin-applicant-userinfo-response-get.json',

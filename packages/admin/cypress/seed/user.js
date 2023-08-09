@@ -1,21 +1,14 @@
-import { databases, runSQL } from './database';
+import { runSQL } from './database';
 
-export const createTestUsers = () => {
-  console.log('Adding test users...');
-  runSQL(
-    './cypress/seed/sql/addTestUsers.sql',
-    databases.userServiceDbName
-  ).then(() => {
-    console.log('Test users successfully added!');
-  });
+const userServiceDbName =
+  process.env.CYPRESS_USER_SERVICE_DB_NAME || 'gapuserlocaldb';
+
+export const createTestUsers = async () => {
+  await runSQL('./cypress/seed/sql/addTestUsers.sql', userServiceDbName);
+  console.log('Successfully added test users');
 };
 
-export const deleteTestUsers = () => {
-  console.log('Deleting test users...');
-  runSQL(
-    './cypress/seed/sql/deleteTestUsers.sql',
-    databases.userServiceDbName
-  ).then(() => {
-    console.log('Test users successfully deleted!');
-  });
+export const deleteTestUsers = async () => {
+  await runSQL('./cypress/seed/sql/deleteTestUsers.sql', userServiceDbName);
+  console.log('Successfully removed test users');
 };
