@@ -18,7 +18,7 @@ import {
   toHaveBeenCalledWith,
   expectObjectEquals,
   getPageProps,
-} from '../../../../../../utils/UnitTestHelpers';
+} from '../../../../../../testUtils/unitTestHelpers';
 import { parseBody } from 'next/dist/server/api-utils/node';
 import InferProps from '../../../../../../types/InferProps';
 import AdvertStatusEnum from '../../../../../../enums/AdvertStatus';

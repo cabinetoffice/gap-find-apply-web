@@ -3,7 +3,7 @@ import { GetServerSidePropsContext } from 'next';
 import { render } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import React from 'react';
-import { createMockRouter } from '../testUtils/createMockRouter';
+import { createMockRouter } from './createMockRouter';
 
 /**
  *

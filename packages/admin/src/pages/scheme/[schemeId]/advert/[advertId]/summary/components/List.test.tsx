@@ -7,7 +7,7 @@ import {
   GrantAdvertSummaryPageQuestion,
 } from '../../../../../../../types/GetSummaryPageContentResponse';
 import { List } from './List';
-import { getPageProps } from '../../../../../../../utils/UnitTestHelpers';
+import { getPageProps } from '../../../../../../../testUtils/unitTestHelpers';
 import AdvertStatusEnum from '../../../../../../../enums/AdvertStatus';
 
 const schemeId = 'test-scheme-id';

@@ -9,7 +9,7 @@ import {
   Optional,
   getPageProps,
   expectObjectEquals,
-} from '../../../../../utils/UnitTestHelpers';
+} from '../../../../../testUtils/unitTestHelpers';
 import InferProps from '../../../../../types/InferProps';
 
 const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({

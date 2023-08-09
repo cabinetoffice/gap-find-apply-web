@@ -5,7 +5,7 @@ import {
   getAdvertPublishInformationBySchemeIdResponse,
   getAdvertStatusBySchemeIdResponse,
 } from '../../../services/AdvertPageService.d';
-import { getPageProps } from '../../../utils/UnitTestHelpers';
+import { getPageProps } from '../../../testUtils/unitTestHelpers';
 import AdvertStatusEnum from '../../../enums/AdvertStatus';
 
 describe('BuildAdvert', () => {

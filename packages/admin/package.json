@@ -66,11 +66,13 @@
     "contentful-typescript-codegen": "^3.2.3",
     "cypress": "^9.5.0",
     "cypress-axe": "^0.14.0",
+    "isomorphic-fetch": "^3.0.0",
     "jest": "^28.1.2",
     "jest-environment-jsdom": "^28.1.2",
     "jest-fetch-mock": "^3.0.3",
     "sass": "1.62.1",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.3",
+    "urlpattern-polyfill": "^9.0.0"
   },
   "browserslist": {
     "production": [

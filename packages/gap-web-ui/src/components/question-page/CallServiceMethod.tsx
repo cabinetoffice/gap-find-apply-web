@@ -46,7 +46,7 @@ export default async function CallServiceMethod<B extends PageBodyResponse, R>(
     body = removeAllCarriageReturns(body);
 
     await validateCSRFCookie(req, res, body);
-
+    console.log('calling service func');
     const result = await serviceFunc(body);
 
     return generateRedirect(

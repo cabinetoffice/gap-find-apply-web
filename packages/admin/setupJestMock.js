@@ -1,4 +1,7 @@
 import '@testing-library/jest-dom';
+import 'isomorphic-fetch';
+
+HTMLFormElement.prototype.requestSubmit = jest.fn();
 
 jest.mock('next/head', () => {
   return {
