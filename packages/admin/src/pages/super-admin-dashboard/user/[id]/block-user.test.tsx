@@ -79,7 +79,13 @@ describe('Block user page functionality', () => {
       params: { userId: '1234' },
     }));
 
-    await getServerSideProps(context);
-    await waitFor(() => expect(updateUserRoles).toHaveBeenCalled());
+    const response = await getServerSideProps(context);
+    expect(updateUserRoles).toHaveBeenCalled();
+    expect(response).toEqual({
+      redirect: {
+        destination: '/super-admin-dashboard/',
+        statusCode: 302,
+      },
+    });
   });
 });

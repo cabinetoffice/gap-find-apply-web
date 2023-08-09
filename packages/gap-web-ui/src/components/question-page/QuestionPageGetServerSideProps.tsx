@@ -95,7 +95,6 @@ async function postPagesResult<T extends PageBodyResponse, V>({
   onErrorMessage,
   resolvedUrl,
 }: PostPageResultProps<T, V>) {
-  console.log('posting...');
   return CallServiceMethod<T, V>(
     req,
     res,
