@@ -6,27 +6,49 @@ import {
   DescriptionListProps,
 } from '../../components/description-list/DescriptionList';
 import { routes } from '../../utils/routes';
+import { ImportantBanner } from 'gap-web-ui';
 
-interface ApplicantDashBoardProps {
+export type ApplicantDashBoardProps = {
   descriptionList: DescriptionListProps;
   hasApplications: boolean;
-  oneLoginMatchingAccountBannerEnabled: boolean;
-}
+  showMigrationErrorBanner: boolean;
+  showMigrationSuccessBanner: boolean;
+};
 
 export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
   descriptionList,
   hasApplications,
-  oneLoginMatchingAccountBannerEnabled,
+  showMigrationErrorBanner,
+  showMigrationSuccessBanner,
 }) => {
   return (
     <div className="govuk-grid-row">
       <div className="govuk-grid-column-two-thirds">
-        {oneLoginMatchingAccountBannerEnabled && (
-          /* TODO: Placeholder for GAP-1923 */
-          <div>
-            <h1>MATCHING ACCOUNT BANNER PLACEHOLDER</h1>
-          </div>
+        {showMigrationSuccessBanner && (
+          <ImportantBanner
+            bannerHeading="Your data has been successfully added to your One Login account."
+            isSuccess
+          />
         )}
+
+        {showMigrationErrorBanner && (
+          <ImportantBanner
+            bannerHeading="Something went wrong while transferring your data."
+            bannerContent={
+              <p className="govuk-body">
+                Please get in contact with our support team at{' '}
+                <a
+                  className="govuk-notification-banner__link"
+                  href="mailto:findagrant@cabinetoffice.gov.uk"
+                >
+                  findagrant@cabinetoffice.gov.uk
+                </a>
+                {'.'}
+              </p>
+            }
+          />
+        )}
+
         <section>
           <h1
             className="govuk-heading-l"

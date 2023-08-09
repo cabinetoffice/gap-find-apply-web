@@ -1,4 +1,4 @@
-import { merge } from 'lodash';
+import { isArray, merge, mergeWith } from 'lodash';
 import { GetServerSidePropsContext } from 'next';
 import { render } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
@@ -14,7 +14,9 @@ const getProps = <T extends Record<string, unknown>>(
   defaultProps: () => T,
   overrides: Optional<T> = {}
 ) => {
-  return merge(defaultProps(), overrides) as T;
+  return mergeWith(defaultProps(), overrides, (obj, src) =>
+    isArray(src) ? src : undefined
+  ) as T;
 };
 
 /**

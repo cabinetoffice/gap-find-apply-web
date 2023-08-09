@@ -12,6 +12,7 @@ import InferProps from '../../types/InferProps';
 export const getServerSideProps = async ({
   req,
   res,
+  query,
 }: GetServerSidePropsContext) => {
   const findRedirectCookie = process.env.APPLYING_FOR_REDIRECT_COOKIE;
 
@@ -51,14 +52,17 @@ export const getServerSideProps = async ({
 
   const oneLoginMatchingAccountBannerEnabled =
     process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
-
+  const migrationStatus = query?.migrationStatus ?? null;
+  const showMigrationSuccessBanner =
+    oneLoginMatchingAccountBannerEnabled && migrationStatus === 'success';
+  const showMigrationErrorBanner =
+    oneLoginMatchingAccountBannerEnabled && migrationStatus === 'error';
   return {
     props: {
       descriptionList,
       hasApplications,
-      oneLoginMatchingAccountBannerEnabled: Boolean(
-        oneLoginMatchingAccountBannerEnabled
-      ),
+      showMigrationErrorBanner,
+      showMigrationSuccessBanner,
     },
   };
 };
@@ -66,7 +70,8 @@ export const getServerSideProps = async ({
 export default function ApplicantDashboardPage({
   descriptionList,
   hasApplications,
-  oneLoginMatchingAccountBannerEnabled,
+  showMigrationErrorBanner,
+  showMigrationSuccessBanner,
 }: InferProps<typeof getServerSideProps>) {
   return (
     <>
@@ -75,9 +80,8 @@ export default function ApplicantDashboardPage({
         <ApplicantDashboard
           descriptionList={descriptionList}
           hasApplications={hasApplications}
-          oneLoginMatchingAccountBannerEnabled={
-            oneLoginMatchingAccountBannerEnabled
-          }
+          showMigrationErrorBanner={showMigrationErrorBanner}
+          showMigrationSuccessBanner={showMigrationSuccessBanner}
         />
       </Layout>
     </>
