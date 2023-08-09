@@ -1,4 +1,8 @@
 /// <reference types="cypress" />
+
+import { createTestUsers, deleteTestUsers } from '../seed/user';
+import { createUserInfoStub } from '../utils/wiremock';
+
 // ***********************************************************
 // This example plugins/index.js can be used to load plugins
 //
@@ -20,6 +24,20 @@ module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   on('task', {
+    'wiremock:selectUser': (user) => {
+      createUserInfoStub(user).then(() => {
+        console.log('User info stub created');
+      });
+      return null;
+    },
+    'db:addTestUsers': () => {
+      createTestUsers();
+      return null;
+    },
+    'db:deleteTestUsers': () => {
+      deleteTestUsers();
+      return null;
+    },
     log(message) {
       console.log(message);
 

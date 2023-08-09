@@ -1,16 +1,18 @@
+import { login } from '../../utils/login';
+import { createUserInfoStub } from '../../utils/wiremock';
 import run_accessibility from '../../utils/run_accessibility';
 
 describe('dashboard', () => {
   beforeEach(() => {
-    cy.session('dashboard', () => {
-      cy.visit('/');
-    });
-    cy.visit('/');
+    cy.task('wiremock:selectUser', 'admin');
+    login();
+  });
+
+  it('should navigate to admin dashboard', () => {
+    cy.url().should('include', 'admin/dashboard');
   });
 
   it('Should have no accessibility violations on admin dashboard', () => {
-    cy.visit('/dashboard');
-
     cy.get('[data-cy="cy_dashboardPageTitle"]')
       .should('be.visible')
       .contains('Manage a grant');
@@ -18,8 +20,6 @@ describe('dashboard', () => {
   });
 
   it('Should render a table containing the list of scheme names and descriptions', () => {
-    cy.visit('/dashboard');
-
     cy.get('[data-cy="cy_tableColumnName_Name"]')
       .should('be.visible')
       .contains('Name');

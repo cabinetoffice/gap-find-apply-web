@@ -35,3 +35,15 @@ Cypress.Commands.add('setTinyMceContent', (content, fieldName) => {
   });
   cy.wait(2000);
 });
+
+Cypress.Commands.add('clickButton', (buttonClass, buttonText) => {
+  cy.get(`.${buttonClass}`).should('be.visible').contains(buttonText).click();
+});
+
+Cypress.Commands.add('checkRadioInputByDataCy', (dataCy) => {
+  cy.get(`[data-cy="${dataCy}"]`).check();
+});
+
+Cypress.Commands.add('checkTextByDataCy', (dataCy, expectedText) => {
+  cy.get(`[data-cy="${dataCy}"]`).should('be.visible').contains(expectedText);
+});
