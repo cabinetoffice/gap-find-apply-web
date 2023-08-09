@@ -4,7 +4,7 @@ import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
 
 const SignInDetails = () => {
-  const oneLoginURL = 'https://home.integration.account.gov.uk/security';
+  const oneLoginURL = process.env.ONE_LOGIN_URL;
   return (
     <>
       <Meta title="Your sign in details - Apply for a grant" />

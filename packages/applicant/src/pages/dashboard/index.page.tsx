@@ -57,7 +57,6 @@ export const getServerSideProps = async ({
     oneLoginMatchingAccountBannerEnabled && migrationStatus === 'success';
   const showMigrationErrorBanner =
     oneLoginMatchingAccountBannerEnabled && migrationStatus === 'error';
-
   const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
 
   return {
