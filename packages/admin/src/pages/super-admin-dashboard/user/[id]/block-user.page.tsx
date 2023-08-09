@@ -44,7 +44,9 @@ const BlockUserPage = ({
   return (
     <>
       <Meta title="Block a User" />
-      <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>Back</Link>
+      <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
+        <a className="govuk-link">Back</a>
+      </Link>
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}
