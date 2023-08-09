@@ -78,7 +78,7 @@ export default async function callServiceMethod<
     if (err.code) {
       return generateErrorPageRedirectV2(err.code, errorPageParams as string);
     }
-    console.log(err);
+
     // If the error is not related to form validation
     return {
       redirect: {
