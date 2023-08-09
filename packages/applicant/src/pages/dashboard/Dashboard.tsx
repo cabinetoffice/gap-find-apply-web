@@ -13,6 +13,7 @@ export type ApplicantDashBoardProps = {
   hasApplications: boolean;
   showMigrationErrorBanner: boolean;
   showMigrationSuccessBanner: boolean;
+  oneLoginEnabled: boolean;
 };
 
 export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
@@ -20,6 +21,7 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
   hasApplications,
   showMigrationErrorBanner,
   showMigrationSuccessBanner,
+  oneLoginEnabled,
 }) => {
   return (
     <div className="govuk-grid-row">
@@ -127,6 +129,13 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
               linkDescription={'Your organisation details'}
               description={'Change your organisation details'}
             />
+            {oneLoginEnabled && (
+              <Card
+                link={routes.signInDetails}
+                linkDescription={'Your sign in details'}
+                description={'Change your sign in details'}
+              />
+            )}
           </div>
         </section>
       </div>

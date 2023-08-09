@@ -20,6 +20,7 @@ function getDefaultProps(): ApplicantDashBoardProps {
     hasApplications: true,
     showMigrationErrorBanner: false,
     showMigrationSuccessBanner: false,
+    oneLoginEnabled: true,
   };
 }
 
@@ -118,5 +119,33 @@ describe('Dashboard', () => {
         screen.queryByRole('heading', { level: 2, name: 'Success' })
       ).toBeFalsy();
     });
+  });
+});
+
+describe('OneLogin feature flag', () => {
+  test('should render Sign In Details card when OneLogin feature flag is enabled', () => {
+    render(
+      <ApplicantDashboard
+        {...getProps(getDefaultProps, {
+          oneLoginEnabled: true,
+        })}
+      />
+    );
+    const card = screen.getByRole('link', {
+      name: 'Your sign in details',
+    });
+
+    expect(card).toBeInTheDocument();
+  });
+
+  test('should not render Sign In Details card when OneLogin feature flag is disabled', () => {
+    render(
+      <ApplicantDashboard
+        {...getProps(getDefaultProps, {
+          oneLoginEnabled: false,
+        })}
+      />
+    );
+    expect(screen.queryByText('Your sign in details')).toBeFalsy();
   });
 });

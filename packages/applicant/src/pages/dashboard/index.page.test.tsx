@@ -117,6 +117,7 @@ describe('getServerSideProps', () => {
         hasApplications: true,
         showMigrationErrorBanner: false,
         showMigrationSuccessBanner: false,
+        oneLoginEnabled: false,
       },
     });
   });
@@ -148,6 +149,7 @@ describe('getServerSideProps', () => {
         hasApplications: true,
         showMigrationErrorBanner: false,
         showMigrationSuccessBanner: false,
+        oneLoginEnabled: false,
       },
     });
   });

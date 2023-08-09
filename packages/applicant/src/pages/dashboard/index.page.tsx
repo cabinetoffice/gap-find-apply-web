@@ -57,12 +57,15 @@ export const getServerSideProps = async ({
     oneLoginMatchingAccountBannerEnabled && migrationStatus === 'success';
   const showMigrationErrorBanner =
     oneLoginMatchingAccountBannerEnabled && migrationStatus === 'error';
+  const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
+
   return {
     props: {
       descriptionList,
       hasApplications,
       showMigrationErrorBanner,
       showMigrationSuccessBanner,
+      oneLoginEnabled,
     },
   };
 };
@@ -72,6 +75,7 @@ export default function ApplicantDashboardPage({
   hasApplications,
   showMigrationErrorBanner,
   showMigrationSuccessBanner,
+  oneLoginEnabled,
 }: InferProps<typeof getServerSideProps>) {
   return (
     <>
@@ -82,6 +86,7 @@ export default function ApplicantDashboardPage({
           hasApplications={hasApplications}
           showMigrationErrorBanner={showMigrationErrorBanner}
           showMigrationSuccessBanner={showMigrationSuccessBanner}
+          oneLoginEnabled={oneLoginEnabled}
         />
       </Layout>
     </>
