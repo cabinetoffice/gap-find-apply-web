@@ -24,18 +24,10 @@ module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   on('task', {
-    'wiremock:selectUser': (user) => {
-      createUserInfoStub(user).then(() => {
-        console.log('User info stub created');
-      });
-      return null;
-    },
-    'db:addTestUsers': async () => {
-      await createTestUsers();
-      return null;
-    },
-    'db:deleteTestUsers': async () => {
+    'setup:user': async (user) => {
       await deleteTestUsers();
+      await createTestUsers();
+      await createUserInfoStub(user);
       return null;
     },
     log(message) {

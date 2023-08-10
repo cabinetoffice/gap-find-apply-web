@@ -27,8 +27,9 @@ export const createUserInfoStub = async (user) => {
   };
 
   try {
-    const response = await axios.get(`${wireMockBaseUrl}/mappings`);
-    const existingMappings = response.data.mappings;
+    const {
+      data: { mappings: existingMappings },
+    } = await axios.get(`${wireMockBaseUrl}/mappings`);
 
     const existingMapping = existingMappings.find(
       (mapping) =>
@@ -50,9 +51,9 @@ export const createUserInfoStub = async (user) => {
         `${wireMockBaseUrl}/mappings`,
         userInfoStub
       );
-      console.log('New WireMock mapping created:', createResponse.data);
+      console.log('New WireMock mapping created:\n\n', createResponse.data);
     }
   } catch (error) {
-    console.error('Error creating/updating WireMock stub:', error.message);
+    console.error('Error creating/updating WireMock stub:\n\n', error);
   }
 };

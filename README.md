@@ -59,7 +59,7 @@ These are designed to run against a local environment. The following apps must b
 `CYPRESS_DATABASE_URL=postgres://postgres:postgres@localhost:5432`
 `CYPRESS_USER_SERVICE_DB_NAME=gapuserlocaldb`
 
-The package.json includes shorthands to run:
+The package.json within admin/applicant includes shorthands to run:
 
 - `yarn workspace admin integration:gui` - run individual test cases against browser
 - `yarn integration` - runs all tests in headless mode
@@ -76,6 +76,8 @@ It is recommended that data teardown/setup happens as part of each test run ensu
 
 Various tasks have been added to perform tasks before and during test runs. These can be found in `cypress/plugins/index.js`
 
-`wiremock:selectUser` - this will edit the wiremock stub mapping to One login (/userInfo) to return either an applicant, admin or super-admin. This will act as the signed in user to perform the test actions
-`db:removeTestUsers` - this will remove test users directly to the database via sql
-`db:addTestUsers` - this will add test users directly to the database via sql
+`setup:user`
+
+- this will remove test users directly to the database via sql
+- this will add test users directly to the database via sql
+- this will edit the wiremock stub mapping to One login (/userInfo) to return either an applicant, admin or super-admin. This will act as the signed in user to perform the test actions

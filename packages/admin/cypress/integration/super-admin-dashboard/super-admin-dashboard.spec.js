@@ -2,9 +2,7 @@ import { login } from '../../utils/login';
 
 describe('super-admin-dashboard', () => {
   beforeEach(() => {
-    cy.task('db:deleteTestUsers');
-    cy.task('db:addTestUsers');
-    cy.task('wiremock:selectUser', 'superAdmin');
+    cy.task('setup:user', 'superAdmin');
     login();
   });
 

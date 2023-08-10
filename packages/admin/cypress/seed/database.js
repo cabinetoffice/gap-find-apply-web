@@ -17,7 +17,7 @@ export const runSQL = async (filePath, dbName) => {
 
     console.log('SQL script executed successfully.');
   } catch (error) {
-    console.error('Error executing SQL script:', error);
+    console.error('Error executing SQL script:\n\n', error);
   }
 };
 
