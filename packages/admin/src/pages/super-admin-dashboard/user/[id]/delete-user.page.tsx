@@ -1,9 +1,6 @@
-import {
-  FlexibleQuestionPageLayout,
-  QuestionPageGetServerSideProps,
-} from 'gap-web-ui';
+import { FlexibleQuestionPageLayout } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
-import CustomLink from '../../../../components/custom-link/CustomLink';
+import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
 import Meta from '../../../../components/layout/Meta';
 import InferProps from '../../../../types/InferProps';
 import { getUserTokenFromCookies } from '../../../../utils/session';
@@ -11,12 +8,13 @@ import {
   deleteUserInformation,
   getUserById,
 } from '../../../../services/SuperAdminService';
+import Link from 'next/link';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
 
   async function handleRequest(_body: { _csrf: string }, jwt: string) {
-    deleteUserInformation(userId, jwt);
+    await deleteUserInformation(userId, jwt);
   }
 
   async function fetchPageData(jwt: string) {
@@ -46,10 +44,9 @@ const DeleteUserPage = ({
   return (
     <>
       <Meta title="Delete User" />
-      <CustomLink
-        isBackButton
-        href={`/super-admin-dashboard/user/${pageData.userId}`}
-      />
+      <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
+        <a className="govuk-back-link">Back</a>
+      </Link>
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
           fieldErrors={fieldErrors}
@@ -69,9 +66,9 @@ const DeleteUserPage = ({
             >
               Delete user
             </button>
-            <CustomLink href={`/super-admin-dashboard/user/${pageData.userId}`}>
+            <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
               <a className="govuk-link">Cancel</a>
-            </CustomLink>
+            </Link>
           </div>
         </FlexibleQuestionPageLayout>
       </div>
