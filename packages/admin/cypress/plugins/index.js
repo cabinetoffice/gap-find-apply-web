@@ -1,4 +1,8 @@
 /// <reference types="cypress" />
+
+import { createTestUsers, deleteTestUsers } from '../seed/user';
+import { createUserInfoStub } from '../utils/wiremock';
+
 // ***********************************************************
 // This example plugins/index.js can be used to load plugins
 //
@@ -20,6 +24,12 @@ module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   on('task', {
+    'setup:user': async (user) => {
+      await deleteTestUsers();
+      await createTestUsers();
+      await createUserInfoStub(user);
+      return null;
+    },
     log(message) {
       console.log(message);
 
