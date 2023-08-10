@@ -60,51 +60,8 @@ describe('Dashboard', () => {
         props: {
           schemes: mockSchemeList,
           userDetails: mockUserDetails,
-          oneLoginTransferErrorEnabled: false,
-        },
-      });
-    });
-
-    it('Should return oneLoginTransferErrorEnabled = true', async () => {
-      mockedGetUserSchemes.mockResolvedValue(mockSchemeList);
-      mockedGetLoggedInUsersDetails.mockResolvedValue(mockUserDetails);
-
-      process.env.SESSION_COOKIE_NAME = 'gap-test';
-      process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED = 'true';
-
-      const result = await getServerSideProps({
-        req: { cookies: { 'gap-test': 'testSessionId' } },
-      } as any);
-
-      expect(result).toStrictEqual({
-        props: {
-          schemes: mockSchemeList,
-          userDetails: mockUserDetails,
-          oneLoginTransferErrorEnabled: true,
-        },
-      });
-    });
-
-    it('Should return oneLoginTransferErrorEnabled = false', async () => {
-      mockedGetUserSchemes.mockResolvedValue(mockSchemeList);
-      mockedGetLoggedInUsersDetails.mockResolvedValue(mockUserDetails);
-
-      process.env.SESSION_COOKIE_NAME = 'gap-test';
-
-      const oneLoginTransferErrorEnabled =
-        process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
-
-      const result = await getServerSideProps({
-        req: { cookies: { 'gap-test': 'testSessionId' } },
-      } as any);
-
-      expect(result).toStrictEqual({
-        props: {
-          schemes: mockSchemeList,
-          userDetails: mockUserDetails,
-          oneLoginTransferErrorEnabled: oneLoginTransferErrorEnabled,
-          showMigrationSuccessBanner: false,
           showMigrationErrorBanner: false,
+          showMigrationSuccessBanner: false,
         },
       });
     });

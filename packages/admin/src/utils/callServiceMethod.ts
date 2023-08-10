@@ -67,16 +67,18 @@ export default async function callServiceMethod<
     };
   } catch (err: any) {
     // If we encounter an error that conforms to the old way of handling form validation errors
-    if (err.response?.data?.fieldErrors) {
+    const data = err?.response?.data;
+    const fieldErrors = data?.errors || data?.fieldErrors;
+    if (fieldErrors) {
       return {
         body: body!,
-        fieldErrors: err.response.data.fieldErrors as ValidationError[],
+        fieldErrors: fieldErrors as ValidationError[],
       };
     }
 
     // If we encounter an error that conforms to the new way of handling form validation errors
     if (err.code) {
-      return generateErrorPageRedirectV2(err.code, errorPageParams as string);
+      return generateErrorPageRedirectV2(err.code, errorPageParams);
     }
 
     // If the error is not related to form validation

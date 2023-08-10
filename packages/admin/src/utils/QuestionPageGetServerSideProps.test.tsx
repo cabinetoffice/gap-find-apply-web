@@ -1,10 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import {
-  expectObjectEquals,
-  getContext,
-  getProps,
-  Optional,
-} from '../../utils/UnitTestHelpers';
+import { expectObjectEquals, getContext, getProps, Optional } from 'gap-web-ui';
 import { parseBody } from 'next/dist/server/api-utils/node';
 import QuestionPageGetServerSideProps from './QuestionPageGetServerSideProps';
 

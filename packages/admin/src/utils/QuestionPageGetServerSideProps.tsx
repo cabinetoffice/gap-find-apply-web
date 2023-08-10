@@ -1,3 +1,4 @@
+import { resolve } from 'styled-jsx/css';
 import CallServiceMethod from './callServiceMethod';
 import {
   ValidationError,
@@ -75,6 +76,8 @@ async function fetchAndHandlePageData<K extends FetchPageData>(
     return await fetchPageData(jwt);
   } catch (err: any) {
     if (err?.response?.data?.code) {
+      console.log('hello');
+      console.log(resolvedUrl);
       return generateRedirect(
         `/error-page/code/${err.response.data.code}?href=${resolvedUrl}`
       );
