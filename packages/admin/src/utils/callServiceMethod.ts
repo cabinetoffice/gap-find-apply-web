@@ -39,12 +39,14 @@ export default async function callServiceMethod<
   redirectTo: string | ((result: R) => string),
   errorPageParams: ServiceError | string
 ): Promise<
-  { body: B; fieldErrors: ValidationError[] } | { redirect: Redirect } | void
+  | { body: B; fieldErrors: ValidationError[] }
+  | { redirect: Redirect }
+  | { nonPost: true }
 > {
   // When we are NOT posting to the same page, initialise the csrf cookie and immediately return
   if (req.method !== 'POST') {
     await initialiseCSRFCookie(req, res);
-    return;
+    return { nonPost: true };
   }
 
   // Otherwise, validate the CSRF cookie & call the service method

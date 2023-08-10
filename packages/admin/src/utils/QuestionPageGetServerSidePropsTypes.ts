@@ -23,10 +23,13 @@ export type PostPageResultProps<T extends PageBodyResponse, V> = {
   resolvedUrl: string;
 };
 
-export type generateValidationPropsType<T> = void | {
-  body: T;
-  fieldErrors: ValidationError[];
-};
+export type generateValidationPropsType<T> =
+  | void
+  | {
+      body: T;
+      fieldErrors: ValidationError[];
+    }
+  | { nonPost: true };
 
 export type NextRedirect = {
   redirect: Redirect;
