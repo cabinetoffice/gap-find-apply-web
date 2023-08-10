@@ -13,7 +13,7 @@ import {
   InferServiceMethodResponse,
   expectObjectEquals,
   getPageProps,
-} from '../../../../../utils/UnitTestHelpers';
+} from '../../../../../testUtils/unitTestHelpers';
 import InferProps from '../../../../../types/InferProps';
 import AdvertStatusEnum from '../../../../../enums/AdvertStatus';
 

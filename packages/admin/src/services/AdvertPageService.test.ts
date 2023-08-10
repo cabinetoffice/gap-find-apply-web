@@ -1,7 +1,7 @@
 import axios from 'axios';
 import getConfig from 'next/config';
 import AdvertStatusEnum from '../enums/AdvertStatus';
-import { InferServiceMethodResponse } from '../utils/UnitTestHelpers';
+import { InferServiceMethodResponse } from '../testUtils/unitTestHelpers';
 import {
   createNewAdvert,
   getAdvertPreviewPageContent,

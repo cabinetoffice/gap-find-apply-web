@@ -60,8 +60,8 @@ describe('Dashboard', () => {
         props: {
           schemes: mockSchemeList,
           userDetails: mockUserDetails,
-          showMigrationSuccessBanner: false,
           showMigrationErrorBanner: false,
+          showMigrationSuccessBanner: false,
         },
       });
     });

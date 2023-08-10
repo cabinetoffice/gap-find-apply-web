@@ -1,14 +1,10 @@
 import { GetServerSidePropsContext, Redirect } from 'next';
+import { ValidationError } from 'gap-web-ui';
 
-interface ValidationError {
-  fieldName: string;
-  errorMessage: string;
-}
+export type PageBodyResponse = Record<string, string | string[]>;
+export type FetchPageData = Record<string, any>;
 
-type PageBodyResponse = Record<string, string | string[]>;
-type FetchPageData = Record<string, any>;
-
-type QuestionPageGetServerSidePropsType<T, K, V> = {
+export type QuestionPageGetServerSidePropsType<T, K, V> = {
   context: GetServerSidePropsContext;
   fetchPageData: (jwt: string) => Promise<K>;
   handleRequest: (body: T, jwt: string) => Promise<V>;
@@ -17,7 +13,7 @@ type QuestionPageGetServerSidePropsType<T, K, V> = {
   onErrorMessage: string;
 };
 
-type PostPageResultProps<T extends PageBodyResponse, V> = {
+export type PostPageResultProps<T extends PageBodyResponse, V> = {
   req: GetServerSidePropsContext['req'];
   res: GetServerSidePropsContext['res'];
   handleRequest: (body: T, jwt: string) => Promise<V>;
@@ -27,21 +23,16 @@ type PostPageResultProps<T extends PageBodyResponse, V> = {
   resolvedUrl: string;
 };
 
-type generateValidationPropsType<T> = void | {
-  body: T;
-  fieldErrors: ValidationError[];
-};
+export type generateValidationPropsType<T> =
+  | void
+  | {
+      body: T;
+      fieldErrors: ValidationError[];
+    }
+  | { nonPost: true };
 
-type NextRedirect = {
+export type NextRedirect = {
   redirect: Redirect;
 };
 
-export {
-  ValidationError,
-  QuestionPageGetServerSidePropsType,
-  PostPageResultProps,
-  PageBodyResponse,
-  FetchPageData,
-  generateValidationPropsType,
-  NextRedirect,
-};
+export type { ValidationError };
