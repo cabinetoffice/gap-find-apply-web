@@ -1,8 +1,8 @@
+import { Pagination } from '../components/pagination/Pagination';
 import { SuperAdminDashboardResponse } from './../pages/super-admin-dashboard/types';
 import getConfig from 'next/config';
 import axios from 'axios';
 import { axiosUserServiceConfig } from '../utils/session';
-import Pagination from '../types/Pagination';
 import {
   Department,
   Role,
@@ -10,21 +10,45 @@ import {
   User,
 } from '../pages/super-admin-dashboard/types';
 import UserDetails from '../types/UserDetails';
+import PaginationType from '../types/Pagination';
 
 const { serverRuntimeConfig } = getConfig();
 
-export const getSuperAdminDashboard = async (
-  pagination: Pagination,
-  userToken: string
-): Promise<SuperAdminDashboardResponse> => {
+type GetSuperAdminDashboardParams = {
+  pagination: PaginationType;
+  userToken: string;
+  filterData?: SuperAdminDashboardFilterData;
+  resetPagination?: boolean;
+};
+
+export const getSuperAdminDashboard = async ({
+  pagination,
+  userToken,
+  resetPagination = false,
+  filterData: {
+    roles = [],
+    departments = [],
+    searchTerm,
+    clearAllFilters,
+  } = {} as SuperAdminDashboardFilterData,
+}: GetSuperAdminDashboardParams): Promise<SuperAdminDashboardResponse> => {
+  console.log({ searchTerm });
+  const params = {
+    ...pagination,
+    roles: roles.join(','),
+    departments: departments.join(','),
+    searchTerm,
+    clearAllFilters: clearAllFilters,
+  };
+
   const response = await axios.get(
     `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
     {
-      params: pagination,
+      params,
       ...axiosUserServiceConfig(userToken),
     }
   );
-  return response.data;
+  return { ...response.data, resetPagination };
 };
 
 export const getUserById = async (id: string, userToken: string) => {
@@ -141,27 +165,3 @@ export const createDepartmentInformation = async (
     body,
     axiosUserServiceConfig(userToken)
   );
-
-export const filterUsers = async (
-  pagination: Pagination,
-  filterData: SuperAdminDashboardFilterData,
-  userToken: string
-) => {
-  const params = {
-    pagination,
-    roles: filterData.roles.join(','),
-    departments: filterData.departments.join(','),
-    searchTerm: filterData.searchTerm,
-    clearAllFilters: filterData.clearAllFilters,
-  };
-
-  const res = await axios.get<SuperAdminDashboardResponse>(
-    `${process.env.USER_SERVICE_URL}/super-admin-dashboard`,
-    {
-      params,
-      ...axiosUserServiceConfig(userToken),
-    }
-  );
-
-  return res.data;
-};

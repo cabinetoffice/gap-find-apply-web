@@ -21,12 +21,13 @@ export type User = {
 };
 
 export type SuperAdminDashboardFilterData = {
-  roles: Array<string>;
-  departments: Array<string>;
-  searchTerm: string;
-  _csrf: string;
+  roles?: Array<string>;
+  departments?: Array<string>;
+  searchTerm?: string;
+  _csrf?: string;
   'clear-all-filters'?: '';
   clearAllFilters?: boolean;
+  resetPagination?: boolean;
 };
 
 export type SuperAdminDashboardResponse = {
@@ -35,4 +36,5 @@ export type SuperAdminDashboardResponse = {
   roles: Role[];
   userCount: number;
   previousFilterData: string[][];
+  resetPagination?: boolean;
 };

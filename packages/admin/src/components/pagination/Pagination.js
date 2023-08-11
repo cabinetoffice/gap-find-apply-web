@@ -11,6 +11,8 @@ import {
 } from './helper';
 
 const Pagination = ({
+  resetPagination = false,
+  additionalQueryData,
   itemsPerPage = 10,
   totalItems = 0,
   itemType = 'items',
@@ -21,7 +23,7 @@ const Pagination = ({
 
   const { page } = query;
 
-  const currentPage = page ? parseInt(page) : 1;
+  const currentPage = !page || resetPagination ? 1 : parseInt(page);
 
   const totalPage = Math.ceil(totalItems / itemsPerPage);
 
@@ -34,12 +36,13 @@ const Pagination = ({
   // code for adding previous button
   if (totalPage > 1 && currentPage > 1) {
     paginationElements.push(
-      buildPaginationListItems(
+      buildPaginationListItems({
         router,
         currentPage,
         itemsPerPage,
-        PAGINATION_PREVIOUS_ELEMENT
-      )
+        paginationElementType: PAGINATION_PREVIOUS_ELEMENT,
+        additionalQueryData,
+      })
     );
   }
 
@@ -47,33 +50,36 @@ const Pagination = ({
   for (let i = 0; i < pageIndexArr.length; i++) {
     if (pageIndexArr[i] === PAGINATION_ELLIPSIS_ELEMENT) {
       paginationElements.push(
-        buildPaginationListItems(
+        buildPaginationListItems({
           router,
-          i,
+          currentPage: i,
           itemsPerPage,
-          PAGINATION_ELLIPSIS_ELEMENT,
-          pageIndexArr[i + 1],
-          pageIndexArr[i - 1]
-        )
+          paginationElementType: PAGINATION_ELLIPSIS_ELEMENT,
+          ellipsisEndAt: pageIndexArr[i + 1],
+          ellipsisStartAt: pageIndexArr[i - 1],
+          additionalQueryData,
+        })
       );
     } else {
       if (currentPage === pageIndexArr[i]) {
         paginationElements.push(
-          buildPaginationListItems(
+          buildPaginationListItems({
             router,
-            pageIndexArr[i],
+            currentPage: pageIndexArr[i],
             itemsPerPage,
-            PAGINATION_ACTIVE_ELEMENT
-          )
+            paginationElementType: PAGINATION_ACTIVE_ELEMENT,
+            additionalQueryData,
+          })
         );
       } else {
         paginationElements.push(
-          buildPaginationListItems(
+          buildPaginationListItems({
             router,
-            pageIndexArr[i],
+            currentPage: pageIndexArr[i],
             itemsPerPage,
-            PAGINATION_NUMERIC_ELEMENT
-          )
+            paginationElementType: PAGINATION_NUMERIC_ELEMENT,
+            additionalQueryData,
+          })
         );
       }
     }
@@ -82,12 +88,13 @@ const Pagination = ({
   //code for adding next button
   if (totalPage > 1 && currentPage < totalPage) {
     paginationElements.push(
-      buildPaginationListItems(
+      buildPaginationListItems({
         router,
         currentPage,
         itemsPerPage,
-        PAGINATION_NEXT_ELEMENT
-      )
+        paginationElementType: PAGINATION_NEXT_ELEMENT,
+        additionalQueryData,
+      })
     );
   }
   return (

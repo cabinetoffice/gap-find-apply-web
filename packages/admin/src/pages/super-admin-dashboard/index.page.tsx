@@ -10,12 +10,8 @@ import {
 import Meta from '../../components/layout/Meta';
 import PaginationType from '../../types/Pagination';
 import { getUserTokenFromCookies } from '../../utils/session';
-import { Pagination } from '../../components/pagination/Pagination';
 import styles from './superadmin-dashboard.module.scss';
-import {
-  filterUsers,
-  getSuperAdminDashboard,
-} from '../../services/SuperAdminService';
+import { getSuperAdminDashboard } from '../../services/SuperAdminService';
 import {
   SuperAdminDashboardFilterData,
   SuperAdminDashboardResponse,
@@ -23,26 +19,37 @@ import {
 } from './types';
 import Navigation from './Nagivation';
 import InferProps from '../../types/InferProps';
-import getConfig from 'next/config';
+import { Pagination } from '../../components/pagination/Pagination';
+import { ButtonTypePropertyEnum } from 'gap-web-ui';
 
 const formatRequestBody = (body: SuperAdminDashboardFilterData) => {
+  console.log({ body });
+  const clearAllFilters = 'clear-all-filters' in body;
   if (typeof body.roles === 'string') body.roles = [body.roles];
   if (typeof body.departments === 'string')
     body.departments = [body.departments];
-  if (!body.departments) body.departments = [];
-  if (!body.roles) body.roles = [];
+  if (!body.departments || clearAllFilters) body.departments = [];
+  if (!body.roles || clearAllFilters) body.roles = [];
 
-  const clearAllFilters = body['clear-all-filters'] === '' ? true : false;
   return {
     ...body,
     clearAllFilters,
   };
 };
 
+const getFilterDataFromQuery = (query: GetServerSidePropsContext['query']) => {
+  console.log({ query });
+  return {
+    departments: (query.departments || []) as string[],
+    roles: (query.roles || []) as string[],
+    searchTerm: (query.searchTerm || '') as string,
+  };
+};
+
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
-  const paginationParams: PaginationType = {
+  const pagination: PaginationType = {
     paginate: true,
     page: Number(context.query.page || 1) - 1,
     size: Number(context.query.limit || 10),
@@ -51,19 +58,22 @@ export const getServerSideProps = async (
   const userToken = getUserTokenFromCookies(context.req);
 
   const fetchPageData = async () =>
-    await getSuperAdminDashboard(paginationParams, userToken);
+    getSuperAdminDashboard({
+      pagination,
+      filterData: getFilterDataFromQuery(context.query),
+      userToken,
+    });
 
-  const handleRequest = async (body: SuperAdminDashboardFilterData) => {
-    const res = await filterUsers(
-      paginationParams,
-      formatRequestBody(body),
-      userToken
-    );
-    return res;
-  };
+  const handleRequest = async (body: SuperAdminDashboardFilterData) =>
+    getSuperAdminDashboard({
+      resetPagination: true,
+      pagination: { ...pagination, page: 0 },
+      filterData: formatRequestBody(body),
+      userToken,
+    });
 
   return QuestionPageGetServerSideProps<
-    Omit<SuperAdminDashboardFilterData, 'clearAllFilters'>,
+    Omit<SuperAdminDashboardFilterData, 'clearAllFilters' | 'resetPagination'>,
     Awaited<ReturnType<typeof getSuperAdminDashboard>>,
     Awaited<ReturnType<typeof handleRequest>>
   >({
@@ -93,20 +103,39 @@ const convertUserDataToTableRows = (users: User[]) =>
     ],
   }));
 
+const formatFilterDataForPagination = ({
+  0: previousDepartments,
+  1: previousRoles,
+  2: previousSearchTerm = [],
+}: string[][]) => ({
+  departments: previousDepartments,
+  roles: previousRoles,
+  searchTerm: previousSearchTerm,
+});
+
 const SuperAdminDashboard = ({
   formAction,
   csrfToken,
   fieldErrors,
   pageData,
 }: InferProps<typeof getServerSideProps>) => {
-  const { departments, roles, userCount, users, previousFilterData } =
-    pageData as SuperAdminDashboardResponse;
+  const {
+    departments,
+    roles,
+    userCount,
+    users,
+    previousFilterData,
+    resetPagination,
+  } = pageData as SuperAdminDashboardResponse;
 
   const {
     0: previousDepartments,
     1: previousRoles,
     2: previousSearchTerm,
   } = previousFilterData || {};
+
+  console.log({ previousSearchTerm });
+
   return (
     <>
       <Navigation />
@@ -132,7 +161,11 @@ const SuperAdminDashboard = ({
 
                   {/* filter button */}
                   <div className={styles['top-controls']}>
-                    <Button text="Clear all filters" isSecondary />
+                    <Button
+                      addNameAttribute
+                      text="Clear all filters"
+                      isSecondary
+                    />
                   </div>
 
                   <Checkboxes
@@ -141,12 +174,10 @@ const SuperAdminDashboard = ({
                     fieldName="roles"
                     defaultCheckboxes={previousRoles || []}
                     titleSize="m"
-                    options={roles
-                      .filter((role) => role.name !== 'FIND')
-                      .map((role) => ({
-                        label: role.label,
-                        value: role.id,
-                      }))}
+                    options={roles.map((role) => ({
+                      label: role.label,
+                      value: role.id,
+                    }))}
                     fieldErrors={fieldErrors}
                     small
                   />
@@ -192,7 +223,10 @@ const SuperAdminDashboard = ({
                       defaultValue={previousSearchTerm || ''}
                       placeholder="enter a keyword or search term here"
                     />
-                    <Button text="Search" />
+                    <Button
+                      type={ButtonTypePropertyEnum.Submit}
+                      text="Search"
+                    />
                   </div>
 
                   <Table
@@ -205,7 +239,14 @@ const SuperAdminDashboard = ({
                     rows={convertUserDataToTableRows(users)}
                   />
 
-                  <Pagination itemsPerPage={10} totalItems={userCount} />
+                  <Pagination
+                    resetPagination={resetPagination}
+                    additionalQueryData={formatFilterDataForPagination(
+                      previousFilterData || {}
+                    )}
+                    itemsPerPage={10}
+                    totalItems={userCount}
+                  />
                 </div>
               </FlexibleQuestionPageLayout>
             </div>
