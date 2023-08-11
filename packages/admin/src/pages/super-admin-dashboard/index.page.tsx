@@ -217,13 +217,7 @@ const SuperAdminDashboard = ({
 
                 <div className="govuk-grid-column-two-thirds">
                   <div
-                    className="govuk-input__wrapper"
-                    style={{
-                      display: 'flex',
-                      flexWrap: 'nowrap',
-                      justifyContent: 'space-between',
-                      gap: '1rem',
-                    }}
+                    className={`govuk-input__wrapper ${styles['search-container']}`}
                   >
                     <input
                       className="govuk-input"
