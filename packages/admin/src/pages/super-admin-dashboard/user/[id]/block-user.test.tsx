@@ -76,14 +76,14 @@ describe('Block user page functionality', () => {
   it('POST request to getServerSideProps calls updateUserRoles', async () => {
     const context = getContext(() => ({
       req: { method: 'POST', body: {} },
-      params: { userId: '1234' },
+      params: { userId: '1234', id: '1' },
     }));
 
     const response = await getServerSideProps(context);
     expect(updateUserRoles).toHaveBeenCalled();
     expect(response).toEqual({
       redirect: {
-        destination: '/super-admin-dashboard/',
+        destination: '/super-admin-dashboard/user/1',
         statusCode: 302,
       },
     });
