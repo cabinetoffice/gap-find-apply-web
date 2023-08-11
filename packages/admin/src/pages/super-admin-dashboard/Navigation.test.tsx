@@ -3,14 +3,6 @@ import { render } from '@testing-library/react';
 import Navigation from './Navigation';
 import { Role } from './types';
 
-jest.mock('next/config', () => () => ({
-  publicRuntimeConfig: {
-    FIND_A_GRANT_URL: 'mocked-find-a-grant-url',
-    APPLICANT_DOMAIN: 'mocked-applicant-domain',
-    TECHNICAL_SUPPORT_DOMAIN: 'mocked-technical-support-domain',
-  },
-}));
-
 const roles: Role[] = [
   { name: 'ADMIN', id: '1', description: 'adminRole', label: 'adminLabel' },
   {
@@ -23,13 +15,13 @@ const roles: Role[] = [
 
 describe('Navigation', () => {
   it('renders navigation items correctly when TECHNICAL_SUPPORT role is present in the roles', () => {
-    const { getByText } = render(<Navigation roles={roles} />);
+    const { getByRole } = render(<Navigation roles={roles} />);
 
-    expect(getByText('Home')).toBeInTheDocument();
-    expect(getByText('Manage users')).toBeInTheDocument();
-    expect(getByText('Admin dashboard')).toBeInTheDocument();
-    expect(getByText('Applicant dashboard')).toBeInTheDocument();
-    expect(getByText('Manage API Keys')).toBeInTheDocument();
+    expect(getByRole('link', { name: 'Home' })).toBeVisible();
+    expect(getByRole('link', { name: 'Manage users' })).toBeVisible();
+    expect(getByRole('link', { name: 'Admin dashboard' })).toBeVisible();
+    expect(getByRole('link', { name: 'Applicant dashboard' })).toBeVisible();
+    expect(getByRole('link', { name: 'Manage API Keys' })).toBeVisible();
   });
 
   it('does not render "Manage API Keys" link for non-TECHNICAL_SUPPORT roles', () => {
