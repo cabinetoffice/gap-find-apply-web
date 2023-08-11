@@ -34,7 +34,7 @@ const Navigation = ({ roles }: NavigationProps) => {
   const technicalSupportNavItem = {
     pageId: 'technicalDash',
     href: publicRuntimeConfig.TECHNICAL_SUPPORT_DOMAIN + '/api-keys',
-    title: 'Technical Support dashboard',
+    title: 'Manage API Keys',
   };
 
   if (roles.find((role) => role.name === 'TECHNICAL_SUPPORT')) {

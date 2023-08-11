@@ -29,15 +29,13 @@ describe('Navigation', () => {
     expect(getByText('Manage users')).toBeInTheDocument();
     expect(getByText('Admin dashboard')).toBeInTheDocument();
     expect(getByText('Applicant dashboard')).toBeInTheDocument();
-    expect(getByText('Technical Support dashboard')).toBeInTheDocument();
+    expect(getByText('Manage API Keys')).toBeInTheDocument();
   });
 
-  it('does not render "Technical Support dashboard" link for non-TECHNICAL_SUPPORT roles', () => {
+  it('does not render "Manage API Keys" link for non-TECHNICAL_SUPPORT roles', () => {
     const { queryByText } = render(<Navigation roles={roles.slice(0, 1)} />);
 
-    const technicalSupportDashboardLink = queryByText(
-      'Technical Support dashboard'
-    );
+    const technicalSupportDashboardLink = queryByText('Manage API Keys');
     expect(technicalSupportDashboardLink).toBeNull();
   });
 });
