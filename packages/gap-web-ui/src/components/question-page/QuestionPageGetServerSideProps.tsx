@@ -51,7 +51,7 @@ export default async function QuestionPageGetServerSideProps<
     ...context,
   });
 
-  if ((postResponse as { redirect: Redirect })?.redirect) {
+  if ('redirect' in (postResponse || {})) {
     return postResponse;
   }
 
