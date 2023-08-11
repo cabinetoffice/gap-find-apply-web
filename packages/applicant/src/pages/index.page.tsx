@@ -8,18 +8,16 @@ import getConfig from 'next/config';
 export const getServerSideProps: GetServerSideProps = () => {
   return Promise.resolve({
     props: {
-      loginUrl: getLoginUrl(),
       registerUrl: `${process.env.USER_SERVICE_URL}/register`,
     },
   });
 };
 
 type HomePageProps = {
-  loginUrl: string;
   registerUrl: string;
 };
 
-function HomePage({ loginUrl, registerUrl }: HomePageProps) {
+function HomePage({ registerUrl }: HomePageProps) {
   const { publicRuntimeConfig } = getConfig();
   return (
     <>
@@ -39,8 +37,13 @@ function HomePage({ loginUrl, registerUrl }: HomePageProps) {
               to.
             </p>
             <p className="govuk-body">
-              If you have an account you can sign in. If you do not have an
-              account you can register for one.
+              You use GOV.UK One Login to sign into Find a grant. If you do not
+              have a One Login account already, you will need to create one.
+            </p>
+            <p className="govuk-body">
+              If you have used Find a grant before, you will still be able to
+              see all of your information when you register or sign in using One
+              Login using the same email address.
             </p>
             <Link href={registerUrl}>
               <a
@@ -50,7 +53,7 @@ function HomePage({ loginUrl, registerUrl }: HomePageProps) {
                 data-module="govuk-button"
                 data-cy="cy-apply-register-button"
               >
-                Register
+                Sign in with One Login
                 <svg
                   className="govuk-button__start-icon"
                   xmlns="http://www.w3.org/2000/svg"
@@ -64,15 +67,6 @@ function HomePage({ loginUrl, registerUrl }: HomePageProps) {
                 </svg>
               </a>
             </Link>
-            <hr className="govuk-section-break"></hr>
-            <a
-              href={loginUrl}
-              className="govuk-link govuk-link--no-visited-state govuk-!-font-size-19"
-              data-cy="cy-apply-existing-account-link"
-            >
-              I already have an account
-            </a>
-
             <h2
               className="govuk-heading-m govuk-!-margin-top-8"
               data-testid="find-a-grant-heading"

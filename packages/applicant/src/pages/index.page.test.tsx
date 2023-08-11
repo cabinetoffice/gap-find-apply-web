@@ -3,14 +3,12 @@ import { render, screen } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { createMockRouter } from '../testUtils/createMockRouter';
 import Home, { getServerSideProps } from './index.page';
-import { getLoginUrl } from '../utils/general';
 
 describe('getServerSideProps', () => {
   it('should return page props', async () => {
     const response = await getServerSideProps(null);
     expect(response).toEqual({
       props: {
-        loginUrl: getLoginUrl(),
         registerUrl: `${process.env.USER_SERVICE_URL}/register`,
       },
     });
@@ -27,7 +25,7 @@ describe('Apply for a grant home page', () => {
           pathname: `/`,
         })}
       >
-        <Home loginUrl="https://test.url/some/path" registerUrl={registerUrl} />
+        <Home registerUrl={registerUrl} />
       </RouterContext.Provider>
     );
   });
@@ -43,26 +41,31 @@ describe('Apply for a grant home page', () => {
     ).toBeDefined();
     expect(
       screen.getByText(
-        /If you have an account you can sign in. If you do not have an account you can register for one./i
+        /You use GOV.UK One Login to sign into Find a grant. If you do not have a One Login account already, you will need to create one./i
+      )
+    ).toBeDefined();
+    expect(
+      screen.getByText(
+        /If you have used Find a grant before, you will still be able to see all of your information when you register or sign in using One Login using the same email address./i
       )
     ).toBeDefined();
   });
 
-  it('should render register button with correct href', async () => {
+  it('should render Sign in with One Login button with correct href', async () => {
     expect(
       screen.getByRole('button', {
-        name: /register/i,
+        name: /Sign in with One Login/i,
       })
     ).toHaveAttribute('href', registerUrl);
   });
 
-  it('should render link to login page with correct href', async () => {
-    expect(
-      screen.getByRole('link', {
-        name: /i already have an account/i,
-      })
-    ).toHaveAttribute('href', 'https://test.url/some/path');
-  });
+  // it('should render link to login page with correct href', async () => {
+  //   expect(
+  //     screen.getByRole('link', {
+  //       name: /i already have an account/i,
+  //     })
+  //   ).toHaveAttribute('href', 'https://test.url/some/path');
+  // });
 
   it('should find a grant section', async () => {
     expect(screen.getByTestId('find-a-grant-heading')).toBeDefined();
