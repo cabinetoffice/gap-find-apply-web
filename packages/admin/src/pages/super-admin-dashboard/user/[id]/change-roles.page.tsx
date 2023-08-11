@@ -22,7 +22,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
-    return updateUserRoles(userId, body.newUserRoles || [], jwt);
+    const findAndApplicantRoles = ['1', '2'];
+    const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
+    return updateUserRoles(userId, newUserRoles, jwt);
   }
 
   async function fetchPageData(jwt: string) {
