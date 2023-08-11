@@ -150,6 +150,15 @@ const SuperAdminDashboard = ({
                 fullPageWidth
                 formAction={formAction}
               >
+                <div className={styles.hidden}>
+                  <Button
+                    hidden={true}
+                    tabIndex={-1}
+                    type={ButtonTypePropertyEnum.Submit}
+                    text="Search"
+                  />
+                </div>
+
                 <div
                   className={`${styles.sidebar} govuk-grid-column-one-third`}
                 >
