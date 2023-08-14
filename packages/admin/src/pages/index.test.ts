@@ -44,6 +44,21 @@ describe('Auth index page', () => {
     });
   });
 
+  it('Should redirect to 404 page when User is not an Admin', async () => {
+    mockedAuthenticateUser.mockRejectedValue({
+      response: { data: { error: { message: 'User is not an admin' } } },
+    });
+
+    const result = await getServerSideProps(getContext(getDefaultContext));
+
+    expectObjectEquals(result, {
+      redirect: {
+        destination: '/404',
+        permanent: false,
+      },
+    });
+  });
+
   describe('User authentication successful', () => {
     it('Should redirect to dashboard if redirectUrl not set', async () => {
       const result = await getServerSideProps(getContext(getDefaultContext));
