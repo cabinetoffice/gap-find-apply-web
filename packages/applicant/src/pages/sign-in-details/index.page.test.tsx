@@ -9,13 +9,13 @@ describe('getServerSideProps', () => {
     const response = await getServerSideProps(null);
     expect(response).toEqual({
       props: {
-        oneLoginUrl: process.env.ONE_LOGIN_URL,
+        oneLoginUrl: process.env.ONE_LOGIN_SECURITY_URL,
       },
     });
   });
 });
 
-const oneLoginUrl = process.env.ONE_LOGIN_URL;
+const oneLoginUrl = process.env.ONE_LOGIN_SECURITY_URL;
 
 describe('Sign in details page', () => {
   beforeEach(() => {

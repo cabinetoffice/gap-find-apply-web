@@ -5,7 +5,7 @@ import { GetServerSideProps } from 'next';
 export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {
-      oneLoginUrl: process.env.ONE_LOGIN_URL,
+      oneLoginUrl: process.env.ONE_LOGIN_SECURITY_URL,
     },
   };
 };
