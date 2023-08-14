@@ -7,6 +7,14 @@ import UserDetails from '../types/UserDetails';
 
 const { serverRuntimeConfig } = getConfig();
 
+export const checkUserIsSuperAdmin = async (userToken: string) => {
+  const response = await axios.get(
+    `${serverRuntimeConfig.userServiceHost}/user/`,
+    axiosUserServiceConfig(userToken)
+  );
+  return response.data;
+};
+
 export const getSuperAdminDashboard = async (
   pagination: Pagination,
   userToken: string

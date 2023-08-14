@@ -14,14 +14,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   let response;
   try {
     response = await authenticateUser(cookieValue);
-  } catch (error) {
-    console.error('Failed to verify token', error);
-    return {
-      redirect: {
-        destination: getLoginUrl(),
-        permanent: false,
-      },
-    };
+  } catch (error: any) {
+    return handleError(error);
   }
 
   // Checks if already have authorisation headers set
@@ -48,6 +42,25 @@ export const getServerSideProps: GetServerSideProps = async ({
 
 const index = () => {
   return <div>index</div>;
+};
+
+const handleError = (error: any) => {
+  console.error('Failed to verify token', error);
+
+  if (error.response.data.error.message === 'User is not an admin') {
+    return {
+      redirect: {
+        destination: '/404',
+        permanent: false,
+      },
+    };
+  }
+  return {
+    redirect: {
+      destination: getLoginUrl(),
+      permanent: false,
+    },
+  };
 };
 
 export default index;

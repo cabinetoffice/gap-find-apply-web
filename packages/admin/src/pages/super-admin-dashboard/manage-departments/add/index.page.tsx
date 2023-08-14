@@ -8,11 +8,14 @@ import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';
 import InferProps from '../../../../types/InferProps';
 import { getUserTokenFromCookies } from '../../../../utils/session';
-import { createDepartmentInformation } from '../../../../services/SuperAdminService';
+import {
+  checkUserIsSuperAdmin,
+  createDepartmentInformation,
+} from '../../../../services/SuperAdminService';
 import { Department } from '../../types';
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
-  const fetchPageData = async () => ({}); //TODO - make this argument optional
+  const fetchPageData = async (jwt: string) => checkUserIsSuperAdmin(jwt);
 
   const handleRequest = async (body: Omit<Department, 'id'>, jwt: string) =>
     createDepartmentInformation(body, jwt);

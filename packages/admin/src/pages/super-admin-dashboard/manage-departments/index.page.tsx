@@ -13,13 +13,19 @@ import { GetServerSidePropsContext } from 'next';
 import { Department } from '../types';
 import { Row } from 'gap-web-ui/dist/cjs/components/summary-list/SummaryList';
 import styles from './manage-departments.module.scss';
+import { handleServiceError } from '../helper/handleServiceError';
+import { AxiosError } from 'axios';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async (jwt: string) => ({
     departments: await getAllDepartments(jwt),
     userId: context.query?.userId || '',
   });
-  return { props: await fetchPageData(getUserTokenFromCookies(context.req)) };
+  try {
+    return { props: await fetchPageData(getUserTokenFromCookies(context.req)) };
+  } catch (err) {
+    return handleServiceError(err as AxiosError);
+  }
 }
 
 const ManageDepartmentsPage = ({

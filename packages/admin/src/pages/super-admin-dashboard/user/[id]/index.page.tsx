@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import getConfig from 'next/config';
 import { SummaryList } from 'gap-web-ui';
@@ -7,17 +7,23 @@ import { User } from '../../types';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import { getUserById } from '../../../../services/SuperAdminService';
 import CustomLink from '../../../../components/custom-link/CustomLink';
+import { handleServiceError } from '../../helper/handleServiceError';
+import { AxiosError } from 'axios';
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps = async ({
   params,
   req,
-}) => {
+}: GetServerSidePropsContext) => {
   const userToken = getUserTokenFromCookies(req);
-  return {
-    props: {
-      user: await getUserById(params?.id as string, userToken),
-    },
-  };
+  try {
+    return {
+      props: {
+        user: await getUserById(params?.id as string, userToken),
+      },
+    };
+  } catch (err) {
+    return handleServiceError(err as AxiosError);
+  }
 };
 
 type UserPageProps = {
