@@ -23,8 +23,6 @@ import { Pagination } from '../../components/pagination/Pagination';
 import { ButtonTypePropertyEnum } from 'gap-web-ui';
 
 const getFilterDataFromQuery = (query: GetServerSidePropsContext['query']) => {
-  console.log({ query });
-
   const departments =
     typeof query.departments === 'string'
       ? [query.departments]
