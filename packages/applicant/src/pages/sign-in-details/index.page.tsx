@@ -1,10 +1,20 @@
-import getConfig from 'next/config';
-
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
+import { GetServerSideProps } from 'next';
 
-const SignInDetails = () => {
-  const oneLoginURL = process.env.ONE_LOGIN_URL;
+export const getServerSideProps: GetServerSideProps = async () => {
+  return {
+    props: {
+      oneLoginUrl: process.env.ONE_LOGIN_URL,
+    },
+  };
+};
+
+type SignInDetailsProps = {
+  oneLoginUrl: string;
+};
+
+const SignInDetails = ({ oneLoginUrl }: SignInDetailsProps) => {
   return (
     <>
       <Meta title="Your sign in details - Apply for a grant" />
@@ -32,7 +42,7 @@ const SignInDetails = () => {
               <li>how you get security codes to sign in</li>
             </ul>
             <p className="govuk-body">
-              <a href={oneLoginURL}>
+              <a href={oneLoginUrl}>
                 Change your sign in details in your GOV.UK One Login
               </a>
             </p>

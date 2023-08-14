@@ -14,6 +14,9 @@ module.exports = {
     FIND_A_GRANT_URL:
       process.env.FIND_A_GRANT_URL ||
       'https://www.find-government-grants.service.gov.uk',
+    ONE_LOGIN_URL:
+      process.env.ONE_LOGIN_URL ||
+      'https://home.integration.account.gov.uk/security',
   },
   i18n: {
     locales: ['en'],
