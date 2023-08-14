@@ -34,7 +34,14 @@ export type SuperAdminDashboardResponse = {
   users: User[];
   departments: Department[];
   roles: Role[];
+  queryParams: {
+    roles: string[];
+    departments: string[];
+    searchTerm: string;
+    clearAllFilters?: boolean;
+  };
   userCount: number;
   previousFilterData: string[][];
+  searchTerm: string;
   resetPagination?: boolean;
 };

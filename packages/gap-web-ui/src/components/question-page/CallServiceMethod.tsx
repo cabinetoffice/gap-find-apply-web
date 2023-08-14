@@ -32,8 +32,7 @@ export default async function CallServiceMethod<B extends PageBodyResponse, R>(
   res: GetServerSidePropsContext['res'],
   serviceFunc: (body: B) => Promise<R>,
   redirectTo: string | ((result: R) => string),
-  errorPageParams: ServiceError | string,
-  useHandleRequestForPageData?: boolean
+  errorPageParams: ServiceError | string
 ): Promise<
   | { body: B; fieldErrors: ValidationError[] }
   | { redirect: Redirect }
@@ -51,10 +50,6 @@ export default async function CallServiceMethod<B extends PageBodyResponse, R>(
     await validateCSRFCookie(req, res, body);
 
     const result = await serviceFunc(body);
-
-    if (useHandleRequestForPageData) {
-      return result;
-    }
 
     return generateRedirect(
       typeof redirectTo === 'string' ? redirectTo : redirectTo(result)

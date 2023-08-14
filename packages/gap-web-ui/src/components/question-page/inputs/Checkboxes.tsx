@@ -111,7 +111,7 @@ const Checkboxes = ({
                       value={value}
                       defaultChecked={
                         defaultCheckboxes &&
-                        defaultCheckboxes.indexOf(value as string) >= 0
+                        defaultCheckboxes.indexOf(value) >= 0
                       }
                       disabled={disabled}
                       data-behaviour={getDataBehaviour()}

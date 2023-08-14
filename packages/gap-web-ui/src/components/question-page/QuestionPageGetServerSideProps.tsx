@@ -33,7 +33,7 @@ export default async function QuestionPageGetServerSideProps<
   K extends FetchPageData,
   V
 >(props: QuestionPageGetServerSidePropsType<T, K, V>) {
-  const { context, fetchPageData, jwt, useHandleRequestForPageData } = props;
+  const { context, fetchPageData, jwt } = props;
   const { req, resolvedUrl } = context;
 
   const pageData = await fetchAndHandlePageData(
@@ -59,15 +59,12 @@ export default async function QuestionPageGetServerSideProps<
     postResponse as { body: PageBodyResponse; fieldErrors: ValidationError[] }
   );
 
-  const shouldUseHandleRequestData =
-    !fieldErrors.length && postResponse && useHandleRequestForPageData;
-
   return {
     props: {
       csrfToken: (req as any).csrfToken?.() || ('' as string),
       formAction: resolvedUrl,
       fieldErrors,
-      pageData: shouldUseHandleRequestData ? postResponse : pageData,
+      pageData,
       previousValues,
     },
   };
@@ -108,8 +105,7 @@ async function postPagesResult<T extends PageBodyResponse, V>({
     res,
     (body) => handleRequest(body, jwt),
     onSuccessRedirectHref,
-    generateServiceErrorProps(onErrorMessage, resolvedUrl),
-    useHandleRequestForPageData
+    generateServiceErrorProps(onErrorMessage, resolvedUrl)
   );
 }
 
