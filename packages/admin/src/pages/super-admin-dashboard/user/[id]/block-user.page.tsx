@@ -31,7 +31,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     handleRequest,
     jwt: getUserTokenFromCookies(context.req),
     onErrorMessage: 'Failed to block user, please try again later.',
-    onSuccessRedirectHref: `/super-admin-dashboard/`,
+    onSuccessRedirectHref: `/super-admin-dashboard/user/${userId}`,
   });
 }
 
