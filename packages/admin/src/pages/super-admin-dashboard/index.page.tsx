@@ -6,33 +6,23 @@ import {
   FlexibleQuestionPageLayout,
   QuestionPageGetServerSideProps,
   Table,
+  ButtonTypePropertyEnum,
 } from 'gap-web-ui';
 import Meta from '../../components/layout/Meta';
 import PaginationType from '../../types/Pagination';
 import { getUserTokenFromCookies } from '../../utils/session';
 import styles from './superadmin-dashboard.module.scss';
 import { getSuperAdminDashboard } from '../../services/SuperAdminService';
-import {
-  SuperAdminDashboardFilterData,
-  SuperAdminDashboardResponse,
-  User,
-} from './types';
+import { SuperAdminDashboardFilterData, User } from './types';
 import Navigation from './Nagivation';
 import InferProps from '../../types/InferProps';
 import { Pagination } from '../../components/pagination/Pagination';
-import { ButtonTypePropertyEnum } from 'gap-web-ui';
 
 const getFilterDataFromQuery = (query: GetServerSidePropsContext['query']) => {
-  const departments =
-    typeof query.departments === 'string'
-      ? [query.departments]
-      : query.departments;
-  const roles = typeof query.roles === 'string' ? [query.roles] : query.roles;
   return {
-    clearAllFilters: Boolean(query.clearAllFilters),
-    departments: departments || [],
-    roles: roles || [],
-    searchTerm: (query.searchTerm || '') as string,
+    departments: (query.departments as string) ?? '',
+    roles: (query.roles as string) ?? '',
+    searchTerm: (query.searchTerm as string) ?? '',
   };
 };
 
@@ -41,35 +31,32 @@ export const getServerSideProps = async (
 ) => {
   const pagination: PaginationType = {
     paginate: true,
-    page: Number(context.query.page || 1) - 1,
-    size: Number(context.query.limit || 10),
+    page: Number(context.query.page ?? 1) - 1,
+    size: Number(context.query.limit ?? 10),
   };
 
-  const userToken = getUserTokenFromCookies(context.req);
-
-  const fetchPageData = async () =>
-    getSuperAdminDashboard({
+  const fetchPageData = async (userToken: string) => {
+    const filterData = getFilterDataFromQuery(context.query);
+    const data = await getSuperAdminDashboard({
       pagination,
-      filterData: getFilterDataFromQuery(context.query),
+      filterData,
       userToken,
     });
-
-  const handleRequest = async (body: SuperAdminDashboardFilterData) => {
-    if ('clear-all-filters' in body) {
-      return {
-        ...body,
-        departments: [],
-        roles: [],
-        searchTerm: '',
-        clearAllFilters: true,
-      };
-    }
-    return body;
+    return {
+      ...data,
+      queryParams: {
+        roles: filterData.roles.split(','),
+        departments: filterData.departments.split(','),
+        searchTerm: filterData.searchTerm,
+      },
+    };
   };
+
+  const handleRequest = async (body: SuperAdminDashboardFilterData) => body;
 
   return QuestionPageGetServerSideProps<
     Omit<SuperAdminDashboardFilterData, 'clearAllFilters' | 'resetPagination'>,
-    Awaited<ReturnType<typeof getSuperAdminDashboard>>,
+    Awaited<ReturnType<typeof fetchPageData>>,
     Awaited<ReturnType<typeof handleRequest>>
   >({
     context,
@@ -77,12 +64,15 @@ export const getServerSideProps = async (
     handleRequest,
     jwt: getUserTokenFromCookies(context.req),
     onErrorMessage: 'Failed to filter users, please try again later.',
-    onSuccessRedirectHref: (body) =>
-      `/super-admin-dashboard?roles=${body.roles || ''}&departments=${
-        body.departments || ''
-      }&searchTerm=${body.searchTerm || ''}&clearAllFilters=${
-        body.clearAllFilters || ''
-      }`,
+    onSuccessRedirectHref: (body) => {
+      if ('clear-all-filters' in body) return `/super-admin-dashboard`;
+
+      return `/super-admin-dashboard?roles=${encodeURIComponent(
+        body.roles ?? ''
+      )}&departments=${encodeURIComponent(
+        body.departments ?? ''
+      )}&searchTerm=${encodeURIComponent(body.searchTerm ?? '')}`;
+    },
   });
 };
 
@@ -90,8 +80,8 @@ const convertUserDataToTableRows = (users: User[]) =>
   users.map((user) => ({
     cells: [
       { content: user.emailAddress },
-      { content: user.department?.name || 'N/A' },
-      { content: user.role?.label || 'N/A' },
+      { content: user.department?.name ?? 'N/A' },
+      { content: user.role?.label ?? 'N/A' },
       {
         content: (
           <Link href={`/super-admin-dashboard/user/${user.gapUserId}/`}>
@@ -109,8 +99,7 @@ const SuperAdminDashboard = ({
   previousValues,
   pageData,
 }: InferProps<typeof getServerSideProps>) => {
-  const { departments, roles, userCount, users, queryParams } =
-    pageData as SuperAdminDashboardResponse;
+  const { departments, roles, userCount, users, queryParams } = pageData;
 
   return (
     <>
@@ -126,14 +115,6 @@ const SuperAdminDashboard = ({
                 fullPageWidth
                 formAction={formAction}
               >
-                <div className={styles.hidden}>
-                  <Button
-                    hidden={true}
-                    type={ButtonTypePropertyEnum.Submit}
-                    text="Search"
-                  />
-                </div>
-
                 <div
                   className={`${styles.sidebar} govuk-grid-column-one-third`}
                 >
@@ -168,9 +149,7 @@ const SuperAdminDashboard = ({
 
                   <Checkboxes
                     useOptionValueAsInputValue
-                    defaultCheckboxes={
-                      (queryParams?.departments as string[]) || []
-                    }
+                    defaultCheckboxes={queryParams?.departments || []}
                     questionTitle="Department"
                     fieldName="departments"
                     titleSize="m"
@@ -220,7 +199,6 @@ const SuperAdminDashboard = ({
                   />
 
                   <Pagination
-                    resetPagination={queryParams.clearAllFilters}
                     additionalQueryData={{
                       ...previousValues,
                       clearAllFilters: '',

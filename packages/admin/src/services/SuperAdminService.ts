@@ -24,24 +24,14 @@ type GetSuperAdminDashboardParams = {
 export const getSuperAdminDashboard = async ({
   pagination,
   userToken,
-  filterData: {
-    roles = [],
-    departments = [],
-    searchTerm = '',
-    clearAllFilters = false,
-  },
+  filterData: { roles = '', departments = '', searchTerm = '' },
 }: GetSuperAdminDashboardParams): Promise<SuperAdminDashboardResponse> => {
-  console.log({ searchTerm });
-
   const params = {
     ...pagination,
-    roles: roles.join(''),
-    departments: departments.join(''),
+    roles,
+    departments,
     searchTerm,
-    clearAllFilters,
   };
-
-  console.log({ params });
 
   const response = await axios.get(
     `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
@@ -50,16 +40,7 @@ export const getSuperAdminDashboard = async ({
       ...axiosUserServiceConfig(userToken),
     }
   );
-
-  return {
-    ...response.data,
-    queryParams: {
-      clearAllFilters,
-      roles: roles[0]?.split(',') || [],
-      departments: departments[0]?.split(',') || [],
-      searchTerm,
-    },
-  };
+  return response.data;
 };
 
 export const getUserById = async (id: string, userToken: string) => {

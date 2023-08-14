@@ -11,7 +11,6 @@ import {
 } from './helper';
 
 const Pagination = ({
-  resetPagination = false,
   additionalQueryData,
   itemsPerPage = 10,
   totalItems = 0,
@@ -23,7 +22,7 @@ const Pagination = ({
 
   const { page } = query;
 
-  const currentPage = !page || resetPagination ? 1 : parseInt(page);
+  const currentPage = page ? parseInt(page) : 1;
 
   const totalPage = Math.ceil(totalItems / itemsPerPage);
 

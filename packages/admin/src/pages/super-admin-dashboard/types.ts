@@ -21,8 +21,8 @@ export type User = {
 };
 
 export type SuperAdminDashboardFilterData = {
-  roles?: Array<string>;
-  departments?: Array<string>;
+  roles?: string;
+  departments?: string;
   searchTerm?: string;
   _csrf?: string;
   'clear-all-filters'?: '';
