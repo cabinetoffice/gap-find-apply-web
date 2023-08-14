@@ -2,7 +2,20 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { createMockRouter } from '../../testUtils/createMockRouter';
-import SignInDetails from './index.page';
+import SignInDetails, { getServerSideProps } from './index.page';
+
+describe('getServerSideProps', () => {
+  it('should return page props', async () => {
+    const response = await getServerSideProps(null);
+    expect(response).toEqual({
+      props: {
+        oneLoginUrl: process.env.ONE_LOGIN_SECURITY_URL,
+      },
+    });
+  });
+});
+
+const oneLoginUrl = process.env.ONE_LOGIN_SECURITY_URL;
 
 describe('Sign in details page', () => {
   beforeEach(() => {
@@ -10,7 +23,7 @@ describe('Sign in details page', () => {
       <RouterContext.Provider
         value={createMockRouter({ pathname: '/sign-in-details' })}
       >
-        <SignInDetails />
+        <SignInDetails oneLoginUrl={oneLoginUrl} />
       </RouterContext.Provider>
     );
   });
