@@ -2,6 +2,8 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 import { authenticateUser } from '../services/AuthService';
 import { getLoginUrl } from '../utils/general';
+import { AxiosError } from 'axios';
+import { handleAxiosError } from '../utils/handleAxiosError';
 
 export const getServerSideProps: GetServerSideProps = async ({
   req,
@@ -14,8 +16,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   let response;
   try {
     response = await authenticateUser(cookieValue);
-  } catch (error: any) {
-    return handleError(error);
+  } catch (error: unknown) {
+    return handleAxiosError(error as AxiosError);
   }
 
   // Checks if already have authorisation headers set
@@ -42,24 +44,6 @@ export const getServerSideProps: GetServerSideProps = async ({
 
 const index = () => {
   return <div>index</div>;
-};
-
-const handleError = (error: any) => {
-  console.error('Failed to verify token', error);
-  if (error.response?.status === 401) {
-    return {
-      redirect: {
-        destination: '/404',
-        permanent: false,
-      },
-    };
-  }
-  return {
-    redirect: {
-      destination: getLoginUrl(),
-      permanent: false,
-    },
-  };
 };
 
 export default index;

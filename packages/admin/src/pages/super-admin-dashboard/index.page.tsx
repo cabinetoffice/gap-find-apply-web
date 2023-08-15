@@ -11,7 +11,7 @@ import { User } from './types';
 import Navigation from './Nagivation';
 import InferProps from '../../types/InferProps';
 import { AxiosError } from 'axios';
-import { handleServiceError } from './helper/handleServiceError';
+import { handleAxiosError } from '../../utils/handleAxiosError';
 
 export const getServerSideProps = async ({
   req,
@@ -36,7 +36,7 @@ export const getServerSideProps = async ({
       },
     };
   } catch (err: unknown) {
-    return handleServiceError(err as AxiosError);
+    return handleAxiosError(err as AxiosError);
   }
 };
 

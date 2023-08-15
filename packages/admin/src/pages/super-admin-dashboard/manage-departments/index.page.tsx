@@ -13,8 +13,8 @@ import { GetServerSidePropsContext } from 'next';
 import { Department } from '../types';
 import { Row } from 'gap-web-ui/dist/cjs/components/summary-list/SummaryList';
 import styles from './manage-departments.module.scss';
-import { handleServiceError } from '../helper/handleServiceError';
 import { AxiosError } from 'axios';
+import { handleAxiosError } from '../../../utils/handleAxiosError';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async (jwt: string) => ({
@@ -24,7 +24,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   try {
     return { props: await fetchPageData(getUserTokenFromCookies(context.req)) };
   } catch (err) {
-    return handleServiceError(err as AxiosError);
+    return handleAxiosError(err as AxiosError);
   }
 }
 
