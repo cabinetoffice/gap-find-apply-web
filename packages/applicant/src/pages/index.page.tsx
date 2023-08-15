@@ -79,7 +79,7 @@ function HomePage({ loginUrl }: HomePageProps) {
               to apply for.
             </p>
             <a
-              href={publicRuntimeConfig.FIND_A_GRANT_URL}
+              href={`${publicRuntimeConfig.FIND_A_GRANT_URL}/grants`}
               className="govuk-link govuk-link--no-visited-state govuk-!-font-size-19"
               data-testid="find-a-grant-link"
               data-cy="cy-find-a-grant-link"

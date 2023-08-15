@@ -77,7 +77,7 @@ describe('Apply for a grant home page', () => {
     ).toBeDefined();
     expect(screen.getByTestId('find-a-grant-link')).toHaveAttribute(
       'href',
-      'https://www.find-government-grants.service.gov.uk'
+      'https://www.find-government-grants.service.gov.uk/grants'
     );
   });
 });
