@@ -17,7 +17,7 @@ import {
   expectObjectEquals,
   InferServiceMethodResponse,
   mockServiceMethod,
-} from '../../../../../utils/UnitTestHelpers';
+} from '../../../../../testUtils/unitTestHelpers';
 import SectionOverview, { getServerSideProps } from './section-overview.page';
 
 jest.mock('../../../../../services/AdvertPageService');

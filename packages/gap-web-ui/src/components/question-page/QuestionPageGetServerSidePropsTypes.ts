@@ -1,5 +1,9 @@
 import { GetServerSidePropsContext, Redirect } from 'next';
-import { ValidationError } from '../../types';
+
+interface ValidationError {
+  fieldName: string;
+  errorMessage: string;
+}
 
 type PageBodyResponse = Record<string, string | string[]>;
 type FetchPageData = Record<string, any>;
@@ -35,6 +39,7 @@ type NextRedirect = {
 };
 
 export {
+  ValidationError,
   QuestionPageGetServerSidePropsType,
   PostPageResultProps,
   PageBodyResponse,

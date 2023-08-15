@@ -11,7 +11,7 @@ const BACKEND_HOST = serverRuntimeConfig.backendHost;
 const BASE_SCHEME_URL = BACKEND_HOST + '/schemes';
 
 const getUserSchemes = async (pagination: Pagination, sessionId: string) => {
-  const response = await axios.get(`${BASE_SCHEME_URL}`, {
+  const response = await axios.get<Scheme[]>(`${BASE_SCHEME_URL}`, {
     params: pagination,
     ...axiosSessionConfig(sessionId),
   });

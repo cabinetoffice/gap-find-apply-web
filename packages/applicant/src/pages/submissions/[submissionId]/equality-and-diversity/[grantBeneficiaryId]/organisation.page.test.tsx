@@ -17,7 +17,7 @@ import OrganisationPage, {
   OrganisationPageProps,
   OrganisationRadioOptions,
 } from './organisation.page';
-import { getContext } from '../../../../../utils/UnitTestHelpers';
+import { getContext } from '../../../../../testUtils/unitTestHelpers';
 import { EqualityAndDiversityParams } from '../types';
 
 jest.mock('next/dist/server/api-utils/node');

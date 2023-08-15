@@ -1,22 +1,22 @@
-import { GetServerSidePropsContext } from 'next';
-import Link from 'next/link';
 import {
   Button,
+  ButtonTypePropertyEnum,
   Checkboxes,
   FlexibleQuestionPageLayout,
   QuestionPageGetServerSideProps,
   Table,
-  ButtonTypePropertyEnum,
 } from 'gap-web-ui';
+import { GetServerSidePropsContext } from 'next';
+import Link from 'next/link';
 import Meta from '../../components/layout/Meta';
+import { Pagination } from '../../components/pagination/Pagination';
+import { getSuperAdminDashboard } from '../../services/SuperAdminService';
+import InferProps from '../../types/InferProps';
 import PaginationType from '../../types/Pagination';
 import { getUserTokenFromCookies } from '../../utils/session';
+import Navigation from './Navigation';
 import styles from './superadmin-dashboard.module.scss';
-import { getSuperAdminDashboard } from '../../services/SuperAdminService';
 import { SuperAdminDashboardFilterData, User } from './types';
-import Navigation from './Nagivation';
-import InferProps from '../../types/InferProps';
-import { Pagination } from '../../components/pagination/Pagination';
 
 const getFilterDataFromQuery = (query: GetServerSidePropsContext['query']) => {
   return {
@@ -80,8 +80,8 @@ const convertUserDataToTableRows = (users: User[]) =>
   users.map((user) => ({
     cells: [
       { content: user.emailAddress },
-      { content: user.department?.name ?? 'N/A' },
-      { content: user.role?.label ?? 'N/A' },
+      { content: user.department?.name || 'N/A' },
+      { content: user.role?.label || 'Blocked' },
       {
         content: (
           <Link href={`/super-admin-dashboard/user/${user.gapUserId}/`}>
@@ -103,7 +103,7 @@ const SuperAdminDashboard = ({
 
   return (
     <>
-      <Navigation />
+      <Navigation roles={roles} />
       <div className="govuk-grid-row govuk-!-padding-top-2">
         <Meta title="Manage Users" />
         <div className="govuk-width-container">

@@ -7,7 +7,7 @@ import { GrantApplicantService } from '../../services/GrantApplicantService';
 import callServiceMethod from '../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
-import { Optional } from '../../utils/UnitTestHelpers';
+import { Optional } from '../../testUtils/unitTestHelpers';
 
 export default async function getServerSideProps({
   req,

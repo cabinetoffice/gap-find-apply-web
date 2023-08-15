@@ -1,5 +1,8 @@
 import { merge } from 'lodash';
 import { GetServerSidePropsContext } from 'next';
+import { render } from '@testing-library/react';
+import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { createMockRouter } from './createMockRouter';
 
 /**
  *
@@ -71,6 +74,20 @@ const toHaveBeenCalledWith = <T extends (...args: any) => any>(
   expect(mockedServiceMethod).toHaveBeenCalledWith(...args);
 };
 
+const renderWithRouter = (jsx: React.JSX.Element, overrides: object = {}) => {
+  const router = createMockRouter(overrides);
+  return {
+    ...render(jsx, {
+      wrapper: ({ children }) => (
+        <RouterContext.Provider value={router}>
+          {children}
+        </RouterContext.Provider>
+      ),
+    }),
+    router,
+  };
+};
+
 /**
  * A type safe function for asserting one object equals another
  *
@@ -101,6 +118,7 @@ export {
   getContext,
   mockServiceMethod,
   toHaveBeenCalledWith,
+  renderWithRouter,
   expectObjectEquals,
 };
 export type { InferServiceMethodResponse, Optional };

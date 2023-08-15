@@ -5,7 +5,7 @@ import {
   getContext,
   mockServiceMethod,
   Optional,
-} from '../../utils/UnitTestHelpers';
+} from '../../testUtils/unitTestHelpers';
 import getServerSideProps from './getServerSideProps';
 import { parseBody } from 'next/dist/server/api-utils/node';
 import { GrantApplicantService } from '../../services/GrantApplicantService';

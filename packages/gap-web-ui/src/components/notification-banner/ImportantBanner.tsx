@@ -2,15 +2,18 @@ import React from 'react';
 
 /**
  * Generic component to be used when adding a GDS important notification banner.
- * Currently we provide bannerContent prop for single line notifications,
- * if this component needs to use more than a single line,
- *  it is recommended to restructure it to use a h3 and a p tag
  */
-const ImportantBanner = ({ bannerContent }: ImportantBannerProps) => {
+const ImportantBanner = ({
+  bannerHeading,
+  bannerContent,
+  isSuccess = false,
+}: ImportantBannerProps) => {
   return (
     <div
-      className="govuk-notification-banner"
-      role="region"
+      className={`govuk-notification-banner ${
+        isSuccess ? 'govuk-notification-banner--success' : ''
+      }`}
+      role={isSuccess ? 'alert' : 'region'}
       aria-labelledby="govuk-notification-banner-title"
       data-module="govuk-notification-banner"
     >
@@ -20,7 +23,7 @@ const ImportantBanner = ({ bannerContent }: ImportantBannerProps) => {
           id="govuk-notification-banner-title"
           data-cy="cyImportantBannerTitle"
         >
-          Important
+          {isSuccess ? 'Success' : 'Important'}
         </h2>
       </div>
       <div className="govuk-notification-banner__content">
@@ -28,15 +31,24 @@ const ImportantBanner = ({ bannerContent }: ImportantBannerProps) => {
           className="govuk-notification-banner__heading"
           data-cy="cyImportantBannerBody"
         >
-          {bannerContent}
+          {bannerHeading}
         </p>
+
+        {bannerContent &&
+          (typeof bannerContent === 'string' ? (
+            <p className="govuk-body">{bannerContent}</p>
+          ) : (
+            bannerContent
+          ))}
       </div>
     </div>
   );
 };
 
-export interface ImportantBannerProps {
-  bannerContent: string;
-}
+export type ImportantBannerProps = {
+  bannerHeading: string;
+  bannerContent?: JSX.Element | string;
+  isSuccess?: boolean;
+};
 
 export default ImportantBanner;
