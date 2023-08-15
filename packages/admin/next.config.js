@@ -28,5 +28,6 @@ module.exports = {
       process.env.FIND_A_GRANT_URL ||
       'https://www.find-government-grants.service.gov.uk',
     oneLoginEnabled: process.env.ONE_LOGIN_ENABLED === 'true',
+    TECHNICAL_SUPPORT_DOMAIN: process.env.TECHNICAL_SUPPORT_DOMAIN,
   },
 };
