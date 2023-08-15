@@ -7,8 +7,8 @@ import { User } from '../../types';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import { getUserById } from '../../../../services/SuperAdminService';
 import CustomLink from '../../../../components/custom-link/CustomLink';
-import { handleServiceError } from '../../helper/handleServiceError';
 import { AxiosError } from 'axios';
+import { handleAxiosError } from '../../../../utils/handleAxiosError';
 
 export const getServerSideProps = async ({
   params,
@@ -22,7 +22,7 @@ export const getServerSideProps = async ({
       },
     };
   } catch (err) {
-    return handleServiceError(err as AxiosError);
+    return handleAxiosError(err as AxiosError);
   }
 };
 

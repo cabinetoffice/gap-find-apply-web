@@ -9,7 +9,7 @@ const { serverRuntimeConfig } = getConfig();
 
 export const checkUserIsSuperAdmin = async (userToken: string) => {
   const response = await axios.get(
-    `${serverRuntimeConfig.userServiceHost}/user/`,
+    `${serverRuntimeConfig.userServiceHost}/isSuperAdmin`,
     axiosUserServiceConfig(userToken)
   );
   return response.data;
