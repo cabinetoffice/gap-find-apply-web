@@ -18,30 +18,29 @@ import Navigation from './Navigation';
 import styles from './superadmin-dashboard.module.scss';
 import { SuperAdminDashboardFilterData, User } from './types';
 
-const getFilterDataFromQuery = (query: GetServerSidePropsContext['query']) => {
-  return {
-    departments: (query.departments as string) ?? '',
-    roles: (query.roles as string) ?? '',
-    searchTerm: (query.searchTerm as string) ?? '',
-  };
-};
-
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
+  const { query, req } = context;
   const pagination: PaginationType = {
     paginate: true,
-    page: Number(context.query.page ?? 1) - 1,
-    size: Number(context.query.limit ?? 10),
+    page: Number(query.page ?? 1) - 1,
+    size: Number(query.limit ?? 10),
   };
 
   const fetchPageData = async (userToken: string) => {
-    const filterData = getFilterDataFromQuery(context.query);
+    const filterData = {
+      departments: (query.departments as string) ?? '',
+      roles: (query.roles as string) ?? '',
+      searchTerm: (query.searchTerm as string) ?? '',
+    };
+
     const data = await getSuperAdminDashboard({
       pagination,
       filterData,
       userToken,
     });
+
     return {
       ...data,
       queryParams: {
@@ -54,15 +53,11 @@ export const getServerSideProps = async (
 
   const handleRequest = async (body: SuperAdminDashboardFilterData) => body;
 
-  return QuestionPageGetServerSideProps<
-    Omit<SuperAdminDashboardFilterData, 'clearAllFilters' | 'resetPagination'>,
-    Awaited<ReturnType<typeof fetchPageData>>,
-    Awaited<ReturnType<typeof handleRequest>>
-  >({
+  return QuestionPageGetServerSideProps({
     context,
     fetchPageData,
     handleRequest,
-    jwt: getUserTokenFromCookies(context.req),
+    jwt: getUserTokenFromCookies(req),
     onErrorMessage: 'Failed to filter users, please try again later.',
     onSuccessRedirectHref: (body) => {
       if ('clear-all-filters' in body) return `/super-admin-dashboard`;
@@ -75,22 +70,6 @@ export const getServerSideProps = async (
     },
   });
 };
-
-const convertUserDataToTableRows = (users: User[]) =>
-  users.map((user) => ({
-    cells: [
-      { content: user.emailAddress },
-      { content: user.department?.name || 'N/A' },
-      { content: user.role?.label || 'Blocked' },
-      {
-        content: (
-          <Link href={`/super-admin-dashboard/user/${user.gapUserId}/`}>
-            <a className="govuk-link">Edit</a>
-          </Link>
-        ),
-      },
-    ],
-  }));
 
 const SuperAdminDashboard = ({
   formAction,
@@ -215,5 +194,21 @@ const SuperAdminDashboard = ({
     </>
   );
 };
+
+const convertUserDataToTableRows = (users: User[]) =>
+  users.map((user) => ({
+    cells: [
+      { content: user.emailAddress },
+      { content: user.department?.name ?? 'N/A' },
+      { content: user.role?.label ?? 'Blocked' },
+      {
+        content: (
+          <Link href={`/super-admin-dashboard/user/${user.gapUserId}/`}>
+            <a className="govuk-link">Edit</a>
+          </Link>
+        ),
+      },
+    ],
+  }));
 
 export default SuperAdminDashboard;
