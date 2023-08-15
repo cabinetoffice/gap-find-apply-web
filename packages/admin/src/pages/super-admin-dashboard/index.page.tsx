@@ -10,8 +10,7 @@ import { getSuperAdminDashboard } from '../../services/SuperAdminService';
 import { User } from './types';
 import Navigation from './Nagivation';
 import InferProps from '../../types/InferProps';
-import { AxiosError } from 'axios';
-import { handleAxiosError } from '../../utils/handleAxiosError';
+import { fetchData } from '../../utils/fetchData';
 
 export const getServerSideProps = async ({
   req,
@@ -24,20 +23,25 @@ export const getServerSideProps = async ({
   };
 
   const userToken = getUserTokenFromCookies(req);
-  try {
-    const { departments, roles, users, userCount } =
-      await getSuperAdminDashboard(paginationParams, userToken);
-    return {
-      props: {
-        departments,
-        roles,
-        users,
-        userCount,
-      },
-    };
-  } catch (err: unknown) {
-    return handleAxiosError(err as AxiosError);
+  const getPageData = async () =>
+    getSuperAdminDashboard(paginationParams, userToken);
+
+  const pageData = await fetchData(getPageData);
+
+  if ('redirect' in pageData) {
+    return pageData;
   }
+
+  const { departments, roles, users, userCount } = pageData;
+
+  return {
+    props: {
+      departments,
+      roles,
+      users,
+      userCount,
+    },
+  };
 };
 
 const convertUserDataToTableRows = (users: User[]) =>

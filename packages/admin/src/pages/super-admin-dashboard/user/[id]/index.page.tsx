@@ -8,22 +8,26 @@ import { getUserTokenFromCookies } from '../../../../utils/session';
 import { getUserById } from '../../../../services/SuperAdminService';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import { AxiosError } from 'axios';
-import { handleAxiosError } from '../../../../utils/handleAxiosError';
+import { fetchData } from '../../../../utils/fetchData';
 
 export const getServerSideProps = async ({
   params,
   req,
 }: GetServerSidePropsContext) => {
   const userToken = getUserTokenFromCookies(req);
-  try {
-    return {
-      props: {
-        user: await getUserById(params?.id as string, userToken),
-      },
-    };
-  } catch (err) {
-    return handleAxiosError(err as AxiosError);
+
+  const getPageData = () => getUserById(params?.id as string, userToken);
+  const pageData = fetchData(getPageData);
+
+  if ('redirect' in pageData) {
+    return pageData;
   }
+
+  return {
+    props: {
+      user: pageData,
+    },
+  };
 };
 
 type UserPageProps = {

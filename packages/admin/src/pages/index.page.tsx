@@ -1,23 +1,23 @@
 import React from 'react';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { authenticateUser } from '../services/AuthService';
 import { getLoginUrl } from '../utils/general';
 import { AxiosError } from 'axios';
-import { handleAxiosError } from '../utils/handleAxiosError';
+import { fetchData } from '../utils/fetchData';
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps = async ({
   req,
   res,
   query,
-}) => {
+}: GetServerSidePropsContext) => {
   const cookieValue = req.cookies[process.env.JWT_COOKIE_NAME!];
   const redirectUrl = query?.redirectUrl as string | undefined;
 
-  let response;
-  try {
-    response = await authenticateUser(cookieValue);
-  } catch (error: unknown) {
-    return handleAxiosError(error as AxiosError);
+  const getPageData = async () => authenticateUser(cookieValue);
+  const response = await fetchData(getPageData);
+
+  if ('redirect' in response) {
+    return response;
   }
 
   // Checks if already have authorisation headers set

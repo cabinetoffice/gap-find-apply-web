@@ -13,19 +13,26 @@ import { GetServerSidePropsContext } from 'next';
 import { Department } from '../types';
 import { Row } from 'gap-web-ui/dist/cjs/components/summary-list/SummaryList';
 import styles from './manage-departments.module.scss';
-import { AxiosError } from 'axios';
-import { handleAxiosError } from '../../../utils/handleAxiosError';
+import { fetchData } from '../../../utils/fetchData';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const fetchPageData = async (jwt: string) => ({
+  const getDepartmentsAndUserId = async (jwt: string) => ({
     departments: await getAllDepartments(jwt),
     userId: context.query?.userId || '',
   });
-  try {
-    return { props: await fetchPageData(getUserTokenFromCookies(context.req)) };
-  } catch (err) {
-    return handleAxiosError(err as AxiosError);
+
+  const getPageData = () =>
+    getDepartmentsAndUserId(getUserTokenFromCookies(context.req));
+
+  const props = await fetchData(getPageData);
+
+  if ('redirect' in props) {
+    return props;
   }
+
+  return {
+    props,
+  };
 }
 
 const ManageDepartmentsPage = ({
