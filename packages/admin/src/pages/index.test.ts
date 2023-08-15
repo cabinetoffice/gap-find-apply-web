@@ -46,7 +46,7 @@ describe('Auth index page', () => {
 
   it('Should redirect to 404 page when User is not an Admin', async () => {
     mockedAuthenticateUser.mockRejectedValue({
-      response: { data: { error: { message: 'User is not an admin' } } },
+      response: { status: 401 },
     });
 
     const result = await getServerSideProps(getContext(getDefaultContext));

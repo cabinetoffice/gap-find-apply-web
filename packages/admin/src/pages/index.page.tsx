@@ -45,9 +45,8 @@ const index = () => {
 };
 
 const handleError = (error: any) => {
-  console.log('Failed to verify token', error);
-
-  if (error.response?.data?.error?.message === 'User is not an admin') {
+  console.error('Failed to verify token', error);
+  if (error.response?.status === 401) {
     return {
       redirect: {
         destination: '/404',
