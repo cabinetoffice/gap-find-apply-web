@@ -17,7 +17,7 @@ export const getServerSideProps = async ({
   const userToken = getUserTokenFromCookies(req);
 
   const getPageData = () => getUserById(params?.id as string, userToken);
-  const pageData = fetchData(getPageData);
+  const pageData = await fetchData(getPageData);
 
   if ('redirect' in pageData) {
     return pageData;
