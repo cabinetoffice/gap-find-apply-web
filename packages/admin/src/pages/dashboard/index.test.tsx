@@ -6,17 +6,17 @@ import { getUserSchemes } from '../../services/SchemeService';
 import { getLoggedInUsersDetails } from '../../services/UserService';
 import UserDetails from '../../types/UserDetails';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
+// jest.mock('next/config', () => () => {
+//   return {
+//     serverRuntimeConfig: {
+//       backendHost: 'http://localhost:8080',
+//     },
+//     publicRuntimeConfig: {
+//       SUB_PATH: '',
+//       APPLICANT_DOMAIN: 'http://localhost:8080',
+//     },
+//   };
+// });
 jest.mock('../../services/SchemeService');
 jest.mock('../../services/UserService');
 
@@ -70,7 +70,7 @@ describe('Dashboard', () => {
         props: {
           schemes: mockSchemeList,
           userDetails: mockUserDetails,
-          oneLoginTransferErrorEnabled: false,
+          oneLoginTransferErrorEnabled: true,
         },
       });
     });
@@ -220,10 +220,10 @@ describe('Dashboard', () => {
       );
       expect(
         screen.getByRole('link', { name: 'View scheme Scheme name 1' })
-      ).toHaveAttribute('href', '/scheme/123');
+      ).toHaveAttribute('href', '/apply/scheme/123');
       expect(
         screen.getByRole('link', { name: 'View scheme Scheme name 2' })
-      ).toHaveAttribute('href', '/scheme/456');
+      ).toHaveAttribute('href', '/apply/scheme/456');
     });
 
     it('Should render a View all schemes link to the schemes page when there are schemes', () => {
@@ -237,7 +237,10 @@ describe('Dashboard', () => {
       const viewAllSchemesElement = screen.getByRole('link', {
         name: 'View all grants',
       });
-      expect(viewAllSchemesElement).toHaveAttribute('href', '/scheme-list');
+      expect(viewAllSchemesElement).toHaveAttribute(
+        'href',
+        '/apply/scheme-list'
+      );
     });
 
     it('Should NOT render the "create new grant scheme" section when there are schemes', () => {
