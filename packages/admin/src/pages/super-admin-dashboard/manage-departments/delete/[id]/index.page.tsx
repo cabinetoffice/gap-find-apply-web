@@ -32,7 +32,7 @@ const DeleteDepartmentPage = ({
   pageData: { id },
   csrfToken,
   fieldErrors,
-}: InferProps<typeof getServerSideProps> & { pageData: { id: string } }) => {
+}: InferProps<typeof getServerSideProps>) => {
   return (
     <>
       <Meta title="Delete Department" />

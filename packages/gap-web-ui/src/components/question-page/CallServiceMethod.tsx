@@ -34,10 +34,7 @@ export default async function CallServiceMethod<B extends PageBodyResponse, R>(
   redirectTo: string | ((result: R) => string),
   errorPageParams: ServiceError | string
 ): Promise<
-  | { body: B; fieldErrors: ValidationError[] }
-  | { redirect: Redirect }
-  | void
-  | Awaited<R>
+  { body: B; fieldErrors: ValidationError[] } | { redirect: Redirect } | void
 > {
   if (req.method !== 'POST') {
     await initialiseCSRFCookie(req, res);

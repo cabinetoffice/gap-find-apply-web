@@ -12,7 +12,6 @@ import {
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
-import { Department, User } from '../../types';
 
 type PageBodyResponse = {
   department: string;
@@ -48,9 +47,7 @@ const UserPage = ({
   pageData,
   formAction,
   fieldErrors,
-}: InferProps<typeof getServerSideProps> & {
-  pageData: { user: User; departments: Department[] };
-}) => {
+}: InferProps<typeof getServerSideProps>) => {
   const { user, departments } = pageData;
   return (
     <>

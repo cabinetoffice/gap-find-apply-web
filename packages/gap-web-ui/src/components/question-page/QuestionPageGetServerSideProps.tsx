@@ -51,13 +51,11 @@ export default async function QuestionPageGetServerSideProps<
     ...context,
   });
 
-  if ('redirect' in (postResponse || {})) {
+  if (postResponse && 'redirect' in postResponse) {
     return postResponse;
   }
 
-  const { fieldErrors, previousValues } = generateValidationProps(
-    postResponse as { body: PageBodyResponse; fieldErrors: ValidationError[] }
-  );
+  const { fieldErrors, previousValues } = generateValidationProps(postResponse);
 
   return {
     props: {
@@ -98,7 +96,6 @@ async function postPagesResult<T extends PageBodyResponse, V>({
   onSuccessRedirectHref,
   onErrorMessage,
   resolvedUrl,
-  useHandleRequestForPageData,
 }: PostPageResultProps<T, V>) {
   return CallServiceMethod<T, V>(
     req,

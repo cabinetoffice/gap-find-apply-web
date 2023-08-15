@@ -53,9 +53,7 @@ const EditDepartmentPage = ({
   csrfToken,
   fieldErrors,
   previousValues,
-}: InferProps<typeof getServerSideProps> & {
-  pageData: Department & { departmentName: string };
-}) => {
+}: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
 
   return (
