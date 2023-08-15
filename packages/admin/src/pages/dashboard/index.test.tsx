@@ -6,17 +6,6 @@ import { getUserSchemes } from '../../services/SchemeService';
 import { getLoggedInUsersDetails } from '../../services/UserService';
 import UserDetails from '../../types/UserDetails';
 
-// jest.mock('next/config', () => () => {
-//   return {
-//     serverRuntimeConfig: {
-//       backendHost: 'http://localhost:8080',
-//     },
-//     publicRuntimeConfig: {
-//       SUB_PATH: '',
-//       APPLICANT_DOMAIN: 'http://localhost:8080',
-//     },
-//   };
-// });
 jest.mock('../../services/SchemeService');
 jest.mock('../../services/UserService');
 
@@ -61,6 +50,7 @@ describe('Dashboard', () => {
       mockedGetLoggedInUsersDetails.mockResolvedValue(mockUserDetails);
 
       process.env.SESSION_COOKIE_NAME = 'gap-test';
+      process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED = 'false';
 
       const result = await getServerSideProps({
         req: { cookies: { 'gap-test': 'testSessionId' } },
@@ -70,7 +60,7 @@ describe('Dashboard', () => {
         props: {
           schemes: mockSchemeList,
           userDetails: mockUserDetails,
-          oneLoginTransferErrorEnabled: true,
+          oneLoginTransferErrorEnabled: false,
         },
       });
     });
