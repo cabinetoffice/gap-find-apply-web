@@ -8,16 +8,16 @@ import getConfig from 'next/config';
 export const getServerSideProps: GetServerSideProps = () => {
   return Promise.resolve({
     props: {
-      registerUrl: `${process.env.USER_SERVICE_URL}/register`,
+      loginUrl: getLoginUrl(),
     },
   });
 };
 
 type HomePageProps = {
-  registerUrl: string;
+  loginUrl: string;
 };
 
-function HomePage({ registerUrl }: HomePageProps) {
+function HomePage({ loginUrl }: HomePageProps) {
   const { publicRuntimeConfig } = getConfig();
   return (
     <>
@@ -45,7 +45,7 @@ function HomePage({ registerUrl }: HomePageProps) {
               see all of your information when you register or sign in using One
               Login using the same email address.
             </p>
-            <Link href={registerUrl}>
+            <Link href={loginUrl}>
               <a
                 role="button"
                 draggable="false"

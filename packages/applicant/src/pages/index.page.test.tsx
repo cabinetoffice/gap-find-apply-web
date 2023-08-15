@@ -3,19 +3,20 @@ import { render, screen } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { createMockRouter } from '../testUtils/createMockRouter';
 import Home, { getServerSideProps } from './index.page';
+import { getLoginUrl } from '../utils/general';
 
 describe('getServerSideProps', () => {
   it('should return page props', async () => {
     const response = await getServerSideProps(null);
     expect(response).toEqual({
       props: {
-        registerUrl: `${process.env.USER_SERVICE_URL}/register`,
+        loginUrl: getLoginUrl(),
       },
     });
   });
 });
 
-const registerUrl = 'https://test.url/register';
+const loginUrl = getLoginUrl();
 
 describe('Apply for a grant home page', () => {
   beforeEach(async () => {
@@ -25,7 +26,7 @@ describe('Apply for a grant home page', () => {
           pathname: `/`,
         })}
       >
-        <Home registerUrl={registerUrl} />
+        <Home loginUrl={loginUrl} />
       </RouterContext.Provider>
     );
   });
@@ -56,7 +57,7 @@ describe('Apply for a grant home page', () => {
       screen.getByRole('button', {
         name: /Sign in with One Login/i,
       })
-    ).toHaveAttribute('href', registerUrl);
+    ).toHaveAttribute('href', loginUrl);
   });
 
   // it('should render link to login page with correct href', async () => {
