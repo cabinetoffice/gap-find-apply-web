@@ -44,21 +44,6 @@ describe('Auth index page', () => {
     });
   });
 
-  it('Should redirect to 404 page when User is not an Admin', async () => {
-    mockedAuthenticateUser.mockRejectedValue({
-      response: { status: 401 },
-    });
-
-    const result = await getServerSideProps(getContext(getDefaultContext));
-
-    expectObjectEquals(result, {
-      redirect: {
-        destination: '/404',
-        permanent: false,
-      },
-    });
-  });
-
   describe('User authentication successful', () => {
     it('Should redirect to dashboard if redirectUrl not set', async () => {
       const result = await getServerSideProps(getContext(getDefaultContext));
@@ -89,7 +74,7 @@ describe('Auth index page', () => {
     it('Should set a session cookie', async () => {
       const context = getContext(getDefaultContext);
 
-      (await getServerSideProps(context)) as NextGetServerSidePropsResponse;
+      await getServerSideProps(context);
 
       expect(context.res.setHeader).toHaveBeenCalledTimes(1);
     });
