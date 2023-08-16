@@ -1,32 +1,27 @@
 import React from 'react';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { authenticateUser } from '../services/AuthService';
-import { getLoginUrl } from '../utils/general';
+import { fetchDataOrGetRedirect } from '../utils/fetchDataOrGetRedirect';
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps = async ({
   req,
   res,
   query,
-}) => {
+}: GetServerSidePropsContext) => {
   const cookieValue = req.cookies[process.env.JWT_COOKIE_NAME!];
   const redirectUrl = query?.redirectUrl as string | undefined;
 
-  let response;
-  try {
-    response = await authenticateUser(cookieValue);
-  } catch (error) {
-    console.error('Failed to verify token', error);
-    return {
-      redirect: {
-        destination: getLoginUrl(),
-        permanent: false,
-      },
-    };
+  const response = await fetchDataOrGetRedirect(async () =>
+    authenticateUser(cookieValue)
+  );
+
+  if ('redirect' in response) {
+    return response;
   }
 
   // Checks if already have authorisation headers set
-  if (response.headers['set-cookie']) {
-    const sessionCookie = response.headers['set-cookie'][0].split(';')[0];
+  if (response.props.headers['set-cookie']) {
+    const sessionCookie = response.props.headers['set-cookie'][0].split(';')[0];
 
     res.setHeader(
       'Set-Cookie',

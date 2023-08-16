@@ -44,6 +44,11 @@ export const routes = {
       ) =>
         `/api/submissions/${grantSubmissionId}/sections/${sectionId}/questions/${questionId}`,
     },
-    isNewApplicant: '/api/isNewApplicant',
+    isNewApplicant: {
+      index: (migrationStatus?) =>
+        migrationStatus
+          ? `/api/isNewApplicant?migrationStatus=${migrationStatus}`
+          : `/api/isNewApplicant`,
+    },
   },
 };

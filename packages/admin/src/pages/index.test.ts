@@ -74,7 +74,7 @@ describe('Auth index page', () => {
     it('Should set a session cookie', async () => {
       const context = getContext(getDefaultContext);
 
-      (await getServerSideProps(context)) as NextGetServerSidePropsResponse;
+      await getServerSideProps(context);
 
       expect(context.res.setHeader).toHaveBeenCalledTimes(1);
     });

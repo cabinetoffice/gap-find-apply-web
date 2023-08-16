@@ -42,7 +42,10 @@ export default async function QuestionPageGetServerSideProps<
     resolvedUrl
   );
 
-  if ('redirect' in pageData) {
+  const redirectUsingPageData =
+    typeof pageData === 'object' && 'redirect' in pageData;
+
+  if (redirectUsingPageData) {
     return pageData as NextRedirect;
   }
 

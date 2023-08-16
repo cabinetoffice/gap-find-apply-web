@@ -1,4 +1,3 @@
-import { Pagination } from '../components/pagination/Pagination';
 import { SuperAdminDashboardResponse } from './../pages/super-admin-dashboard/types';
 import getConfig from 'next/config';
 import axios from 'axios';
@@ -39,6 +38,14 @@ export const getSuperAdminDashboard = async ({
       params,
       ...axiosUserServiceConfig(userToken),
     }
+  );
+  return response.data;
+};
+
+export const checkUserIsSuperAdmin = async (userToken: string) => {
+  const response = await axios.get(
+    `${serverRuntimeConfig.userServiceHost}/isSuperAdmin`,
+    axiosUserServiceConfig(userToken)
   );
   return response.data;
 };

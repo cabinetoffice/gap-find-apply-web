@@ -11,18 +11,22 @@ const { publicRuntimeConfig } = getConfig();
 const getRoleCheckService = () =>
   publicRuntimeConfig.oneLoginEnabled ? getUserRoles : isAdmin;
 
-const getDestination = (user: UserRolesResponse) => {
+const getDestination = (user: UserRolesResponse, migrationStatus?: string) => {
   if (user.isSuperAdmin)
     return `${process.env.ADMIN_FRONTEND_URL}/?redirect=/super-admin-dashboard`;
   if (user.isAdmin)
     return `${process.env.ADMIN_FRONTEND_URL}/?redirect=/dashboard`;
-  if (user.isApplicant) return routes.api.isNewApplicant; //checks if the user exist, if not creates it
+  if (user.isApplicant) return routes.api.isNewApplicant.index(migrationStatus); //checks if the user exist, if not creates it
   // TODO go to an error page?
   return `${publicRuntimeConfig.FIND_A_GRANT_URL}`;
 };
 
 //TODO add unit test, and move this to be an api
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
   let result: UserRolesResponse;
   try {
     const userServiceJwt = getJwtFromCookies(req);
@@ -39,7 +43,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     };
   }
   await initiateCSRFCookie(req, res);
-  const destination = getDestination(result);
+
+  const destination = getDestination(result, query?.migrationStatus as string);
   return {
     redirect: {
       destination,
