@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import getConfig from 'next/config';
 import { SummaryList } from 'gap-web-ui';
@@ -7,24 +7,19 @@ import { User } from '../../types';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import { getUserById } from '../../../../services/SuperAdminService';
 import CustomLink from '../../../../components/custom-link/CustomLink';
+import { fetchDataOrGetRedirect } from '../../../../utils/fetchDataOrGetRedirect';
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps = async ({
   params,
   req,
-}) => {
+}: GetServerSidePropsContext) => {
   const userToken = getUserTokenFromCookies(req);
-  return {
-    props: {
-      user: await getUserById(params?.id as string, userToken),
-    },
-  };
+
+  const getPageData = () => getUserById(params?.id as string, userToken);
+  return await fetchDataOrGetRedirect(getPageData);
 };
 
-type UserPageProps = {
-  user: User;
-};
-
-const UserPage = ({ user }: UserPageProps) => {
+const UserPage = (user: User) => {
   const { publicRuntimeConfig } = getConfig();
   return (
     <>
