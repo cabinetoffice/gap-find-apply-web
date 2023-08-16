@@ -2,10 +2,10 @@ import { AxiosError } from 'axios';
 import { getLoginUrl } from './general';
 
 async function fetchDataOrGetRedirect<T>(
-  fetchData: (...args: unknown[]) => Promise<T> | { redirect: object }
-): Promise<ReturnType<typeof fetchData>> {
+  fetchData: (...args: unknown[]) => Promise<T>
+): Promise<{ props: T } | { redirect: Redirect }> {
   try {
-    return await fetchData();
+    return { props: await fetchData() };
   } catch (error: unknown) {
     return getRedirect(error);
   }
