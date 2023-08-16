@@ -16,7 +16,7 @@ describe('fetchDataOrGetRedirect()', () => {
 
   it('should return data from fetchFunction on success', async () => {
     const result = await fetchDataOrGetRedirect(mockFetchFunctionSuccess);
-    expect(result).toBe('Success');
+    expect(result).toMatchObject({ props: 'Success' });
   });
 
   it('should handle AxiosError and return redirect object for unauthorized error', async () => {
