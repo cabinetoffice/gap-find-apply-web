@@ -1,16 +1,15 @@
+import { Button, Checkboxes, Table } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { Button, Checkboxes, Table } from 'gap-web-ui';
 import Meta from '../../components/layout/Meta';
+import { Pagination } from '../../components/pagination/Pagination';
+import { getSuperAdminDashboard } from '../../services/SuperAdminService';
+import InferProps from '../../types/InferProps';
 import PaginationType from '../../types/Pagination';
 import { getUserTokenFromCookies } from '../../utils/session';
-import { Pagination } from '../../components/pagination/Pagination';
+import Navigation from './Navigation';
 import styles from './superadmin-dashboard.module.scss';
-import { getSuperAdminDashboard } from '../../services/SuperAdminService';
 import { User } from './types';
-import Navigation from './Nagivation';
-import InferProps from '../../types/InferProps';
-import { fetchDataOrGetRedirect } from '../../utils/fetchDataOrGetRedirect';
 
 export const getServerSideProps = async ({
   req,
@@ -23,16 +22,10 @@ export const getServerSideProps = async ({
   };
 
   const userToken = getUserTokenFromCookies(req);
-  const getPageData = async () =>
-    getSuperAdminDashboard(paginationParams, userToken);
-
-  const pageData = await fetchDataOrGetRedirect(getPageData);
-
-  if ('redirect' in pageData) {
-    return pageData;
-  }
-
-  const { departments, roles, users, userCount } = pageData;
+  const { departments, roles, users, userCount } = await getSuperAdminDashboard(
+    paginationParams,
+    userToken
+  );
 
   return {
     props: {
@@ -68,7 +61,7 @@ const SuperAdminDashboard = ({
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
-      <Navigation />
+      <Navigation roles={roles} />
       <div className="govuk-grid-row govuk-!-padding-top-2">
         <Meta title="Manage Users" />
         <div className="govuk-width-container">
