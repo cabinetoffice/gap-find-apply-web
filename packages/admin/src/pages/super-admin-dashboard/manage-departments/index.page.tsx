@@ -24,15 +24,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const getPageData = () =>
     getDepartmentsAndUserId(getUserTokenFromCookies(context.req));
 
-  const props = await fetchDataOrGetRedirect(getPageData);
-
-  if ('redirect' in props) {
-    return props;
-  }
-
-  return {
-    props,
-  };
+  return await fetchDataOrGetRedirect(getPageData);
 }
 
 const ManageDepartmentsPage = ({

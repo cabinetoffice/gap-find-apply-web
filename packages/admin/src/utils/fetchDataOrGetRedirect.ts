@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import { getLoginUrl } from './general';
+import { Redirect } from 'next';
 
 async function fetchDataOrGetRedirect<T>(
   fetchData: (...args: unknown[]) => Promise<T>

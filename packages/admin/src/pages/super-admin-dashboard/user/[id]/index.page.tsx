@@ -16,24 +16,10 @@ export const getServerSideProps = async ({
   const userToken = getUserTokenFromCookies(req);
 
   const getPageData = () => getUserById(params?.id as string, userToken);
-  const pageData = await fetchDataOrGetRedirect(getPageData);
-
-  if ('redirect' in pageData) {
-    return pageData;
-  }
-
-  return {
-    props: {
-      user: pageData,
-    },
-  };
+  return await fetchDataOrGetRedirect(getPageData);
 };
 
-type UserPageProps = {
-  user: User;
-};
-
-const UserPage = ({ user }: UserPageProps) => {
+const UserPage = (user: User) => {
   const { publicRuntimeConfig } = getConfig();
   return (
     <>

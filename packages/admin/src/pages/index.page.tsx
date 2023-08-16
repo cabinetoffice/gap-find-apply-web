@@ -20,8 +20,8 @@ export const getServerSideProps = async ({
   }
 
   // Checks if already have authorisation headers set
-  if (response.headers['set-cookie']) {
-    const sessionCookie = response.headers['set-cookie'][0].split(';')[0];
+  if (response.props.headers['set-cookie']) {
+    const sessionCookie = response.props.headers['set-cookie'][0].split(';')[0];
 
     res.setHeader(
       'Set-Cookie',
