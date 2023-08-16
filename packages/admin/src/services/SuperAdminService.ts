@@ -1,35 +1,51 @@
+import { SuperAdminDashboardResponse } from './../pages/super-admin-dashboard/types';
 import getConfig from 'next/config';
 import axios from 'axios';
 import { axiosUserServiceConfig } from '../utils/session';
-import Pagination from '../types/Pagination';
-import { Department, Role, User } from '../pages/super-admin-dashboard/types';
+import {
+  Department,
+  Role,
+  SuperAdminDashboardFilterData,
+  User,
+} from '../pages/super-admin-dashboard/types';
 import UserDetails from '../types/UserDetails';
+import PaginationType from '../types/Pagination';
 
 const { serverRuntimeConfig } = getConfig();
+
+type GetSuperAdminDashboardParams = {
+  pagination: PaginationType;
+  userToken: string;
+  filterData: SuperAdminDashboardFilterData;
+  resetPagination?: boolean;
+};
+
+export const getSuperAdminDashboard = async ({
+  pagination,
+  userToken,
+  filterData: { roles = '', departments = '', searchTerm = '' },
+}: GetSuperAdminDashboardParams): Promise<SuperAdminDashboardResponse> => {
+  const params = {
+    ...pagination,
+    roles,
+    departments,
+    searchTerm,
+  };
+
+  const response = await axios.get(
+    `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
+    {
+      params,
+      ...axiosUserServiceConfig(userToken),
+    }
+  );
+  return response.data;
+};
 
 export const checkUserIsSuperAdmin = async (userToken: string) => {
   const response = await axios.get(
     `${serverRuntimeConfig.userServiceHost}/isSuperAdmin`,
     axiosUserServiceConfig(userToken)
-  );
-  return response.data;
-};
-
-export const getSuperAdminDashboard = async (
-  pagination: Pagination,
-  userToken: string
-): Promise<{
-  users: User[];
-  departments: Department[];
-  roles: Role[];
-  userCount: number;
-}> => {
-  const response = await axios.get(
-    `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
-    {
-      params: pagination,
-      ...axiosUserServiceConfig(userToken),
-    }
   );
   return response.data;
 };

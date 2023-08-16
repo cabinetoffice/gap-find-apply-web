@@ -14,6 +14,8 @@ export interface ButtonProps {
   addNameAttribute?: boolean;
   disabled?: boolean;
   ariaLabel?: string;
+  tabIndex?: number;
+  hidden?: boolean;
 }
 
 const Button: FC<ButtonProps> = ({
@@ -24,9 +26,11 @@ const Button: FC<ButtonProps> = ({
   addNameAttribute = false,
   disabled = false,
   ariaLabel,
+  ...additionalProps
 }) => {
   return (
     <button
+      {...additionalProps}
       type={type}
       className={`govuk-button ${
         isSecondary ? 'govuk-button--secondary' : ''

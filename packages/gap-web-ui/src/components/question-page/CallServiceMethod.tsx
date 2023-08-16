@@ -40,7 +40,6 @@ export default async function CallServiceMethod<B extends PageBodyResponse, R>(
     await initialiseCSRFCookie(req, res);
     return;
   }
-
   let body: Body<B> = await parseBody(req, '1mb');
   try {
     body = removeAllCarriageReturns(body);
@@ -120,7 +119,7 @@ function getValidationErrors<B extends PageBodyResponse>(
   const fieldErrors = data?.errors || data?.fieldErrors;
   if (fieldErrors) {
     return {
-      body: body,
+      body,
       fieldErrors: fieldErrors as ValidationError[],
     };
   }

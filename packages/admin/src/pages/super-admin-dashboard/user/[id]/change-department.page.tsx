@@ -12,7 +12,6 @@ import {
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
-import Link from 'next/link';
 
 type PageBodyResponse = {
   department: string;

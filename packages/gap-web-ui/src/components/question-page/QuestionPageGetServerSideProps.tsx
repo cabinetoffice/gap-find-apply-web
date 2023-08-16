@@ -1,5 +1,7 @@
 import { ValidationError } from '../../types';
 import CallServiceMethod from './CallServiceMethod';
+import { Redirect } from 'next';
+
 import {
   QuestionPageGetServerSidePropsType,
   PostPageResultProps,
@@ -134,7 +136,7 @@ export function generateServiceErrorRedirect(
 ): NextRedirect {
   return {
     redirect: {
-      destination: `/service-error?serviceErrorProps=${JSON.stringify(
+      destination: `/service-error?excludeSubPath=true&serviceErrorProps=${JSON.stringify(
         generateServiceErrorProps(errorMessage, resolvedUrl)
       )}`,
       statusCode: 302,
@@ -146,7 +148,7 @@ function generateServiceErrorProps(errorMessage: string, resolvedUrl: string) {
   return {
     errorInformation: errorMessage,
     linkAttributes: {
-      href: resolvedUrl,
+      href: encodeURIComponent(resolvedUrl),
       linkText: 'Please return',
       linkInformation: ' and try again.',
     },

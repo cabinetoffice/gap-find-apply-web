@@ -73,14 +73,15 @@ export const buildPaginationArr = (current, last) => {
   return pagesWithEllipsis;
 };
 
-export const buildPaginationListItems = (
+export const buildPaginationListItems = ({
   router,
   currentPage,
   itemsPerPage,
   paginationElementType,
   ellipsisEndAt,
-  ellipsisStartAt
-) => {
+  ellipsisStartAt,
+  additionalQueryData,
+}) => {
   const { route, query = {} } = router;
 
   const PAGINATION_ELEMENTS_OBJECT = {
@@ -95,6 +96,7 @@ export const buildPaginationListItems = (
               skip: (currentPage - 2) * itemsPerPage,
               limit: itemsPerPage,
               page: currentPage - 1,
+              ...additionalQueryData,
             },
           }}
         >
@@ -127,6 +129,7 @@ export const buildPaginationListItems = (
               skip: currentPage * itemsPerPage,
               limit: itemsPerPage,
               page: currentPage + 1,
+              ...additionalQueryData,
             },
           }}
         >
@@ -187,6 +190,7 @@ export const buildPaginationListItems = (
               skip: (currentPage - 1) * itemsPerPage,
               limit: itemsPerPage,
               page: currentPage,
+              ...additionalQueryData,
             },
           }}
         >

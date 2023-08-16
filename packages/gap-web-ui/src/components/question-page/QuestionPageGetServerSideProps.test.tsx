@@ -94,7 +94,7 @@ describe('QuestionPageGetServerSideProps', () => {
       expectObjectEquals(response, {
         redirect: {
           destination:
-            '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to load this page.","linkAttributes":{"href":"/testResolvedURL","linkText":"Please return","linkInformation":" and try again."}}',
+            '/service-error?excludeSubPath=true&serviceErrorProps={"errorInformation":"Something went wrong while trying to load this page.","linkAttributes":{"href":"%2FtestResolvedURL","linkText":"Please return","linkInformation":" and try again."}}',
           statusCode: 302,
         },
       });
@@ -176,7 +176,7 @@ describe('QuestionPageGetServerSideProps', () => {
 
       expectObjectEquals(response, {
         redirect: {
-          destination: '/error-page/code/401?href=/testResolvedURL',
+          destination: '/error-page/code/401?href=%2FtestResolvedURL',
           statusCode: 302,
         },
       });
@@ -192,7 +192,7 @@ describe('QuestionPageGetServerSideProps', () => {
       expectObjectEquals(response, {
         redirect: {
           destination:
-            '/service-error?serviceErrorProps={"errorInformation":"Test error message","linkAttributes":{"href":"/testResolvedURL","linkText":"Please return","linkInformation":" and try again."}}',
+            '/service-error?serviceErrorProps={"errorInformation":"Test error message","linkAttributes":{"href":"%2FtestResolvedURL","linkText":"Please return","linkInformation":" and try again."}}',
           statusCode: 302,
         },
       });

@@ -75,7 +75,7 @@ const EditDepartmentPage = ({
             questionTitle={`Department name`}
             titleSize="m"
             fieldName="name"
-            defaultValue={previousValues?.name || departmentName}
+            defaultValue={(previousValues?.name || departmentName) as string}
             fieldErrors={fieldErrors}
             TitleTag="h2"
           />
@@ -87,7 +87,7 @@ const EditDepartmentPage = ({
             questionTitle={`GGIS ID number`}
             titleSize="m"
             fieldName="ggisID"
-            defaultValue={previousValues?.ggisID || ggisID}
+            defaultValue={(previousValues?.ggisID || ggisID) as string}
             fieldErrors={fieldErrors}
             TitleTag="h2"
           />
