@@ -10,7 +10,7 @@ import { getSuperAdminDashboard } from '../../services/SuperAdminService';
 import { User } from './types';
 import Navigation from './Nagivation';
 import InferProps from '../../types/InferProps';
-import { fetchDataOrGetRedirect } from '../../utils/fetchData';
+import { fetchDataOrGetRedirect } from '../../utils/fetchDataOrGetRedirect';
 
 export const getServerSideProps = async ({
   req,

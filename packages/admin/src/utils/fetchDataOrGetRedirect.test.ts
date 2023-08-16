@@ -1,5 +1,5 @@
 import { getLoginUrl } from './general';
-import { fetchDataOrGetRedirect } from './fetchData';
+import { fetchDataOrGetRedirect } from './fetchDataOrGetRedirect';
 import { AxiosError, AxiosResponse } from 'axios';
 
 describe('fetchDataOrGetRedirect()', () => {

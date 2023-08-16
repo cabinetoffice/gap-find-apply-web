@@ -13,7 +13,7 @@ import { GetServerSidePropsContext } from 'next';
 import { Department } from '../types';
 import { Row } from 'gap-web-ui/dist/cjs/components/summary-list/SummaryList';
 import styles from './manage-departments.module.scss';
-import { fetchDataOrGetRedirect } from '../../../utils/fetchData';
+import { fetchDataOrGetRedirect } from '../../../utils/fetchDataOrGetRedirect';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const getDepartmentsAndUserId = async (jwt: string) => ({

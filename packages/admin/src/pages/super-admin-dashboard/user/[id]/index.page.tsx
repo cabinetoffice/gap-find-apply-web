@@ -7,7 +7,7 @@ import { User } from '../../types';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import { getUserById } from '../../../../services/SuperAdminService';
 import CustomLink from '../../../../components/custom-link/CustomLink';
-import { fetchDataOrGetRedirect } from '../../../../utils/fetchData';
+import { fetchDataOrGetRedirect } from '../../../../utils/fetchDataOrGetRedirect';
 
 export const getServerSideProps = async ({
   params,

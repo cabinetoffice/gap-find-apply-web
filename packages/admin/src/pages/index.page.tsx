@@ -1,7 +1,7 @@
 import React from 'react';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { authenticateUser } from '../services/AuthService';
-import { fetchDataOrGetRedirect } from '../utils/fetchData';
+import { fetchDataOrGetRedirect } from '../utils/fetchDataOrGetRedirect';
 
 export const getServerSideProps = async ({
   req,
