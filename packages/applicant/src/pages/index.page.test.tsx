@@ -60,14 +60,6 @@ describe('Apply for a grant home page', () => {
     ).toHaveAttribute('href', loginUrl);
   });
 
-  // it('should render link to login page with correct href', async () => {
-  //   expect(
-  //     screen.getByRole('link', {
-  //       name: /i already have an account/i,
-  //     })
-  //   ).toHaveAttribute('href', 'https://test.url/some/path');
-  // });
-
   it('should find a grant section', async () => {
     expect(screen.getByTestId('find-a-grant-heading')).toBeDefined();
     expect(
