@@ -7,11 +7,11 @@ async function fetchDataOrGetRedirect<T>(
   try {
     return await fetchData();
   } catch (error: unknown) {
-    return gerRedirect(error);
+    return getRedirect(error);
   }
 }
 
-const gerRedirect = (error: unknown) => {
+const getRedirect = (error: unknown) => {
   if (error instanceof AxiosError) {
     const unauthorized =
       error?.response?.status === 401 || error?.response?.status === 403;
