@@ -11,8 +11,9 @@ export const getServerSideProps = async ({
   const cookieValue = req.cookies[process.env.JWT_COOKIE_NAME!];
   const redirectUrl = query?.redirectUrl as string | undefined;
 
-  const getPageData = async () => authenticateUser(cookieValue);
-  const response = await fetchDataOrGetRedirect(getPageData);
+  const response = await fetchDataOrGetRedirect(async () =>
+    authenticateUser(cookieValue)
+  );
 
   if ('redirect' in response) {
     return response;
