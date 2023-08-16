@@ -10,7 +10,7 @@ import { getSuperAdminDashboard } from '../../services/SuperAdminService';
 import { User } from './types';
 import Navigation from './Nagivation';
 import InferProps from '../../types/InferProps';
-import { fetchData } from '../../utils/fetchData';
+import { fetchDataOrGetRedirect } from '../../utils/fetchData';
 
 export const getServerSideProps = async ({
   req,
@@ -26,7 +26,7 @@ export const getServerSideProps = async ({
   const getPageData = async () =>
     getSuperAdminDashboard(paginationParams, userToken);
 
-  const pageData = await fetchData(getPageData);
+  const pageData = await fetchDataOrGetRedirect(getPageData);
 
   if ('redirect' in pageData) {
     return pageData;

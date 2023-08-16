@@ -1,19 +1,18 @@
 import { AxiosError } from 'axios';
 import { getLoginUrl } from './general';
 
-async function fetchData<T>(
-  fetchData: (...args: any[]) => Promise<T> | { redirect: object }
+async function fetchDataOrGetRedirect<T>(
+  fetchData: (...args: unknown[]) => Promise<T> | { redirect: object }
 ): Promise<ReturnType<typeof fetchData>> {
   try {
     return await fetchData();
   } catch (error: unknown) {
-    return handleRequestError(error);
+    return gerRedirect(error);
   }
 }
 
-const handleRequestError = (error: unknown) => {
+const gerRedirect = (error: unknown) => {
   if (error instanceof AxiosError) {
-    console.error('Request error', error);
     const unauthorized =
       error?.response?.status === 401 || error?.response?.status === 403;
     if (unauthorized) {
@@ -33,4 +32,4 @@ const handleRequestError = (error: unknown) => {
   };
 };
 
-export { fetchData };
+export { fetchDataOrGetRedirect };

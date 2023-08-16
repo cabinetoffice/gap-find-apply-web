@@ -1,9 +1,7 @@
 import React from 'react';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { authenticateUser } from '../services/AuthService';
-import { getLoginUrl } from '../utils/general';
-import { AxiosError } from 'axios';
-import { fetchData } from '../utils/fetchData';
+import { fetchDataOrGetRedirect } from '../utils/fetchData';
 
 export const getServerSideProps = async ({
   req,
@@ -14,7 +12,7 @@ export const getServerSideProps = async ({
   const redirectUrl = query?.redirectUrl as string | undefined;
 
   const getPageData = async () => authenticateUser(cookieValue);
-  const response = await fetchData(getPageData);
+  const response = await fetchDataOrGetRedirect(getPageData);
 
   if ('redirect' in response) {
     return response;

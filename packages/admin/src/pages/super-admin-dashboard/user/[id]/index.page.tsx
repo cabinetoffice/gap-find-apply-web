@@ -7,8 +7,7 @@ import { User } from '../../types';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import { getUserById } from '../../../../services/SuperAdminService';
 import CustomLink from '../../../../components/custom-link/CustomLink';
-import { AxiosError } from 'axios';
-import { fetchData } from '../../../../utils/fetchData';
+import { fetchDataOrGetRedirect } from '../../../../utils/fetchData';
 
 export const getServerSideProps = async ({
   params,
@@ -17,7 +16,7 @@ export const getServerSideProps = async ({
   const userToken = getUserTokenFromCookies(req);
 
   const getPageData = () => getUserById(params?.id as string, userToken);
-  const pageData = await fetchData(getPageData);
+  const pageData = await fetchDataOrGetRedirect(getPageData);
 
   if ('redirect' in pageData) {
     return pageData;
