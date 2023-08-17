@@ -6,9 +6,8 @@ import { getJwtFromCookies } from '../utils/jwt';
 import { routes } from '../utils/routes';
 import getConfig from 'next/config';
 
-const getRoleCheckService = (publicRuntimeConfig) => {
-  return publicRuntimeConfig.oneLoginEnabled ? getUserRoles : isAdmin;
-};
+const getRoleCheckService = (publicRuntimeConfig) =>
+  publicRuntimeConfig.oneLoginEnabled ? getUserRoles : isAdmin;
 
 const getDestination = (
   user: UserRolesResponse,
