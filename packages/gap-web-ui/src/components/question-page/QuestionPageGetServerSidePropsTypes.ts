@@ -17,7 +17,6 @@ type QuestionPageGetServerSidePropsType<T, K, V> = {
   onSuccessRedirectHref: string | ((result: V) => string);
   onErrorMessage: string;
   useHandleRequestForPageData?: boolean;
-  handleRequestError?: (err: unknown) => NextRedirect;
 };
 
 type PostPageResultProps<T extends PageBodyResponse, V> = {
