@@ -17,6 +17,7 @@ import { getUserTokenFromCookies } from '../../utils/session';
 import Navigation from './Navigation';
 import styles from './superadmin-dashboard.module.scss';
 import { SuperAdminDashboardFilterData, User } from './types';
+import { getRedirect } from '../../utils/fetchDataOrGetRedirect';
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -58,6 +59,7 @@ export const getServerSideProps = async (
     fetchPageData,
     handleRequest,
     jwt: getUserTokenFromCookies(req),
+    fetchPageDataErrorHandler: (err: unknown) => getRedirect(err),
     onErrorMessage: 'Failed to filter users, please try again later.',
     onSuccessRedirectHref: (body) => {
       if ('clear-all-filters' in body) return `/super-admin-dashboard`;
