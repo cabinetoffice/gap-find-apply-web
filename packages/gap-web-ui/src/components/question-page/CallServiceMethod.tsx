@@ -32,7 +32,8 @@ export default async function CallServiceMethod<B extends PageBodyResponse, R>(
   res: GetServerSidePropsContext['res'],
   serviceFunc: (body: B) => Promise<R>,
   redirectTo: string | ((result: R) => string),
-  errorPageParams: ServiceError | string
+  errorPageParams: ServiceError | string,
+  handleRequestError?: (err: unknown) => NextRedirect
 ): Promise<
   { body: B; fieldErrors: ValidationError[] } | { redirect: Redirect } | void
 > {
@@ -51,6 +52,9 @@ export default async function CallServiceMethod<B extends PageBodyResponse, R>(
       typeof redirectTo === 'string' ? redirectTo : redirectTo(result)
     );
   } catch (err: any) {
+    if (handleRequestError) {
+      return handleRequestError(err);
+    }
     const validationErrors = getValidationErrors(err, body);
     if (validationErrors) return validationErrors;
     if (err.code) return generateErrorPageRedirect(err, errorPageParams);

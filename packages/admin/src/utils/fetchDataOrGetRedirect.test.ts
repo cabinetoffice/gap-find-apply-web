@@ -8,8 +8,8 @@ describe('fetchDataOrGetRedirect()', () => {
     const error = new AxiosError('Unauthorized');
     error.response = {
       ...error.response,
-      status: 401,
-      statusText: 'Unauthorized',
+      status: 403,
+      statusText: 'Forbidden',
     } as AxiosResponse;
     throw error;
   };

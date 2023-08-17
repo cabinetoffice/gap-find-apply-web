@@ -33,14 +33,15 @@ export default async function QuestionPageGetServerSideProps<
   K extends FetchPageData,
   V
 >(props: QuestionPageGetServerSidePropsType<T, K, V>) {
-  const { context, fetchPageData, jwt } = props;
+  const { context, fetchPageData, jwt, fetchPageDataErrorHandler } = props;
   const { req, resolvedUrl } = context;
 
-  const pageData = await fetchAndHandlePageData(
+  const pageData = await fetchAndHandlePageData({
     fetchPageData,
     jwt,
-    resolvedUrl
-  );
+    resolvedUrl,
+    fetchPageDataErrorHandler,
+  });
 
   const redirectUsingPageData =
     typeof pageData === 'object' && 'redirect' in pageData;
@@ -71,14 +72,23 @@ export default async function QuestionPageGetServerSideProps<
   };
 }
 
-async function fetchAndHandlePageData<K extends FetchPageData>(
-  fetchPageData: (jwt: string) => Promise<K>,
-  jwt: string,
-  resolvedUrl: string
-) {
+async function fetchAndHandlePageData<K extends FetchPageData>({
+  fetchPageData,
+  jwt,
+  resolvedUrl,
+  fetchPageDataErrorHandler,
+}: {
+  fetchPageData: (jwt: string) => Promise<K>;
+  jwt: string;
+  resolvedUrl: string;
+  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect;
+}) {
   try {
     return await fetchPageData(jwt);
   } catch (err: any) {
+    if (fetchPageDataErrorHandler) {
+      return fetchPageDataErrorHandler(err);
+    }
     if (err?.response?.data?.code) {
       return generateRedirect(
         `/error-page/code/${err.response.data.code}?href=${resolvedUrl}`
@@ -95,6 +105,7 @@ async function postPagesResult<T extends PageBodyResponse, V>({
   req,
   res,
   handleRequest,
+  fetchPageDataErrorHandler,
   jwt,
   onSuccessRedirectHref,
   onErrorMessage,
@@ -105,7 +116,8 @@ async function postPagesResult<T extends PageBodyResponse, V>({
     res,
     (body) => handleRequest(body, jwt),
     onSuccessRedirectHref,
-    generateServiceErrorProps(onErrorMessage, resolvedUrl)
+    generateServiceErrorProps(onErrorMessage, resolvedUrl),
+    fetchPageDataErrorHandler
   );
 }
 
