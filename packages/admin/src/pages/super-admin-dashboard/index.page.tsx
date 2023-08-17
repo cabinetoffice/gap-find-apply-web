@@ -84,7 +84,7 @@ const SuperAdminDashboard = ({
     <>
       <Navigation roles={roles} />
 
-      <div className="govuk-grid-row govuk-!-padding-top-2">
+      <div className="govuk-grid-row govuk-!-padding-top-7">
         <Meta title="Manage Users" />
 
         <FlexibleQuestionPageLayout
@@ -93,7 +93,8 @@ const SuperAdminDashboard = ({
           fullPageWidth
           formAction={formAction}
         >
-          <input type="submit" style={{ display: 'none' }} />
+          {/* Ensures hitting "Enter" submits the form. Otherwise defaults to clear all filters when pressing enter */}
+          <input type="submit" hidden value="submit" />
 
           <div className={`${styles.sidebar} govuk-grid-column-one-third`}>
             <h2 className="govuk-heading-l">Manage users</h2>
@@ -151,7 +152,9 @@ const SuperAdminDashboard = ({
                 type="text"
                 defaultValue={queryParams.searchTerm || ''}
                 placeholder="enter a keyword or search term here"
+                aria-label="Search for a user via email address"
               />
+
               <Button type={ButtonTypePropertyEnum.Submit} text="Search" />
             </div>
 
