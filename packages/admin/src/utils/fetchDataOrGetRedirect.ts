@@ -14,9 +14,8 @@ async function fetchDataOrGetRedirect<T>(
 
 const getRedirect = (error: unknown) => {
   if (error instanceof AxiosError) {
-    const unauthorized =
-      error?.response?.status === 401 || error?.response?.status === 403;
-    if (unauthorized) {
+    const forbidden = error?.response?.status === 403;
+    if (forbidden) {
       return {
         redirect: {
           destination: '/404',
@@ -33,4 +32,4 @@ const getRedirect = (error: unknown) => {
   };
 };
 
-export { fetchDataOrGetRedirect };
+export { fetchDataOrGetRedirect, getRedirect };

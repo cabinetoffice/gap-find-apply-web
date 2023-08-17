@@ -9,6 +9,7 @@ type PageBodyResponse = Record<string, string | string[]>;
 type FetchPageData = Record<string, any>;
 
 type QuestionPageGetServerSidePropsType<T, K, V> = {
+  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect;
   context: GetServerSidePropsContext;
   fetchPageData: (jwt: string) => Promise<K>;
   handleRequest: (body: T, jwt: string) => Promise<V>;
@@ -16,6 +17,7 @@ type QuestionPageGetServerSidePropsType<T, K, V> = {
   onSuccessRedirectHref: string | ((result: V) => string);
   onErrorMessage: string;
   useHandleRequestForPageData?: boolean;
+  handleRequestError?: (err: unknown) => NextRedirect;
 };
 
 type PostPageResultProps<T extends PageBodyResponse, V> = {
@@ -27,6 +29,7 @@ type PostPageResultProps<T extends PageBodyResponse, V> = {
   onErrorMessage: string;
   resolvedUrl: string;
   useHandleRequestForPageData?: boolean;
+  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect;
 };
 
 type generateValidationPropsType<T> = void | {
