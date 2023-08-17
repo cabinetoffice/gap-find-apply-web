@@ -6,12 +6,15 @@ import { getJwtFromCookies } from '../utils/jwt';
 import { routes } from '../utils/routes';
 import getConfig from 'next/config';
 
-const { publicRuntimeConfig } = getConfig();
+const getRoleCheckService = (publicRuntimeConfig) => {
+  return publicRuntimeConfig.oneLoginEnabled ? getUserRoles : isAdmin;
+};
 
-const getRoleCheckService = () =>
-  publicRuntimeConfig.oneLoginEnabled ? getUserRoles : isAdmin;
-
-const getDestination = (user: UserRolesResponse, migrationStatus?: string) => {
+const getDestination = (
+  user: UserRolesResponse,
+  publicRuntimeConfig,
+  migrationStatus?: string
+) => {
   if (user.isSuperAdmin)
     return `${process.env.ADMIN_FRONTEND_URL}/?redirect=/super-admin-dashboard`;
   if (user.isAdmin)
@@ -27,10 +30,11 @@ export const getServerSideProps: GetServerSideProps = async ({
   res,
   query,
 }) => {
+  const { publicRuntimeConfig } = getConfig();
   let result: UserRolesResponse;
   try {
     const userServiceJwt = getJwtFromCookies(req);
-    const roleCheckService = getRoleCheckService();
+    const roleCheckService = getRoleCheckService(publicRuntimeConfig);
     result = await roleCheckService(userServiceJwt);
   } catch (error) {
     console.error('Error determining user roles');
@@ -44,7 +48,11 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
   await initiateCSRFCookie(req, res);
 
-  const destination = getDestination(result, query?.migrationStatus as string);
+  const destination = getDestination(
+    result,
+    publicRuntimeConfig,
+    query?.migrationStatus as string
+  );
   return {
     redirect: {
       destination,
