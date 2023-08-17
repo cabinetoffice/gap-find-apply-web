@@ -96,7 +96,7 @@ const EditRoleWithId = ({
                   </>
                 ),
               }))}
-              defaultCheckboxes={user.roles.map(({ id }) => String(id))}
+              defaultCheckboxes={user.roles.map(({ id }) => id)}
             />
 
             <div className="govuk-button-group">

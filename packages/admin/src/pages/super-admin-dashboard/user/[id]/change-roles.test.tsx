@@ -5,25 +5,25 @@ import UserDetails from '../../../../types/UserDetails';
 
 const getMockRoles = () => [
   {
-    id: '1',
+    id: 1,
     name: 'FIND',
     description: 'this is a description',
     label: 'Find',
   },
   {
-    id: '2',
+    id: 2,
     name: 'SUPER_ADMIN',
     description: 'this is a super admin description',
     label: 'Super administrator',
   },
   {
-    id: '3',
+    id: 3,
     name: 'ADMIN',
     description: 'this is another description',
     label: 'Administrator',
   },
   {
-    id: '4',
+    id: 4,
     name: 'APPLICANT',
     description: 'this is another description',
     label: 'Applicant',
