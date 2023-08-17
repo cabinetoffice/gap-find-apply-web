@@ -12,7 +12,12 @@ const logout = async (req: NextApiRequest, res: NextApiResponse) => {
     `session_id=deleted; Path=/; secure; HttpOnly; SameSite=Strict; expires=Thu, 01 Jan 1970 00:00:00 GMT`
   );
 
-  res.redirect(302, process.env.LOGOUT_URL!);
+  const logoutUrl =
+    process.env.ONE_LOGIN_ENABLED === 'true'
+      ? process.env.V2_LOGOUT_URL
+      : process.env.LOGOUT_URL;
+
+  res.redirect(302, logoutUrl);
 };
 
 export default logout;
