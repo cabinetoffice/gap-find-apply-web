@@ -5,7 +5,7 @@ export type Department = {
 };
 
 export type Role = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   label: string;

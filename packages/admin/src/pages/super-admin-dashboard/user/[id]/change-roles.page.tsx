@@ -88,7 +88,7 @@ const EditRoleWithId = ({
               fieldErrors={fieldErrors}
               fieldName="newUserRoles"
               options={roles.map(({ id, label, description }) => ({
-                value: id,
+                value: String(id),
                 label: (
                   <>
                     <span>{label}</span>
@@ -96,7 +96,7 @@ const EditRoleWithId = ({
                   </>
                 ),
               }))}
-              defaultCheckboxes={user.roles.map(({ id }) => id)}
+              defaultCheckboxes={user.roles.map(({ id }) => String(id))}
             />
 
             <div className="govuk-button-group">
