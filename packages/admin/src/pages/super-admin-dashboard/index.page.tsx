@@ -83,113 +83,98 @@ const SuperAdminDashboard = ({
   return (
     <>
       <Navigation roles={roles} />
+
       <div className="govuk-grid-row govuk-!-padding-top-2">
         <Meta title="Manage Users" />
-        <div className="govuk-width-container">
-          <main className="govuk-main-wrapper">
-            <div className="govuk-grid-row">
-              <FlexibleQuestionPageLayout
-                csrfToken={csrfToken}
-                fieldErrors={fieldErrors}
-                fullPageWidth
-                formAction={formAction}
-              >
-                <div
-                  className={`${styles.sidebar} govuk-grid-column-one-third`}
-                >
-                  <h2 className="govuk-heading-l">Manage users</h2>
-                  {/* counter */}
-                  <p className="govuk-body">
-                    We’ve found <strong>{userCount}</strong> users
-                  </p>
 
-                  {/* filter button */}
-                  <div className={styles['top-controls']}>
-                    <Button
-                      addNameAttribute
-                      text="Clear all filters"
-                      isSecondary
-                    />
-                  </div>
+        <FlexibleQuestionPageLayout
+          csrfToken={csrfToken}
+          fieldErrors={fieldErrors}
+          fullPageWidth
+          formAction={formAction}
+        >
+          <input type="submit" style={{ display: 'none' }} />
 
-                  <Checkboxes
-                    useOptionValueAsInputValue
-                    questionTitle="Role"
-                    fieldName="roles"
-                    defaultCheckboxes={queryParams.roles.map(String)}
-                    titleSize="m"
-                    options={roles.map((role) => ({
-                      label: role.label,
-                      value: String(role.id),
-                    }))}
-                    fieldErrors={fieldErrors}
-                    small
-                  />
+          <div className={`${styles.sidebar} govuk-grid-column-one-third`}>
+            <h2 className="govuk-heading-l">Manage users</h2>
+            {/* counter */}
+            <p className="govuk-body">
+              We’ve found <strong>{userCount}</strong> users
+            </p>
 
-                  <Checkboxes
-                    useOptionValueAsInputValue
-                    defaultCheckboxes={queryParams?.departments || []}
-                    questionTitle="Department"
-                    fieldName="departments"
-                    titleSize="m"
-                    options={departments.map((department) => ({
-                      label: department.name,
-                      value: String(department.id),
-                    }))}
-                    fieldErrors={fieldErrors}
-                    small
-                  />
-
-                  <div className={styles['bottom-controls']}>
-                    <Button text="Apply filters" />
-                    <Button
-                      addNameAttribute
-                      text="Clear all filters"
-                      isSecondary
-                    />
-                  </div>
-                </div>
-
-                <div className="govuk-grid-column-two-thirds">
-                  <div
-                    className={`govuk-input__wrapper ${styles['search-container']}`}
-                  >
-                    <input
-                      className="govuk-input"
-                      name="searchTerm"
-                      type="text"
-                      defaultValue={queryParams.searchTerm || ''}
-                      placeholder="enter a keyword or search term here"
-                    />
-                    <Button
-                      type={ButtonTypePropertyEnum.Submit}
-                      text="Search"
-                    />
-                  </div>
-
-                  <Table
-                    tHeadColumns={[
-                      { name: 'Email address', wrapText: true },
-                      { name: 'Department' },
-                      { name: 'Roles' },
-                      { name: 'Actions' },
-                    ]}
-                    rows={convertUserDataToTableRows(users)}
-                  />
-
-                  <Pagination
-                    additionalQueryData={{
-                      ...previousValues,
-                      clearAllFilters: '',
-                    }}
-                    itemsPerPage={10}
-                    totalItems={userCount}
-                  />
-                </div>
-              </FlexibleQuestionPageLayout>
+            {/* filter button */}
+            <div className={styles['top-controls']}>
+              <Button addNameAttribute text="Clear all filters" isSecondary />
             </div>
-          </main>
-        </div>
+
+            <Checkboxes
+              useOptionValueAsInputValue
+              questionTitle="Role"
+              fieldName="roles"
+              defaultCheckboxes={queryParams.roles.map(String)}
+              titleSize="m"
+              options={roles.map((role) => ({
+                label: role.label,
+                value: String(role.id),
+              }))}
+              fieldErrors={fieldErrors}
+              small
+            />
+
+            <Checkboxes
+              useOptionValueAsInputValue
+              defaultCheckboxes={queryParams?.departments || []}
+              questionTitle="Department"
+              fieldName="departments"
+              titleSize="m"
+              options={departments.map((department) => ({
+                label: department.name,
+                value: String(department.id),
+              }))}
+              fieldErrors={fieldErrors}
+              small
+            />
+
+            <div className={styles['bottom-controls']}>
+              <Button text="Apply filters" />
+              <Button addNameAttribute text="Clear all filters" isSecondary />
+            </div>
+          </div>
+
+          <div className="govuk-grid-column-two-thirds">
+            <div
+              className={`govuk-input__wrapper ${styles['search-container']}`}
+            >
+              <input
+                className="govuk-input"
+                name="searchTerm"
+                type="text"
+                defaultValue={queryParams.searchTerm || ''}
+                placeholder="enter a keyword or search term here"
+              />
+              <Button type={ButtonTypePropertyEnum.Submit} text="Search" />
+            </div>
+
+            <Table
+              tHeadColumns={[
+                { name: 'Email address', wrapText: true },
+                { name: 'Department' },
+                { name: 'Roles' },
+                { name: 'Actions' },
+              ]}
+              rows={convertUserDataToTableRows(users)}
+            />
+
+            <Pagination
+              additionalQueryData={{
+                ...previousValues,
+                clearAllFilters: '',
+              }}
+              itemsPerPage={10}
+              totalItems={userCount}
+            />
+          </div>
+        </FlexibleQuestionPageLayout>
       </div>
     </>
   );
