@@ -22,7 +22,14 @@ export const getServerSideProps = async ({
 
 const UserPage = (user: User) => {
   const { publicRuntimeConfig } = getConfig();
-  const creationDate = moment(user.created).format('DD MMMM YYYY');
+  function createdDate() {
+    if (user.created) {
+      return moment(user.created).format('DD MMMM YYYY');
+    } else {
+      return '-';
+    }
+  }
+
   return (
     <>
       <Meta title="Manage User" />
@@ -45,7 +52,7 @@ const UserPage = (user: User) => {
                   rows={[
                     {
                       key: 'Account created',
-                      value: creationDate,
+                      value: createdDate(),
                       action: <></>,
                     },
                     { key: 'Email', value: user.emailAddress, action: <></> },
