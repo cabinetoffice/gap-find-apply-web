@@ -15,9 +15,9 @@ const getDestination = (
   migrationStatus?: string
 ) => {
   if (user.isSuperAdmin)
-    return `${process.env.ADMIN_FRONTEND_URL}/?redirect=/super-admin-dashboard`;
+    return `${process.env.ADMIN_FRONTEND_URL}/?redirectUrl=/super-admin-dashboard`;
   if (user.isAdmin)
-    return `${process.env.ADMIN_FRONTEND_URL}/?redirect=/dashboard`;
+    return `${process.env.ADMIN_FRONTEND_URL}/?redirectUrl=/dashboard`;
   if (user.isApplicant) return routes.api.isNewApplicant.index(migrationStatus); //checks if the user exist, if not creates it
   // TODO go to an error page?
   return `${publicRuntimeConfig.FIND_A_GRANT_URL}`;
