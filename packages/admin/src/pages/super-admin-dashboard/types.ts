@@ -18,6 +18,7 @@ export type User = {
   roles: Role[];
   role?: Role;
   department?: Department;
+  created: string;
 };
 
 export type SuperAdminDashboardFilterData = {
