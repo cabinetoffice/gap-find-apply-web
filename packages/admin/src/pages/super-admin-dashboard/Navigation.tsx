@@ -27,7 +27,7 @@ const Navigation = () => {
     {
       pageId: 'technicalDash',
       href: publicRuntimeConfig.TECHNICAL_SUPPORT_DOMAIN + '/api-keys',
-      title: 'Manage API Keys',
+      title: 'Manage API keys',
     },
   ];
 

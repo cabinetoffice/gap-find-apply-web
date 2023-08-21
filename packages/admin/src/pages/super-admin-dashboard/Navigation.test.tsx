@@ -10,6 +10,6 @@ describe('Navigation', () => {
     expect(getByRole('link', { name: 'Manage users' })).toBeVisible();
     expect(getByRole('link', { name: 'Admin dashboard' })).toBeVisible();
     expect(getByRole('link', { name: 'Applicant dashboard' })).toBeVisible();
-    expect(getByRole('link', { name: 'Manage API Keys' })).toBeVisible();
+    expect(getByRole('link', { name: 'Manage API keys' })).toBeVisible();
   });
 });
