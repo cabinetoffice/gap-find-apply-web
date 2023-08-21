@@ -1,12 +1,7 @@
 import getConfig from 'next/config';
 import Link from 'next/link';
-import { Role } from './types';
 
-interface NavigationProps {
-  roles: Role[];
-}
-
-const Navigation = ({ roles }: NavigationProps) => {
+const Navigation = () => {
   const { publicRuntimeConfig } = getConfig();
   const navItems = [
     {
@@ -29,17 +24,12 @@ const Navigation = ({ roles }: NavigationProps) => {
       href: publicRuntimeConfig.APPLICANT_DOMAIN + '/dashboard',
       title: 'Applicant dashboard',
     },
+    {
+      pageId: 'technicalDash',
+      href: publicRuntimeConfig.TECHNICAL_SUPPORT_DOMAIN + '/api-keys',
+      title: 'Manage API Keys',
+    },
   ];
-
-  const technicalSupportNavItem = {
-    pageId: 'technicalDash',
-    href: publicRuntimeConfig.TECHNICAL_SUPPORT_DOMAIN + '/api-keys',
-    title: 'Manage API Keys',
-  };
-
-  if (roles.find((role) => role.name === 'TECHNICAL_SUPPORT')) {
-    navItems.push(technicalSupportNavItem);
-  }
 
   // Build the links in the main navigation && set active states
   return (
