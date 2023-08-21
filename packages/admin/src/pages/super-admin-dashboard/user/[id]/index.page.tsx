@@ -8,6 +8,7 @@ import { getUserTokenFromCookies } from '../../../../utils/session';
 import { getUserById } from '../../../../services/SuperAdminService';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import { fetchDataOrGetRedirect } from '../../../../utils/fetchDataOrGetRedirect';
+import moment from 'moment';
 
 export const getServerSideProps = async ({
   params,
@@ -21,6 +22,14 @@ export const getServerSideProps = async ({
 
 const UserPage = (user: User) => {
   const { publicRuntimeConfig } = getConfig();
+  function createdDate() {
+    if (user.created) {
+      return moment(user.created).format('DD MMMM YYYY');
+    } else {
+      return '-';
+    }
+  }
+
   return (
     <>
       <Meta title="Manage User" />
@@ -41,7 +50,11 @@ const UserPage = (user: User) => {
                 <h2 className="govuk-heading-m">User Information</h2>
                 <SummaryList
                   rows={[
-                    { key: 'Account created', value: '', action: <></> },
+                    {
+                      key: 'Account created',
+                      value: createdDate(),
+                      action: <></>,
+                    },
                     { key: 'Email', value: user.emailAddress, action: <></> },
                     {
                       key: 'Department',

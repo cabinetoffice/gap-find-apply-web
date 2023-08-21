@@ -38,6 +38,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     organisationName: '',
     emailAddress: '',
     roles: [],
+    created: '',
   };
 
   const errorPageParams = generateErrorPageParams(
