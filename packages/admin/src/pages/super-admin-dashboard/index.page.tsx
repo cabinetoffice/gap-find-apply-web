@@ -13,11 +13,11 @@ import { Pagination } from '../../components/pagination/Pagination';
 import { getSuperAdminDashboard } from '../../services/SuperAdminService';
 import InferProps from '../../types/InferProps';
 import PaginationType from '../../types/Pagination';
+import { getRedirect } from '../../utils/fetchDataOrGetRedirect';
 import { getUserTokenFromCookies } from '../../utils/session';
 import Navigation from './Navigation';
 import styles from './superadmin-dashboard.module.scss';
 import { SuperAdminDashboardFilterData, User } from './types';
-import { getRedirect } from '../../utils/fetchDataOrGetRedirect';
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -84,7 +84,7 @@ const SuperAdminDashboard = ({
 
   return (
     <>
-      <Navigation roles={roles} />
+      <Navigation />
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <Meta title="Manage Users" />
