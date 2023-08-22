@@ -7,8 +7,9 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const grantApplicantService = GrantApplicantService.getInstance();
-  const doesApplicantExist: boolean =
-    await grantApplicantService.doesApplicantExist(getJwtFromCookies(req));
+  const doesApplicantExist = await grantApplicantService.doesApplicantExist(
+    getJwtFromCookies(req)
+  );
   if (!doesApplicantExist) {
     await grantApplicantService.createAnApplicant(getJwtFromCookies(req));
   }
