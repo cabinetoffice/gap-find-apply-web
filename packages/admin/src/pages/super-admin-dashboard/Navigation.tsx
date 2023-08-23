@@ -21,7 +21,7 @@ const Navigation = () => {
     },
     {
       pageId: 'applicantDash',
-      href: publicRuntimeConfig.APPLICANT_DOMAIN + '/dashboard',
+      href: publicRuntimeConfig.APPLICANT_DOMAIN + '/api/isNewApplicant',
       title: 'Applicant dashboard',
     },
     {
