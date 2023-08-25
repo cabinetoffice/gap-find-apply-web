@@ -21,10 +21,8 @@ const UnpublishSummary = ({
 
       <p className="govuk-body break-all-words">
         To add this application form to your grant advert, you will need to copy
-        and paste the URL below and send it in an email to{' '}
-        <a className="govuk-link" href="mailto:findagrant@cabinetoffice.gov.uk">
-          findagrant@cabinetoffice.gov.uk
-        </a>
+        the URL below and paste it into Section 4 (How to Apply) of your Grant
+        Advert.
       </p>
 
       <p className="govuk-body break-all-words">

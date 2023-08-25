@@ -19,12 +19,6 @@ describe('UnpublishSummary component', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'findagrant@cabinetoffice.gov.uk',
-      })
-    ).toHaveAttribute('href', 'mailto:findagrant@cabinetoffice.gov.uk');
-
-    expect(
-      screen.getByRole('link', {
         name: 'http://localhost:3000/applications/testApplicationId',
       })
     ).toHaveAttribute(
