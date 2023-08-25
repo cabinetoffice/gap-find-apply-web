@@ -51,8 +51,16 @@ export const checkUserIsSuperAdmin = async (userToken: string) => {
 };
 
 export const getUserById = async (id: string, userToken: string) => {
-  const response = await axios.get<UserDetails>(
+  const response = await axios.get<User>(
     `${serverRuntimeConfig.userServiceHost}/user/${id}`,
+    axiosUserServiceConfig(userToken)
+  );
+  return response.data;
+};
+
+export const getUserFromJwt = async (userToken: string) => {
+  const response = await axios.get<User>(
+    `${serverRuntimeConfig.userServiceHost}/user/`,
     axiosUserServiceConfig(userToken)
   );
   return response.data;
