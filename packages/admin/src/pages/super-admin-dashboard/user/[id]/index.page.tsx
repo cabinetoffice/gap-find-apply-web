@@ -21,13 +21,11 @@ export const getServerSideProps = async ({
 
   const getPageData = async () => {
     const jwtUser = await getUserFromJwt(userToken);
-    console.log({ jwtUser });
+    const isViewingOwnAccount = jwtUser?.gapUserId === params?.id;
 
-    const superAdminIsViewingTheirOwnAccount =
-      jwtUser?.gapUserId === params?.id;
     return {
-      superAdminIsViewingTheirOwnAccount,
-      ...(superAdminIsViewingTheirOwnAccount
+      isViewingOwnAccount,
+      ...(isViewingOwnAccount
         ? jwtUser
         : await getUserById(params?.id as string, userToken)),
     };
@@ -36,9 +34,7 @@ export const getServerSideProps = async ({
   return await fetchDataOrGetRedirect(getPageData);
 };
 
-const UserPage = (
-  pageData: User & { superAdminIsViewingTheirOwnAccount: boolean }
-) => {
+const UserPage = (pageData: User & { isViewingOwnAccount: boolean }) => {
   const { publicRuntimeConfig } = getConfig();
   function createdDate() {
     if (pageData.created) {
@@ -104,25 +100,25 @@ const UserPage = (
                     },
                   ]}
                 />
-                <div className="govuk-button-group">
-                  <CustomLink
-                    href={`/super-admin-dashboard/user/${pageData.gapUserId}/delete-user`}
-                    customStyle="govuk-button govuk-button--warning"
-                    data-module="govuk-button"
-                  >
-                    Delete user
-                  </CustomLink>
-                  {!pageData.role?.label && (
+                {!pageData.isViewingOwnAccount && (
+                  <div className="govuk-button-group">
                     <CustomLink
-                      href={`/api/unblockUser?id=${pageData.gapUserId}`}
-                      customStyle="govuk-button govuk-button--secondary"
+                      href={`/super-admin-dashboard/user/${pageData.gapUserId}/delete-user`}
+                      customStyle="govuk-button govuk-button--warning"
+                      data-module="govuk-button"
                     >
-                      Unblock user
+                      Delete user
                     </CustomLink>
-                  )}
+                    {!pageData.role?.label && (
+                      <CustomLink
+                        href={`/api/unblockUser?id=${pageData.gapUserId}`}
+                        customStyle="govuk-button govuk-button--secondary"
+                      >
+                        Unblock user
+                      </CustomLink>
+                    )}
 
-                  {pageData.role?.label &&
-                    !pageData.superAdminIsViewingTheirOwnAccount && (
+                    {pageData.role?.label && (
                       <CustomLink
                         href={`/super-admin-dashboard/user/${pageData.gapUserId}/block-user`}
                         customStyle="govuk-button govuk-button--secondary"
@@ -130,7 +126,8 @@ const UserPage = (
                         Block user
                       </CustomLink>
                     )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </main>

@@ -7,6 +7,7 @@ import { getUserTokenFromCookies } from '../../../../utils/session';
 import {
   updateUserRoles,
   getUserById,
+  getUserFromJwt,
 } from '../../../../services/SuperAdminService';
 import Link from 'next/link';
 
@@ -17,13 +18,20 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     await updateUserRoles(userId, [], jwt);
   }
 
-  async function fetchPageData(jwt: string) {
-    const user = await getUserById(userId, jwt);
+  const fetchPageData = async (jwt: string) => {
+    const jwtUser = await getUserFromJwt(jwt);
+    const isViewingOwnAccount = jwtUser?.gapUserId === userId;
+
     return {
-      user,
       userId,
+      isViewingOwnAccount,
+      user: {
+        ...(isViewingOwnAccount
+          ? jwtUser
+          : await getUserById(userId as string, jwt)),
+      },
     };
-  }
+  };
 
   return QuestionPageGetServerSideProps({
     context,
@@ -40,27 +48,30 @@ const BlockUserPage = ({
   pageData,
   csrfToken,
   fieldErrors,
-}: InferProps<typeof getServerSideProps>) => {
-  return (
-    <>
-      <Meta title="Block a User" />
-      <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
-        <a className="govuk-back-link">Back</a>
-      </Link>
-      <div className="govuk-!-padding-top-7">
-        <FlexibleQuestionPageLayout
-          fieldErrors={fieldErrors}
-          csrfToken={csrfToken}
-          formAction={formAction}
-        >
-          <span className="govuk-caption-l">{pageData.user.emailAddress}</span>
-          <h1 className="govuk-heading-l">Block a user</h1>
-          <p className="govuk-body">
-            Blocking this user will remove their access to Find a grant, but
-            they will stay listed in the database and can be unblocked later.
-            Their roles will be reset and will need to be restored manually.
-          </p>
-          <div className="govuk-button-group">
+}: InferProps<typeof getServerSideProps>) => (
+  <>
+    <Meta title="Block a User" />
+    <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
+      <a className="govuk-back-link">Back</a>
+    </Link>
+    <div className="govuk-!-padding-top-7">
+      <FlexibleQuestionPageLayout
+        fieldErrors={fieldErrors}
+        csrfToken={csrfToken}
+        formAction={formAction}
+      >
+        <span className="govuk-caption-l">{pageData.user?.emailAddress}</span>
+        <h1 className="govuk-heading-l">Block a user</h1>
+        <p className="govuk-body">
+          Blocking this user will remove their access to Find a grant, but they
+          will stay listed in the database and can be unblocked later. Their
+          roles will be reset and will need to be restored manually.
+        </p>
+        {pageData.isViewingOwnAccount && (
+          <p className="govuk-body">You cannot block your account.</p>
+        )}
+        <div className="govuk-button-group">
+          {!pageData.isViewingOwnAccount && (
             <button
               className="govuk-button govuk-button--warning"
               data-module="govuk-button"
@@ -68,14 +79,14 @@ const BlockUserPage = ({
             >
               Block user
             </button>
-            <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
-              <a className="govuk-link">Cancel</a>
-            </Link>
-          </div>
-        </FlexibleQuestionPageLayout>
-      </div>
-    </>
-  );
-};
+          )}
+          <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
+            <a className="govuk-link">Cancel</a>
+          </Link>
+        </div>
+      </FlexibleQuestionPageLayout>
+    </div>
+  </>
+);
 
 export default BlockUserPage;

@@ -7,6 +7,7 @@ import { getUserTokenFromCookies } from '../../../../utils/session';
 import {
   deleteUserInformation,
   getUserById,
+  getUserFromJwt,
 } from '../../../../services/SuperAdminService';
 import Link from 'next/link';
 
@@ -17,13 +18,20 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     await deleteUserInformation(userId, jwt);
   }
 
-  async function fetchPageData(jwt: string) {
-    const user = await getUserById(userId, jwt);
+  const fetchPageData = async (jwt: string) => {
+    const jwtUser = await getUserFromJwt(jwt);
+    const isViewingOwnAccount = jwtUser?.gapUserId === userId;
+
     return {
-      user,
       userId,
+      isViewingOwnAccount,
+      user: {
+        ...(isViewingOwnAccount
+          ? jwtUser
+          : await getUserById(userId as string, jwt)),
+      },
     };
-  }
+  };
 
   return QuestionPageGetServerSideProps({
     context,
@@ -40,40 +48,43 @@ const DeleteUserPage = ({
   pageData,
   csrfToken,
   fieldErrors,
-}: InferProps<typeof getServerSideProps>) => {
-  return (
-    <>
-      <Meta title="Delete User" />
-      <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
-        <a className="govuk-back-link">Back</a>
-      </Link>
-      <div className="govuk-!-padding-top-7">
-        <FlexibleQuestionPageLayout
-          fieldErrors={fieldErrors}
-          csrfToken={csrfToken}
-          formAction={formAction}
-        >
-          <span className="govuk-caption-l">{pageData.user.emailAddress}</span>
-          <h1 className="govuk-heading-l">Delete a user</h1>
-          <p className="govuk-body">
-            If you delete this user&apos;s account, all of their data will be
-            lost. You cannot undo this action.
-          </p>
-          <div className="govuk-button-group">
+}: InferProps<typeof getServerSideProps>) => (
+  <>
+    <Meta title="Delete User" />
+    <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
+      <a className="govuk-back-link">Back</a>
+    </Link>
+    <div className="govuk-!-padding-top-7">
+      <FlexibleQuestionPageLayout
+        fieldErrors={fieldErrors}
+        csrfToken={csrfToken}
+        formAction={formAction}
+      >
+        <span className="govuk-caption-l">{pageData.user.emailAddress}</span>
+        <h1 className="govuk-heading-l">Delete a user</h1>
+        <p className="govuk-body">
+          If you delete this user&apos;s account, all of their data will be
+          lost. You cannot undo this action.
+        </p>
+        {pageData.isViewingOwnAccount && (
+          <p className="govuk-body">You cannot delete your account</p>
+        )}
+        <div className="govuk-button-group">
+          {!pageData.isViewingOwnAccount && (
             <button
               className="govuk-button govuk-button--warning"
               data-module="govuk-button"
             >
               Delete user
             </button>
-            <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
-              <a className="govuk-link">Cancel</a>
-            </Link>
-          </div>
-        </FlexibleQuestionPageLayout>
-      </div>
-    </>
-  );
-};
+          )}
+          <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
+            <a className="govuk-link">Cancel</a>
+          </Link>
+        </div>
+      </FlexibleQuestionPageLayout>
+    </div>
+  </>
+);
 
 export default DeleteUserPage;
