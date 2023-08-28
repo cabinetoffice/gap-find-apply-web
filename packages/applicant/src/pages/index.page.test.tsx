@@ -11,12 +11,16 @@ describe('getServerSideProps', () => {
     expect(response).toEqual({
       props: {
         loginUrl: getLoginUrl(),
+        oneLoginEnabled: process.env.ONE_LOGIN_ENABLED,
+        registerUrl: `${process.env.USER_SERVICE_URL}/register`,
       },
     });
   });
 });
 
 const loginUrl = getLoginUrl();
+const oneLoginEnabled = 'true';
+const registerUrl = 'a-register-url';
 
 describe('Apply for a grant home page', () => {
   beforeEach(async () => {
@@ -26,7 +30,11 @@ describe('Apply for a grant home page', () => {
           pathname: `/`,
         })}
       >
-        <Home loginUrl={loginUrl} />
+        <Home
+          loginUrl={loginUrl}
+          oneLoginEnabled={oneLoginEnabled}
+          registerUrl={registerUrl}
+        />
       </RouterContext.Provider>
     );
   });
