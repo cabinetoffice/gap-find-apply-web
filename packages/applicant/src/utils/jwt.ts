@@ -41,7 +41,7 @@ export const axiosUserServiceConfig = (userToken: string) => {
   return {
     withCredentials: true,
     headers: {
-      Cookie: `${process.env.JWT_COOKIE_NAME}=${userToken};`,
+      Cookie: `${process.env.USER_TOKEN_NAME}=${userToken};`,
     },
   };
 };

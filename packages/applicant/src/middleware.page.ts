@@ -40,7 +40,6 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
         path: '/',
         secure: true,
         httpOnly: true,
-        sameSite: 'strict',
         maxAge: 900,
       }
     );
