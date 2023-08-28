@@ -48,9 +48,9 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
                   one.
                 </p>
                 <p className="govuk-body">
-                  If you have used Find a grant before, you can see all of your
-                  information if you register for One Login using the same email
-                  address.
+                  If you have used Find a grant before, you will still be able
+                  to see all of your information when you register or sign in
+                  using One Login using the same email address.
                 </p>
                 <Link href={loginUrl}>
                   <a
