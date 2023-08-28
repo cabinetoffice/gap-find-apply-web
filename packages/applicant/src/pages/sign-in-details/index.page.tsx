@@ -1,6 +1,7 @@
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
 import { GetServerSideProps } from 'next';
+import { routes } from '../../utils/routes';
 
 export const getServerSideProps: GetServerSideProps = async () => {
   return {
@@ -19,7 +20,7 @@ const SignInDetails = ({ oneLoginUrl }: SignInDetailsProps) => {
     <>
       <Meta title="Your sign in details - Apply for a grant" />
 
-      <Layout>
+      <Layout backBtnUrl={routes.dashboard}>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1
