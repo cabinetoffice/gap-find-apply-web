@@ -55,7 +55,7 @@ describe('Apply for a grant home page', () => {
     ).toBeDefined();
     expect(
       screen.getByText(
-        /If you have used Find a grant before, you will still be able to see all of your information when you register or sign in using One Login using the same email address./i
+        /If you have used Find a grant before, you can see all of your information if you register for One Login using the same email address./i
       )
     ).toBeDefined();
   });
