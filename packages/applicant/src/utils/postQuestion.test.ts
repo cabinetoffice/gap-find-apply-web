@@ -464,7 +464,7 @@ describe('fieldsStartingWithQuestionIdInBody', () => {
       questionIdSomething: 'commission',
       'save-and-continue': '',
     };
-    const questionId: string = 'questionId';
+    const questionId = 'questionId';
     const result = fieldsStartingWithQuestionIdInBody(body, questionId);
     const expectedResult = [['questionIdSomething', 'commission']];
     expect(result).toStrictEqual(expectedResult);
@@ -475,7 +475,7 @@ describe('fieldsStartingWithQuestionIdInBody', () => {
       questionIdSomething: 'commission',
       'save-and-continue': '',
     };
-    const questionId: string = 'wrongRegex';
+    const questionId = 'wrongRegex';
     const result = fieldsStartingWithQuestionIdInBody(body, questionId);
     const expectedResult = [];
     expect(result).toStrictEqual(expectedResult);

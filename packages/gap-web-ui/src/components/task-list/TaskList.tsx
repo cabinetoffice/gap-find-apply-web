@@ -6,7 +6,6 @@ export interface TaskListProps {
 }
 
 export interface ListItem {
-  // eslint-disable-next-line no-undef
   value: string | JSX.Element;
   subList?: SubListItem[];
   customSubList?: JSX.Element;

@@ -108,7 +108,6 @@ export const buildPaginationListItems = (
             onClick={skipToMainContent}
           >
             {PAGINATION_PREVIOUS_ELEMENT}
-            <span className="govuk-visually-hidden"> set of pages</span>
           </a>
         </Link>
       </li>
@@ -137,7 +136,6 @@ export const buildPaginationListItems = (
             onClick={skipToMainContent}
           >
             {PAGINATION_NEXT_ELEMENT}
-            <span className="govuk-visually-hidden"> set of pages</span>
           </a>
         </Link>
       </li>

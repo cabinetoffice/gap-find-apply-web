@@ -2,9 +2,7 @@ import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import { IncomingMessage } from 'http';
 import { NextApiRequest } from 'next';
-// eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextApiRequestCookies } from 'next/dist/server/api-utils';
-// eslint-disable-next-line @next/next/no-server-import-in-page
 
 export const getJwtFromCookies = (
   req: (IncomingMessage & { cookies: NextApiRequestCookies }) | NextApiRequest
@@ -35,6 +33,15 @@ export const axiosConfig = (token: string) => {
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
+    },
+  };
+};
+
+export const axiosUserServiceConfig = (userToken: string) => {
+  return {
+    withCredentials: true,
+    headers: {
+      Cookie: `${process.env.USER_TOKEN_NAME}=${userToken};`,
     },
   };
 };

@@ -15,9 +15,9 @@ import { getJwtFromCookies } from '../../../../../utils/jwt';
 import OrganisationPage, {
   getServerSideProps,
   OrganisationPageProps,
-  OrganisationRadioOptions
+  OrganisationRadioOptions,
 } from './organisation.page';
-import { getContext } from '../../../../../utils/UnitTestHelpers';
+import { getContext } from '../../../../../testUtils/unitTestHelpers';
 import { EqualityAndDiversityParams } from '../types';
 
 jest.mock('next/dist/server/api-utils/node');
@@ -64,24 +64,25 @@ describe('Organisation page', () => {
       } as Redirect,
     };
 
-    const getServerContext = (overrides: GetServerSidePropsContext | {} = {}) =>
+    const getServerContext = (
+      overrides: GetServerSidePropsContext | object = {}
+    ) =>
       getContext(
         () => ({
           params: {
             submissionId: 'testSubmissionId',
             grantBeneficiaryId: 'testGrantBeneficiaryId',
-          } ,
+          },
           query: {
             returnToSummaryPage: null,
-          } ,
+          },
           req: {
             method: 'GET',
           },
           resolvedUrl: '/testResolvedURL',
         }),
         overrides
-        ) as GetServerSidePropsContext<EqualityAndDiversityParams, PreviewData>;
-
+      ) as GetServerSidePropsContext<EqualityAndDiversityParams, PreviewData>;
 
     describe('when handling a GET request', () => {
       beforeEach(() => {
@@ -113,7 +114,8 @@ describe('Organisation page', () => {
       });
 
       test.each([
-        [1,
+        [
+          1,
           {
             organisationGroup1: true,
             organisationGroup2: false,
@@ -121,7 +123,8 @@ describe('Organisation page', () => {
           },
           OrganisationRadioOptions.VCSE,
         ],
-        [2, 
+        [
+          2,
           {
             organisationGroup1: false,
             organisationGroup2: true,
@@ -129,7 +132,8 @@ describe('Organisation page', () => {
           },
           OrganisationRadioOptions.SME,
         ],
-        [3, 
+        [
+          3,
           {
             organisationGroup1: false,
             organisationGroup2: false,
@@ -199,7 +203,7 @@ describe('Organisation page', () => {
             hasProvidedAdditionalAnswers: true,
             organisationGroup1: true,
             organisationGroup2: false,
-            organisationGroup3: false
+            organisationGroup3: false,
           },
           'testJwt',
           'testGrantBeneficiaryId'

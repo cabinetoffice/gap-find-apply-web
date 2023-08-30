@@ -1,6 +1,9 @@
 import { screen } from '@testing-library/react';
 import InferProps from '../../types/InferProps';
-import { getPageProps, renderWithRouter } from '../../utils/UnitTestHelpers';
+import {
+  getPageProps,
+  renderWithRouter,
+} from '../../testUtils/unitTestHelpers';
 import CompaniesHouseNumberPage, {
   getServerSideProps,
 } from './companies-house-number.page';
@@ -36,7 +39,9 @@ describe('Organisation companies house number page', () => {
       'If your organisation is registered with Companies House, enter your company number below.'
     );
     expect(
-      screen.getByRole('link', { name: 'Search for your company number (opens in new tab)' })
+      screen.getByRole('link', {
+        name: 'Search for your company number (opens in new tab)',
+      })
     ).toHaveAttribute(
       'href',
       'https://find-and-update.company-information.service.gov.uk/?_ga=2.111669508.18905375.1663663866-660770501.1644938489'

@@ -9,24 +9,32 @@ export enum ButtonTypePropertyEnum {
 export interface ButtonProps {
   text: string;
   isSecondary?: boolean;
+  isWarning?: boolean;
   type?: ButtonTypePropertyEnum;
   addNameAttribute?: boolean;
   disabled?: boolean;
   ariaLabel?: string;
+  tabIndex?: number;
+  hidden?: boolean;
 }
 
 const Button: FC<ButtonProps> = ({
   text,
   isSecondary = false,
+  isWarning = false,
   type,
   addNameAttribute = false,
   disabled = false,
-  ariaLabel
+  ariaLabel,
+  ...additionalProps
 }) => {
   return (
     <button
+      {...additionalProps}
       type={type}
-      className={`govuk-button ${isSecondary ? 'govuk-button--secondary' : ''}`}
+      className={`govuk-button ${
+        isSecondary ? 'govuk-button--secondary' : ''
+      } ${isWarning ? 'govuk-button--warning' : ''}`}
       data-module="govuk-button"
       name={
         addNameAttribute ? text.toLowerCase().replace(/ /g, '-') : undefined

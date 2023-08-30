@@ -1,5 +1,7 @@
 import { ValidationError } from '../../types';
 import CallServiceMethod from './CallServiceMethod';
+import { Redirect } from 'next';
+
 import {
   QuestionPageGetServerSidePropsType,
   PostPageResultProps,
@@ -14,32 +16,37 @@ import {
  *
  * @template T - The type of the pages body when posting all the fields in its form
  * @template K - The response of the 'fetchPageData' function
- * @template V - The response of the 'processPagePostResponse' function
+ * @template V - The response of the 'handleRequest' function
  *
  * @param context - GetServerSidePropsContext
  * @param fetchPageData - A function that takes in a jwt and returns data asynchronously
- * @param processPagePostResponse - A function that takes in a jwt and the body the page returns, then updates/posts this data
+ * @param handleRequest - A function that takes in a jwt and the body the page returns, then updates/posts this data
  * @param jwt - A JWT needed for calls to the backend
  * @param onSuccessRedirectHref - Where to redirect to after successfully updating data
  * @param onErrorMessage - An error message to display if getting/updating data fails
  *
  * @returns A redirect to the relevant location, or a set of props needed to load a page
  */
+
 export default async function QuestionPageGetServerSideProps<
   T extends PageBodyResponse,
   K extends FetchPageData,
   V
 >(props: QuestionPageGetServerSidePropsType<T, K, V>) {
-  const { context, fetchPageData, jwt } = props;
+  const { context, fetchPageData, jwt, fetchPageDataErrorHandler } = props;
   const { req, resolvedUrl } = context;
 
-  const pageData = await fetchAndHandlePageData(
+  const pageData = await fetchAndHandlePageData({
     fetchPageData,
     jwt,
-    resolvedUrl
-  );
+    resolvedUrl,
+    fetchPageDataErrorHandler,
+  });
 
-  if ('redirect' in pageData) {
+  const redirectUsingPageData =
+    typeof pageData === 'object' && 'redirect' in pageData;
+
+  if (redirectUsingPageData) {
     return pageData as NextRedirect;
   }
 
@@ -56,7 +63,7 @@ export default async function QuestionPageGetServerSideProps<
 
   return {
     props: {
-      csrfToken: ((req as any).csrfToken?.() || '') as string,
+      csrfToken: (req as any).csrfToken?.() || ('' as string),
       formAction: resolvedUrl,
       fieldErrors,
       pageData,
@@ -65,14 +72,23 @@ export default async function QuestionPageGetServerSideProps<
   };
 }
 
-async function fetchAndHandlePageData<K extends FetchPageData>(
-  fetchPageData: (jwt: string) => Promise<K>,
-  jwt: string,
-  resolvedUrl: string
-) {
+async function fetchAndHandlePageData<K extends FetchPageData>({
+  fetchPageData,
+  jwt,
+  resolvedUrl,
+  fetchPageDataErrorHandler,
+}: {
+  fetchPageData: (jwt: string) => Promise<K>;
+  jwt: string;
+  resolvedUrl: string;
+  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect;
+}) {
   try {
     return await fetchPageData(jwt);
   } catch (err: any) {
+    if (fetchPageDataErrorHandler) {
+      return fetchPageDataErrorHandler(err);
+    }
     if (err?.response?.data?.code) {
       return generateRedirect(
         `/error-page/code/${err.response.data.code}?href=${resolvedUrl}`
@@ -88,7 +104,8 @@ async function fetchAndHandlePageData<K extends FetchPageData>(
 async function postPagesResult<T extends PageBodyResponse, V>({
   req,
   res,
-  processPagePostResponse,
+  handleRequest,
+  fetchPageDataErrorHandler,
   jwt,
   onSuccessRedirectHref,
   onErrorMessage,
@@ -97,9 +114,10 @@ async function postPagesResult<T extends PageBodyResponse, V>({
   return CallServiceMethod<T, V>(
     req,
     res,
-    (body) => processPagePostResponse(body, jwt),
+    (body) => handleRequest(body, jwt),
     onSuccessRedirectHref,
-    generateServiceErrorProps(onErrorMessage, resolvedUrl)
+    generateServiceErrorProps(onErrorMessage, resolvedUrl),
+    fetchPageDataErrorHandler
   );
 }
 
@@ -130,7 +148,7 @@ export function generateServiceErrorRedirect(
 ): NextRedirect {
   return {
     redirect: {
-      destination: `/service-error?serviceErrorProps=${JSON.stringify(
+      destination: `/service-error?excludeSubPath=true&serviceErrorProps=${JSON.stringify(
         generateServiceErrorProps(errorMessage, resolvedUrl)
       )}`,
       statusCode: 302,
@@ -142,7 +160,7 @@ function generateServiceErrorProps(errorMessage: string, resolvedUrl: string) {
   return {
     errorInformation: errorMessage,
     linkAttributes: {
-      href: resolvedUrl,
+      href: encodeURIComponent(resolvedUrl),
       linkText: 'Please return',
       linkInformation: ' and try again.',
     },

@@ -1,6 +1,9 @@
 import { screen } from '@testing-library/react';
 import InferProps from '../../types/InferProps';
-import { getPageProps, renderWithRouter } from '../../utils/UnitTestHelpers';
+import {
+  getPageProps,
+  renderWithRouter,
+} from '../../testUtils/unitTestHelpers';
 import AddressPage, { getServerSideProps } from './address.page';
 
 describe('Organisation address page', () => {

@@ -363,7 +363,6 @@
           ))
       ) {
         global.DOMTokenList = (function () {
-          // eslint-disable-line no-unused-vars
           var dpSupport = true;
           var defineGetter = function (object, name, fn, configurable) {
             if (Object.defineProperty)

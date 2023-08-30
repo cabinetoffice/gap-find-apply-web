@@ -1,27 +1,27 @@
 import React from 'react';
-import axios from 'axios';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { authenticateUser } from '../services/AuthService';
+import { fetchDataOrGetRedirect } from '../utils/fetchDataOrGetRedirect';
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+export const getServerSideProps = async ({
+  req,
+  res,
+  query,
+}: GetServerSidePropsContext) => {
   const cookieValue = req.cookies[process.env.JWT_COOKIE_NAME!];
+  const redirectUrl = query?.redirectUrl as string | undefined;
 
-  let response;
-  try {
-    response = await authenticateUser(cookieValue);
-  } catch (error) {
-    console.error('Failed to verify token', error);
-    return {
-      redirect: {
-        destination: process.env.LOGIN_URL!,
-        permanent: false,
-      },
-    };
+  const response = await fetchDataOrGetRedirect(async () =>
+    authenticateUser(cookieValue)
+  );
+
+  if ('redirect' in response) {
+    return response;
   }
 
-  // Checks if already have athorisation headers set
-  if (response.headers['set-cookie']) {
-    const sessionCookie = response.headers['set-cookie'][0].split(';')[0];
+  // Checks if already have authorisation headers set
+  if (response.props.headers['set-cookie']) {
+    const sessionCookie = response.props.headers['set-cookie'][0].split(';')[0];
 
     res.setHeader(
       'Set-Cookie',
@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
   return {
     redirect: {
-      destination: '/dashboard',
+      destination: redirectUrl || '/dashboard',
       permanent: false,
     },
   };

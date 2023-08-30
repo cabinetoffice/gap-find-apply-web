@@ -20,8 +20,14 @@ const downloadFile = async (url: string, name: string) => {
   // a.remove();
 };
 
-const getObjEntriesByKeySubstr = (substr: string, obj: Object) => {
+const getObjEntriesByKeySubstr = (substr: string, obj: object) => {
   return Object.entries(obj).filter(([key]) => key.includes(substr));
 };
 
-export { isJSEnabled, downloadFile, getObjEntriesByKeySubstr };
+const getLoginUrl = () => {
+  return process.env.ONE_LOGIN_ENABLED === 'true'
+    ? process.env.V2_LOGIN_URL
+    : process.env.LOGIN_URL;
+};
+
+export { isJSEnabled, downloadFile, getObjEntriesByKeySubstr, getLoginUrl };

@@ -5,7 +5,7 @@ import {
   getContext,
   mockServiceMethod,
   Optional,
-} from '../../utils/UnitTestHelpers';
+} from '../../testUtils/unitTestHelpers';
 import getServerSideProps from './getServerSideProps';
 import { parseBody } from 'next/dist/server/api-utils/node';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
@@ -26,7 +26,7 @@ const spiedGrantApplicantOrganisationProfileService = jest.spyOn(
 describe('getServerSideProps', () => {
   const getDefaultGrantApplicant = (): GrantApplicant => ({
     id: 'testApplicantId',
-    fullName: 'Jack Dale',
+    email: 'test@email.com',
     organisation: {
       id: 'testOrganisationId',
       legalName: 'Chris charity',

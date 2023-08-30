@@ -1,6 +1,6 @@
 import axios from 'axios';
 import ExportStatusEnum from '../enums/ExportStatus';
-import {axiosSessionConfig} from '../utils/session';
+import { axiosSessionConfig } from '../utils/session';
 
 const BASE_SUBMISSIONS_URL = process.env.BACKEND_HOST + '/submissions';
 
@@ -10,13 +10,13 @@ const spotlightExport = async (
 ) => {
   const response = await axios.get(
     `${BASE_SUBMISSIONS_URL}/spotlight-export/${applicationId}`,
-      {
-        withCredentials: true,
-        responseType: 'arraybuffer',
-        headers: {
-          Cookie: `SESSION=${sessionCookie};`
-        }
-      }
+    {
+      withCredentials: true,
+      responseType: 'arraybuffer',
+      headers: {
+        Cookie: `SESSION=${sessionCookie};`,
+      },
+    }
   );
   return response;
 };

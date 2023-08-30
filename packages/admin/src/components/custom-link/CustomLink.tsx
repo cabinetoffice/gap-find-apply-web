@@ -32,6 +32,8 @@ const CustomLink = ({
 
   const props = isButton || isSecondaryButton ? buttonProps : linkProps;
 
+  if (typeof href === 'object') href = new URL(href).toString();
+
   return (
     <a
       href={

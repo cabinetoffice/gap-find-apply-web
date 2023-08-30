@@ -1,4 +1,5 @@
 import { Redirect } from 'next';
+import ServiceError from '../types/ServiceError';
 
 const generateErrorPageParams = (errorInformation: string, href: string) => ({
   errorInformation,
@@ -12,7 +13,7 @@ const generateErrorPageParams = (errorInformation: string, href: string) => ({
 const generateErrorPageRedirect = (
   errorInformation: string,
   href: string,
-  excludeSubPath: boolean = false
+  excludeSubPath = false
 ) => ({
   redirect: {
     statusCode: 302,
@@ -24,11 +25,15 @@ const generateErrorPageRedirect = (
 
 const generateErrorPageRedirectV2 = (
   errorCode: string,
-  href: string
+  errorPageParams: ServiceError | string
 ) => ({
   redirect: {
     statusCode: 302,
-    destination: `/error-page/code/${errorCode}?href=${href}`,
+    destination: `/error-page/code/${errorCode}?href=${
+      typeof errorPageParams === 'string'
+        ? errorPageParams
+        : errorPageParams.linkAttributes?.href
+    }`,
   } as Redirect,
 });
 

@@ -13,7 +13,6 @@ export interface TableProps {
 }
 
 export interface TheadColumn {
-  // eslint-disable-next-line no-undef
   name: string | JSX.Element;
   isVisuallyHidden?: boolean;
   isNumber?: boolean;
@@ -25,6 +24,7 @@ export interface TheadColumn {
     | 'one-third'
     | 'one-quarter';
   theadColumnAttributes?: Record<string, unknown>;
+  wrapText?: boolean;
 }
 
 export interface Row {
@@ -32,7 +32,6 @@ export interface Row {
 }
 
 interface Cell {
-  // eslint-disable-next-line no-undef
   content: string | number | JSX.Element;
   cellAttributes?: Record<string, unknown>;
 }
@@ -98,6 +97,7 @@ const Table = ({
           >
             {row.cells.map((cell, cellIndex) => {
               const lastCell = row.cells.length - 1;
+              const column = tHeadColumns[cellIndex];
               return (
                 <td
                   key={cellIndex}
@@ -114,14 +114,17 @@ const Table = ({
                       ? ' govuk-!-text-align-right'
                       : ''
                   }${
-                    tHeadColumns[cellIndex].width &&
-                    tHeadColumns[cellIndex].isVisuallyHidden
+                    column.width && column.isVisuallyHidden
                       ? ' govuk-!-width-' + tHeadColumns[cellIndex].width
+                      : ''
+                  }${
+                    column.wrapText
+                      ? ` ${styles['gap-table-cell-wrap-text']}`
                       : ''
                   }`}
                   {...cell.cellAttributes}
                   data-cy={`cy_table_row-for-${
-                    caption ? caption : tHeadColumns[cellIndex].name
+                    caption ? caption : column.name
                   }-row-${rowIndex}-cell-${cellIndex}`}
                 >
                   {cell.content}

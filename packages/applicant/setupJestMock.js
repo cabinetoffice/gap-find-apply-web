@@ -5,11 +5,11 @@ import 'urlpattern-polyfill';
 jest.mock('csurf', () => {
   return {
     __esModule: true,
-    default: () => (req,res,callback) => {
+    default: () => (req, res, callback) => {
       callback({});
-    }
-  }
-})
+    },
+  };
+});
 
 jest.mock('next/config', () => () => {
   return {
@@ -19,6 +19,7 @@ jest.mock('next/config', () => () => {
     },
     publicRuntimeConfig: {
       subPath: '',
+      FIND_A_GRANT_URL: 'https://www.find-government-grants.service.gov.uk',
     },
   };
 });

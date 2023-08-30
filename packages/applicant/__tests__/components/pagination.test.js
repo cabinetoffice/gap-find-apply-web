@@ -111,7 +111,7 @@ describe('Testing Pagination component behaviour', () => {
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
         Array [
-          "Previous set of pages",
+          "Previous",
           "1",
           "...",
           "4",
@@ -119,7 +119,7 @@ describe('Testing Pagination component behaviour', () => {
           "6",
           "...",
           "10",
-          "Next set of pages",
+          "Next",
         ]
       `);
   });
@@ -149,7 +149,7 @@ describe('Testing Pagination component behaviour', () => {
           "3",
           "4",
           "5",
-          "Next set of pages",
+          "Next",
         ]
       `);
   });
@@ -175,7 +175,7 @@ describe('Testing Pagination component behaviour', () => {
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
         Array [
-          "Previous set of pages",
+          "Previous",
           "1",
           "...",
           "4",
@@ -183,7 +183,7 @@ describe('Testing Pagination component behaviour', () => {
           "6",
           "...",
           "10",
-          "Next set of pages",
+          "Next",
         ]
       `);
   });
@@ -223,7 +223,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
           "3",
           "...",
           "7",
-          "Next set of pages",
+          "Next",
         ]
       `);
   });
@@ -243,7 +243,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
         Array [
-          "Previous set of pages",
+          "Previous",
           "1",
           "2",
           "3",
@@ -251,7 +251,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
           "5",
           "6",
           "7",
-          "Next set of pages",
+          "Next",
         ]
       `);
   });
@@ -271,7 +271,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
         Array [
-          "Previous set of pages",
+          "Previous",
           "1",
           "...",
           "5",

@@ -157,9 +157,7 @@ describe('Question Options', () => {
 
     it('Should render a meta title without "Error: " when fieldErrors is empty', () => {
       render(component);
-      expect(document.title).toBe(
-        'Add a question - Manage a grant'
-      );
+      expect(document.title).toBe('Add a question - Manage a grant');
     });
 
     it('Should render a meta title with "Error: " when fieldErrors is NOT empty', () => {
@@ -168,9 +166,7 @@ describe('Question Options', () => {
           {...getProps({ fieldErrors: parsedValidationErrors })}
         />
       );
-      expect(document.title).toBe(
-        'Error: Add a question - Manage a grant'
-      );
+      expect(document.title).toBe('Error: Add a question - Manage a grant');
     });
   });
 

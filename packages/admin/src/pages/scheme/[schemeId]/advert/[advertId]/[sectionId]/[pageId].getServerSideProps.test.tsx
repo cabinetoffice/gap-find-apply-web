@@ -13,7 +13,7 @@ import {
   mockServiceMethod,
   Optional,
   toHaveBeenCalledWith,
-} from '../../../../../../utils/UnitTestHelpers';
+} from '../../../../../../testUtils/unitTestHelpers';
 import { getServerSideProps } from './[pageId].getServerSideProps';
 
 jest.mock('next/dist/server/api-utils/node');

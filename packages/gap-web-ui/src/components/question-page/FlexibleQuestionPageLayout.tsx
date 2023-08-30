@@ -10,6 +10,7 @@ const FlexibleQuestionPageLayout = ({
   csrfToken,
   encType = 'application/x-www-form-urlencoded',
   sideBarContent,
+  fullPageWidth,
 }: FlexibleQuestionPageProps) => {
   if (typeof window !== 'undefined') {
     const errorSummary = window.document.getElementById('error-summary');
@@ -23,7 +24,13 @@ const FlexibleQuestionPageLayout = ({
     <>
       <ErrorBanner fieldErrors={fieldErrors} />
       <div className="govuk-grid-row">
-        <div className="govuk-grid-column-two-thirds">
+        <div
+          className={
+            fullPageWidth
+              ? 'govuk-grid-column-full'
+              : 'govuk-grid-column-two-third'
+          }
+        >
           <form
             action={formAction}
             method="post"
@@ -64,6 +71,7 @@ export interface FlexibleQuestionPageProps {
   csrfToken: string;
   encType?: string; //can be optional as forms default to 'application/x-www-form-urlencoded' but needs to be set to 'multipart/form-data' for file uploads
   sideBarContent?: JSX.Element;
+  fullPageWidth?: boolean;
 }
 
 export default FlexibleQuestionPageLayout;

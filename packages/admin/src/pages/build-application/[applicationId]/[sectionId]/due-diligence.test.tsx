@@ -76,9 +76,7 @@ describe('Due diligence page', () => {
 
     it('Should render a meta title without "Error: " when fieldErrors is empty', () => {
       renderComponent();
-      expect(document.title).toBe(
-        'Due-diligence checks - Manage a grant'
-      );
+      expect(document.title).toBe('Due-diligence checks - Manage a grant');
     });
 
     it('Should render a meta title with "Error: " when fieldErrors is NOT empty', () => {

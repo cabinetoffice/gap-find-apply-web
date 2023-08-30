@@ -15,7 +15,7 @@ import {
   mockServiceMethod,
   Optional,
   toHaveBeenCalledWith,
-} from '../../../../../utils/UnitTestHelpers';
+} from '../../../../../testUtils/unitTestHelpers';
 import UnpublishConfirmationPage, {
   getServerSideProps,
 } from './unpublish-confirmation.page';

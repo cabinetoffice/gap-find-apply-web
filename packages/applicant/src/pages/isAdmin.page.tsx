@@ -1,15 +1,42 @@
 import { GetServerSideProps } from 'next';
-import { isAdmin, IsAdminResponse } from '../services/IsAdminService';
+import { isAdmin } from '../services/IsAdminService';
+import { getUserRoles, UserRolesResponse } from '../services/UserRolesService';
 import { initiateCSRFCookie } from '../utils/csrf';
 import { getJwtFromCookies } from '../utils/jwt';
 import { routes } from '../utils/routes';
+import getConfig from 'next/config';
+
+const getRoleCheckService = (publicRuntimeConfig) =>
+  publicRuntimeConfig.oneLoginEnabled ? getUserRoles : isAdmin;
+
+const getDestination = (
+  user: UserRolesResponse,
+  publicRuntimeConfig,
+  migrationStatus?: string
+) => {
+  if (user.isSuperAdmin)
+    return `${process.env.ADMIN_FRONTEND_URL}/?redirectUrl=/super-admin-dashboard`;
+  if (user.isAdmin)
+    return `${process.env.ADMIN_FRONTEND_URL}/?redirectUrl=/dashboard`;
+  if (user.isApplicant) return routes.api.isNewApplicant.index(migrationStatus); //checks if the user exist, if not creates it
+  // TODO go to an error page?
+  return `${publicRuntimeConfig.FIND_A_GRANT_URL}`;
+};
+
 //TODO add unit test, and move this to be an api
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  let result: IsAdminResponse;
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
+  const { publicRuntimeConfig } = getConfig();
+  let result: UserRolesResponse;
   try {
-    result = await isAdmin(getJwtFromCookies(req));
+    const userServiceJwt = getJwtFromCookies(req);
+    const roleCheckService = getRoleCheckService(publicRuntimeConfig);
+    result = await roleCheckService(userServiceJwt);
   } catch (error) {
-    console.error('Error determining if user isAdmin');
+    console.error('Error determining user roles');
     console.error(error);
     return {
       redirect: {
@@ -19,26 +46,15 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     };
   }
   await initiateCSRFCookie(req, res);
-  if (result.isAdmin) {
-    return {
-      redirect: {
-        destination: process.env.ADMIN_FRONTEND_URL,
-        permanent: false,
-      },
-    };
-  }
-  if (result.isApplicant) {
-    return {
-      redirect: {
-        destination: routes.api.isNewApplicant, //checks if the user exist, if not creates it
-        permanent: false,
-      },
-    };
-  }
 
+  const destination = getDestination(
+    result,
+    publicRuntimeConfig,
+    query?.migrationStatus as string
+  );
   return {
     redirect: {
-      destination: `${process.env.USER_SERVICE_URL}/register`,
+      destination,
       permanent: false,
     },
   };

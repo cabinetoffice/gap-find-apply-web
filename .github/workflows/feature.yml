@@ -7,6 +7,8 @@ on:
       - AFG-**
       - GAP-**
       - fix/**
+      - bug/**
+      - TMI2-**
     paths-ignore:
       - "*.md"
 

@@ -4,6 +4,8 @@ import { NextRouter, useRouter } from 'next/router';
 import { FC } from 'react';
 import { isIE } from 'react-device-detect';
 import styles from './Header.module.scss';
+import { getLoginUrl } from '../../utils/general';
+import getConfig from 'next/config';
 
 interface NavItemType {
   pageId: string;
@@ -16,13 +18,14 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = ({ isUserLoggedIn = true }) => {
+  const { publicRuntimeConfig } = getConfig();
   const router: NextRouter = useRouter();
 
   const navItems: NavItemType[] = [
     {
       pageId: 'browseGrants',
-      link: 'https://www.find-government-grants.service.gov.uk/grants',
-      as: 'https://www.find-government-grants.service.gov.uk/grants',
+      link: publicRuntimeConfig.FIND_A_GRANT_URL + '/grants',
+      as: publicRuntimeConfig.FIND_A_GRANT_URL + '/grants',
       title: 'Find a grant',
     },
     {
@@ -72,7 +75,7 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn = true }) => {
     );
   });
 
-  const feedbackContent: string = `https://docs.google.com/forms/d/e/1FAIpQLSeZnNVCqmtnzfZQJSBW_k9CklS2Y_ym2GRt-z0-1wf9pDEgPw/viewform`;
+  const feedbackContent = `https://docs.google.com/forms/d/e/1FAIpQLSeZnNVCqmtnzfZQJSBW_k9CklS2Y_ym2GRt-z0-1wf9pDEgPw/viewform`;
 
   return (
     <>
@@ -161,7 +164,7 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn = true }) => {
             </Link>
           ) : (
             <a
-              href={process.env.LOGIN_URL}
+              href={getLoginUrl()}
               className="govuk-link govuk-link--no-visited-state"
             >
               Sign in

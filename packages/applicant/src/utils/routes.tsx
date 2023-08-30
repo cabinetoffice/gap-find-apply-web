@@ -1,8 +1,13 @@
+import getConfig from 'next/config';
+
+const { publicRuntimeConfig } = getConfig();
+
 export const routes = {
   homePage: '/',
   dashboard: '/dashboard',
   grants: '/grants',
   personalDetails: '/personal-details',
+  signInDetails: '/sign-in-details',
   organisation: {
     index: '/organisation',
     address: '/organisation/address',
@@ -27,7 +32,7 @@ export const routes = {
     submissionConfirmation: (grantSubmissionId: string) =>
       `/submissions/${grantSubmissionId}/submission-confirmation`,
   },
-  findAGrant: 'https://www.find-government-grants.service.gov.uk/',
+  findAGrant: publicRuntimeConfig.FIND_A_GRANT_URL,
   api: {
     submissions: {
       section: (grantSubmissionId: string, sectionId: string) =>
@@ -39,6 +44,11 @@ export const routes = {
       ) =>
         `/api/submissions/${grantSubmissionId}/sections/${sectionId}/questions/${questionId}`,
     },
-    isNewApplicant: '/api/isNewApplicant',
+    isNewApplicant: {
+      index: (migrationStatus?) =>
+        migrationStatus
+          ? `/api/isNewApplicant?migrationStatus=${migrationStatus}`
+          : `/api/isNewApplicant`,
+    },
   },
 };

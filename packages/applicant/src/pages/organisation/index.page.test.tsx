@@ -28,7 +28,7 @@ const context = {
 const APPLICANT_ID = '75ab5fbd-0682-4d3d-a467-01c7a447f07c';
 const MOCK_GRANT_APPLICANT: GrantApplicant = {
   id: APPLICANT_ID,
-  fullName: 'Jack Dale',
+  email: 'test@email.com',
   organisation: {
     id: 'liksjnke',
     legalName: 'Chris charity',
@@ -148,7 +148,7 @@ describe('getServerSideProps', () => {
       .spyOn(GrantApplicantService.prototype, 'getGrantApplicant')
       .mockResolvedValue({
         id: APPLICANT_ID,
-        fullName: 'Jack Dale',
+        email: 'test@email.com',
         organisation: {
           id: 'liksjnke',
           legalName: '',

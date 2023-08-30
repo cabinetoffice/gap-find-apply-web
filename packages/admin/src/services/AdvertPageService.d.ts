@@ -60,7 +60,7 @@ export type PatchAdvertSectionPageResponseBody = {
 export type getAdvertStatusBySchemeIdResponse = {
   status: number;
   data?: {
-    grantAdvertId: String;
+    grantAdvertId: string;
     grantAdvertStatus: grantAdvertStatus;
     contentfulSlug: string | null;
   };
@@ -69,7 +69,7 @@ export type getAdvertStatusBySchemeIdResponse = {
 export type getAdvertPublishInformationBySchemeIdResponse = {
   status: number;
   data?: {
-    grantAdvertId: String;
+    grantAdvertId: string;
     grantAdvertStatus: grantAdvertStatus;
     contentfulSlug: string | null;
     openingDate: string | null;
@@ -86,7 +86,6 @@ type grantAdvertStatus =
   | AdvertStatusEnum.SCHEDULED
   | AdvertStatusEnum.UNPUBLISHED
   | AdvertStatusEnum.UNSCHEDULED;
-
 
 export type PreviewPageTab = {
   name: string;

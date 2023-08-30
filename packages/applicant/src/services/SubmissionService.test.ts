@@ -297,7 +297,7 @@ describe('Submission service ', () => {
     test('should successfully submit the application', async () => {
       const spy = jest.spyOn(axios, 'post');
       const mock = new MockAdapter(axios);
-      const expectedResult: string = 'Submitted';
+      const expectedResult = 'Submitted';
       const postBody = {
         submissionId,
       };
@@ -626,7 +626,7 @@ describe('postHasSectionBeenCompleted', () => {
     const mockBody: SectionReviewBody = {
       isComplete: true,
     };
-    const mockPostResponse: string =
+    const mockPostResponse =
       'Section with ID 5678 status has been updated to COMPLETED.';
     mock
       .onPost(postHasSectionBeenCompletedUrl, mockBody)
@@ -659,7 +659,7 @@ describe('postHasSectionBeenCompleted', () => {
     const mockBody: SectionReviewBody = {
       isComplete: true,
     };
-    const mockPostResponse: string =
+    const mockPostResponse =
       'Section with ID 5678 status has been updated to COMPLETED.';
     mock
       .onPost(postHasSectionBeenCompletedUrl, mockBody)

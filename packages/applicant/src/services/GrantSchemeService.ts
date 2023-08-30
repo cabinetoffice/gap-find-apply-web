@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { GrantScheme } from '../models/GrantScheme';
 import { axiosConfig } from '../utils/jwt';
-import getConfig from 'next/config'
+import getConfig from 'next/config';
 
 export class GrantSchemeService {
   private static instance: GrantSchemeService;
@@ -20,7 +20,7 @@ export class GrantSchemeService {
   }
 
   public async getGrantSchemeById(
-    grantSchemeId: String,
+    grantSchemeId: string,
     jwt: string
   ): Promise<GrantScheme> {
     const { data } = await axios.get<GrantScheme>(

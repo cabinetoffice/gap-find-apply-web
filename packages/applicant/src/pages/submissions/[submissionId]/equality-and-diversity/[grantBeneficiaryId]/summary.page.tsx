@@ -14,10 +14,17 @@ import { mapValuesToString } from './summaryPageHelper';
 import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 import { EqualityAndDiversityParams } from '../types';
 
-export const getServerSideProps: GetServerSideProps<{}, EqualityAndDiversityParams> = async ({
-  params,
-  req,
-}) => {
+type SummaryPageProps = {
+  grantBeneficiary: GrantBeneficiary;
+  baseChangeLink: string;
+  confirmationLink: string;
+  backButtonLink: string;
+};
+
+export const getServerSideProps: GetServerSideProps<
+  SummaryPageProps,
+  EqualityAndDiversityParams
+> = async ({ params, req }) => {
   const { submissionId, grantBeneficiaryId } = params;
 
   let response: GrantBeneficiary;
@@ -63,12 +70,15 @@ const SummaryPage = ({
 
             <SummaryList
               rows={[
-                { 
+                {
                   key: 'Which of these options best describes your organisation?',
                   value: mapValuesToString([
-                    grantBeneficiary.organisationGroup1 && OrganisationRadioOptions.VCSE, 
-                    grantBeneficiary.organisationGroup2 && OrganisationRadioOptions.SME, 
-                    grantBeneficiary.organisationGroup3 && OrganisationRadioOptions.NEITHER
+                    grantBeneficiary.organisationGroup1 &&
+                      OrganisationRadioOptions.VCSE,
+                    grantBeneficiary.organisationGroup2 &&
+                      OrganisationRadioOptions.SME,
+                    grantBeneficiary.organisationGroup3 &&
+                      OrganisationRadioOptions.NEITHER,
                   ]),
                   action: (
                     <a
@@ -129,12 +139,18 @@ const SummaryPage = ({
                   value: grantBeneficiary.ethnicGroupAll
                     ? EthnicityRadioOptions.ALL
                     : mapValuesToString([
-                        grantBeneficiary.ethnicGroup1 && EthnicityRadioOptions.WHITE,
-                        grantBeneficiary.ethnicGroup2 && EthnicityRadioOptions.MIXED,
-                        grantBeneficiary.ethnicGroup3 && EthnicityRadioOptions.ASIAN,
-                        grantBeneficiary.ethnicGroup4 && EthnicityRadioOptions.BLACK,
-                        grantBeneficiary.ethnicGroup5 && EthnicityRadioOptions.ARAB,
-                        grantBeneficiary.ethnicGroupOther && grantBeneficiary.ethnicOtherDetails,
+                        grantBeneficiary.ethnicGroup1 &&
+                          EthnicityRadioOptions.WHITE,
+                        grantBeneficiary.ethnicGroup2 &&
+                          EthnicityRadioOptions.MIXED,
+                        grantBeneficiary.ethnicGroup3 &&
+                          EthnicityRadioOptions.ASIAN,
+                        grantBeneficiary.ethnicGroup4 &&
+                          EthnicityRadioOptions.BLACK,
+                        grantBeneficiary.ethnicGroup5 &&
+                          EthnicityRadioOptions.ARAB,
+                        grantBeneficiary.ethnicGroupOther &&
+                          grantBeneficiary.ethnicOtherDetails,
                       ]),
                   action: (
                     <a
@@ -205,10 +221,4 @@ const SummaryPage = ({
   );
 };
 
-type SummaryPageProps = {
-  grantBeneficiary: GrantBeneficiary;
-  baseChangeLink: string;
-  confirmationLink: string;
-  backButtonLink: string;
-};
 export default SummaryPage;

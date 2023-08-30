@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import 'isomorphic-fetch';
 
 jest.mock('next/head', () => {
   return {
@@ -15,6 +16,7 @@ jest.mock('next/config', () => {
         SUB_PATH: '/apply',
         APPLICANT_DOMAIN: 'http://localhost:3000',
         FIND_A_GRANT_URL: 'https://www.find-government-grants.service.gov.uk',
+        TECHNICAL_SUPPORT_DOMAIN: 'mocked-technical-support-domain',
       },
       serverRuntimeConfig: {
         backendHost: 'http://localhost:8080',

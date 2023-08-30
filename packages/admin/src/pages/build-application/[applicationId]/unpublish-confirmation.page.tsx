@@ -6,6 +6,7 @@ import { updateApplicationFormStatus } from '../../../services/ApplicationServic
 import callServiceMethod from '../../../utils/callServiceMethod';
 import { getSessionIdFromCookies } from '../../../utils/session';
 import { errorPageParams } from './publish-service-errors';
+import getConfig from 'next/config';
 
 type RequestBody = {
   confirmation: string;
@@ -81,6 +82,7 @@ const UnpublishConfirmationPage = ({
   fieldErrors,
   csrfToken,
 }: PublishConfirmationPageProps) => {
+  const { publicRuntimeConfig } = getConfig();
   return (
     <>
       <Meta
@@ -103,7 +105,7 @@ const UnpublishConfirmationPage = ({
               <p className="govuk-body">
                 Once unpublished, your application form will no longer appear on{' '}
                 <a
-                  href="https://www.find-government-grants.service.gov.uk/"
+                  href={publicRuntimeConfig.FIND_A_GRANT_URL}
                   className="govuk-link"
                 >
                   Find a grant

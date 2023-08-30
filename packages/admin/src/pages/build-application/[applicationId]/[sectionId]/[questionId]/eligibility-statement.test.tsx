@@ -23,7 +23,7 @@ const getMockSchemeParams = (overrides: any = {}) =>
       questionCaption: '',
       defaultValue: '',
       csrfToken: '',
-      applicationStatus: 'DRAFT' as 'DRAFT',
+      applicationStatus: 'DRAFT' as const,
       pageCaption: '',
     },
     overrides

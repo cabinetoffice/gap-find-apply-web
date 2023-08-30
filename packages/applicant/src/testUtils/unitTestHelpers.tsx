@@ -1,5 +1,9 @@
 import { merge } from 'lodash';
 import { GetServerSidePropsContext } from 'next';
+import { render } from '@testing-library/react';
+import { RouterContext } from 'next/dist/shared/lib/router-context';
+import React from 'react';
+import { createMockRouter } from './createMockRouter';
 
 /**
  *
@@ -7,7 +11,7 @@ import { GetServerSidePropsContext } from 'next';
  * @param overrides - Custom overrides for specific attributes of the object
  * @returns - A single combined object with all the default values AND the overrides
  */
-const getPageProps = <T extends Object>(
+const getPageProps = <T extends object>(
   defaultProps: () => T,
   overrides: Optional<T> = {}
 ) => {
@@ -45,10 +49,12 @@ const getContext = (
  * @param defaultValue - A function that returns a default object that this function returns
  * @param overrides - (OPTIONAL) An additional object to override specific attributes of the defaultValue
  */
-const mockServiceMethod = <T extends (...args: any) => Promise<Object>>(
-  mockedServiceMethod: jest.MockedFn<T>,
-  defaultValue: () => InferServiceMethodResponse<T>,
-  overrides: Optional<InferServiceMethodResponse<T>> = {}
+const mockServiceMethod = <T extends object>(
+  mockedServiceMethod:
+    | jest.SpyInstance<Promise<T>, object[]>
+    | jest.MockedFn<(...args: any) => Promise<T>>,
+  defaultValue: () => T,
+  overrides: Optional<T> = {}
 ) => {
   mockedServiceMethod.mockResolvedValue(
     merge(defaultValue() as any, overrides)
@@ -71,22 +77,30 @@ const toHaveBeenCalledWith = <T extends (...args: any) => any>(
   expect(mockedServiceMethod).toHaveBeenCalledWith(...args);
 };
 
+const renderWithRouter = (ui: React.ReactNode) => {
+  render(
+    <RouterContext.Provider value={createMockRouter({})}>
+      {ui}
+    </RouterContext.Provider>
+  );
+};
+
 /**
  * A type safe function for asserting one object equals another
  *
  * @param actual - The actual received object
  * @param expected - The object we expect actual to equal
  */
-const expectObjectEquals = <T extends Object>(actual: T, expected: T) => {
+const expectObjectEquals = <T extends object>(actual: T, expected: T) => {
   expect(actual).toStrictEqual(expect.objectContaining<T>(expected));
 };
 
 /**
  * Extracts the result of an asynchronous function. Useful to mock service methods with type safety.
  */
-type InferServiceMethodResponse<T extends (...args: any[]) => Object> = Extract<
+type InferServiceMethodResponse<T extends (...args: any[]) => object> = Extract<
   Awaited<ReturnType<T>>,
-  {}
+  object
 >;
 
 /**
@@ -102,5 +116,6 @@ export {
   mockServiceMethod,
   toHaveBeenCalledWith,
   expectObjectEquals,
+  renderWithRouter,
 };
 export type { InferServiceMethodResponse, Optional };

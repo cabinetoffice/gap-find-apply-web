@@ -61,7 +61,9 @@ describe('ApplicationService', () => {
       applicationName: 'mock application form name',
     };
 
-    const mockApplicationFormStatsArray: FindApplicationFormStatsResponse[] = [{applicationId: '1', inProgressCount: 0, submissionCount: 0}];
+    const mockApplicationFormStatsArray: FindApplicationFormStatsResponse[] = [
+      { applicationId: '1', inProgressCount: 0, submissionCount: 0 },
+    ];
 
     it('Should send valid get request to backend', async () => {
       mockedAxios.get.mockResolvedValue(mockApplicationFormStatsArray);
@@ -78,7 +80,9 @@ describe('ApplicationService', () => {
     });
 
     it('Should return stats if no axios errors are thrown', async () => {
-      mockedAxios.get.mockResolvedValue({ data: mockApplicationFormStatsArray });
+      mockedAxios.get.mockResolvedValue({
+        data: mockApplicationFormStatsArray,
+      });
 
       const response = await findMatchingApplicationForms(
         mockQueryObject,

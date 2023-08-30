@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import InferProps from '../../../../../../types/InferProps';
-import { getPageProps } from '../../../../../../utils/UnitTestHelpers';
+import { getPageProps } from '../../../../../../testUtils/unitTestHelpers';
 import Page, { getServerSideProps, removePTag } from './[pageId].page';
 
 const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({

@@ -3,6 +3,8 @@ type UserDetails = {
   lastName: string;
   organisationName: string;
   emailAddress: string;
+  roles: Role[];
+  created: string;
 };
 
 export default UserDetails;

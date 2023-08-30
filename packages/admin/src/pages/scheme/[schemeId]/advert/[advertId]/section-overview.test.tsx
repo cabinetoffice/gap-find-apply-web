@@ -17,7 +17,7 @@ import {
   expectObjectEquals,
   InferServiceMethodResponse,
   mockServiceMethod,
-} from '../../../../../utils/UnitTestHelpers';
+} from '../../../../../testUtils/unitTestHelpers';
 import SectionOverview, { getServerSideProps } from './section-overview.page';
 
 jest.mock('../../../../../services/AdvertPageService');
@@ -262,7 +262,7 @@ describe('section-overview', () => {
       screen.getByText(/this advert will be published on \./i);
       expect(findAGrantLink).toHaveAttribute(
         'href',
-        'https://www.find-government-grants.service.gov.uk/'
+        'https://www.find-government-grants.service.gov.uk'
       );
     });
 

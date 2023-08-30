@@ -4,9 +4,7 @@ import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
 import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
-import {
-  postGrantBeneficiaryResponse,
-} from '../../../../../services/GrantBeneficiaryService';
+import { postGrantBeneficiaryResponse } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import {
@@ -32,7 +30,7 @@ type Req = NextIncomingMessage & {
   cookies: Partial<{
     [key: string]: string;
   }>;
-}
+};
 
 export type OrganisationPageProps = {
   formAction: string;
@@ -43,18 +41,17 @@ export type OrganisationPageProps = {
 
 const getDefaultChecked = (grantBeneficiary: GrantBeneficiary) => {
   if (grantBeneficiary.organisationGroup1) return OrganisationRadioOptions.VCSE;
-  else if (grantBeneficiary.organisationGroup2) return OrganisationRadioOptions.SME;
-  else if (grantBeneficiary.organisationGroup3) return OrganisationRadioOptions.NEITHER;
+  else if (grantBeneficiary.organisationGroup2)
+    return OrganisationRadioOptions.SME;
+  else if (grantBeneficiary.organisationGroup3)
+    return OrganisationRadioOptions.NEITHER;
   return null;
 };
 
-export const getServerSideProps: GetServerSideProps<OrganisationPageProps, EqualityAndDiversityParams> = async ({
-  params,
-  resolvedUrl,
-  req,
-  res,
-  query,
-}) => {
+export const getServerSideProps: GetServerSideProps<
+  OrganisationPageProps,
+  EqualityAndDiversityParams
+> = async ({ params, resolvedUrl, req, res, query }) => {
   const { submissionId, grantBeneficiaryId } = params;
   const { returnToSummaryPage } = query;
 
@@ -78,7 +75,8 @@ export const getServerSideProps: GetServerSideProps<OrganisationPageProps, Equal
               body.organisation === OrganisationRadioOptions.VCSE,
             organisationGroup2:
               body.organisation === OrganisationRadioOptions.SME,
-            organisationGroup3: body.organisation === OrganisationRadioOptions.NEITHER
+            organisationGroup3:
+              body.organisation === OrganisationRadioOptions.NEITHER,
           },
           getJwtFromCookies(req),
           grantBeneficiaryId
@@ -131,10 +129,12 @@ const OrganisationPage = ({
             questionTitle="Which of these options best describes your organisation?"
             fieldName="organisation"
             fieldErrors={[]}
-            radioOptions={Object.values(OrganisationRadioOptions).map((option) => ({
-              label: option,
-              value: option
-            }))}
+            radioOptions={Object.values(OrganisationRadioOptions).map(
+              (option) => ({
+                label: option,
+                value: option,
+              })
+            )}
             defaultChecked={defaultChecked}
             divideLastRadioOption={true}
           />
