@@ -40,7 +40,9 @@ export const getServerSideProps: GetServerSideProps = async ({
     console.error(error);
     return {
       redirect: {
-        destination: `${process.env.USER_SERVICE_URL}/register`,
+        destination: publicRuntimeConfig.oneLoginEnabled
+          ? process.env.HOST
+          : `${process.env.USER_SERVICE_URL}/register`,
         permanent: false,
       },
     };
