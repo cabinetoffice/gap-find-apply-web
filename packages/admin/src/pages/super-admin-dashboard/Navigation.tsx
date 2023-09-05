@@ -21,12 +21,12 @@ const Navigation = () => {
     },
     {
       pageId: 'applicantDash',
-      href: publicRuntimeConfig.APPLICANT_DOMAIN + '/dashboard',
+      href: publicRuntimeConfig.APPLICANT_DOMAIN + '/api/isNewApplicant',
       title: 'Applicant dashboard',
     },
     {
       pageId: 'technicalDash',
-      href: publicRuntimeConfig.TECHNICAL_SUPPORT_DOMAIN + '/api-keys',
+      href: publicRuntimeConfig.TECHNICAL_SUPPORT_DOMAIN + '/api-keys/manage',
       title: 'Manage API keys',
     },
   ];
