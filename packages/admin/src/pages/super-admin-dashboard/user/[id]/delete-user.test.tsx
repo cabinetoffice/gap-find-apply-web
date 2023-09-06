@@ -13,11 +13,17 @@ jest.mock('next/dist/server/api-utils/node', () => ({
 
 jest.mock('../../../../services/SuperAdminService', () => ({
   getUserById: jest.fn(() => Promise.resolve({ statusCode: 200 })),
+  getUserFromJwt: () =>
+    Promise.resolve({ ...mockPageData.user, gapUserId: '2' }),
   deleteUserInformation: jest.fn(),
 }));
 
 const mockPageData = {
+  isViewingOwnAccount: false,
   user: {
+    gapUserId: '1',
+    created: 'rn',
+    sub: 'za',
     firstName: 'testFirstName',
     lastName: 'testLastName',
     organisationName: 'tco',
