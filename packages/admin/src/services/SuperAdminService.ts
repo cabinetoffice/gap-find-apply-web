@@ -60,7 +60,7 @@ export const getUserById = async (id: string, userToken: string) => {
 
 export const getUserFromJwt = async (userToken: string) => {
   const response = await axios.get<User>(
-    `${serverRuntimeConfig.userServiceHost}/user`,
+    `${serverRuntimeConfig.userServiceHost}/userFromJwt`,
     axiosUserServiceConfig(userToken)
   );
   return response.data;
