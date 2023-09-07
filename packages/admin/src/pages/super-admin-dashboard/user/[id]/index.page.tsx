@@ -56,17 +56,21 @@ const UserPage = (user: User) => {
                       action: <></>,
                     },
                     { key: 'Email', value: user.emailAddress, action: <></> },
-                    {
-                      key: 'Department',
-                      value: user.department?.name ?? '',
-                      action: (
-                        <Link
-                          href={`/super-admin-dashboard/user/${user.gapUserId}/change-department`}
-                        >
-                          <a className="govuk-link">Change</a>
-                        </Link>
-                      ),
-                    },
+                    ...(user.role?.label !== 'Applicant'
+                      ? [
+                          {
+                            key: 'Department',
+                            value: user.department?.name ?? '',
+                            action: (
+                              <Link
+                                href={`/super-admin-dashboard/user/${user.gapUserId}/change-department`}
+                              >
+                                <a className="govuk-link">Change</a>
+                              </Link>
+                            ),
+                          },
+                        ]
+                      : []),
                     {
                       key: 'Roles',
                       value: user.role?.label || 'Blocked',
