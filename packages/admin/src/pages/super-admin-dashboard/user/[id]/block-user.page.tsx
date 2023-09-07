@@ -21,11 +21,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async (jwt: string) => {
     const jwtUser = await getUserFromJwt(jwt);
     const isViewingOwnAccount = jwtUser?.gapUserId === userId;
-    const user = {
-      ...(isViewingOwnAccount
-        ? jwtUser
-        : await getUserById(userId as string, jwt)),
-    };
+    const user = isViewingOwnAccount
+      ? jwtUser
+      : await getUserById(userId as string, jwt);
 
     return {
       userId,
