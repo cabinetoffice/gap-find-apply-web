@@ -1,7 +1,6 @@
 // eslint-disable-next-line  @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
 import { getLoginUrl } from './utils/general';
-import https from 'https';
 import { isAdminSessionValid } from './services/UserService';
 
 // It will apply the middleware to all those paths

@@ -13,15 +13,14 @@ jest.mock('next/dist/server/api-utils/node', () => ({
 
 jest.mock('../../../../services/SuperAdminService', () => ({
   getUserById: jest.fn(() => Promise.resolve({ statusCode: 200 })),
-  getUserFromJwt: () =>
-    Promise.resolve({ ...mockPageData.user, gapUserId: '2' }),
+  getUserFromJwt: jest.fn(),
   updateUserRoles: jest.fn(),
 }));
 
-const mockPageData = {
-  isViewingOwnAccount: false,
+const getMockPageData = (gapUserId: string, isViewingOwnAccount: boolean) => ({
+  isViewingOwnAccount,
   user: {
-    gapUserId: '1',
+    gapUserId,
     created: 'rn',
     sub: 'za',
     firstName: 'testFirstName',
@@ -32,10 +31,11 @@ const mockPageData = {
   },
   userId: '1',
   _csrf: '',
-};
+});
 
-const renderComponent = () =>
-  renderWithRouter(
+const renderComponent = (gapUserId = '2', isViewingOwnAccount = false) => {
+  const mockPageData = getMockPageData(gapUserId, isViewingOwnAccount);
+  return renderWithRouter(
     <BlockUserPage
       previousValues={mockPageData}
       formAction="."
@@ -44,6 +44,7 @@ const renderComponent = () =>
       fieldErrors={[]}
     />
   );
+};
 
 describe('Block user information page', () => {
   it('renders email address and expected content', () => {
@@ -93,5 +94,12 @@ describe('Block user page functionality', () => {
         statusCode: 302,
       },
     });
+  });
+
+  it('should not render the block button when a super admin is viewing their own account', () => {
+    renderComponent('1', true);
+
+    expect(screen.queryByText('Block user')).not.toBeInTheDocument();
+    expect(screen.queryByText('You cannot block your account.')).toBeVisible();
   });
 });

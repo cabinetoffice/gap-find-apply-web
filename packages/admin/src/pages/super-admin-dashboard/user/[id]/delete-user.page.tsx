@@ -68,7 +68,7 @@ const DeleteUserPage = ({
           lost. You cannot undo this action.
         </p>
         {pageData.isViewingOwnAccount && (
-          <p className="govuk-body">You cannot delete your account</p>
+          <p className="govuk-body">You cannot delete your account.</p>
         )}
         <div className="govuk-button-group">
           {!pageData.isViewingOwnAccount && (

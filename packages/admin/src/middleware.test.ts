@@ -6,9 +6,10 @@ import '@testing-library/jest-dom';
 import { middleware } from './middleware.page';
 // eslint-disable-next-line  @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
+import { isAdminSessionValid } from './services/UserService';
 
 jest.mock('./services/UserService', () => ({
-  isAdminSessionValid: () => true,
+  isAdminSessionValid: jest.fn(),
 }));
 
 describe('middleware', () => {
@@ -32,7 +33,21 @@ describe('middleware', () => {
     );
   });
 
+  it('should redirect to the logout page when the admin session is invalid', async () => {
+    req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
+    (isAdminSessionValid as jest.Mock).mockImplementation(async () => false);
+
+    const result = await middleware(req);
+
+    expect(result).toBeInstanceOf(NextResponse);
+
+    expect(result.headers.get('Location')).toStrictEqual(
+      'http://localhost:8082/login'
+    );
+  });
+
   it('Should reset auth cookie correctly when the user is authorised', async () => {
+    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
     // Just set any expiry. If response expiry is different, cookie was updated
     req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
     const reqCookie = req.cookies.getWithOptions('session_id');
@@ -48,6 +63,7 @@ describe('middleware', () => {
   });
 
   it('Should redirect to the original requests URL when we are authorised', async () => {
+    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
     req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
     const result = await middleware(req);
 
@@ -63,6 +79,7 @@ describe('middleware', () => {
   );
 
   it('Should allow the user to access the advert builder pages if the feature is enabled', async () => {
+    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
     req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
     process.env.FEATURE_ADVERT_BUILDER = 'enabled';
     const result = await middleware(req);
@@ -74,6 +91,7 @@ describe('middleware', () => {
   });
 
   it('Should not allow the user to access the advert builder pages if the feature is enabled', async () => {
+    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
     req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
     process.env.FEATURE_ADVERT_BUILDER = 'disabled';
     const result = await middleware(req);
