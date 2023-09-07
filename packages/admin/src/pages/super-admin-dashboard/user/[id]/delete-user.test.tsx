@@ -106,6 +106,6 @@ describe('Block user page functionality', () => {
     renderComponent('1', true);
 
     expect(screen.queryByText('Delete user')).not.toBeInTheDocument();
-    expect(screen.queryByText('You cannot delete your account')).toBeVisible();
+    expect(screen.queryByText('You cannot delete your account.')).toBeVisible();
   });
 });
