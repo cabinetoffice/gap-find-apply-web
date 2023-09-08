@@ -74,17 +74,21 @@ const UserPage = (pageData: User & { isViewingOwnAccount: boolean }) => {
                       value: pageData.emailAddress,
                       action: <></>,
                     },
-                    {
-                      key: 'Department',
-                      value: pageData.department?.name ?? '',
-                      action: (
-                        <Link
-                          href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-department`}
-                        >
-                          <a className="govuk-link">Change</a>
-                        </Link>
-                      ),
-                    },
+                    ...(pageData.role?.label !== 'Applicant'
+                      ? [
+                          {
+                            key: 'Department',
+                            value: pageData.department?.name ?? '',
+                            action: (
+                              <Link
+                                href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-department`}
+                              >
+                                <a className="govuk-link">Change</a>
+                              </Link>
+                            ),
+                          },
+                        ]
+                      : []),
                     {
                       key: 'Roles',
                       value: pageData.role?.label || 'Blocked',

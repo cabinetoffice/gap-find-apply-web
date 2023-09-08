@@ -26,5 +26,6 @@ coverage
 .idea
 *.iml
 
-# Local environment variable overrides
-.env*.local
+### Local properties ###
+application-local.properties
+.env.local
