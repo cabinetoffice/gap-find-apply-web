@@ -35,7 +35,7 @@ export async function middleware(req: NextRequest) {
   if (auth_cookie !== undefined) {
     const isValidAdminSession = await isAdminSessionValid(auth_cookie);
     if (!isValidAdminSession) {
-      return NextResponse.redirect(getLoginUrl());
+      return NextResponse.redirect(getLoginUrl({ redirectToApplicant: true }));
     }
 
     res.cookies.set('session_id', auth_cookie, {
