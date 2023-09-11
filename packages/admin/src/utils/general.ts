@@ -31,7 +31,7 @@ type GetLoginUrlOptions = {
 const getLoginUrl = (options?: GetLoginUrlOptions) => {
   const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
   if (options?.redirectToApplicant && oneLoginEnabled) {
-    return `${process.env.USER_SERVICE_URL}/v2/login?redirectUrl=${process.env.APPLICANT_DOMAIN}`;
+    return `${process.env.USER_SERVICE_URL}/v2/login?redirectUrl=${process.env.APPLICANT_DOMAIN}/api/isNewApplicant`;
   }
   return oneLoginEnabled ? process.env.V2_LOGIN_URL : process.env.LOGIN_URL;
 };
