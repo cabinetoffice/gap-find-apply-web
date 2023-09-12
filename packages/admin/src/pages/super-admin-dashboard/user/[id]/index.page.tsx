@@ -3,9 +3,11 @@ import Link from 'next/link';
 import getConfig from 'next/config';
 import { SummaryList } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
-import { User } from '../../types';
 import { getUserTokenFromCookies } from '../../../../utils/session';
-import { getUserById, parseJwt } from '../../../../services/SuperAdminService';
+import {
+  getUserById,
+  getUserFromJwt,
+} from '../../../../services/SuperAdminService';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import { fetchDataOrGetRedirect } from '../../../../utils/fetchDataOrGetRedirect';
 import moment from 'moment';
@@ -18,7 +20,7 @@ export const getServerSideProps = async ({
   const userToken = getUserTokenFromCookies(req);
 
   const getPageData = async () => {
-    const jwtUser = await parseJwt(userToken);
+    const jwtUser = await getUserFromJwt(userToken);
     const isViewingOwnAccount = jwtUser?.gapUserId === params?.id;
     const user = isViewingOwnAccount
       ? jwtUser
