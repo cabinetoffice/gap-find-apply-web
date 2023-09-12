@@ -5,13 +5,11 @@ import { SummaryList } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import { User } from '../../types';
 import { getUserTokenFromCookies } from '../../../../utils/session';
-import {
-  getUserById,
-  getUserFromJwt,
-} from '../../../../services/SuperAdminService';
+import { getUserById, parseJwt } from '../../../../services/SuperAdminService';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import { fetchDataOrGetRedirect } from '../../../../utils/fetchDataOrGetRedirect';
 import moment from 'moment';
+import InferProps from '../../../../types/InferProps';
 
 export const getServerSideProps = async ({
   params,
@@ -20,21 +18,22 @@ export const getServerSideProps = async ({
   const userToken = getUserTokenFromCookies(req);
 
   const getPageData = async () => {
-    const jwtUser = await getUserFromJwt(userToken);
+    const jwtUser = await parseJwt(userToken);
     const isViewingOwnAccount = jwtUser?.gapUserId === params?.id;
+    const user = isViewingOwnAccount
+      ? jwtUser
+      : await getUserById(params?.id as string, userToken);
 
     return {
       isViewingOwnAccount,
-      ...(isViewingOwnAccount
-        ? jwtUser
-        : await getUserById(params?.id as string, userToken)),
+      ...user,
     };
   };
 
   return await fetchDataOrGetRedirect(getPageData);
 };
 
-const UserPage = (pageData: User & { isViewingOwnAccount: boolean }) => {
+const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
   function createdDate() {
     if (pageData.created) {
