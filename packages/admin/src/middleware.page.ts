@@ -33,9 +33,13 @@ export async function middleware(req: NextRequest) {
   }
 
   if (auth_cookie !== undefined) {
-    const isValidAdminSession = await isAdminSessionValid(auth_cookie);
-    if (!isValidAdminSession) {
-      return NextResponse.redirect(getLoginUrl({ redirectToApplicant: true }));
+    if (process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE === 'true') {
+      const isValidAdminSession = await isAdminSessionValid(auth_cookie);
+      if (!isValidAdminSession) {
+        return NextResponse.redirect(
+          getLoginUrl({ redirectToApplicant: true })
+        );
+      }
     }
 
     res.cookies.set('session_id', auth_cookie, {
