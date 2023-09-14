@@ -50,12 +50,12 @@ describe('Apply for a grant home page', () => {
     ).toBeDefined();
     expect(
       screen.getByText(
-        /You use GOV.UK One Login to sign into Find a grant. If you do not have a One Login account already, you will need to create one./i
+        /You use GOV.UK One Login to sign into Find a grant. If you do not have a GOV.UK One Login already, you will need to create one./i
       )
     ).toBeDefined();
     expect(
       screen.getByText(
-        /If you have used Find a grant before, you can see all of your information if you register for One Login using the same email address./i
+        /If you have used Find a grant before, you can see all of your information if you register for GOV.UK One Login using the same email address./i
       )
     ).toBeDefined();
   });
