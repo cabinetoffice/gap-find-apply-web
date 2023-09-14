@@ -54,15 +54,10 @@ const PublishSuccessPage = ({
               </h1>
             </div>
 
-            <p className="govuk-body break-all-words">
-              To add this application form to your grant advert, you will need
-              to copy and paste the URL below and send it in an email to{' '}
-              <a
-                className="govuk-link"
-                href="mailto:findagrant@cabinetoffice.gov.uk"
-              >
-                findagrant@cabinetoffice.gov.uk
-              </a>
+            <p className="govuk-body">
+              To add this application form to your advert, copy the URL below
+              and paste it into the &apos;How to Apply&apos; section of your
+              grant advert.
             </p>
 
             <p className="govuk-body break-all-words">
