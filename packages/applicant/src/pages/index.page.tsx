@@ -40,7 +40,7 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
               funding organisations make a decision about who to award funding
               to.
             </p>
-            {oneLoginEnabled == 'true' ? (
+            {oneLoginEnabled === 'true' ? (
               <>
                 <p className="govuk-body">
                   You use GOV.UK One Login to sign into Find a grant. If you do

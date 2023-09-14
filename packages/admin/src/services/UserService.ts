@@ -11,4 +11,13 @@ const getLoggedInUsersDetails = async (sessionCookie: string) => {
   return response.data;
 };
 
-export { getLoggedInUsersDetails };
+const isAdminSessionValid = async (sessionCookie: string) => {
+  const response = await fetch(`${BASE_USERS_URL}/validateAdminSession`, {
+    headers: {
+      Cookie: `SESSION=${sessionCookie};`,
+    },
+  });
+  return (await response.text()) === 'true';
+};
+
+export { getLoggedInUsersDetails, isAdminSessionValid };

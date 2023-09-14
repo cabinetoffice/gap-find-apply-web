@@ -3,12 +3,15 @@ import Link from 'next/link';
 import getConfig from 'next/config';
 import { SummaryList } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
-import { User } from '../../types';
 import { getUserTokenFromCookies } from '../../../../utils/session';
-import { getUserById } from '../../../../services/SuperAdminService';
+import {
+  getUserById,
+  getUserFromJwt,
+} from '../../../../services/SuperAdminService';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import { fetchDataOrGetRedirect } from '../../../../utils/fetchDataOrGetRedirect';
 import moment from 'moment';
+import InferProps from '../../../../types/InferProps';
 
 export const getServerSideProps = async ({
   params,
@@ -16,15 +19,27 @@ export const getServerSideProps = async ({
 }: GetServerSidePropsContext) => {
   const userToken = getUserTokenFromCookies(req);
 
-  const getPageData = () => getUserById(params?.id as string, userToken);
+  const getPageData = async () => {
+    const jwtUser = await getUserFromJwt(userToken);
+    const isViewingOwnAccount = jwtUser?.gapUserId === params?.id;
+    const user = isViewingOwnAccount
+      ? jwtUser
+      : await getUserById(params?.id as string, userToken);
+
+    return {
+      isViewingOwnAccount,
+      ...user,
+    };
+  };
+
   return await fetchDataOrGetRedirect(getPageData);
 };
 
-const UserPage = (user: User) => {
+const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
   function createdDate() {
-    if (user.created) {
-      return moment(user.created).format('DD MMMM YYYY');
+    if (pageData.created) {
+      return moment(pageData.created).format('DD MMMM YYYY');
     } else {
       return '-';
     }
@@ -45,7 +60,7 @@ const UserPage = (user: User) => {
           <main className="govuk-main-wrapper govuk-main-wrapper--auto-spacing">
             <div className="govuk-grid-row">
               <div className="govuk-grid-column-two-thirds">
-                <span className="govuk-caption-l">{user.emailAddress}</span>
+                <span className="govuk-caption-l">{pageData.emailAddress}</span>
                 <h1 className="govuk-heading-l">Manage a user</h1>
                 <h2 className="govuk-heading-m">User Information</h2>
                 <SummaryList
@@ -55,15 +70,19 @@ const UserPage = (user: User) => {
                       value: createdDate(),
                       action: <></>,
                     },
-                    { key: 'Email', value: user.emailAddress, action: <></> },
-                    ...(user.role?.label !== 'Applicant'
+                    {
+                      key: 'Email',
+                      value: pageData.emailAddress,
+                      action: <></>,
+                    },
+                    ...(pageData.role?.label !== 'Applicant'
                       ? [
                           {
                             key: 'Department',
-                            value: user.department?.name ?? '',
+                            value: pageData.department?.name ?? '',
                             action: (
                               <Link
-                                href={`/super-admin-dashboard/user/${user.gapUserId}/change-department`}
+                                href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-department`}
                               >
                                 <a className="govuk-link">Change</a>
                               </Link>
@@ -73,10 +92,10 @@ const UserPage = (user: User) => {
                       : []),
                     {
                       key: 'Roles',
-                      value: user.role?.label || 'Blocked',
-                      action: user.role?.label ? (
+                      value: pageData.role?.label || 'Blocked',
+                      action: pageData.role?.label ? (
                         <Link
-                          href={`/super-admin-dashboard/user/${user.gapUserId}/change-roles`}
+                          href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-roles`}
                         >
                           <a className="govuk-link">Change</a>
                         </Link>
@@ -86,32 +105,34 @@ const UserPage = (user: User) => {
                     },
                   ]}
                 />
-                <div className="govuk-button-group">
-                  <CustomLink
-                    href={`/super-admin-dashboard/user/${user.gapUserId}/delete-user`}
-                    customStyle="govuk-button govuk-button--warning"
-                    data-module="govuk-button"
-                  >
-                    Delete user
-                  </CustomLink>
-                  {!user.role?.label && (
+                {!pageData.isViewingOwnAccount && (
+                  <div className="govuk-button-group">
                     <CustomLink
-                      href={`/api/unblockUser?id=${user.gapUserId}`}
-                      customStyle="govuk-button govuk-button--secondary"
+                      href={`/super-admin-dashboard/user/${pageData.gapUserId}/delete-user`}
+                      customStyle="govuk-button govuk-button--warning"
+                      data-module="govuk-button"
                     >
-                      Unblock user
+                      Delete user
                     </CustomLink>
-                  )}
+                    {!pageData.role?.label && (
+                      <CustomLink
+                        href={`/api/unblockUser?id=${pageData.gapUserId}`}
+                        customStyle="govuk-button govuk-button--secondary"
+                      >
+                        Unblock user
+                      </CustomLink>
+                    )}
 
-                  {user.role?.label && (
-                    <CustomLink
-                      href={`/super-admin-dashboard/user/${user.gapUserId}/block-user`}
-                      customStyle="govuk-button govuk-button--secondary"
-                    >
-                      Block user
-                    </CustomLink>
-                  )}
-                </div>
+                    {pageData.role?.label && (
+                      <CustomLink
+                        href={`/super-admin-dashboard/user/${pageData.gapUserId}/block-user`}
+                        customStyle="govuk-button govuk-button--secondary"
+                      >
+                        Block user
+                      </CustomLink>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </main>
