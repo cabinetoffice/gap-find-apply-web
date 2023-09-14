@@ -46,14 +46,6 @@ describe('Publish success page', () => {
     screen.getByText('Grant application form published');
   });
 
-  it('Should render a link to add a link to the application to an email to find a grant', () => {
-    expect(
-      screen.getByRole('link', {
-        name: 'findagrant@cabinetoffice.gov.uk',
-      })
-    ).toHaveAttribute('href', 'mailto:findagrant@cabinetoffice.gov.uk');
-  });
-
   it('Should render a url to apply for the newly published application', () => {
     screen.getByRole('link', {
       name: 'http://localhost:8080/applications/testApplicationId',

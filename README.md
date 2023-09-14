@@ -7,7 +7,7 @@ All commands mentioned below are relative to the root of the repository - no nee
 ## Packages
 
 - admin - covers the journeys related to managing schemes, grant application forms, etc
-- applicant - covers the journeys related to creating a submission for a published grant applicantion form
+- applicant - covers the journeys related to creating a submission for a published grant application form
 - gap-web-ui - a set of components shared across both sets of journeys
 
 ## Getting Started

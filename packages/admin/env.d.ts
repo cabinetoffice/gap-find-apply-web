@@ -15,6 +15,7 @@ declare global {
       FEATURE_ADVERT_BUILDER: string;
       V2_LOGIN_URL: string;
       V2_LOGOUT_URL: string;
+      VALIDATE_USER_ROLES_IN_MIDDLEWARE: string;
       ONE_LOGIN_ENABLED: string;
     }
   }
