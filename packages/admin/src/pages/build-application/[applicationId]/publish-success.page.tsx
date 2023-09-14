@@ -54,7 +54,7 @@ const PublishSuccessPage = ({
               </h1>
             </div>
 
-            <p className="govuk-body break-all-words">
+            <p className="govuk-body">
               To add this application form to your advert, copy the URL below
               and paste it into the &apos;How to Apply&apos; section of your
               grant advert.

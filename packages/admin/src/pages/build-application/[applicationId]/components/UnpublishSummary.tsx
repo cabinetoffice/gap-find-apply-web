@@ -19,7 +19,7 @@ const UnpublishSummary = ({
         Add this application form to your grant advert?
       </h2>
 
-      <p className="govuk-body break-all-words">
+      <p className="govuk-body">
         To add this application form to your advert, copy the URL below and
         paste it into the &apos;How to Apply&apos; section of your grant advert.
       </p>
