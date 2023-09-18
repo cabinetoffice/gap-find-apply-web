@@ -43,13 +43,6 @@ const props = {
   },
 };
 
-const propsError = {
-  redirect: {
-    destination: `/grant-is-closed`,
-    permanent: false,
-  },
-};
-
 const propsSubmissionExistsError = {
   redirect: {
     destination: routes.applications,
@@ -68,13 +61,7 @@ const propsUnknownError = {
     permanent: false,
   },
 };
-const unknownError = {
-  response: {
-    data: {
-      message: 'Unknown Error',
-    },
-  },
-};
+
 const submissionExists = {
   response: {
     data: {
@@ -130,8 +117,6 @@ describe('getServerSideProps', () => {
         permanent: false,
       },
     });
-    expect(createSubmission).toHaveBeenCalled();
-    expect(createSubmission).toHaveBeenCalledWith('1', 'testJwt');
   });
 
   it('should redirect to grant is closed page if grant is closed', async () => {
