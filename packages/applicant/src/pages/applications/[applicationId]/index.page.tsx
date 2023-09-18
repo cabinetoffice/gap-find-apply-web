@@ -11,7 +11,6 @@ export const getServerSideProps: GetServerSideProps = async ({
   params,
   query,
 }) => {
-  console.log(query);
   const migrationStatus = query?.migrationStatus ?? null;
 
   await validateCSRF(req, res);
