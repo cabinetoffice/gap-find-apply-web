@@ -181,4 +181,33 @@ describe('getServerSideProps', () => {
       },
     });
   });
+
+  it('should redirect to applications page with migration status set', async () => {
+    const result = await getServerSideProps(
+      getContext(getDefaultContext, {
+        query: {
+          migrationStatus: 'success',
+        },
+        req: {
+          cookies: {
+            testRedirectCookie: '1',
+          },
+        },
+        res: {
+          setHeader: mockSetHeader,
+        },
+      })
+    );
+
+    expect(mockSetHeader).toBeCalledWith(
+      'Set-Cookie',
+      'testRedirectCookie=deleted; Path=/; Max-Age=0'
+    );
+    expectObjectEquals(result, {
+      redirect: {
+        destination: '/applications/1?migrationStatus=success',
+        statusCode: 307,
+      },
+    });
+  });
 });

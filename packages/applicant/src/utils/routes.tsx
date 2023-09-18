@@ -19,8 +19,10 @@ export const routes = {
   applications: '/applications',
   submissions: {
     index: '/submissions',
-    sections: (grantSubmissionId: string) =>
-      `/submissions/${grantSubmissionId}/sections`,
+    sections: (grantSubmissionId: string, migrationStatus?: string) =>
+      migrationStatus
+        ? `/submissions/${grantSubmissionId}/sections?migrationStatus=${migrationStatus}`
+        : `/submissions/${grantSubmissionId}/sections`,
     section: (grantSubmissionId: string, sectionId: string) =>
       `/submissions/${grantSubmissionId}/sections/${sectionId}`,
     question: (

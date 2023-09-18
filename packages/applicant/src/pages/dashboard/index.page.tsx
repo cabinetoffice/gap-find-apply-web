@@ -15,6 +15,14 @@ export const getServerSideProps = async ({
   query,
 }: GetServerSidePropsContext) => {
   const findRedirectCookie = process.env.APPLYING_FOR_REDIRECT_COOKIE;
+  const migrationStatus = query?.migrationStatus ?? null;
+  const oneLoginTransferErrorEnabled =
+    process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
+  const showMigrationSuccessBanner =
+    oneLoginTransferErrorEnabled && migrationStatus === 'success';
+  const showMigrationErrorBanner =
+    oneLoginTransferErrorEnabled && migrationStatus === 'error';
+  const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
 
   if (req.cookies[findRedirectCookie]) {
     const applicationId = req.cookies[findRedirectCookie];
@@ -24,7 +32,9 @@ export const getServerSideProps = async ({
     );
     return {
       redirect: {
-        destination: `/applications/${applicationId}`,
+        destination: migrationStatus
+          ? `/applications/${applicationId}?migrationStatus=${migrationStatus}`
+          : `/applications/${applicationId}`,
         statusCode: 307,
       },
     };
@@ -49,15 +59,6 @@ export const getServerSideProps = async ({
     needAddOrChangeButtons: false,
     needBorder: false,
   };
-
-  const oneLoginMatchingAccountBannerEnabled =
-    process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
-  const migrationStatus = query?.migrationStatus ?? null;
-  const showMigrationSuccessBanner =
-    oneLoginMatchingAccountBannerEnabled && migrationStatus === 'success';
-  const showMigrationErrorBanner =
-    oneLoginMatchingAccountBannerEnabled && migrationStatus === 'error';
-  const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
 
   return {
     props: {

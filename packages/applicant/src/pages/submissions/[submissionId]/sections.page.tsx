@@ -16,6 +16,7 @@ import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { SUBMISSION_STATUS_TAGS } from '../../../utils/sectionStatusTags';
 import styles from './sections.module.scss';
+import { ImportantBanner } from 'gap-web-ui';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -31,7 +32,7 @@ export interface SubmissionSectionPage {
 
 export const getServerSideProps: GetServerSideProps<
   SubmissionSectionPage
-> = async ({ req, res, params }) => {
+> = async ({ req, res, params, query }) => {
   const submissionId = params.submissionId.toString();
 
   const { sections, grantSubmissionId, applicationName, grantSchemeId } =
@@ -69,8 +70,18 @@ export const getServerSideProps: GetServerSideProps<
     getJwtFromCookies(req)
   );
 
+  const migrationStatus = query?.migrationStatus ?? null;
+  const oneLoginTransferErrorEnabled =
+    process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
+  const showMigrationSuccessBanner =
+    oneLoginTransferErrorEnabled && migrationStatus === 'success';
+  const showMigrationErrorBanner =
+    oneLoginTransferErrorEnabled && migrationStatus === 'error';
+
   return {
     props: {
+      showMigrationSuccessBanner,
+      showMigrationErrorBanner,
       sections,
       grantSubmissionId,
       applicationName,
@@ -92,11 +103,38 @@ export default function SubmissionSections({
   csrfToken,
   supportEmail,
   eligibilityCheckPassed,
+  showMigrationSuccessBanner,
+  showMigrationErrorBanner,
 }) {
   return (
     <>
       <Meta title="My application - Apply for a grant" />
       <Layout backBtnUrl={routes.applications}>
+        {showMigrationSuccessBanner && (
+          <ImportantBanner
+            bannerHeading="Your data has been successfully added to your One Login account."
+            isSuccess
+          />
+        )}
+
+        {showMigrationErrorBanner && (
+          <ImportantBanner
+            bannerHeading="Something went wrong while transferring your data. "
+            bannerContent={
+              <p className="govuk-body">
+                Please get in contact with our support team at{' '}
+                <a
+                  className="govuk-notification-banner__link"
+                  href="mailto:findagrant@cabinetoffice.gov.uk"
+                >
+                  findagrant@cabinetoffice.gov.uk
+                </a>
+                {'.'}
+              </p>
+            }
+          />
+        )}
+
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <form

@@ -20,6 +20,10 @@ jest.mock('../../../utils/constants');
 jest.mock('../../../utils/jwt');
 jest.mock('../../../utils/csrf');
 
+jest.mock('gap-web-ui', () => ({
+  ImportantBanner: ({ bannerHeading }) => <div>{bannerHeading}</div>,
+}));
+
 jest.mock('next/config', () => () => {
   return {
     serverRuntimeConfig: {
@@ -256,6 +260,8 @@ describe('getServerSideProps', () => {
         eligibilityCheckPassed: false,
         hasSubmissionBeenSubmitted: false,
         isSubmissionReady: true,
+        showMigrationSuccessBanner: false,
+        showMigrationErrorBanner: false,
       },
     });
     expect(getSubmissionById).toHaveBeenCalled();
@@ -284,6 +290,8 @@ describe('getServerSideProps', () => {
         hasSubmissionBeenSubmitted: false,
         isSubmissionReady: true,
         supportEmail: 'test@test.com',
+        showMigrationSuccessBanner: false,
+        showMigrationErrorBanner: false,
       },
     });
     expect(getSubmissionById).toHaveBeenCalled();
@@ -312,6 +320,8 @@ describe('getServerSideProps', () => {
         hasSubmissionBeenSubmitted: false,
         isSubmissionReady: true,
         supportEmail: 'test@test.com',
+        showMigrationSuccessBanner: false,
+        showMigrationErrorBanner: false,
       },
     });
     expect(getSubmissionById).toHaveBeenCalled();
@@ -344,6 +354,8 @@ describe('getServerSideProps', () => {
         eligibilityCheckPassed: false,
         hasSubmissionBeenSubmitted: false,
         isSubmissionReady: true,
+        showMigrationSuccessBanner: false,
+        showMigrationErrorBanner: false,
       },
     });
     expect(getSubmissionById).toHaveBeenCalled();
@@ -374,6 +386,8 @@ describe('getServerSideProps', () => {
         supportEmail: 'test@test.com',
         hasSubmissionBeenSubmitted: false,
         isSubmissionReady: true,
+        showMigrationSuccessBanner: false,
+        showMigrationErrorBanner: false,
         eligibilityCheckPassed: false,
       },
     });
@@ -422,6 +436,8 @@ describe('Submission section page', () => {
           })}
         >
           <SubmissionSections
+            showMigrationErrorBanner={false}
+            showMigrationSuccessBanner={false}
             sections={propsWithAllValues.sections}
             grantSubmissionId={propsWithAllValues.grantSubmissionId}
             applicationName={propsWithAllValues.applicationName}
@@ -482,6 +498,62 @@ describe('Submission section page', () => {
     });
   });
 
+  describe('Submission sections should render properly__migrationBanner', () => {
+    it('should render the error banner', () => {
+      render(
+        <RouterContext.Provider
+          value={createMockRouter({
+            pathname: `/submissions/${context.params.submissionId}/sections`,
+          })}
+        >
+          <SubmissionSections
+            showMigrationErrorBanner={true}
+            showMigrationSuccessBanner={false}
+            sections={propsWithAllValues.sections}
+            grantSubmissionId={propsWithAllValues.grantSubmissionId}
+            applicationName={propsWithAllValues.applicationName}
+            isSubmissionReady={true}
+            hasSubmissionBeenSubmitted={false}
+            csrfToken="testCSRFToken"
+            supportEmail=""
+            eligibilityCheckPassed={true}
+          />
+        </RouterContext.Provider>
+      );
+      expect(
+        screen.getByText('Something went wrong while transferring your data.')
+      ).toBeVisible();
+    });
+
+    it('should render the success banner', () => {
+      render(
+        <RouterContext.Provider
+          value={createMockRouter({
+            pathname: `/submissions/${context.params.submissionId}/sections`,
+          })}
+        >
+          <SubmissionSections
+            showMigrationErrorBanner={false}
+            showMigrationSuccessBanner={true}
+            sections={propsWithAllValues.sections}
+            grantSubmissionId={propsWithAllValues.grantSubmissionId}
+            applicationName={propsWithAllValues.applicationName}
+            isSubmissionReady={true}
+            hasSubmissionBeenSubmitted={false}
+            csrfToken="testCSRFToken"
+            supportEmail=""
+            eligibilityCheckPassed={true}
+          />
+        </RouterContext.Provider>
+      );
+      expect(
+        screen.getByText(
+          'Your data has been successfully added to your One Login account.'
+        )
+      ).toBeVisible();
+    });
+  });
+
   describe('Submission section will render the supportEmail', () => {
     test('should render the HelpAndSupport SideBar', () => {
       render(
@@ -491,6 +563,8 @@ describe('Submission section page', () => {
           })}
         >
           <SubmissionSections
+            showMigrationErrorBanner={false}
+            showMigrationSuccessBanner={false}
             sections={propsWithAllValues.sections}
             grantSubmissionId={propsWithAllValues.grantSubmissionId}
             applicationName={propsWithAllValues.applicationName}
@@ -521,6 +595,8 @@ describe('Submission section page', () => {
           })}
         >
           <SubmissionSections
+            showMigrationErrorBanner={false}
+            showMigrationSuccessBanner={false}
             sections={propsWithAllValues.sections}
             grantSubmissionId={propsWithAllValues.grantSubmissionId}
             applicationName={propsWithAllValues.applicationName}
@@ -562,6 +638,8 @@ describe('Submission section page', () => {
           })}
         >
           <SubmissionSections
+            showMigrationErrorBanner={false}
+            showMigrationSuccessBanner={false}
             sections={
               propsWithVariedSectionEligilityCompleteOthersMixedNotStarted.sections
             }
@@ -594,6 +672,8 @@ describe('Submission section page', () => {
           })}
         >
           <SubmissionSections
+            showMigrationErrorBanner={false}
+            showMigrationSuccessBanner={false}
             sections={propsWithInProgressSectionTags.sections}
             grantSubmissionId={propsWithInProgressSectionTags.grantSubmissionId}
             applicationName={propsWithInProgressSectionTags.applicationName}
@@ -623,6 +703,8 @@ describe('Submission section page', () => {
           })}
         >
           <SubmissionSections
+            showMigrationErrorBanner={false}
+            showMigrationSuccessBanner={false}
             sections={propsWithoutSectionValues.sections}
             grantSubmissionId={propsWithoutSectionValues.grantSubmissionId}
             applicationName={propsWithoutSectionValues.applicationName}
@@ -670,6 +752,8 @@ describe('Submission section page', () => {
         >
           <SubmissionSections
             sections={propsWithoutSectionValues.sections}
+            showMigrationErrorBanner={false}
+            showMigrationSuccessBanner={false}
             grantSubmissionId={propsWithoutSectionValues.grantSubmissionId}
             applicationName={propsWithoutSectionValues.applicationName}
             isSubmissionReady={false}
@@ -700,6 +784,8 @@ describe('Submission section page', () => {
           })}
         >
           <SubmissionSections
+            showMigrationErrorBanner={false}
+            showMigrationSuccessBanner={false}
             sections={propsWithoutSectionValues.sections}
             grantSubmissionId={propsWithoutSectionValues.grantSubmissionId}
             applicationName={propsWithoutSectionValues.applicationName}

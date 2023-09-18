@@ -5,6 +5,13 @@ describe('Submission.sections', () => {
     const url = routes.submissions.sections('grantSubmissionId');
     expect(url).toBe(`/submissions/grantSubmissionId/sections`);
   });
+
+  test('should create the right sections url when migrationStatus is set', () => {
+    const url = routes.submissions.sections('grantSubmissionId', 'success');
+    expect(url).toBe(
+      `/submissions/grantSubmissionId/sections?migrationStatus=success`
+    );
+  });
 });
 describe('Submission.section', () => {
   test('should create the right section url', () => {

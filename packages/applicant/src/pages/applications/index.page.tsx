@@ -9,20 +9,35 @@ import {
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import getConfig from 'next/config';
+import { ImportantBanner } from 'gap-web-ui';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
-  res,
+  query,
 }) => {
   const applicationData = await getApplicationsListById(getJwtFromCookies(req));
+  const migrationStatus = query?.migrationStatus ?? null;
+  const oneLoginTransferErrorEnabled =
+    process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
+  const showMigrationSuccessBanner =
+    oneLoginTransferErrorEnabled && migrationStatus === 'success';
+  const showMigrationErrorBanner =
+    oneLoginTransferErrorEnabled && migrationStatus === 'error';
+
   return {
     props: {
-      applicationData: applicationData,
+      showMigrationSuccessBanner,
+      showMigrationErrorBanner,
+      applicationData,
     },
   };
 };
 
-const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
+const ExistingApplications = ({
+  applicationData,
+  showMigrationSuccessBanner,
+  showMigrationErrorBanner,
+}: ApplicationsPage) => {
   const { publicRuntimeConfig } = getConfig();
   const hasApplicationData = applicationData.length > 0;
 
@@ -31,6 +46,30 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
       <Meta title="View my applications - Apply for a grant" />
 
       <Layout backBtnUrl={routes.dashboard}>
+        {showMigrationSuccessBanner && (
+          <ImportantBanner
+            bannerHeading="Your data has been successfully added to your One Login account."
+            isSuccess
+          />
+        )}
+
+        {showMigrationErrorBanner && (
+          <ImportantBanner
+            bannerHeading="Something went wrong while transferring your data. "
+            bannerContent={
+              <p className="govuk-body">
+                Please get in contact with our support team at{' '}
+                <a
+                  className="govuk-notification-banner__link"
+                  href="mailto:findagrant@cabinetoffice.gov.uk"
+                >
+                  findagrant@cabinetoffice.gov.uk
+                </a>
+                {'.'}
+              </p>
+            }
+          />
+        )}
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1
@@ -131,6 +170,8 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
 
 export interface ApplicationsPage {
   applicationData: ApplicationsList[];
+  showMigrationErrorBanner: boolean;
+  showMigrationSuccessBanner: boolean;
 }
 
 export interface ApplicationsList {

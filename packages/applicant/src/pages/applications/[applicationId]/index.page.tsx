@@ -9,7 +9,11 @@ export const getServerSideProps: GetServerSideProps = async ({
   req,
   res,
   params,
+  query,
 }) => {
+  console.log(query);
+  const migrationStatus = query?.migrationStatus ?? null;
+
   await validateCSRF(req, res);
 
   const applicationId = params.applicationId.toString();
@@ -23,7 +27,10 @@ export const getServerSideProps: GetServerSideProps = async ({
 
     return {
       redirect: {
-        destination: routes.submissions.sections(grantSubmissionId),
+        destination: routes.submissions.sections(
+          grantSubmissionId,
+          migrationStatus as string
+        ),
         permanent: false,
       },
     };
@@ -32,7 +39,9 @@ export const getServerSideProps: GetServerSideProps = async ({
     if (error?.response?.data?.code === 'SUBMISSION_ALREADY_CREATED') {
       return {
         redirect: {
-          destination: routes.applications,
+          destination: migrationStatus
+            ? routes.applications + `?migrationStatus=${migrationStatus}`
+            : routes.applications,
           permanent: false,
         },
       };

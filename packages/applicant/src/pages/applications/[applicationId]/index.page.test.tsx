@@ -26,13 +26,17 @@ const mockData = {
   message: 'message',
 };
 
-const context = {
-  params: {
-    applicationId: '1',
-  },
-  req: { csrfToken: () => 'testCSRFToken' },
-  res: {},
-} as unknown as GetServerSidePropsContext;
+const getContext = (query: GetServerSidePropsContext['query'] = {}) => {
+  console.log({ query });
+  return {
+    query,
+    params: {
+      applicationId: '1',
+    },
+    req: { csrfToken: () => 'testCSRFToken' },
+    res: {},
+  } as unknown as GetServerSidePropsContext;
+};
 
 const props = {
   redirect: {
@@ -92,7 +96,7 @@ describe('getServerSideProps', () => {
     (createSubmission as jest.Mock).mockReturnValue(mockData);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
 
-    const response = await getServerSideProps(context);
+    const response = await getServerSideProps(getContext());
 
     expect(response).toEqual(props);
     expect(createSubmission).toHaveBeenCalled();
@@ -105,9 +109,29 @@ describe('getServerSideProps', () => {
     });
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
 
-    const response = await getServerSideProps(context);
+    const response = await getServerSideProps(getContext());
 
     expect(response).toEqual(propsSubmissionExistsError);
+    expect(createSubmission).toHaveBeenCalled();
+    expect(createSubmission).toHaveBeenCalledWith('1', 'testJwt');
+  });
+
+  it('should redirect to applications dashboard if submission already exists and one login migration was successful', async () => {
+    (createSubmission as jest.Mock).mockImplementation(() => {
+      throw submissionExists;
+    });
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+
+    const response = await getServerSideProps(
+      getContext({ migrationStatus: 'success' })
+    );
+
+    expect(response).toEqual({
+      redirect: {
+        destination: routes.applications + '?migrationStatus=success',
+        permanent: false,
+      },
+    });
     expect(createSubmission).toHaveBeenCalled();
     expect(createSubmission).toHaveBeenCalledWith('1', 'testJwt');
   });
@@ -118,7 +142,7 @@ describe('getServerSideProps', () => {
     });
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
 
-    const response = await getServerSideProps(context);
+    const response = await getServerSideProps(getContext());
 
     expect(response).toEqual(propsGrantClosedError);
     expect(createSubmission).toHaveBeenCalled();
@@ -129,7 +153,7 @@ describe('getServerSideProps', () => {
     (createSubmission as jest.Mock).mockReturnValue(null);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
 
-    const response = await getServerSideProps(context);
+    const response = await getServerSideProps(getContext());
 
     expect(response).toEqual(propsUnknownError);
     expect(createSubmission).toHaveBeenCalled();
