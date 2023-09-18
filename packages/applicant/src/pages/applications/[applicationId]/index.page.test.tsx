@@ -26,17 +26,15 @@ const mockData = {
   message: 'message',
 };
 
-const getContext = (query: GetServerSidePropsContext['query'] = {}) => {
-  console.log({ query });
-  return {
+const getContext = (query: GetServerSidePropsContext['query'] = {}) =>
+  ({
     query,
     params: {
       applicationId: '1',
     },
     req: { csrfToken: () => 'testCSRFToken' },
     res: {},
-  } as unknown as GetServerSidePropsContext;
-};
+  } as unknown as GetServerSidePropsContext);
 
 const props = {
   redirect: {
