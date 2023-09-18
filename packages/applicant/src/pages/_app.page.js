@@ -20,14 +20,16 @@ const MyApp = ({ Component, pageProps, cookies }) => {
       '_ga',
       '_ga_RZMG2XBH9M',
     ];
-    if (cookies.design_system_cookies_policy === 'true') {
-      if (typeof window !== 'undefined' || typeof document !== 'undefined') {
-        TagManager.initialize({ gtmId: 'GTM-52T2C9G' });
-      }
-    } else {
-      for (const element of Object.keys(cookies)) {
-        if (cookiesToDelete.includes(element)) {
-          nookies.destroy({}, element, { path: '/' });
+    if (cookies) {
+      if (cookies.design_system_cookies_policy === 'true') {
+        if (typeof window !== 'undefined' || typeof document !== 'undefined') {
+          TagManager.initialize({ gtmId: 'GTM-52T2C9G' });
+        }
+      } else {
+        for (const element of Object.keys(cookies)) {
+          if (cookiesToDelete.includes(element)) {
+            nookies.destroy({}, element, { path: '/' });
+          }
         }
       }
     }
