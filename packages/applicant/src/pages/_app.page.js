@@ -11,7 +11,7 @@ import '../../../../node_modules/gap-web-ui/dist/cjs/index.css';
 
 const MyApp = ({ Component, pageProps, cookies }) => {
   const { publicRuntimeConfig } = getConfig();
-  const showCookieBanner = !cookies.design_system_cookies_policy;
+  const showCookieBanner = !cookies?.design_system_cookies_policy;
 
   useEffect(() => {
     const cookiesToDelete = [
