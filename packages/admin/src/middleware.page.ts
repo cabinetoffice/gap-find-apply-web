@@ -37,7 +37,8 @@ export async function middleware(req: NextRequest) {
       const isValidAdminSession = await isAdminSessionValid(auth_cookie);
       if (!isValidAdminSession) {
         return NextResponse.redirect(
-          getLoginUrl({ redirectToApplicant: true })
+          getLoginUrl({ redirectToApplicant: true }),
+          { status: 302 }
         );
       }
     }
