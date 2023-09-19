@@ -1,5 +1,4 @@
 import { GetServerSideProps } from 'next';
-import Link from 'next/link';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
 import {
@@ -77,18 +76,15 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                               {application.applicationName}
                             </p>
                           ) : (
-                            <Link
+                            <a
+                              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+                              data-cy={`cy-application-link-${application.applicationName}`}
                               href={routes.submissions.sections(
                                 application.grantSubmissionId
                               )}
                             >
-                              <a
-                                className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-                                data-cy={`cy-application-link-${application.applicationName}`}
-                              >
-                                {application.applicationName}
-                              </a>
-                            </Link>
+                              {application.applicationName}
+                            </a>
                           )}
                         </th>
 
