@@ -21,8 +21,10 @@ export const getJwtFromCookies = (
   // If the cookie is not a signed cookie, the parser will return the provided value
   const unsignedCookie = cookieParser.signedCookie(parsedCookie, COOKIE_SECRET);
 
-  if (!unsignedCookie) {
-    throw new Error('Failed to verify cookie signature');
+  if (!unsignedCookie || unsignedCookie === 'undefined') {
+    throw new Error(
+      `Failed to verify signature for ${USER_TOKEN_NAME} cookie: ${cookieValue}`
+    );
   }
 
   return unsignedCookie;

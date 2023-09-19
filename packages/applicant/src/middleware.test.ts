@@ -5,20 +5,13 @@ import { verifyToken } from './services/JwtService';
 
 jest.mock('./services/JwtService');
 
-global.fetch = jest.fn();
-const mockedFetch = jest.mocked(global.fetch);
 const mockedVerifyToken = jest.mocked(verifyToken);
 
 describe('Middleware', () => {
   beforeEach(jest.clearAllMocks);
 
-  it('redirects to host if response is not OK or JWT is undefined', async () => {
-    mockedFetch.mockResolvedValueOnce({
-      ok: false,
-      text: jest.fn().mockResolvedValueOnce('undefined'),
-    } as unknown as Response);
-
-    const req = new NextRequest(new Request('https://some.website.com/page'));
+  it('redirects to host if no JWT in cookies ', async () => {
+    const req = new NextRequest(new Request('https://www.website.com/page'));
     const res = await middleware(req);
 
     expect(res.status).toBe(307);
@@ -26,14 +19,10 @@ describe('Middleware', () => {
   });
 
   it('redirects to host if JWT is not valid', async () => {
-    mockedFetch.mockResolvedValueOnce({
-      ok: true,
-      text: jest.fn().mockResolvedValueOnce('someJwt'),
-    } as unknown as Response);
-
     mockedVerifyToken.mockResolvedValueOnce({ valid: false });
 
     const req = new NextRequest(new Request('https://some.website.com/page'));
+    req.cookies.set(process.env.USER_TOKEN_NAME, 'invalid');
     const res = await middleware(req);
 
     expect(res.status).toBe(307);
@@ -41,11 +30,6 @@ describe('Middleware', () => {
   });
 
   it('redirects to refresh URL if JWT is close to expiration', async () => {
-    mockedFetch.mockResolvedValueOnce({
-      ok: true,
-      text: jest.fn().mockResolvedValueOnce('someJwt'),
-    } as unknown as Response);
-
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10); // Expiring in 10 minutes
 
@@ -55,6 +39,7 @@ describe('Middleware', () => {
     });
 
     const req = new NextRequest(new Request('https://some.website.com/test'));
+    req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
     const res = await middleware(req);
 
     expect(res.status).toBe(307);
@@ -64,10 +49,7 @@ describe('Middleware', () => {
   });
 
   it('sets redirect cookie if URL matches new application pattern', async () => {
-    mockedFetch.mockResolvedValueOnce({
-      ok: true,
-      text: jest.fn().mockResolvedValueOnce('someJwt'),
-    } as unknown as Response);
+    mockedVerifyToken.mockResolvedValueOnce({ valid: false });
     const pathname = 'applications/123';
     const applicationId = '123';
 
