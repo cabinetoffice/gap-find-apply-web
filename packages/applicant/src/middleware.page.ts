@@ -1,3 +1,5 @@
+import cookie from 'cookie';
+import cookieParser from 'cookie-parser';
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { verifyToken } from './services/JwtService';
@@ -48,6 +50,29 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
   return res;
 }
 
+export const getJwtFromMiddlewareCookies = (req: NextRequest) => {
+  const COOKIE_SECRET = process.env.COOKIE_SECRET;
+
+  // Implementation below replicates that of a lambda function
+  // cabinet office have:
+  // https://github.com/cabinetoffice/x-co-login-auth-lambda/blob/22ce5fa104d2a36016a79f914d238f53ddabcee4/src/controllers/http/v1/request/utils.js#L81
+  const cookieValue = req.cookies.get(USER_TOKEN_NAME);
+  const parsedCookie = cookie.parse(`connect.sid=${cookieValue}`)[
+    'connect.sid'
+  ];
+
+  // If the cookie is not a signed cookie, the parser will return the provided value
+  const unsignedCookie = cookieParser.signedCookie(parsedCookie, COOKIE_SECRET);
+
+  if (!unsignedCookie || unsignedCookie === 'undefined') {
+    throw new Error(
+      `Failed to verify signature for ${USER_TOKEN_NAME} cookie: ${cookieValue}`
+    );
+  }
+
+  return unsignedCookie;
+};
+
 export async function middleware(req: NextRequest) {
   if (signInDetailsPage.test({ pathname: req.nextUrl.pathname })) {
     if (!ONE_LOGIN_ENABLED) {
@@ -59,23 +84,11 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  const cookie = req.cookies.get(USER_TOKEN_NAME);
-
-  const response = await fetch(`${HOST}/api/getJwt`, {
-    method: 'get',
-    headers: {
-      Cookie: `${USER_TOKEN_NAME}=${cookie}`,
-    },
-  });
-
-  const jwt = await response.text();
-
-  if (!response.ok || jwt === 'undefined') {
-    if (!response.ok) {
-      const err = await response.text();
-      console.error(err);
-    }
-
+  let jwt: string;
+  try {
+    jwt = await getJwtFromMiddlewareCookies(req);
+  } catch (err) {
+    console.error(err);
     const res = buildMiddlewareResponse(req, HOST);
     return res;
   }
