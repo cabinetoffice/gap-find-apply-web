@@ -49,7 +49,6 @@ describe('Middleware', () => {
   });
 
   it('sets redirect cookie if URL matches new application pattern', async () => {
-    mockedVerifyToken.mockResolvedValueOnce({ valid: false });
     const pathname = 'applications/123';
     const applicationId = '123';
 
