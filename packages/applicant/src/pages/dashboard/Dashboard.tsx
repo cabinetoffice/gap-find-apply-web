@@ -77,14 +77,13 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
               <p className="govuk-body">
                 See your past and current applications
               </p>
-              <Link href={'/applications'}>
-                <a
-                  className="govuk-link govuk-link--no-visited-state"
-                  data-cy="cy-your-applications-link"
-                >
-                  View your applications
-                </a>
-              </Link>
+              <a
+                className="govuk-link govuk-link--no-visited-state"
+                data-cy="cy-your-applications-link"
+                href={'/applications'}
+              >
+                View your applications
+              </a>
             </>
           ) : (
             <>
