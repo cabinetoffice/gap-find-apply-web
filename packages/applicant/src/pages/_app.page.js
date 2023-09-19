@@ -11,7 +11,7 @@ import '../../../../node_modules/gap-web-ui/dist/cjs/index.css';
 
 const MyApp = ({ Component, pageProps, cookies }) => {
   const { publicRuntimeConfig } = getConfig();
-  const showCookieBanner = !cookies.design_system_cookies_policy;
+  const showCookieBanner = !cookies?.design_system_cookies_policy;
 
   useEffect(() => {
     const cookiesToDelete = [
@@ -20,14 +20,16 @@ const MyApp = ({ Component, pageProps, cookies }) => {
       '_ga',
       '_ga_RZMG2XBH9M',
     ];
-    if (cookies.design_system_cookies_policy === 'true') {
-      if (typeof window !== 'undefined' || typeof document !== 'undefined') {
-        TagManager.initialize({ gtmId: 'GTM-52T2C9G' });
-      }
-    } else {
-      for (const element of Object.keys(cookies)) {
-        if (cookiesToDelete.includes(element)) {
-          nookies.destroy({}, element, { path: '/' });
+    if (cookies) {
+      if (cookies.design_system_cookies_policy === 'true') {
+        if (typeof window !== 'undefined' || typeof document !== 'undefined') {
+          TagManager.initialize({ gtmId: 'GTM-52T2C9G' });
+        }
+      } else {
+        for (const element of Object.keys(cookies)) {
+          if (cookiesToDelete.includes(element)) {
+            nookies.destroy({}, element, { path: '/' });
+          }
         }
       }
     }
@@ -46,7 +48,7 @@ const MyApp = ({ Component, pageProps, cookies }) => {
 
 MyApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext);
-  const cookies = appContext.ctx.req.cookies;
+  const cookies = appContext.ctx.req?.cookies || {};
   return { ...appProps, cookies };
 };
 
