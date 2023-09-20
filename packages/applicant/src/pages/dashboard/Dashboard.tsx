@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { FC } from 'react';
 import { Card } from '../../components/card/Card';
 import {
@@ -7,6 +6,7 @@ import {
 } from '../../components/description-list/DescriptionList';
 import { routes } from '../../utils/routes';
 import { ImportantBanner } from 'gap-web-ui';
+import getConfig from 'next/config';
 
 export type ApplicantDashBoardProps = {
   descriptionList: DescriptionListProps;
@@ -23,6 +23,8 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
   showMigrationSuccessBanner,
   oneLoginEnabled,
 }) => {
+  const { publicRuntimeConfig } = getConfig();
+
   return (
     <div className="govuk-grid-row">
       <div className="govuk-grid-column-two-thirds">
@@ -80,7 +82,7 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
               <a
                 className="govuk-link govuk-link--no-visited-state"
                 data-cy="cy-your-applications-link"
-                href={'/applications'}
+                href={`${publicRuntimeConfig.SUB_PATH}/applications`}
               >
                 View your applications
               </a>
