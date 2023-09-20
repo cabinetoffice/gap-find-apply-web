@@ -44,13 +44,13 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
               <>
                 <p className="govuk-body">
                   You use GOV.UK One Login to sign into Find a grant. If you do
-                  not have a One Login account already, you will need to create
+                  not have a GOV.UK One Login already, you will need to create
                   one.
                 </p>
                 <p className="govuk-body">
                   If you have used Find a grant before, you can see all of your
-                  information if you register for One Login using the same email
-                  address.
+                  information if you register for GOV.UK One Login using the
+                  same email address.
                 </p>
                 <Link href={loginUrl}>
                   <a
