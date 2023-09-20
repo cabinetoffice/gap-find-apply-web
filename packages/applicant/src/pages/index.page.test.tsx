@@ -63,7 +63,7 @@ describe('Apply for a grant home page', () => {
   it('should render Sign in with One Login button with correct href', async () => {
     expect(
       screen.getByRole('button', {
-        name: /Sign in with One Login/i,
+        name: /Sign in with GOV.UK One Login/i,
       })
     ).toHaveAttribute('href', loginUrl);
   });
