@@ -45,7 +45,7 @@ describe('Dashboard', () => {
     screen.getByText(/see your past and current applications/i);
     expect(
       screen.getByRole('link', { name: /view your applications/i })
-    ).toHaveAttribute('href', 'undefined/applications');
+    ).toHaveAttribute('href', '/applications');
   });
 
   describe('should render second section when applicant has no applications', () => {

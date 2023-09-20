@@ -8,6 +8,7 @@ import {
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import getConfig from 'next/config';
+import Link from 'next/link';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
@@ -76,15 +77,18 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                               {application.applicationName}
                             </p>
                           ) : (
-                            <a
-                              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-                              data-cy={`cy-application-link-${application.applicationName}`}
+                            <Link
                               href={routes.submissions.sections(
                                 application.grantSubmissionId
                               )}
                             >
-                              {application.applicationName}
-                            </a>
+                              <a
+                                className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+                                data-cy={`cy-application-link-${application.applicationName}`}
+                              >
+                                {application.applicationName}
+                              </a>
+                            </Link>
                           )}
                         </th>
 
