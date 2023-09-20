@@ -7,6 +7,7 @@ import {
 import { routes } from '../../utils/routes';
 import { ImportantBanner } from 'gap-web-ui';
 import getConfig from 'next/config';
+import Link from 'next/link';
 
 export type ApplicantDashBoardProps = {
   descriptionList: DescriptionListProps;
@@ -79,13 +80,14 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
               <p className="govuk-body">
                 See your past and current applications
               </p>
-              <a
+              <Link
                 className="govuk-link govuk-link--no-visited-state"
+                href={'/applications'}
+                prefetch={false}
                 data-cy="cy-your-applications-link"
-                href={`${publicRuntimeConfig.subPath}/applications`}
               >
                 View your applications
-              </a>
+              </Link>
             </>
           ) : (
             <>
