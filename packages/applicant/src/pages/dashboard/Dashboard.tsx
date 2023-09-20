@@ -82,7 +82,7 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
               <a
                 className="govuk-link govuk-link--no-visited-state"
                 data-cy="cy-your-applications-link"
-                href={`${publicRuntimeConfig.SUB_PATH}/applications`}
+                href={`${publicRuntimeConfig.subPath}/applications`}
               >
                 View your applications
               </a>
