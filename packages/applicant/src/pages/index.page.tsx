@@ -60,7 +60,7 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
                     data-module="govuk-button"
                     data-cy="cy-apply-register-button"
                   >
-                    Sign in with One Login
+                    Sign in with GOV.UK One Login
                     <svg
                       className="govuk-button__start-icon"
                       xmlns="http://www.w3.org/2000/svg"
