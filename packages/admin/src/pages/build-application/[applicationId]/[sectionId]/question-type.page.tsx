@@ -257,7 +257,7 @@ const QuestionType = ({
                 value: ResponseType.SingleFileUpload,
                 hint: (
                   <QuestionTypeHint
-                    description="Allows all documents except .xls and .exe to be uploaded."
+                    description="Allows files that are .DOC, .DOCX, .ODT, .PDF, .XLS, .XLSX or .ZIP"
                     questionType="document-upload"
                     imageFileName="document-upload"
                     imageAlt="A screenshot of a document upload component, with a button that allows the user to choose a file to upload"
