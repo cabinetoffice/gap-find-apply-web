@@ -13,11 +13,16 @@ jest.mock('next/dist/server/api-utils/node', () => ({
 
 jest.mock('../../../../services/SuperAdminService', () => ({
   getUserById: jest.fn(() => Promise.resolve({ statusCode: 200 })),
+  getUserFromJwt: jest.fn(),
   deleteUserInformation: jest.fn(),
 }));
 
-const mockPageData = {
+const getMockPageData = (gapUserId: string, isViewingOwnAccount: boolean) => ({
+  isViewingOwnAccount,
   user: {
+    gapUserId,
+    created: 'rn',
+    sub: 'za',
     firstName: 'testFirstName',
     lastName: 'testLastName',
     organisationName: 'tco',
@@ -26,10 +31,11 @@ const mockPageData = {
   },
   userId: '1',
   _csrf: '',
-};
+});
 
-const renderComponent = () =>
-  renderWithRouter(
+const renderComponent = (gapUserId = '2', isViewingOwnAccount = false) => {
+  const mockPageData = getMockPageData(gapUserId, isViewingOwnAccount);
+  return renderWithRouter(
     <DeleteUserPage
       previousValues={mockPageData}
       formAction="."
@@ -38,6 +44,7 @@ const renderComponent = () =>
       fieldErrors={[]}
     />
   );
+};
 
 describe('Delete user information page', () => {
   it('renders email address and expected content', () => {
@@ -45,6 +52,7 @@ describe('Delete user information page', () => {
     expect(
       screen.getByRole('heading', { name: 'Delete a user' })
     ).toBeVisible();
+    expect(screen.queryByText('Delete user')).toBeVisible();
     expect(
       screen.getByText(
         `If you delete this user's account, all of their data will be lost. You cannot undo this action.`
@@ -92,5 +100,12 @@ describe('Block user page functionality', () => {
         statusCode: 302,
       },
     });
+  });
+
+  it('should not render the delete button when a super admin is viewing their own account', () => {
+    renderComponent('1', true);
+
+    expect(screen.queryByText('Delete user')).not.toBeInTheDocument();
+    expect(screen.queryByText('You cannot delete your account.')).toBeVisible();
   });
 });

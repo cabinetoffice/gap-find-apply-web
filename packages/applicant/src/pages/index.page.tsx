@@ -40,17 +40,17 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
               funding organisations make a decision about who to award funding
               to.
             </p>
-            {oneLoginEnabled == 'true' ? (
+            {oneLoginEnabled === 'true' ? (
               <>
                 <p className="govuk-body">
                   You use GOV.UK One Login to sign into Find a grant. If you do
-                  not have a One Login account already, you will need to create
+                  not have a GOV.UK One Login already, you will need to create
                   one.
                 </p>
                 <p className="govuk-body">
                   If you have used Find a grant before, you can see all of your
-                  information if you register for One Login using the same email
-                  address.
+                  information if you register for GOV.UK One Login using the
+                  same email address.
                 </p>
                 <Link href={loginUrl}>
                   <a
@@ -60,7 +60,7 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
                     data-module="govuk-button"
                     data-cy="cy-apply-register-button"
                   >
-                    Sign in with One Login
+                    Sign in with GOV.UK One Login
                     <svg
                       className="govuk-button__start-icon"
                       xmlns="http://www.w3.org/2000/svg"

@@ -1,5 +1,4 @@
 import { GetServerSideProps } from 'next';
-import Link from 'next/link';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
 import {
@@ -9,6 +8,7 @@ import {
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import getConfig from 'next/config';
+import Link from 'next/link';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
