@@ -125,7 +125,7 @@ describe('Question type', () => {
       render(component);
       screen.getByRole('radio', { name: 'Document upload' });
       screen.getByText(
-        'Allows all documents except .xls and .exe to be uploaded.'
+        'Allows files that are .DOC, .DOCX, .ODT, .PDF, .XLS, .XLSX or .ZIP'
       );
     });
 
