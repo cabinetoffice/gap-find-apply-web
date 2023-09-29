@@ -56,7 +56,9 @@ describe('Document Upload component', () => {
 
   it('Should render a label with the relevant accepted doc types', () => {
     render(<DocumentUpload {...props()} />);
-    screen.getByText('Upload a file (all documents except .xls and .exe)');
+    screen.getByText(
+      'Upload a file (Allows files that are .DOC, .DOCX, .ODT, .PDF, .XLS, .XLSX or .ZIP)'
+    );
   });
 
   it('Should NOT render an error message when there are no field errors', () => {

@@ -42,7 +42,8 @@ const DocumentUpload = ({
       )}
 
       <label className="govuk-label govuk-!-margin-top-8" htmlFor={fieldName}>
-        Upload a file (all documents except .xls and .exe)
+        Upload a file (Allows files that are .DOC, .DOCX, .ODT, .PDF, .XLS,
+        .XLSX or .ZIP)
       </label>
 
       <ErrorMessage fieldErrors={fieldErrors} fieldName={fieldName} />
