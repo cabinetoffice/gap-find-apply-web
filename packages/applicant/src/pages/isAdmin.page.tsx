@@ -12,13 +12,18 @@ const getRoleCheckService = (publicRuntimeConfig) =>
 const getDestination = (
   user: UserRolesResponse,
   publicRuntimeConfig,
-  migrationStatus?: string
+  applyMigrationStatus?: string,
+  findMigrationStatus?: string
 ) => {
   if (user.isSuperAdmin)
     return `${process.env.ADMIN_FRONTEND_URL}/?redirectUrl=/super-admin-dashboard`;
   if (user.isAdmin)
     return `${process.env.ADMIN_FRONTEND_URL}/?redirectUrl=/dashboard`;
-  if (user.isApplicant) return routes.api.isNewApplicant.index(migrationStatus); //checks if the user exist, if not creates it
+  if (user.isApplicant)
+    return routes.api.isNewApplicant.index(
+      applyMigrationStatus,
+      findMigrationStatus
+    ); //checks if the user exist, if not creates it
   // TODO go to an error page?
   return `${publicRuntimeConfig.FIND_A_GRANT_URL}`;
 };
@@ -52,7 +57,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   const destination = getDestination(
     result,
     publicRuntimeConfig,
-    query?.migrationStatus as string
+    query?.applyMigrationStatus as string,
+    query?.findMigrationStatus as string
   );
   return {
     redirect: {

@@ -52,11 +52,18 @@ export const getServerSideProps = async ({
 
   const oneLoginMatchingAccountBannerEnabled =
     process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
-  const migrationStatus = query?.migrationStatus ?? null;
+
+  const applyMigrationStatus = query?.applyMigrationStatus ?? null;
+  const findMigrationStatus = query?.findMigrationStatus ?? null;
+
   const showMigrationSuccessBanner =
-    oneLoginMatchingAccountBannerEnabled && migrationStatus === 'success';
+    oneLoginMatchingAccountBannerEnabled &&
+    (applyMigrationStatus === 'success' || findMigrationStatus === 'success');
+
   const showMigrationErrorBanner =
-    oneLoginMatchingAccountBannerEnabled && migrationStatus === 'error';
+    oneLoginMatchingAccountBannerEnabled &&
+    (applyMigrationStatus === 'error' || findMigrationStatus === 'error');
+
   const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
 
   return {
