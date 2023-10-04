@@ -47,14 +47,17 @@ export const routes = {
     isNewApplicant: {
       index: (applyMigrationStatus?, findMigrationStatus?) => {
         let url = `/api/isNewApplicant`;
+
         if (applyMigrationStatus) {
           url += `?applyMigrationStatus=${applyMigrationStatus}`;
         }
         if (applyMigrationStatus && findMigrationStatus) {
           url += `&`;
         }
-        if (findMigrationStatus) {
+        if (findMigrationStatus && !applyMigrationStatus) {
           url += `?findMigrationStatus=${findMigrationStatus}`;
+        } else if (findMigrationStatus) {
+          url += `${findMigrationStatus}`;
         }
         return url;
       },
