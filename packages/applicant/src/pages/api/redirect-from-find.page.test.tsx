@@ -1,7 +1,7 @@
 import { merge } from 'lodash';
 import { AdvertDto, getAdvertBySlug } from '../../services/GrantAdvertService';
 import { getJwtFromCookies } from '../../utils/jwt';
-import handler from './redirect.page';
+import handler from './redirect-from-find.page';
 
 // Mock the getAdvertBySlug function (you may need to adjust this based on your actual implementation)
 jest.mock('../../services/GrantAdvertService');
