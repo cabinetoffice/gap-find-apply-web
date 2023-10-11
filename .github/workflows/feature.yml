@@ -44,8 +44,8 @@ jobs:
         run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
         id: yarn-cache-dir-path
 
-      - name: Cache dependencies
-        uses: actions/cache@v2
+      - name: Restore cached dependencies
+        uses: actions/cache/restore@v3
         id: yarn-cache
         with:
           path: |
@@ -60,6 +60,18 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: |
           yarn install --immutable
+
+      - name: Save cached dependencies
+        uses: actions/cache/save@v3
+        if: always() // or any other condition to invoke the save action
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            **/node_modules
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Snyk setup
         uses: snyk/actions/node@master
