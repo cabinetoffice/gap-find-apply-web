@@ -13,12 +13,16 @@ import {
   getApplicationExportStatus,
   requestSubmissionsExport,
 } from '../../../services/SubmissionsService';
+import { parseBody } from 'next/dist/server/api-utils/node';
 
 jest.mock('../../../services/SchemeService');
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../services/UserService');
 jest.mock('../../../services/SubmissionsService');
 jest.mock('../../../utils/callServiceMethod');
+jest.mock('next/dist/server/api-utils/node', () => ({
+  parseBody: jest.fn(),
+}));
 
 const mockedFindApplicationFormFromScheme =
   findApplicationFormFromScheme as jest.Mock;
@@ -35,6 +39,7 @@ const customProps = {
   emailAddress: '',
   csrfToken: '',
   formAction: '',
+  requested: null,
 };
 
 const component = <DownloadSubmissions {...customProps} />;
@@ -138,6 +143,7 @@ describe('Download submissions page', () => {
       mockedGetApplicationExportStatus.mockResolvedValue(
         ExportStatusEnum.PROCESSING
       );
+      (parseBody as jest.Mock).mockResolvedValue({ testBody: true });
     });
 
     it('Should NOT return a redirect object if applicationFormsStatus is successfully retrieved', async () => {
@@ -213,26 +219,6 @@ describe('Download submissions page', () => {
       );
     });
 
-    it('Should redirect to self when NOT_STARTED', async () => {
-      mockedGetApplicationExportStatus.mockResolvedValue(
-        ExportStatusEnum.NOT_STARTED
-      );
-      mockedRequestSubmissionsExport.mockResolvedValue({});
-
-      const response = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
-
-      expect(response).toStrictEqual({
-        redirect: {
-          permanent: false,
-          destination: '/scheme/testSchemeId/download-submissions',
-        },
-      });
-    });
-
-    it.todo('Placeholder for checking if the export is in progress');
-
     describe('POST method', () => {
       beforeEach(() => {
         mockedFindApplicationFormFromScheme.mockResolvedValue([
@@ -250,6 +236,9 @@ describe('Download submissions page', () => {
         mockedGetApplicationExportStatus.mockResolvedValue(
           ExportStatusEnum.NOT_STARTED
         );
+        (parseBody as jest.Mock).mockResolvedValue({
+          'download-submitted-applications': true,
+        });
 
         await getServerSideProps(getPostContext());
 
