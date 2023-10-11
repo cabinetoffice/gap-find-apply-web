@@ -16,6 +16,10 @@ export const routes = {
     name: '/organisation/name',
     type: '/organisation/type',
   },
+  mandatoryQuestions: {
+    startPage: (schemeId: string) =>
+      `/mandatory-questions/start?schemeId=${schemeId}`,
+  },
   applications: '/applications',
   submissions: {
     index: '/submissions',
@@ -33,6 +37,8 @@ export const routes = {
       `/submissions/${grantSubmissionId}/submission-confirmation`,
   },
   findAGrant: publicRuntimeConfig.FIND_A_GRANT_URL,
+  serviceError: (serviceErrorProps) =>
+    `/service-error?serviceErrorProps=${JSON.stringify(serviceErrorProps)}`,
   api: {
     submissions: {
       section: (grantSubmissionId: string, sectionId: string) =>

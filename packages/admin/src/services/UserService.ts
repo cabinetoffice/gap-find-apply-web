@@ -1,9 +1,12 @@
 import axios from 'axios';
 import { axiosSessionConfig } from '../utils/session';
+import UserDetails from '../types/UserDetails';
 
 const BASE_USERS_URL = process.env.BACKEND_HOST + '/users';
 
-const getLoggedInUsersDetails = async (sessionCookie: string) => {
+const getLoggedInUsersDetails = async (
+  sessionCookie: string
+): Promise<UserDetails> => {
   const response = await axios.get(
     `${BASE_USERS_URL}/loggedInUser`,
     axiosSessionConfig(sessionCookie)
