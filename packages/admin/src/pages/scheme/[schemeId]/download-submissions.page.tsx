@@ -10,16 +10,11 @@ import {
 } from '../../../services/SubmissionsService';
 import { getLoggedInUsersDetails } from '../../../services/UserService';
 import UserDetails from '../../../types/UserDetails';
-import callServiceMethod from '../../../utils/callServiceMethod';
-import {
-  generateErrorPageParams,
-  generateErrorPageRedirect,
-} from '../../../utils/serviceErrorHelpers';
+import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../utils/session';
 
 export const getServerSideProps: GetServerSideProps = async ({
   req,
-  res,
   query,
   resolvedUrl,
 }) => {
@@ -40,11 +35,6 @@ export const getServerSideProps: GetServerSideProps = async ({
     roles: [],
     created: '',
   };
-
-  const errorPageParams = generateErrorPageParams(
-    'Something went wrong while trying to export submissions.',
-    `/scheme/${schemeId}`
-  );
 
   const errorPageRedirect = generateErrorPageRedirect(
     'Something went wrong while trying to export submissions.',
@@ -83,16 +73,13 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
 
   if (exportStatus == ExportStatusEnum.NOT_STARTED) {
-    const response = await callServiceMethod(
-      req,
-      res,
-      () => requestSubmissionsExport(sessionCookie, applicationId),
-      `/scheme/${schemeId}/download-submissions`, // after export is triggered, redirect to same page
-      errorPageParams
-    );
-    if ('redirect' in response) {
-      return response;
-    }
+    requestSubmissionsExport(sessionCookie, applicationId);
+    return {
+      redirect: {
+        destination: `/scheme/${schemeId}/download-submissions`,
+        permanent: false,
+      },
+    };
   }
 
   if (

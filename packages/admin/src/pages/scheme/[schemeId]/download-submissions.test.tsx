@@ -13,19 +13,6 @@ import {
   getApplicationExportStatus,
   requestSubmissionsExport,
 } from '../../../services/SubmissionsService';
-import callServiceMethod from '../../../utils/callServiceMethod';
-
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
 
 jest.mock('../../../services/SchemeService');
 jest.mock('../../../services/ApplicationService');
@@ -40,8 +27,7 @@ const mockedGetLoggedInUsersDetails = getLoggedInUsersDetails as jest.Mock;
 
 const mockedGetApplicationExportStatus =
   getApplicationExportStatus as jest.Mock;
-
-const mockedCallServiceMethod = callServiceMethod as jest.Mock;
+const mockedRequestSubmissionsExport = requestSubmissionsExport as jest.Mock;
 
 const customProps = {
   backButtonHref: '/back',
@@ -227,17 +213,22 @@ describe('Download submissions page', () => {
       );
     });
 
-    it('Should return an empty user email when export is not in progress', async () => {
+    it('Should redirect to self when NOT_STARTED', async () => {
       mockedGetApplicationExportStatus.mockResolvedValue(
         ExportStatusEnum.NOT_STARTED
       );
-      mockedCallServiceMethod.mockResolvedValue({});
+      mockedRequestSubmissionsExport.mockResolvedValue({});
 
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
 
-      expect(response.props.emailAddress).toStrictEqual('');
+      expect(response).toStrictEqual({
+        redirect: {
+          permanent: false,
+          destination: '/scheme/testSchemeId/download-submissions',
+        },
+      });
     });
 
     it.todo('Placeholder for checking if the export is in progress');
@@ -259,17 +250,16 @@ describe('Download submissions page', () => {
         mockedGetApplicationExportStatus.mockResolvedValue(
           ExportStatusEnum.NOT_STARTED
         );
-        mockedCallServiceMethod.mockResolvedValue({});
 
         await getServerSideProps(getPostContext());
 
-        expect(mockedCallServiceMethod).toBeCalled();
+        expect(mockedRequestSubmissionsExport).toBeCalledWith('', 1);
       });
 
       it('requestSubmissionsExport is not triggered if exportStatus is PROCESSING', async () => {
         await getServerSideProps(getPostContext());
 
-        expect(mockedCallServiceMethod).not.toBeCalled();
+        expect(mockedRequestSubmissionsExport).not.toBeCalled();
       });
 
       it('Should return a user email if export is in progress', async () => {
