@@ -104,4 +104,22 @@ describe('API Handler Tests', () => {
       'http://localhost/mandatory-questions/start?schemeId=456'
     );
   });
+  it('should redirect to the service Error when there is an error in the call to the backend', async () => {
+    (getAdvertBySlug as jest.Mock).mockRejectedValue(new Error('error'));
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    await handler(req(), res());
+    const serviceErrorProps = {
+      errorInformation: 'There was an error in the service',
+      linkAttributes: {
+        href: '/dashboard',
+        linkText: 'Go back to your dashboard',
+        linkInformation: '',
+      },
+    };
+    expect(mockedRedirect).toHaveBeenCalledWith(
+      `http://localhost/service-error?serviceErrorProps=${JSON.stringify(
+        serviceErrorProps
+      )}`
+    );
+  });
 });

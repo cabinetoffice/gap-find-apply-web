@@ -31,6 +31,17 @@ export default async function handler(
       );
     }
   } catch (e) {
-    res.redirect(`${process.env.HOST}/404`);
+    const serviceErrorProps = {
+      errorInformation: 'There was an error in the service',
+      linkAttributes: {
+        href: routes.dashboard,
+        linkText: 'Go back to your dashboard',
+        linkInformation: '',
+      },
+    };
+    console.log(e);
+    res.redirect(
+      `${process.env.HOST}${routes.serviceError(serviceErrorProps)}`
+    );
   }
 }
