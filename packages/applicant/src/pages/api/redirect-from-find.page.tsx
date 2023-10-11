@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getAdvertBySlug } from '../../services/GrantAdvertService';
 import { getJwtFromCookies } from '../../utils/jwt';
+import { routes } from '../../utils/routes';
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -17,14 +18,16 @@ export default async function handler(
 
     if (version === 1) {
       const redirectUrl = isInternal
-        ? `${process.env.HOST}/applications/${grantApplicationId}`
+        ? `${process.env.HOST}${routes.applications}/${grantApplicationId}`
         : externalSubmissionUrl;
       res.redirect(redirectUrl);
     }
 
     if (version === 2) {
       res.redirect(
-        `${process.env.HOST}/mandatory-questions/${grantSchemeId}/start`
+        `${process.env.HOST}${routes.mandatoryQuestions.startPage(
+          grantSchemeId.toString()
+        )}`
       );
     }
   } catch (e) {

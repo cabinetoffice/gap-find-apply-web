@@ -16,6 +16,10 @@ export const routes = {
     name: '/organisation/name',
     type: '/organisation/type',
   },
+  mandatoryQuestions: {
+    startPage: (schemeId: string) =>
+      `/mandatory-questions/start?schemeId=${schemeId}`,
+  },
   applications: '/applications',
   submissions: {
     index: '/submissions',

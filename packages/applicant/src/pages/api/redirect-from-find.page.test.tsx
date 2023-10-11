@@ -82,7 +82,7 @@ describe('API Handler Tests', () => {
     await handler(req(), res());
 
     expect(mockedRedirect).toHaveBeenCalledWith(
-      'http://localhost/mandatory-questions/456/start'
+      'http://localhost/mandatory-questions/start?schemeId=456'
     );
   });
 
@@ -101,7 +101,7 @@ describe('API Handler Tests', () => {
     await handler(req(), res());
 
     expect(mockedRedirect).toHaveBeenCalledWith(
-      'http://localhost/mandatory-questions/456/start'
+      'http://localhost/mandatory-questions/start?schemeId=456'
     );
   });
 });
