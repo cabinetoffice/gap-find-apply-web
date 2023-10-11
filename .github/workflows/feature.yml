@@ -64,7 +64,6 @@ jobs:
       - name: Save cached dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v3
-        if: always()
         with:
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
