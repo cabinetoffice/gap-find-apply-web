@@ -10,7 +10,7 @@ export async function getMandatoryQuestionById(
   mandatoryQuestionId: string
 ): Promise<GrantMandatoryQuestionDto> {
   const { data } = await axios.get<GrantMandatoryQuestionDto>(
-    `${BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}}`,
+    `${BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}`,
     axiosConfig(jwt)
   );
   return data;
@@ -22,7 +22,7 @@ export async function updateMandatoryQuestion(
   body: GrantMandatoryQuestionDto
 ): Promise<string> {
   const { data } = await axios.patch<string>(
-    `${BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}}`,
+    `${BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}`,
     body,
     axiosConfig(jwt)
   );

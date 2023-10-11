@@ -1,7 +1,6 @@
 import {
   ButtonTypePropertyEnum,
   FlexibleQuestionPageLayout,
-  Optional,
   TextInput,
   ValidationError,
 } from 'gap-web-ui';
@@ -15,6 +14,7 @@ import {
   getMandatoryQuestionById,
   updateMandatoryQuestion,
 } from '../../../services/GrantMandatoryQuestionService';
+import { Optional } from '../../../testUtils/unitTestHelpers';
 import callServiceMethod from '../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
@@ -26,6 +26,7 @@ export const getServerSideProps = async ({
   resolvedUrl,
 }: GetServerSidePropsContext) => {
   const mandatoryQuestionId = (query?.mandatoryQuestionId as string) || null;
+  const fromSummary = (query?.fromSummary as string) || null;
   const jwt = getJwtFromCookies(req);
   const mandatoryQuestion = await getMandatoryQuestionById(
     jwt,
@@ -39,7 +40,11 @@ export const getServerSideProps = async ({
       },
     };
   }
-  if (mandatoryQuestion?.name !== null) {
+  //TODO change this to be false. only when someone access this from the summary page,
+  //  we want to show the default value
+  //otherwise we gonna send it to the next non filled page
+
+  if (mandatoryQuestion?.name !== null && fromSummary === 'true') {
     return {
       redirect: {
         destination: routes.mandatoryQuestions.addressPage(mandatoryQuestionId),
@@ -67,8 +72,9 @@ export const getServerSideProps = async ({
   if ('redirect' in response) {
     return response;
   }
+
   let defaultFields =
-    mandatoryQuestion.name as Optional<GrantMandatoryQuestionDto>;
+    (mandatoryQuestion.name as Optional<GrantMandatoryQuestionDto>) || '';
   let fieldErrors = [] as ValidationError[];
   if ('fieldErrors' in response) {
     fieldErrors = response.fieldErrors;
@@ -109,7 +115,7 @@ const MandatoryQuestionOrganisationNamePage = ({
               questionTitle="Enter the name of your organisation"
               questionHintText="This is the official name of your organisation. It could be the name that is registered with Companies House or the Charity Commission"
               fieldName="name"
-              defaultValue={defaultFields.name}
+              defaultValue={defaultFields.name || ''}
               fieldErrors={fieldErrors}
               width="30"
             />
