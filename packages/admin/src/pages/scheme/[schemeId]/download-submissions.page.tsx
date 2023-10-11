@@ -143,34 +143,35 @@ const DownloadSubmissions = ({
           )}
 
           {(exportStatus == ExportStatusEnum.NOT_STARTED ||
-            exportStatus == ExportStatusEnum.COMPLETE) && (
-            <>
-              <h1 className="govuk-heading-l">View your applications</h1>
-              <p
-                className="govuk-body"
-                data-cy="cy_Download-submissions-page-text-1"
-              >
-                To see who has applied for your grant, you need to view and
-                download your submitted applications.
-              </p>
-              <p
-                className="govuk-body"
-                data-cy="cy_Download-submissions-page-text-2"
-              >
-                Get started by requesting a list of applications.
-              </p>
-              <FlexibleQuestionPageLayout
-                fieldErrors={[]}
-                formAction={formAction}
-                csrfToken={csrfToken}
-              >
-                <Button
-                  text="Download submitted applications"
-                  addNameAttribute
-                />
-              </FlexibleQuestionPageLayout>
-            </>
-          )}
+            exportStatus == ExportStatusEnum.COMPLETE) &&
+            requested != 'true' && (
+              <>
+                <h1 className="govuk-heading-l">View your applications</h1>
+                <p
+                  className="govuk-body"
+                  data-cy="cy_Download-submissions-page-text-1"
+                >
+                  To see who has applied for your grant, you need to view and
+                  download your submitted applications.
+                </p>
+                <p
+                  className="govuk-body"
+                  data-cy="cy_Download-submissions-page-text-2"
+                >
+                  Get started by requesting a list of applications.
+                </p>
+                <FlexibleQuestionPageLayout
+                  fieldErrors={[]}
+                  formAction={formAction}
+                  csrfToken={csrfToken}
+                >
+                  <Button
+                    text="Download submitted applications"
+                    addNameAttribute
+                  />
+                </FlexibleQuestionPageLayout>
+              </>
+            )}
         </div>
       </div>
     </>
