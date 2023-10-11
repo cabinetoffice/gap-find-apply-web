@@ -14,6 +14,7 @@ import {
 import { createMockRouter } from '../../../testUtils/createMockRouter';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import SubmissionSections, { getServerSideProps } from './sections.page';
+import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
 
 jest.mock('../../../services/SubmissionService');
 jest.mock('../../../utils/constants');
@@ -21,7 +22,7 @@ jest.mock('../../../utils/jwt');
 jest.mock('../../../utils/csrf');
 
 jest.mock('../../../services/ApplicationService', () => ({
-  getApplicationStatusBySchemeId: jest.fn().mockResolvedValue('PUBLISHED'),
+  getApplicationStatusBySchemeId: jest.fn(),
 }));
 
 jest.mock('next/config', () => () => {
@@ -238,7 +239,28 @@ const questionDataStandardEligibilityResponseNull = {
 };
 
 describe('getServerSideProps', () => {
+  it('should return a redirect to grant-is-closed when submission is REMOVED ', async () => {
+    (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue('REMOVED');
+    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+    (isSubmissionReady as jest.Mock).mockReturnValue(true);
+    (getQuestionById as jest.Mock).mockReturnValue(
+      questionDataStandardEligibilityResponseNo
+    );
+    const response = await getServerSideProps(context);
+    expect(response).toEqual({
+      redirect: {
+        destination: '/grant-is-closed',
+        permanent: false,
+      },
+    });
+  });
+
   it('should return sections, submissionId, applicationName', async () => {
+    (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue(
+      'PUBLISHED'
+    );
     (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
