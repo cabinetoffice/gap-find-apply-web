@@ -9,7 +9,7 @@ const ExternalApplicationSignpost = () => {
 
       <Layout
         isUserLoggedIn={false}
-        backBtnUrl={'/mandatory-questions/summary'}
+        backBtnUrl={'/mandatory-questions/[mandatoryQuestionId]/summary'}
       >
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
