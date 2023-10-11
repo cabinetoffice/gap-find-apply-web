@@ -20,6 +20,10 @@ jest.mock('../../../utils/constants');
 jest.mock('../../../utils/jwt');
 jest.mock('../../../utils/csrf');
 
+jest.mock('../../../services/ApplicationService', () => ({
+  getApplicationStatusBySchemeId: jest.fn().mockResolvedValue('PUBLISHED'),
+}));
+
 jest.mock('next/config', () => () => {
   return {
     serverRuntimeConfig: {
