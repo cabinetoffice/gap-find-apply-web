@@ -70,8 +70,6 @@ jobs:
             **/node_modules
             ~/.cache/Cypress
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
 
       - name: Snyk setup
         uses: snyk/actions/node@master
