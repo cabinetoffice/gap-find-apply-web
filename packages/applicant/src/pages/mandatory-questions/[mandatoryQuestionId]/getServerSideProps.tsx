@@ -14,11 +14,11 @@ import { routes } from '../../../utils/routes';
 export default async function getServerSideProps({
   req,
   res,
+  params,
   query,
   resolvedUrl, //the url that the user requested
 }: GetServerSidePropsContext) {
-  const { mandatoryQuestionId } = query as Record<string, string>;
-  const fromSummary = (query?.fromSummary as string) || null;
+  const { mandatoryQuestionId } = params as Record<string, string>;
   const jwt = getJwtFromCookies(req);
   const { publicRuntimeConfig } = getConfig();
 

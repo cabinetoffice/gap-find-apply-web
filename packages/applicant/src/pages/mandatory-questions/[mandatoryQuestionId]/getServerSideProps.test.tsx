@@ -50,7 +50,7 @@ describe('getServerSideProps', () => {
 
   describe('when handling a GET request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
-      query: { mandatoryQuestionId: 'mandatoryQuestionId' },
+      params: { mandatoryQuestionId: 'mandatoryQuestionId' },
     });
 
     it('should return the right props', async () => {
@@ -114,7 +114,7 @@ describe('getServerSideProps', () => {
       req: {
         method: 'POST',
       },
-      query: { mandatoryQuestionId: 'mandatoryQuestionId' },
+      params: { mandatoryQuestionId: 'mandatoryQuestionId' },
     });
 
     beforeEach(() => {
