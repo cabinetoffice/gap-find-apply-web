@@ -8,7 +8,6 @@ import {
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import getConfig from 'next/config';
-import Link from 'next/link';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
