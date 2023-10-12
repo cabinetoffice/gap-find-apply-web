@@ -41,6 +41,12 @@ jobs:
         run: |
           yarn workspace gap-web-ui build
 
+      - name: Upload gap-web-ui-dist
+        uses: actions/upload-artifact@v3
+        with:
+          name: gap-web-ui-dist
+          path: packages/gap-web-ui/dist
+
       - name: Units Tests
         run: |
           yarn workspace gap-web-ui coverage

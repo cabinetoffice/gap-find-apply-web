@@ -41,23 +41,7 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install --immutable
-
-      - name: Cache gap-web-ui build
-        id: cache-gap-web-ui
-        uses: actions/cache@v3
-        with:
-          path: '**/packages/gap-web-ui/dist'
-          key: ${{ runner.os }}-gap-web-ui-${{ hashFiles('**/packages/gap-web-ui/dist') }}
-
-      - name: Build gap-web-ui
-        if: steps.cache-gap-web-ui.outputs.cache-hit != 'true'
-        run: |
-          yarn workspace gap-web-ui build
-
-      - name: Build application
-        run: |
-          yarn workspace admin build
-
+      
       - name: Lint files
         run: |
           yarn workspace admin lint
@@ -65,3 +49,12 @@ jobs:
       - name: Units Tests
         run: |
           yarn workspace admin coverage
+
+      - name: Download gap-web-ui
+        uses: actions/download-artifact@v3
+        with:
+          name: gap-web-ui-dist
+
+      - name: Build application
+        run: |
+          yarn workspace admin build
