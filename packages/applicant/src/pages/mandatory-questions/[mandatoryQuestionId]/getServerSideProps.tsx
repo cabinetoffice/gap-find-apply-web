@@ -17,7 +17,7 @@ export default async function getServerSideProps({
   query,
   resolvedUrl, //the url that the user requested
 }: GetServerSidePropsContext) {
-  const mandatoryQuestionId = (query?.mandatoryQuestionId as string) || null;
+  const mandatoryQuestionId = query?.mandatoryQuestionId as string;
   const fromSummary = (query?.fromSummary as string) || null;
   const jwt = getJwtFromCookies(req);
   const { publicRuntimeConfig } = getConfig();
@@ -46,6 +46,7 @@ export default async function getServerSideProps({
       redirect: {
         destination: routes.serviceError(serviceErrorProps),
         permanent: false,
+        statusCode: 302,
       },
     };
   }

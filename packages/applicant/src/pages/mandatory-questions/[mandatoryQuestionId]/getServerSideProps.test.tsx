@@ -90,6 +90,23 @@ describe('getServerSideProps', () => {
         spiedGrantMandatoryQuestionServiceGetMandatoryQuestion
       ).toHaveBeenNthCalledWith(1, 'testSessionId', 'mandatoryQuestionId');
     });
+
+    it('should redirect to errorPage if some error happens to the backend call', async () => {
+      spiedGrantMandatoryQuestionServiceGetMandatoryQuestion.mockRejectedValue(
+        new Error()
+      );
+
+      const response = await getServerSideProps(getContext(getDefaultContext));
+
+      expectObjectEquals(response, {
+        redirect: {
+          destination:
+            '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to get the page you requested","linkAttributes":{"href":"/testResolvedURL","linkText":"Please return","linkInformation":" and try again."}}',
+          permanent: false,
+          statusCode: 302,
+        },
+      });
+    });
   });
 
   describe('when handling a POST request', () => {
