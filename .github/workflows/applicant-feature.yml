@@ -11,10 +11,12 @@ on:
       - TMI2-**
     paths-ignore:
       - "*.md"
+    paths:
+      - "packages/applicant/**"
 
 jobs:
   build:
-    name: Build Feature
+    name: Applicant CI
 
     runs-on: ubuntu-latest
 
@@ -27,8 +29,6 @@ jobs:
 
       - name: Generate .env files
         run: |
-          cp packages/admin/.env.example packages/admin/.env
-          sed -i -e '/TINYMCE_API_KEY=/s/$/${{ secrets.TINYMCE_API_KEY }}/g' packages/admin/.env 
           cp packages/applicant/.env.example packages/applicant/.env
 
       - name: Read .nvmrc
@@ -43,7 +43,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn install --frozen-lockfile
+          yarn workspace applicant install --frozen-lockfile
 
       - name: Snyk setup
         uses: snyk/actions/node@master
@@ -54,12 +54,12 @@ jobs:
 
       - name: Lint files
         run: |
-          yarn lint
+          yarn workspace applicant lint
 
       - name: Build application
         run: |
-          yarn build
+          yarn workspace applicant build
 
       - name: Units Tests
         run: |
-          yarn coverage
+          yarn workspace applicant coverage
