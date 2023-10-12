@@ -20,9 +20,9 @@ export const routes = {
     startPage: (schemeId: string) =>
       `/mandatory-questions/start?schemeId=${schemeId}`,
     namePage: (mandatoryQuestionId: string) =>
-      `/mandatory-questions/${mandatoryQuestionId}/name`,
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-name`,
     addressPage: (mandatoryQuestionId: string) =>
-      `/mandatory-questions/${mandatoryQuestionId}/address`,
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-address`,
   },
   applications: '/applications',
   submissions: {

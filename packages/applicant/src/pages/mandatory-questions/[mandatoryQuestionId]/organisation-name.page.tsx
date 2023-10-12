@@ -23,28 +23,42 @@ export const getServerSideProps = async ({
   req,
   res,
   query,
-  resolvedUrl,
+  resolvedUrl, //the url that the user requested
 }: GetServerSidePropsContext) => {
   const mandatoryQuestionId = (query?.mandatoryQuestionId as string) || null;
   const fromSummary = (query?.fromSummary as string) || null;
   const jwt = getJwtFromCookies(req);
-  const mandatoryQuestion = await getMandatoryQuestionById(
-    jwt,
-    mandatoryQuestionId
-  );
-  if (!mandatoryQuestion) {
+  let mandatoryQuestion;
+
+  try {
+    mandatoryQuestion = await getMandatoryQuestionById(
+      jwt,
+      mandatoryQuestionId
+    );
+  } catch (e) {
+    const serviceErrorProps = {
+      errorInformation:
+        'Something went wrong while trying to get the page you requested',
+      linkAttributes: {
+        href: resolvedUrl,
+        linkText: 'Please return',
+        linkInformation: ' and try again.',
+      },
+    };
     return {
       redirect: {
-        destination: 404,
+        destination: routes.serviceError(serviceErrorProps),
         permanent: false,
       },
     };
   }
-  //TODO change this to be false. only when someone access this from the summary page,
+
+  //TODO only when someone access this page from the summary page,
   //  we want to show the default value
   //otherwise we gonna send it to the next non filled page
+  // we could add an helper function that will generate the next page url
 
-  if (mandatoryQuestion?.name !== null && fromSummary === 'true') {
+  if (mandatoryQuestion?.name !== null && fromSummary === 'false') {
     return {
       redirect: {
         destination: routes.mandatoryQuestions.addressPage(mandatoryQuestionId),
@@ -57,7 +71,7 @@ export const getServerSideProps = async ({
     req,
     res,
     (body) => updateMandatoryQuestion(jwt, mandatoryQuestionId, body),
-    routes.mandatoryQuestions.startPage(mandatoryQuestion.schemeId.toString()),
+    routes.mandatoryQuestions.addressPage(mandatoryQuestionId),
     {
       errorInformation:
         'Something went wrong while trying to update your organisation details',
@@ -72,29 +86,37 @@ export const getServerSideProps = async ({
   if ('redirect' in response) {
     return response;
   }
+  const { publicRuntimeConfig } = getConfig();
+  const backButtonUrl = routes.mandatoryQuestions.startPage(
+    mandatoryQuestion.schemeId.toString()
+  );
 
   let defaultFields =
     (mandatoryQuestion.name as Optional<GrantMandatoryQuestionDto>) || '';
   let fieldErrors = [] as ValidationError[];
+
   if ('fieldErrors' in response) {
     fieldErrors = response.fieldErrors;
     defaultFields = response.body as Optional<GrantMandatoryQuestionDto>;
   }
-  const { publicRuntimeConfig } = getConfig();
+
   return {
     props: {
       csrfToken: (req as any).csrfToken?.() || '',
       formAction: publicRuntimeConfig.subPath + resolvedUrl,
       fieldErrors,
       defaultFields,
+      backButtonUrl,
     },
   };
 };
+
 const MandatoryQuestionOrganisationNamePage = ({
   csrfToken,
   fieldErrors,
   formAction,
   defaultFields,
+  backButtonUrl,
 }) => {
   return (
     <>
@@ -105,7 +127,7 @@ const MandatoryQuestionOrganisationNamePage = ({
           }Organisation name - Apply for a grant`}
         />
 
-        <Layout backBtnUrl={routes.organisation.index}>
+        <Layout backBtnUrl={backButtonUrl}>
           <FlexibleQuestionPageLayout
             formAction={formAction}
             fieldErrors={fieldErrors}
