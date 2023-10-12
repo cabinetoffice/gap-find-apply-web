@@ -33,6 +33,8 @@ export const routes = {
       `/mandatory-questions/${mandatoryQuestionId}/funding-amount`,
     fundingLocationPage: (mandatoryQuestionId: string) =>
       `/mandatory-questions/${mandatoryQuestionId}/funding-location`,
+    summaryPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/summary`,
   },
   applications: '/applications',
   submissions: {

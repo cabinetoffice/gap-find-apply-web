@@ -1,11 +1,14 @@
 import { GrantMandatoryQuestionDto } from '../services/GrantMandatoryQuestionService';
 import { routes } from './routes';
 
-export const generateUrlForMandatoryQuestionNextPage = (
+export const generateRedirectForMandatoryQuestionNextPage = (
   mandatoryQuestion: GrantMandatoryQuestionDto,
   mandatoryQuestionId: string
 ) => {
-  const redirect = { destination: '', permanent: false };
+  const redirect = {
+    destination: routes.mandatoryQuestions.summaryPage(mandatoryQuestionId),
+    permanent: false,
+  };
   if (mandatoryQuestion.name) {
     redirect.destination =
       routes.mandatoryQuestions.addressPage(mandatoryQuestionId);

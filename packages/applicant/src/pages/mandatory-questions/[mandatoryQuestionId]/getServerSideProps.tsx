@@ -8,7 +8,7 @@ import {
 } from '../../../services/GrantMandatoryQuestionService';
 import { Optional } from '../../../testUtils/unitTestHelpers';
 import callServiceMethod from '../../../utils/callServiceMethod';
-import { generateUrlForMandatoryQuestionNextPage as generateRedirectForMandatoryQuestionNextPage } from '../../../utils/generateUrlForMandatoryQuestionNextPage';
+import { generateRedirectForMandatoryQuestionNextPage } from '../../../utils/generateRedirectForMandatoryQuestionNextPage';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 

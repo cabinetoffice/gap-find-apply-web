@@ -51,3 +51,74 @@ describe('Api.submissions.question', () => {
     );
   });
 });
+describe('Mandatory Questions Routes', () => {
+  it('should generate the correct start page URL', () => {
+    const schemeId = 'exampleSchemeId';
+    const expectedURL = `/mandatory-questions/start?schemeId=${schemeId}`;
+    expect(routes.mandatoryQuestions.startPage(schemeId)).toBe(expectedURL);
+  });
+
+  it('should generate the correct name page URL', () => {
+    const mandatoryQuestionId = 'exampleMandatoryQuestionId';
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/organisation-name`;
+    expect(routes.mandatoryQuestions.namePage(mandatoryQuestionId)).toBe(
+      expectedURL
+    );
+  });
+
+  it('should generate the correct address page URL', () => {
+    const mandatoryQuestionId = 'exampleMandatoryQuestionId';
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/organisation-address`;
+    expect(routes.mandatoryQuestions.addressPage(mandatoryQuestionId)).toBe(
+      expectedURL
+    );
+  });
+
+  it('should generate the correct type page URL', () => {
+    const mandatoryQuestionId = 'exampleMandatoryQuestionId';
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/organisation-type`;
+    expect(routes.mandatoryQuestions.typePage(mandatoryQuestionId)).toBe(
+      expectedURL
+    );
+  });
+
+  it('should generate the correct companiesHouseNumberPage URL', () => {
+    const mandatoryQuestionId = 'exampleMandatoryQuestionId';
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/organisation-companies-house-number`;
+    expect(
+      routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId)
+    ).toBe(expectedURL);
+  });
+
+  it('should generate the correct charityCommissionNumberPage URL', () => {
+    const mandatoryQuestionId = 'exampleMandatoryQuestionId';
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/organisation-charity-commission-number`;
+    expect(
+      routes.mandatoryQuestions.charityCommissionNumberPage(mandatoryQuestionId)
+    ).toBe(expectedURL);
+  });
+
+  it('should generate the correct fundingAmountPage URL', () => {
+    const mandatoryQuestionId = 'exampleMandatoryQuestionId';
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/funding-amount`;
+    expect(
+      routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId)
+    ).toBe(expectedURL);
+  });
+
+  it('should generate the correct fundingLocationPage URL', () => {
+    const mandatoryQuestionId = 'exampleMandatoryQuestionId';
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/funding-location`;
+    expect(
+      routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId)
+    ).toBe(expectedURL);
+  });
+
+  it('should generate the correct summary page URL', () => {
+    const mandatoryQuestionId = 'exampleMandatoryQuestionId';
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/summary`;
+    expect(routes.mandatoryQuestions.summaryPage(mandatoryQuestionId)).toBe(
+      expectedURL
+    );
+  });
+});
