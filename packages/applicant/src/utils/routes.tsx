@@ -30,11 +30,11 @@ export const routes = {
     charityCommissionNumberPage: (mandatoryQuestionId: string) =>
       `/mandatory-questions/${mandatoryQuestionId}/organisation-charity-commission-number`,
     fundingAmountPage: (mandatoryQuestionId: string) =>
-      `/mandatory-questions/${mandatoryQuestionId}/funding-amount`,
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-funding-amount`,
     fundingLocationPage: (mandatoryQuestionId: string) =>
-      `/mandatory-questions/${mandatoryQuestionId}/funding-location`,
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-funding-location`,
     summaryPage: (mandatoryQuestionId: string) =>
-      `/mandatory-questions/${mandatoryQuestionId}/summary`,
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-summary`,
   },
   applications: '/applications',
   submissions: {

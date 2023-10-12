@@ -100,7 +100,7 @@ describe('Mandatory Questions Routes', () => {
 
   it('should generate the correct fundingAmountPage URL', () => {
     const mandatoryQuestionId = 'exampleMandatoryQuestionId';
-    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/funding-amount`;
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/organisation-funding-amount`;
     expect(
       routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId)
     ).toBe(expectedURL);
@@ -108,7 +108,7 @@ describe('Mandatory Questions Routes', () => {
 
   it('should generate the correct fundingLocationPage URL', () => {
     const mandatoryQuestionId = 'exampleMandatoryQuestionId';
-    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/funding-location`;
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/organisation-funding-location`;
     expect(
       routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId)
     ).toBe(expectedURL);
@@ -116,7 +116,7 @@ describe('Mandatory Questions Routes', () => {
 
   it('should generate the correct summary page URL', () => {
     const mandatoryQuestionId = 'exampleMandatoryQuestionId';
-    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/summary`;
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/organisation-summary`;
     expect(routes.mandatoryQuestions.summaryPage(mandatoryQuestionId)).toBe(
       expectedURL
     );

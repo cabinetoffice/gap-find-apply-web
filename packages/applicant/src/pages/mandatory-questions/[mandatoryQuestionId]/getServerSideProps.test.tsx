@@ -10,11 +10,15 @@ import {
   getContext,
   mockServiceMethod,
 } from '../../../testUtils/unitTestHelpers';
-import { generateRedirectUrlForMandatoryQuestionNextPage } from '../../../utils/generateRedirectForMandatoryQuestionNextPage';
+import {
+  checkIfPageHaveAlreadyBeenAnswered,
+  generateRedirectUrlForMandatoryQuestionNextPage,
+} from '../../../utils/mandatoryQuestionUtils';
+import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 
 jest.mock('next/dist/server/api-utils/node');
-jest.mock('../../../utils/generateRedirectForMandatoryQuestionNextPage');
+jest.mock('../../../utils/mandatoryQuestionUtils');
 
 const spiedGrantMandatoryQuestionServiceGetMandatoryQuestion = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
@@ -51,6 +55,7 @@ describe('getServerSideProps', () => {
   describe('when handling a GET request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
+      query: {},
     });
 
     it('should return the right props', async () => {
@@ -102,8 +107,54 @@ describe('getServerSideProps', () => {
         redirect: {
           destination:
             '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to get the page you requested","linkAttributes":{"href":"/testResolvedURL","linkText":"Please return","linkInformation":" and try again."}}',
-          permanent: false,
           statusCode: 302,
+        },
+      });
+    });
+
+    it('should redirect to next not answered page if the page we are accessing has already been answered, and the url does not have the fromSummaryPage query param as true', async () => {
+      mockServiceMethod(
+        spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
+        getDefaultGrantMandatoryQuestion
+      );
+      (
+        generateRedirectUrlForMandatoryQuestionNextPage as jest.Mock
+      ).mockReturnValue('/nextpage');
+      (checkIfPageHaveAlreadyBeenAnswered as jest.Mock).mockReturnValue(true);
+
+      const response = await getServerSideProps(getContext(getDefaultContext));
+
+      expectObjectEquals(response, {
+        redirect: {
+          destination: '/nextpage',
+          statusCode: 302,
+        },
+      });
+    });
+    it('should not redirect to next not answered page if the page we are accessing has already been answered when the url have the fromSummaryPage query param as true', async () => {
+      const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
+        params: { mandatoryQuestionId: 'mandatoryQuestionId' },
+        query: { fromSummaryPage: 'true' },
+      });
+
+      mockServiceMethod(
+        spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
+        getDefaultGrantMandatoryQuestion
+      );
+      (
+        generateRedirectUrlForMandatoryQuestionNextPage as jest.Mock
+      ).mockReturnValue('/nextpage');
+      (checkIfPageHaveAlreadyBeenAnswered as jest.Mock).mockReturnValue(true);
+
+      const response = await getServerSideProps(getContext(getDefaultContext));
+
+      expectObjectEquals(response, {
+        props: {
+          csrfToken: 'testCSRFToken',
+          fieldErrors: [],
+          formAction: '/testResolvedURL',
+          defaultFields: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
         },
       });
     });
@@ -115,6 +166,7 @@ describe('getServerSideProps', () => {
         method: 'POST',
       },
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
+      query: {},
     });
 
     beforeEach(() => {
@@ -146,6 +198,26 @@ describe('getServerSideProps', () => {
       expectObjectEquals(response, {
         redirect: {
           destination: '/nextpage',
+          statusCode: 302,
+        },
+      });
+    });
+
+    it('Should redirect to the summary page after successfully updating if query parameter fromSummaryPage is true', async () => {
+      const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
+        req: {
+          method: 'POST',
+        },
+        params: { mandatoryQuestionId: 'mandatoryQuestionId' },
+        query: { fromSummaryPage: 'true' },
+      });
+      const response = await getServerSideProps(getContext(getDefaultContext));
+
+      expectObjectEquals(response, {
+        redirect: {
+          destination: routes.mandatoryQuestions.summaryPage(
+            'mandatoryQuestionId'
+          ),
           statusCode: 302,
         },
       });
