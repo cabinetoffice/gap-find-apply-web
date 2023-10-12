@@ -70,6 +70,7 @@ describe('getServerSideProps', () => {
           fieldErrors: [],
           formAction: '/testResolvedURL',
           defaultFields: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
         },
       });
     });
@@ -176,6 +177,7 @@ describe('getServerSideProps', () => {
 
           formAction: '/testResolvedURL',
           defaultFields: { name: 'test name' },
+          mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
         },
       });
     });

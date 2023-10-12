@@ -103,6 +103,7 @@ export default async function getServerSideProps({
       formAction: publicRuntimeConfig.subPath + resolvedUrl,
       fieldErrors,
       defaultFields,
+      mandatoryQuestion,
     },
   };
 }
