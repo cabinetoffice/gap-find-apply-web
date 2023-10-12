@@ -38,17 +38,13 @@ jobs:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
           cache: 'yarn'
 
-      - name: Install gap-web-ui dependencies
+      - name: Install dependencies
         run: |
-          yarn workspace gap-web-ui install --immutable
+          yarn workspace admin install --immutable
 
       - name: Build gap-web-ui
         run: |
           yarn workspace gap-web-ui build
-
-      - name: Install dependencies
-        run: |
-          yarn workspace admin install --immutable
 
       - name: Build application
         run: |
