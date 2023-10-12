@@ -45,6 +45,18 @@ jobs:
         run: |
           yarn workspace applicant install --immutable
 
+      - name: Install gap-web-ui dependencies
+        run: |
+          yarn workspace gap-web-ui install --immutable
+          
+      - name: Build gap-web-ui application
+        run: |
+          yarn workspace gap-web-ui build
+
+      - name: Build application
+        run: |
+          yarn workspace applicant build
+
       - name: Snyk setup
         uses: snyk/actions/node@master
         env:
@@ -55,14 +67,6 @@ jobs:
       - name: Lint files
         run: |
           yarn workspace applicant lint
-
-      - name: Build gap-web-ui application
-        run: |
-          yarn workspace gap-web-ui build
-
-      - name: Build application
-        run: |
-          yarn workspace applicant build
 
       - name: Units Tests
         run: |

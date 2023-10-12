@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - feature/**
-      - AFG-**
       - GAP-**
       - fix/**
       - bug/**
@@ -43,17 +42,6 @@ jobs:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
           cache: 'yarn'
 
-      - name: Snyk setup
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --yarn-workspaces --strict-out-of-sync=false
-
-      - name: Lint files
-        run: |
-          yarn workspace admin lint
-
       - name: Install dependencies
         run: |
           yarn workspace admin install --immutable
@@ -69,6 +57,17 @@ jobs:
       - name: Build application
         run: |
           yarn workspace admin build
+
+      - name: Snyk setup
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --yarn-workspaces --strict-out-of-sync=false
+
+      - name: Lint files
+        run: |
+          yarn workspace admin lint
 
       - name: Units Tests
         run: |
