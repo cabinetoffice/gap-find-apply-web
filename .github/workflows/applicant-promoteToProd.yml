@@ -1,7 +1,7 @@
 name: Applicant Promote to Prod Workflow
 
 on:
-  pull_request:
+  push:
     branches:
       - main
     paths:
