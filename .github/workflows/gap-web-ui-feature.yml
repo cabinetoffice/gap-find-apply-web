@@ -1,4 +1,4 @@
-name: Feature Workflow
+name: gap-web-ui CI
 
 on:
   push:
