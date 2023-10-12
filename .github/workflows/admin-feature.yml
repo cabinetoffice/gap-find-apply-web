@@ -45,7 +45,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn workspace admin install --frozen-lockfile
+          yarn workspace admin install --immutable
 
       - name: Snyk setup
         uses: snyk/actions/node@master
@@ -57,6 +57,10 @@ jobs:
       - name: Lint files
         run: |
           yarn workspace admin lint
+
+      - name: Build gap-web-ui application
+        run: |
+          yarn workspace gap-web-ui build
 
       - name: Build application
         run: |

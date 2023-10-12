@@ -40,7 +40,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn workspace gap-web-ui install --frozen-lockfile
+          yarn workspace gap-web-ui install --immutable
 
       - name: Snyk setup
         uses: snyk/actions/node@master
