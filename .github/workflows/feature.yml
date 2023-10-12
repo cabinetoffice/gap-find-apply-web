@@ -20,10 +20,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        
       - name: Snyk setup
         uses: snyk/actions/node@master
         env:
