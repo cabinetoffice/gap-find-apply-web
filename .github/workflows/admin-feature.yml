@@ -46,14 +46,14 @@ jobs:
         run: |
           yarn workspace admin lint
 
-      - name: Units Tests
-        run: |
-          yarn workspace admin coverage
-
       - name: Download gap-web-ui
         uses: actions/download-artifact@v3
         with:
           name: gap-web-ui-dist
+
+      - name: Units Tests
+        run: |
+          yarn workspace admin coverage
 
       - name: Build application
         run: |

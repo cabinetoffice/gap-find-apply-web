@@ -45,15 +45,15 @@ jobs:
         run: |
           yarn workspace applicant lint
 
-      - name: Units Tests
-        run: |
-          yarn workspace applicant coverage
-
-      - name: Build application
-        run: |
-          yarn workspace applicant build
-
       - name: Download gap-web-ui
         uses: actions/download-artifact@v3
         with:
           name: gap-web-ui-dist
+      
+      - name: Units Tests
+        run: |
+          yarn workspace applicant coverage
+          
+      - name: Build application
+        run: |
+          yarn workspace applicant build
