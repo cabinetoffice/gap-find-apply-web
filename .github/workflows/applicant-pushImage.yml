@@ -8,6 +8,7 @@ on:
       - develop
     paths:
       - "packages/applicant/**"
+      - "packages/gap-web-ui/**"
       - ".github/workflows/applicant-pushImage.yml"
       - "package.json"
       - "yarn.lock"
