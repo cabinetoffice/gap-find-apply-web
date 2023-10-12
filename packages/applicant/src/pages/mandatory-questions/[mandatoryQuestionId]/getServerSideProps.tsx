@@ -46,18 +46,14 @@ export default async function getServerSideProps({
       },
     };
   }
-
   //TODO only when someone access this page from the summary page,
   //  we want to show the default value
   //otherwise we gonna send it to the next non filled page
-  if (!fromSummary) {
-    return {
-      redirect: generateRedirectForMandatoryQuestionNextPage(
-        mandatoryQuestion,
-        mandatoryQuestionId
-      ),
-    };
-  }
+  generateRedirectForMandatoryQuestionNextPage(
+    mandatoryQuestion,
+    mandatoryQuestionId,
+    fromSummary === 'true'
+  );
 
   const response = await callServiceMethod(
     req,
@@ -68,7 +64,11 @@ export default async function getServerSideProps({
         mandatoryQuestionId,
         body
       ),
-    routes.mandatoryQuestions.addressPage(mandatoryQuestionId),
+    generateRedirectForMandatoryQuestionNextPage(
+      mandatoryQuestion,
+      mandatoryQuestionId,
+      fromSummary === 'true'
+    ).redirect.destination,
     {
       errorInformation:
         'Something went wrong while trying to update your organisation details',
