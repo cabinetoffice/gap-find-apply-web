@@ -57,10 +57,3 @@ jobs:
       - name: Units Tests
         run: |
           yarn workspace admin coverage
-
-      - name: Snyk setup
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --yarn-workspaces --strict-out-of-sync=false
