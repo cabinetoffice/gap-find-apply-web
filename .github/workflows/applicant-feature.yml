@@ -39,7 +39,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn workspace applicant install --immutable
+          yarn install --immutable
 
       - name: Build gap-web-ui
         run: |
