@@ -31,6 +31,7 @@ export default [
         extract: true,
       }),
     ],
+    external: ['depd'],
   },
   {
     input: 'dist/esm/types/index.d.ts',
