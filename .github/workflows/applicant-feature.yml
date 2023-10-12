@@ -11,7 +11,7 @@ on:
       - TMI2-**
     paths:
       - "packages/applicant/**"
-      - ".github/workflows/**"
+      - ".github/workflows/applicant-feature.yml"
       - "package.json"
       - "yarn.lock"
 
