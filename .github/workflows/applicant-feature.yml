@@ -41,7 +41,15 @@ jobs:
         run: |
           yarn install --immutable
 
+      - name: Cache gap-web-ui build
+        id: cache-gap-web-ui
+        uses: actions/cache@v3
+        with:
+          path: packages/gap-web-ui/dist
+          key: ${{ runner.os }}-gap-web-ui-${{ hashFiles('packages/gap-web-ui/dist') }}
+
       - name: Build gap-web-ui
+        if: steps.cache-gap-web-ui.outputs.cache-hit != 'true'
         run: |
           yarn workspace gap-web-ui build
 
