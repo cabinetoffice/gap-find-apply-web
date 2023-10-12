@@ -45,7 +45,7 @@ jobs:
         id: cache-gap-web-ui
         uses: actions/cache@v3
         with:
-          path: **/packages/gap-web-ui/dist
+          path: '**/packages/gap-web-ui/dist'
           key: ${{ runner.os }}-gap-web-ui-${{ hashFiles('**/packages/gap-web-ui/dist') }}
 
       - name: Build gap-web-ui
