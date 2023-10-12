@@ -1,0 +1,38 @@
+name: Applicant Promote to Prod Workflow
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/applicant/**"
+      - "packages/gap-web-ui/**"
+      - ".github/workflows/applicant-pushImage.yml"
+      - "package.json"
+      - "yarn.lock"
+
+env:
+  AWS_REGION: eu-west-2
+
+jobs:
+  promoteToProd:
+    environment: AWS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Add prod tag to existing qa image
+        # Based on steps described here - https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-retag.html
+        run: |
+          MANIFEST=$(aws ecr batch-get-image --repository-name gap-apply-applicant-web --image-ids imageTag=qa --output json | jq --raw-output --join-output '.images[0].imageManifest')
+          aws ecr put-image --repository-name gap-apply-applicant-web --image-tag prod --image-manifest "$MANIFEST"
