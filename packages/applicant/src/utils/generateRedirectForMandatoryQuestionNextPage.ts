@@ -3,41 +3,96 @@ import { routes } from './routes';
 
 export const generateRedirectForMandatoryQuestionNextPage = (
   mandatoryQuestion: GrantMandatoryQuestionDto,
-  mandatoryQuestionId: string
+  mandatoryQuestionId: string,
+  isRequestFromSummaryPage: boolean
 ) => {
+  if (isRequestFromSummaryPage) {
+    return;
+  }
   const redirect = {
     destination: routes.mandatoryQuestions.summaryPage(mandatoryQuestionId),
     permanent: false,
   };
-  if (mandatoryQuestion.name) {
-    redirect.destination =
-      routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
-  }
   if (
-    !!mandatoryQuestion.addressLine1 &&
-    !!mandatoryQuestion.city &&
-    !!mandatoryQuestion.postcode
+    mandatoryQuestion.name !== null &&
+    mandatoryQuestion.addressLine1 !== null &&
+    mandatoryQuestion.city !== null &&
+    mandatoryQuestion.postcode !== null &&
+    mandatoryQuestion.orgType !== null &&
+    mandatoryQuestion.companiesHouseNumber !== null &&
+    mandatoryQuestion.charityCommissionNumber !== null &&
+    mandatoryQuestion.fundingAmount !== null &&
+    mandatoryQuestion.fundingLocation !== null
   ) {
     redirect.destination =
-      routes.mandatoryQuestions.typePage(mandatoryQuestionId);
+      routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
+    return { redirect };
   }
-  if (mandatoryQuestion.orgType) {
+  if (
+    mandatoryQuestion.name !== null &&
+    mandatoryQuestion.addressLine1 !== null &&
+    mandatoryQuestion.city !== null &&
+    mandatoryQuestion.postcode !== null &&
+    mandatoryQuestion.orgType !== null &&
+    mandatoryQuestion.companiesHouseNumber !== null &&
+    mandatoryQuestion.charityCommissionNumber !== null &&
+    mandatoryQuestion.fundingAmount !== null
+  ) {
     redirect.destination =
-      routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
+      routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId);
+    return { redirect };
   }
-  if (mandatoryQuestion.companiesHouseNumber) {
+  if (
+    mandatoryQuestion.name !== null &&
+    mandatoryQuestion.addressLine1 !== null &&
+    mandatoryQuestion.city !== null &&
+    mandatoryQuestion.postcode !== null &&
+    mandatoryQuestion.orgType !== null &&
+    mandatoryQuestion.companiesHouseNumber !== null &&
+    mandatoryQuestion.charityCommissionNumber !== null
+  ) {
+    redirect.destination =
+      routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
+    return { redirect };
+  }
+  if (
+    mandatoryQuestion.name !== null &&
+    mandatoryQuestion.addressLine1 !== null &&
+    mandatoryQuestion.city !== null &&
+    mandatoryQuestion.postcode !== null &&
+    mandatoryQuestion.orgType !== null &&
+    mandatoryQuestion.companiesHouseNumber !== null
+  ) {
     redirect.destination =
       routes.mandatoryQuestions.charityCommissionNumberPage(
         mandatoryQuestionId
       );
+    return { redirect };
   }
-  if (mandatoryQuestion.charityCommissionNumber) {
+  if (
+    mandatoryQuestion.name !== null &&
+    mandatoryQuestion.addressLine1 !== null &&
+    mandatoryQuestion.city !== null &&
+    mandatoryQuestion.postcode !== null &&
+    mandatoryQuestion.orgType !== null
+  ) {
     redirect.destination =
-      routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
+      routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
+    return { redirect };
   }
-  if (mandatoryQuestion.fundingAmount) {
+  if (
+    mandatoryQuestion.name !== null &&
+    mandatoryQuestion.addressLine1 !== null &&
+    mandatoryQuestion.city !== null &&
+    mandatoryQuestion.postcode !== null
+  ) {
     redirect.destination =
-      routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId);
+      routes.mandatoryQuestions.typePage(mandatoryQuestionId);
+    return { redirect };
   }
-  return redirect;
+  if (mandatoryQuestion.name !== null) {
+    redirect.destination =
+      routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
+    return { redirect };
+  }
 };

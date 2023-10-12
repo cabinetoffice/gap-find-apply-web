@@ -3,8 +3,7 @@ import { GetServerSidePropsContext } from 'next';
 import getConfig from 'next/config';
 import {
   GrantMandatoryQuestionDto,
-  getMandatoryQuestionById,
-  updateMandatoryQuestion,
+  GrantMandatoryQuestionService,
 } from '../../../services/GrantMandatoryQuestionService';
 import { Optional } from '../../../testUtils/unitTestHelpers';
 import callServiceMethod from '../../../utils/callServiceMethod';
@@ -22,12 +21,14 @@ export default async function getServerSideProps({
   const fromSummary = (query?.fromSummary as string) || null;
   const jwt = getJwtFromCookies(req);
   let mandatoryQuestion;
-
+  const grantMandatoryQuestionService =
+    GrantMandatoryQuestionService.getInstance();
   try {
-    mandatoryQuestion = await getMandatoryQuestionById(
-      jwt,
-      mandatoryQuestionId
-    );
+    mandatoryQuestion =
+      await grantMandatoryQuestionService.getMandatoryQuestionById(
+        jwt,
+        mandatoryQuestionId
+      );
   } catch (e) {
     const serviceErrorProps = {
       errorInformation:
@@ -61,7 +62,12 @@ export default async function getServerSideProps({
   const response = await callServiceMethod(
     req,
     res,
-    (body) => updateMandatoryQuestion(jwt, mandatoryQuestionId, body),
+    (body) =>
+      grantMandatoryQuestionService.updateMandatoryQuestion(
+        jwt,
+        mandatoryQuestionId,
+        body
+      ),
     routes.mandatoryQuestions.addressPage(mandatoryQuestionId),
     {
       errorInformation:

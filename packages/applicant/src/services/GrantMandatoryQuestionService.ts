@@ -2,34 +2,49 @@ import axios from 'axios';
 import getConfig from 'next/config';
 import { axiosConfig } from '../utils/jwt';
 
-const { serverRuntimeConfig } = getConfig();
-const BACKEND_HOST = serverRuntimeConfig.backendHost;
+export class GrantMandatoryQuestionService {
+  private static instance: GrantMandatoryQuestionService;
 
-export async function getMandatoryQuestionById(
-  jwt: string,
-  mandatoryQuestionId: string
-): Promise<GrantMandatoryQuestionDto> {
-  const { data } = await axios.get<GrantMandatoryQuestionDto>(
-    `${BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}`,
-    axiosConfig(jwt)
-  );
-  return data;
+  private BACKEND_HOST: string;
+
+  private constructor() {
+    const { serverRuntimeConfig } = getConfig();
+    this.BACKEND_HOST = serverRuntimeConfig.backendHost;
+  }
+
+  public static getInstance(): GrantMandatoryQuestionService {
+    if (!GrantMandatoryQuestionService.instance) {
+      GrantMandatoryQuestionService.instance =
+        new GrantMandatoryQuestionService();
+    }
+    return GrantMandatoryQuestionService.instance;
+  }
+
+  public async getMandatoryQuestionById(
+    jwt: string,
+    mandatoryQuestionId: string
+  ): Promise<GrantMandatoryQuestionDto> {
+    const { data } = await axios.get<GrantMandatoryQuestionDto>(
+      `${this.BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}`,
+      axiosConfig(jwt)
+    );
+    return data;
+  }
+
+  public async updateMandatoryQuestion(
+    jwt: string,
+    mandatoryQuestionId: string,
+    body: GrantMandatoryQuestionDto
+  ): Promise<string> {
+    const { data } = await axios.patch<string>(
+      `${this.BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}`,
+      body,
+      axiosConfig(jwt)
+    );
+
+    return data;
+  }
 }
-
-export async function updateMandatoryQuestion(
-  jwt: string,
-  mandatoryQuestionId: string,
-  body: GrantMandatoryQuestionDto
-): Promise<string> {
-  const { data } = await axios.patch<string>(
-    `${BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}`,
-    body,
-    axiosConfig(jwt)
-  );
-
-  return data;
-}
-
 export interface GrantMandatoryQuestionDto {
   name?: string;
   addressLine1?: string;
