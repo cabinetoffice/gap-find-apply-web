@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        
+
       - name: Snyk setup
         uses: snyk/actions/node@master
         env:
@@ -77,7 +77,7 @@ jobs:
         run: |
           yarn workspace gap-web-ui install --immutable
 
-      - name: Build gap-web-ui application
+      - name: Build gap-web-ui
         if: ${{ matrix.app_name == 'admin' || matrix.app_name == 'applicant' }}
         run: |
           yarn workspace gap-web-ui build
