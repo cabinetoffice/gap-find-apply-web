@@ -13,25 +13,16 @@ import {
   getApplicationExportStatus,
   requestSubmissionsExport,
 } from '../../../services/SubmissionsService';
-import callServiceMethod from '../../../utils/callServiceMethod';
-
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
+import { parseBody } from 'next/dist/server/api-utils/node';
 
 jest.mock('../../../services/SchemeService');
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../services/UserService');
 jest.mock('../../../services/SubmissionsService');
 jest.mock('../../../utils/callServiceMethod');
+jest.mock('next/dist/server/api-utils/node', () => ({
+  parseBody: jest.fn(),
+}));
 
 const mockedFindApplicationFormFromScheme =
   findApplicationFormFromScheme as jest.Mock;
@@ -40,8 +31,7 @@ const mockedGetLoggedInUsersDetails = getLoggedInUsersDetails as jest.Mock;
 
 const mockedGetApplicationExportStatus =
   getApplicationExportStatus as jest.Mock;
-
-const mockedCallServiceMethod = callServiceMethod as jest.Mock;
+const mockedRequestSubmissionsExport = requestSubmissionsExport as jest.Mock;
 
 const customProps = {
   backButtonHref: '/back',
@@ -49,6 +39,7 @@ const customProps = {
   emailAddress: '',
   csrfToken: '',
   formAction: '',
+  requested: null,
 };
 
 const component = <DownloadSubmissions {...customProps} />;
@@ -152,6 +143,7 @@ describe('Download submissions page', () => {
       mockedGetApplicationExportStatus.mockResolvedValue(
         ExportStatusEnum.PROCESSING
       );
+      (parseBody as jest.Mock).mockResolvedValue({ testBody: true });
     });
 
     it('Should NOT return a redirect object if applicationFormsStatus is successfully retrieved', async () => {
@@ -227,21 +219,6 @@ describe('Download submissions page', () => {
       );
     });
 
-    it('Should return an empty user email when export is not in progress', async () => {
-      mockedGetApplicationExportStatus.mockResolvedValue(
-        ExportStatusEnum.NOT_STARTED
-      );
-      mockedCallServiceMethod.mockResolvedValue({});
-
-      const response = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
-
-      expect(response.props.emailAddress).toStrictEqual('');
-    });
-
-    it.todo('Placeholder for checking if the export is in progress');
-
     describe('POST method', () => {
       beforeEach(() => {
         mockedFindApplicationFormFromScheme.mockResolvedValue([
@@ -259,17 +236,19 @@ describe('Download submissions page', () => {
         mockedGetApplicationExportStatus.mockResolvedValue(
           ExportStatusEnum.NOT_STARTED
         );
-        mockedCallServiceMethod.mockResolvedValue({});
+        (parseBody as jest.Mock).mockResolvedValue({
+          'download-submitted-applications': true,
+        });
 
         await getServerSideProps(getPostContext());
 
-        expect(mockedCallServiceMethod).toBeCalled();
+        expect(mockedRequestSubmissionsExport).toBeCalledWith('', 1);
       });
 
       it('requestSubmissionsExport is not triggered if exportStatus is PROCESSING', async () => {
         await getServerSideProps(getPostContext());
 
-        expect(mockedCallServiceMethod).not.toBeCalled();
+        expect(mockedRequestSubmissionsExport).not.toBeCalled();
       });
 
       it('Should return a user email if export is in progress', async () => {

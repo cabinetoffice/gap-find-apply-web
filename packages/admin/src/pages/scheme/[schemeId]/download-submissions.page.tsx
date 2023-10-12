@@ -1,5 +1,5 @@
 import { Button, FlexibleQuestionPageLayout } from 'gap-web-ui';
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import ExportStatusEnum from '../../../enums/ExportStatus';
@@ -9,42 +9,24 @@ import {
   requestSubmissionsExport,
 } from '../../../services/SubmissionsService';
 import { getLoggedInUsersDetails } from '../../../services/UserService';
-import UserDetails from '../../../types/UserDetails';
-import callServiceMethod from '../../../utils/callServiceMethod';
-import {
-  generateErrorPageParams,
-  generateErrorPageRedirect,
-} from '../../../utils/serviceErrorHelpers';
+import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../utils/session';
+import { parseBody } from 'next/dist/server/api-utils/node';
+import InferProps from '../../../types/InferProps';
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps = async ({
   req,
-  res,
   query,
   resolvedUrl,
-}) => {
+}: GetServerSidePropsContext) => {
   const sessionCookie = getSessionIdFromCookies(req);
-  const { schemeId } = query as Record<string, string>;
+  const { schemeId, requested } = query as Record<string, string>;
 
-  let exportStatus: ExportStatusEnum;
   let applicationFormsStatus: {
     applicationId: string;
     submissionCount: number;
   }[];
   let applicationId: string;
-  let userDetails: UserDetails = {
-    firstName: '',
-    lastName: '',
-    organisationName: '',
-    emailAddress: '',
-    roles: [],
-    created: '',
-  };
-
-  const errorPageParams = generateErrorPageParams(
-    'Something went wrong while trying to export submissions.',
-    `/scheme/${schemeId}`
-  );
 
   const errorPageRedirect = generateErrorPageRedirect(
     'Something went wrong while trying to export submissions.',
@@ -73,43 +55,36 @@ export const getServerSideProps: GetServerSideProps = async ({
     );
   }
 
-  exportStatus = await getApplicationExportStatus(sessionCookie, applicationId);
-
-  if (exportStatus == ExportStatusEnum.COMPLETE) {
-    // for now, we just treat COMPLETE the same as NOT_STARTED ie. allow them to trigger another download
-    // in the future, if an export is complete we should aim to redirect them to the summary table page
-    // so they can access the most recent export without requiring the email link
-    exportStatus = ExportStatusEnum.NOT_STARTED;
-  }
-
-  if (exportStatus == ExportStatusEnum.NOT_STARTED) {
-    const response = await callServiceMethod(
-      req,
-      res,
-      () => requestSubmissionsExport(sessionCookie, applicationId),
-      `/scheme/${schemeId}/download-submissions`, // after export is triggered, redirect to same page
-      errorPageParams
-    );
-    if ('redirect' in response) {
-      return response;
+  if (req.method === 'POST') {
+    const body = await parseBody(req, '1mb');
+    if ('download-submitted-applications' in body) {
+      requestSubmissionsExport(sessionCookie, applicationId);
+      return {
+        redirect: {
+          destination: `/scheme/${schemeId}/download-submissions?requested=true`,
+          statusCode: 302,
+        },
+      };
     }
   }
 
-  if (
-    exportStatus == ExportStatusEnum.PROCESSING ||
-    exportStatus == ExportStatusEnum.REQUESTED
-  ) {
-    try {
-      userDetails = await getLoggedInUsersDetails(sessionCookie);
-    } catch (error) {
-      return errorPageRedirect;
-    }
+  const exportStatus = await getApplicationExportStatus(
+    sessionCookie,
+    applicationId
+  );
+
+  let userDetails;
+  try {
+    userDetails = await getLoggedInUsersDetails(sessionCookie);
+  } catch (error) {
+    return errorPageRedirect;
   }
 
   return {
     props: {
       backButtonHref: `/scheme/${schemeId}`,
       exportStatus,
+      requested: requested || null,
       emailAddress: userDetails.emailAddress,
       formAction: resolvedUrl,
       csrfToken: (req as any).csrfToken?.() || '',
@@ -120,16 +95,18 @@ export const getServerSideProps: GetServerSideProps = async ({
 const DownloadSubmissions = ({
   backButtonHref,
   exportStatus,
+  requested,
   emailAddress,
   formAction,
   csrfToken,
-}: DownloadSubmissionsProps) => {
+}: InferProps<typeof getServerSideProps>) => {
   return (
     <>
       <Meta
         title={`Download applications${
           exportStatus == ExportStatusEnum.PROCESSING ||
-          exportStatus == ExportStatusEnum.REQUESTED
+          exportStatus == ExportStatusEnum.REQUESTED ||
+          requested == 'true'
             ? ' - In progress'
             : ''
         } - Manage a grant`}
@@ -140,7 +117,8 @@ const DownloadSubmissions = ({
       <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-bottom-6">
         <div className="govuk-grid-column-full">
           {(exportStatus == ExportStatusEnum.PROCESSING ||
-            exportStatus == ExportStatusEnum.REQUESTED) && (
+            exportStatus == ExportStatusEnum.REQUESTED ||
+            requested == 'true') && (
             <>
               <div className="govuk-grid-row">
                 <div className="govuk-grid-column-two-thirds">
@@ -164,46 +142,40 @@ const DownloadSubmissions = ({
             </>
           )}
 
-          {exportStatus == ExportStatusEnum.NOT_STARTED && (
-            <>
-              <h1 className="govuk-heading-l">View your applications</h1>
-              <p
-                className="govuk-body"
-                data-cy="cy_Download-submissions-page-text-1"
-              >
-                To see who has applied for your grant, you need to view and
-                download your submitted applications.
-              </p>
-              <p
-                className="govuk-body"
-                data-cy="cy_Download-submissions-page-text-2"
-              >
-                Get started by requesting a list of applications.
-              </p>
-              <FlexibleQuestionPageLayout
-                fieldErrors={[]}
-                formAction={formAction}
-                csrfToken={csrfToken}
-              >
-                <Button
-                  text="Download submitted applications"
-                  addNameAttribute
-                />
-              </FlexibleQuestionPageLayout>
-            </>
-          )}
+          {(exportStatus == ExportStatusEnum.NOT_STARTED ||
+            exportStatus == ExportStatusEnum.COMPLETE) &&
+            requested != 'true' && (
+              <>
+                <h1 className="govuk-heading-l">View your applications</h1>
+                <p
+                  className="govuk-body"
+                  data-cy="cy_Download-submissions-page-text-1"
+                >
+                  To see who has applied for your grant, you need to view and
+                  download your submitted applications.
+                </p>
+                <p
+                  className="govuk-body"
+                  data-cy="cy_Download-submissions-page-text-2"
+                >
+                  Get started by requesting a list of applications.
+                </p>
+                <FlexibleQuestionPageLayout
+                  fieldErrors={[]}
+                  formAction={formAction}
+                  csrfToken={csrfToken}
+                >
+                  <Button
+                    text="Download submitted applications"
+                    addNameAttribute
+                  />
+                </FlexibleQuestionPageLayout>
+              </>
+            )}
         </div>
       </div>
     </>
   );
 };
-
-interface DownloadSubmissionsProps {
-  backButtonHref: string;
-  exportStatus: ExportStatusEnum;
-  emailAddress: string;
-  formAction: string;
-  csrfToken: string;
-}
 
 export default DownloadSubmissions;

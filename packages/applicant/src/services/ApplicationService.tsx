@@ -15,6 +15,17 @@ export async function getApplicationsListById(
   return data;
 }
 
+export const getApplicationStatusBySchemeId = async (
+  schemeId: string,
+  jwt: string
+) => {
+  const { data } = await axios.get<string>(
+    `${BACKEND_HOST}/grant-application/${schemeId}/status`,
+    axiosConfig(jwt)
+  );
+  return data;
+};
+
 export interface ApplicationsList {
   grantSchemeId: string;
   grantApplicationId: string;
