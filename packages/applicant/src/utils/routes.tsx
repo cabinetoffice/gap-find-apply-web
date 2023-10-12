@@ -23,6 +23,16 @@ export const routes = {
       `/mandatory-questions/${mandatoryQuestionId}/organisation-name`,
     addressPage: (mandatoryQuestionId: string) =>
       `/mandatory-questions/${mandatoryQuestionId}/organisation-address`,
+    typePage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-type`,
+    companiesHouseNumberPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-companies-house-number`,
+    charityCommissionNumberPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-charity-commission-number`,
+    fundingAmountPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/funding-amount`,
+    fundingLocationPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/funding-location`,
   },
   applications: '/applications',
   submissions: {
