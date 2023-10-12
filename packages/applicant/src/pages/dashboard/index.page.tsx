@@ -14,13 +14,13 @@ export const getServerSideProps = async ({
   res,
   query,
 }: GetServerSidePropsContext) => {
-  const findRedirectCookie = process.env.APPLYING_FOR_REDIRECT_COOKIE;
+  const applyRedirectCookie = process.env.APPLYING_FOR_REDIRECT_COOKIE;
 
-  if (req.cookies[findRedirectCookie]) {
-    const applicationId = req.cookies[findRedirectCookie];
+  if (req.cookies[applyRedirectCookie]) {
+    const applicationId = req.cookies[applyRedirectCookie];
     res.setHeader(
       'Set-Cookie',
-      `${findRedirectCookie}=deleted; Path=/; Max-Age=0`
+      `${applyRedirectCookie}=deleted; Path=/; Max-Age=0`
     );
     return {
       redirect: {
@@ -28,6 +28,24 @@ export const getServerSideProps = async ({
         statusCode: 307,
       },
     };
+  }
+
+  if (process.env.MANDATORY_QUESTIONS_ENABLED) {
+    const findRedirectCookie = process.env.FIND_REDIRECT_COOKIE;
+
+    if (req.cookies[findRedirectCookie]) {
+      const slug = req.cookies[findRedirectCookie];
+      res.setHeader(
+        'Set-Cookie',
+        `${findRedirectCookie}=deleted; Path=/; Max-Age=0`
+      );
+      return {
+        redirect: {
+          destination: `/api/redirect-after-find/${slug}`,
+          statusCode: 307,
+        },
+      };
+    }
   }
 
   const grantApplicantService = GrantApplicantService.getInstance();

@@ -45,6 +45,21 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
         maxAge: 900,
       }
     );
+  } else if (
+    process.env.MANDATORY_QUESTIONS_ENABLED &&
+    redirectFromFindPattern.test({ pathname: req.nextUrl.pathname })
+  ) {
+    res.cookies.set(
+      process.env.FIND_REDIRECT_COOKIE,
+      redirectFromFindPattern.exec({ pathname: req.nextUrl.pathname }).pathname
+        .groups.slug,
+      {
+        path: '/',
+        secure: true,
+        httpOnly: true,
+        maxAge: 900,
+      }
+    );
   }
 
   return res;
@@ -116,6 +131,10 @@ export async function middleware(req: NextRequest) {
 
 const newApplicationPattern = new URLPattern({
   pathname: '/applications/:applicationId([0-9]+)',
+});
+
+const redirectFromFindPattern = new URLPattern({
+  pathname: '/api/redirect-from-find?slug=:slug([a-z0-9-]+)',
 });
 
 const signInDetailsPage = new URLPattern({

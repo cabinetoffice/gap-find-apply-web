@@ -4,8 +4,12 @@ import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
 import { Button } from 'gap-web-ui';
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  return { props: {} };
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  return {
+    props: {
+      schemeId: query.schemeId,
+    },
+  };
 };
 
 const MandatoryQuestionsBeforeYouStart = () => {
@@ -14,9 +18,6 @@ const MandatoryQuestionsBeforeYouStart = () => {
       <Meta title="Before you start" />
       <Layout backBtnUrl={routes.organisation.index}>
         <h1 className="govuk-heading-l">Before you start</h1>
-        <p className="govuk-body">
-          Before you start, we’d like to ask you a few questions.
-        </p>
         <p className="govuk-body">
           Before you start, we’d like to ask you a few questions.
         </p>
