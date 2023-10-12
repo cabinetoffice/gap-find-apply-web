@@ -20,9 +20,12 @@ export default async function getServerSideProps({
   const mandatoryQuestionId = (query?.mandatoryQuestionId as string) || null;
   const fromSummary = (query?.fromSummary as string) || null;
   const jwt = getJwtFromCookies(req);
+  const { publicRuntimeConfig } = getConfig();
+
   let mandatoryQuestion;
   const grantMandatoryQuestionService =
     GrantMandatoryQuestionService.getInstance();
+
   try {
     mandatoryQuestion =
       await grantMandatoryQuestionService.getMandatoryQuestionById(
@@ -46,7 +49,8 @@ export default async function getServerSideProps({
       },
     };
   }
-  //TODO only when someone access this page from the summary page,
+
+  //only when someone access this page from the summary page,
   //  we want to show the default value
   //otherwise we gonna send it to the next non filled page
   generateRedirectForMandatoryQuestionNextPage(
@@ -83,13 +87,9 @@ export default async function getServerSideProps({
   if ('redirect' in response) {
     return response;
   }
-  const { publicRuntimeConfig } = getConfig();
-  const backButtonUrl = routes.mandatoryQuestions.startPage(
-    mandatoryQuestion.schemeId.toString()
-  );
 
   let defaultFields =
-    (mandatoryQuestion.name as Optional<GrantMandatoryQuestionDto>) || '';
+    (mandatoryQuestion as Optional<GrantMandatoryQuestionDto>) || '';
   let fieldErrors = [] as ValidationError[];
 
   if ('fieldErrors' in response) {
@@ -103,8 +103,6 @@ export default async function getServerSideProps({
       formAction: publicRuntimeConfig.subPath + resolvedUrl,
       fieldErrors,
       defaultFields,
-      backButtonUrl,
-      mandatoryQuestion,
     },
   };
 }

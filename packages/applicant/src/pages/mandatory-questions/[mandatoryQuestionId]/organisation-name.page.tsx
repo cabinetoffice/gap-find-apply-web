@@ -6,6 +6,7 @@ import {
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
 import { SaveAndCancel } from '../../../components/save-and-cancel/SaveAndCancel';
+import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 
 export { getServerSideProps };
@@ -14,10 +15,11 @@ const MandatoryQuestionOrganisationNamePage = ({
   fieldErrors,
   formAction,
   defaultFields,
-  backButtonUrl,
   mandatoryQuestion,
 }) => {
-  console.log('defaultFields', defaultFields);
+  const backButtonUrl = routes.mandatoryQuestions.startPage(
+    mandatoryQuestion.schemeId.toString()
+  );
   return (
     <>
       <>
@@ -37,7 +39,7 @@ const MandatoryQuestionOrganisationNamePage = ({
               questionTitle="Enter the name of your organisation"
               questionHintText="This is the official name of your organisation. It could be the name that is registered with Companies House or the Charity Commission"
               fieldName="name"
-              defaultValue={defaultFields.name || mandatoryQuestion.name || ''}
+              defaultValue={defaultFields.name || ''}
               fieldErrors={fieldErrors}
               width="30"
             />

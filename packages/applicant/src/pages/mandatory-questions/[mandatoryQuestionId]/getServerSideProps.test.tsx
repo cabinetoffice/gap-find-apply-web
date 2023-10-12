@@ -11,7 +11,6 @@ import {
   mockServiceMethod,
 } from '../../../testUtils/unitTestHelpers';
 import { generateRedirectForMandatoryQuestionNextPage } from '../../../utils/generateRedirectForMandatoryQuestionNextPage';
-import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 
 jest.mock('next/dist/server/api-utils/node');
@@ -70,9 +69,7 @@ describe('getServerSideProps', () => {
           csrfToken: 'testCSRFToken',
           fieldErrors: [],
           formAction: '/testResolvedURL',
-          backButtonUrl: routes.mandatoryQuestions.startPage('1'),
-          mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
-          defaultFields: '',
+          defaultFields: getDefaultGrantMandatoryQuestion(),
         },
       });
     });
@@ -178,8 +175,6 @@ describe('getServerSideProps', () => {
           csrfToken: 'testCSRFToken',
 
           formAction: '/testResolvedURL',
-          backButtonUrl: routes.mandatoryQuestions.startPage('1'),
-          mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
           defaultFields: { name: 'test name' },
         },
       });
