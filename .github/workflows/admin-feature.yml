@@ -43,10 +43,6 @@ jobs:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
           cache: 'yarn'
 
-      - name: Install dependencies
-        run: |
-          yarn workspace admin install --immutable
-
       - name: Snyk setup
         uses: snyk/actions/node@master
         env:
@@ -57,6 +53,14 @@ jobs:
       - name: Lint files
         run: |
           yarn workspace admin lint
+
+      - name: Install dependencies
+        run: |
+          yarn workspace admin install --immutable
+
+      - name: Install gap-web-ui dependencies
+        run: |
+          yarn workspace gap-web-ui install --immutable
 
       - name: Build gap-web-ui application
         run: |
