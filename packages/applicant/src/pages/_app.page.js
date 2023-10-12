@@ -47,8 +47,12 @@ const MyApp = ({ Component, pageProps, cookies }) => {
 };
 
 MyApp.getInitialProps = async (appContext) => {
+  if (typeof Error.captureStackTrace !== 'function') {
+    Error.captureStackTrace = () => {};
+  }
   const appProps = await App.getInitialProps(appContext);
-  const cookies = appContext.ctx.req.cookies;
+  const cookies =
+    typeof window === 'undefined' ? {} : appContext.ctx.req.cookies;
   return { ...appProps, cookies };
 };
 
