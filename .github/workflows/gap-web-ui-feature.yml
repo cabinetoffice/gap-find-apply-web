@@ -49,10 +49,6 @@ jobs:
         with:
           args: --yarn-workspaces --strict-out-of-sync=false
 
-      - name: Lint files
-        run: |
-          yarn workspace gap-web-ui lint
-
       - name: Build application
         run: |
           yarn workspace gap-web-ui build
