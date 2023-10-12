@@ -63,11 +63,11 @@ jobs:
             yarn workspace applicant coverage
 
         - name: Gap-web-ui units tests
-        run: |
-          yarn workspace gap-web-ui coverage
+          run: |
+            yarn workspace gap-web-ui coverage
 
   imageBuild:
-    needs: Deploy app
+    needs: build
 
     environment: AWS
     runs-on: ubuntu-latest
