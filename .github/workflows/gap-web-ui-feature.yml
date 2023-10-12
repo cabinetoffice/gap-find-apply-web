@@ -11,7 +11,7 @@ on:
       - TMI2-**
     paths:
       - "packages/gap-web-ui/**"
-      - ".github/workflows"
+      - ".github/workflows/**"
       - "package.json"
       - "yarn.lock"
 
