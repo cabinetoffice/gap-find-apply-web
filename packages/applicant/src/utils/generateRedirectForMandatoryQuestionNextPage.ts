@@ -75,5 +75,4 @@ export const generateRedirectUrlForMandatoryQuestionNextPage = (
   if (mandatoryQuestion.name !== null) {
     return routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
   }
-  return routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
 };

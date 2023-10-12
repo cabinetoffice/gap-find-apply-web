@@ -17,7 +17,7 @@ export default async function getServerSideProps({
   query,
   resolvedUrl, //the url that the user requested
 }: GetServerSidePropsContext) {
-  const mandatoryQuestionId = query?.mandatoryQuestionId as string;
+  const { mandatoryQuestionId } = query as Record<string, string>;
   const fromSummary = (query?.fromSummary as string) || null;
   const jwt = getJwtFromCookies(req);
   const { publicRuntimeConfig } = getConfig();
