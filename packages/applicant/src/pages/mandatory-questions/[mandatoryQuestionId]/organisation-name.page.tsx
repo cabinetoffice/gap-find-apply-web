@@ -6,17 +6,18 @@ import {
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
 import { SaveAndCancel } from '../../../components/save-and-cancel/SaveAndCancel';
+import InferProps from '../../../types/InferProps';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 
 export { getServerSideProps };
-const MandatoryQuestionOrganisationNamePage = ({
+export default function MandatoryQuestionOrganisationNamePage({
   csrfToken,
   fieldErrors,
   formAction,
   defaultFields,
   mandatoryQuestion,
-}) => {
+}: InferProps<typeof getServerSideProps>) {
   const backButtonUrl = routes.mandatoryQuestions.startPage(
     mandatoryQuestion.schemeId.toString()
   );
@@ -39,7 +40,7 @@ const MandatoryQuestionOrganisationNamePage = ({
               questionTitle="Enter the name of your organisation"
               questionHintText="This is the official name of your organisation. It could be the name that is registered with Companies House or the Charity Commission"
               fieldName="name"
-              defaultValue={defaultFields.name || ''}
+              defaultValue={defaultFields.name}
               fieldErrors={fieldErrors}
               width="30"
             />
@@ -55,6 +56,4 @@ const MandatoryQuestionOrganisationNamePage = ({
       </>
     </>
   );
-};
-
-export default MandatoryQuestionOrganisationNamePage;
+}

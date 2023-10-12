@@ -88,8 +88,7 @@ export default async function getServerSideProps({
     return response;
   }
 
-  let defaultFields =
-    (mandatoryQuestion as Optional<GrantMandatoryQuestionDto>) || '';
+  let defaultFields = mandatoryQuestion as Optional<GrantMandatoryQuestionDto>;
   let fieldErrors = [] as ValidationError[];
 
   if ('fieldErrors' in response) {
