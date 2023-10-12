@@ -3,11 +3,7 @@ name: Admin CI
 on:
   pull_request:
     branches:
-      - feature/**
-      - GAP-**
-      - fix/**
-      - bug/**
-      - TMI2-**
+      - develop
     paths:
       - "packages/admin/**"
       - ".github/workflows/admin-feature.yml"
