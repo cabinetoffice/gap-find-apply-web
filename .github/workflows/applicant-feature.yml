@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    name: Applicant CI
+    name: Test app
 
     runs-on: ubuntu-latest
 

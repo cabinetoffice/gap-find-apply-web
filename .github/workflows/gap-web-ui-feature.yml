@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    name: gap-web-ui CI
+    name: Test app
 
     runs-on: ubuntu-latest
 
