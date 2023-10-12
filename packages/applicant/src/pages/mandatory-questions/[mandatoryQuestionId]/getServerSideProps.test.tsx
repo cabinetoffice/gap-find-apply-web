@@ -10,7 +10,7 @@ import {
   getContext,
   mockServiceMethod,
 } from '../../../testUtils/unitTestHelpers';
-import { generateRedirectForMandatoryQuestionNextPage } from '../../../utils/generateRedirectForMandatoryQuestionNextPage';
+import { generateRedirectUrlForMandatoryQuestionNextPage } from '../../../utils/generateRedirectForMandatoryQuestionNextPage';
 import getServerSideProps from './getServerSideProps';
 
 jest.mock('next/dist/server/api-utils/node');
@@ -59,8 +59,8 @@ describe('getServerSideProps', () => {
         getDefaultGrantMandatoryQuestion
       );
       (
-        generateRedirectForMandatoryQuestionNextPage as jest.Mock
-      ).mockReturnValue({ redirect: { destination: '/nextpage' } });
+        generateRedirectUrlForMandatoryQuestionNextPage as jest.Mock
+      ).mockReturnValue('/nextpage');
 
       const response = await getServerSideProps(getContext(getDefaultContext));
 
@@ -81,8 +81,8 @@ describe('getServerSideProps', () => {
         getDefaultGrantMandatoryQuestion
       );
       (
-        generateRedirectForMandatoryQuestionNextPage as jest.Mock
-      ).mockReturnValue({ redirect: { destination: '/nextpage' } });
+        generateRedirectUrlForMandatoryQuestionNextPage as jest.Mock
+      ).mockReturnValue('/nextpage');
 
       await getServerSideProps(getContext(getDefaultContext));
 
@@ -109,8 +109,8 @@ describe('getServerSideProps', () => {
         name: 'test name',
       });
       (
-        generateRedirectForMandatoryQuestionNextPage as jest.Mock
-      ).mockReturnValue({ redirect: { destination: '/nextpage' } });
+        generateRedirectUrlForMandatoryQuestionNextPage as jest.Mock
+      ).mockReturnValue('/nextpage');
     });
 
     it('Should update the mandatoryQuestion', async () => {

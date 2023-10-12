@@ -7,7 +7,7 @@ import {
 } from '../../../services/GrantMandatoryQuestionService';
 import { Optional } from '../../../testUtils/unitTestHelpers';
 import callServiceMethod from '../../../utils/callServiceMethod';
-import { generateRedirectForMandatoryQuestionNextPage } from '../../../utils/generateRedirectForMandatoryQuestionNextPage';
+import { generateRedirectUrlForMandatoryQuestionNextPage } from '../../../utils/generateRedirectForMandatoryQuestionNextPage';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 
@@ -22,7 +22,7 @@ export default async function getServerSideProps({
   const jwt = getJwtFromCookies(req);
   const { publicRuntimeConfig } = getConfig();
 
-  let mandatoryQuestion;
+  let mandatoryQuestion: GrantMandatoryQuestionDto;
   const grantMandatoryQuestionService =
     GrantMandatoryQuestionService.getInstance();
 
@@ -50,13 +50,12 @@ export default async function getServerSideProps({
     };
   }
 
-  //only when someone access this page from the summary page,
+  //TODO only when someone access this page from the summary page,
   //  we want to show the default value
   //otherwise we gonna send it to the next non filled page
-  generateRedirectForMandatoryQuestionNextPage(
+  const nextNotAnsweredPage = generateRedirectUrlForMandatoryQuestionNextPage(
     mandatoryQuestion,
-    mandatoryQuestionId,
-    fromSummary === 'true'
+    mandatoryQuestionId
   );
 
   const response = await callServiceMethod(
@@ -68,11 +67,7 @@ export default async function getServerSideProps({
         mandatoryQuestionId,
         body
       ),
-    generateRedirectForMandatoryQuestionNextPage(
-      mandatoryQuestion,
-      mandatoryQuestionId,
-      fromSummary === 'true'
-    ).redirect.destination,
+    nextNotAnsweredPage,
     {
       errorInformation:
         'Something went wrong while trying to update your organisation details',

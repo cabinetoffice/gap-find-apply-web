@@ -1,18 +1,10 @@
 import { GrantMandatoryQuestionDto } from '../services/GrantMandatoryQuestionService';
 import { routes } from './routes';
 
-export const generateRedirectForMandatoryQuestionNextPage = (
+export const generateRedirectUrlForMandatoryQuestionNextPage = (
   mandatoryQuestion: GrantMandatoryQuestionDto,
-  mandatoryQuestionId: string,
-  isRequestFromSummaryPage: boolean
-) => {
-  if (isRequestFromSummaryPage) {
-    return;
-  }
-  const redirect = {
-    destination: routes.mandatoryQuestions.summaryPage(mandatoryQuestionId),
-    permanent: false,
-  };
+  mandatoryQuestionId: string
+): string => {
   if (
     mandatoryQuestion.name !== null &&
     mandatoryQuestion.addressLine1 !== null &&
@@ -24,9 +16,7 @@ export const generateRedirectForMandatoryQuestionNextPage = (
     mandatoryQuestion.fundingAmount !== null &&
     mandatoryQuestion.fundingLocation !== null
   ) {
-    redirect.destination =
-      routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
-    return { redirect };
+    return routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
   }
   if (
     mandatoryQuestion.name !== null &&
@@ -38,9 +28,7 @@ export const generateRedirectForMandatoryQuestionNextPage = (
     mandatoryQuestion.charityCommissionNumber !== null &&
     mandatoryQuestion.fundingAmount !== null
   ) {
-    redirect.destination =
-      routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId);
-    return { redirect };
+    return routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId);
   }
   if (
     mandatoryQuestion.name !== null &&
@@ -51,9 +39,7 @@ export const generateRedirectForMandatoryQuestionNextPage = (
     mandatoryQuestion.companiesHouseNumber !== null &&
     mandatoryQuestion.charityCommissionNumber !== null
   ) {
-    redirect.destination =
-      routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
-    return { redirect };
+    return routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
   }
   if (
     mandatoryQuestion.name !== null &&
@@ -63,11 +49,9 @@ export const generateRedirectForMandatoryQuestionNextPage = (
     mandatoryQuestion.orgType !== null &&
     mandatoryQuestion.companiesHouseNumber !== null
   ) {
-    redirect.destination =
-      routes.mandatoryQuestions.charityCommissionNumberPage(
-        mandatoryQuestionId
-      );
-    return { redirect };
+    return routes.mandatoryQuestions.charityCommissionNumberPage(
+      mandatoryQuestionId
+    );
   }
   if (
     mandatoryQuestion.name !== null &&
@@ -76,9 +60,9 @@ export const generateRedirectForMandatoryQuestionNextPage = (
     mandatoryQuestion.postcode !== null &&
     mandatoryQuestion.orgType !== null
   ) {
-    redirect.destination =
-      routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
-    return { redirect };
+    return routes.mandatoryQuestions.companiesHouseNumberPage(
+      mandatoryQuestionId
+    );
   }
   if (
     mandatoryQuestion.name !== null &&
@@ -86,13 +70,10 @@ export const generateRedirectForMandatoryQuestionNextPage = (
     mandatoryQuestion.city !== null &&
     mandatoryQuestion.postcode !== null
   ) {
-    redirect.destination =
-      routes.mandatoryQuestions.typePage(mandatoryQuestionId);
-    return { redirect };
+    return routes.mandatoryQuestions.typePage(mandatoryQuestionId);
   }
   if (mandatoryQuestion.name !== null) {
-    redirect.destination =
-      routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
-    return { redirect };
+    return routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
   }
+  return routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
 };

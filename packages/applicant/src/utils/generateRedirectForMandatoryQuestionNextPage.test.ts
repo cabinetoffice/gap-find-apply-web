@@ -1,7 +1,7 @@
 import { GrantMandatoryQuestionDto } from '../services/GrantMandatoryQuestionService';
-import { generateRedirectForMandatoryQuestionNextPage } from './generateRedirectForMandatoryQuestionNextPage';
+import { generateRedirectUrlForMandatoryQuestionNextPage } from './generateRedirectForMandatoryQuestionNextPage';
 
-describe('generateRedirectForMandatoryQuestionNextPage', () => {
+describe('generateRedirectUrlForMandatoryQuestionNextPage', () => {
   it('should generate the correct URL for the address page when name is provided', () => {
     const mandatoryQuestion: GrantMandatoryQuestionDto = {
       name: 'Example Organization',
@@ -16,13 +16,12 @@ describe('generateRedirectForMandatoryQuestionNextPage', () => {
     };
     const mandatoryQuestionId = 'mandatoryQuestionId';
 
-    const result = generateRedirectForMandatoryQuestionNextPage(
+    const result = generateRedirectUrlForMandatoryQuestionNextPage(
       mandatoryQuestion,
-      mandatoryQuestionId,
-      false
+      mandatoryQuestionId
     );
 
-    expect(result.redirect.destination).toBe(
+    expect(result).toBe(
       `/mandatory-questions/mandatoryQuestionId/organisation-address`
     );
   });
@@ -42,13 +41,12 @@ describe('generateRedirectForMandatoryQuestionNextPage', () => {
 
     const mandatoryQuestionId = 'mandatoryQuestionId';
 
-    const result = generateRedirectForMandatoryQuestionNextPage(
+    const result = generateRedirectUrlForMandatoryQuestionNextPage(
       mandatoryQuestion,
-      mandatoryQuestionId,
-      false
+      mandatoryQuestionId
     );
 
-    expect(result.redirect.destination).toBe(
+    expect(result).toBe(
       `/mandatory-questions/mandatoryQuestionId/organisation-type`
     );
   });
@@ -67,13 +65,12 @@ describe('generateRedirectForMandatoryQuestionNextPage', () => {
     };
     const mandatoryQuestionId = 'mandatoryQuestionId';
 
-    const result = generateRedirectForMandatoryQuestionNextPage(
+    const result = generateRedirectUrlForMandatoryQuestionNextPage(
       mandatoryQuestion,
-      mandatoryQuestionId,
-      false
+      mandatoryQuestionId
     );
 
-    expect(result.redirect.destination).toBe(
+    expect(result).toBe(
       `/mandatory-questions/mandatoryQuestionId/organisation-companies-house-number`
     );
   });
@@ -92,13 +89,12 @@ describe('generateRedirectForMandatoryQuestionNextPage', () => {
     };
     const mandatoryQuestionId = 'mandatoryQuestionId';
 
-    const result = generateRedirectForMandatoryQuestionNextPage(
+    const result = generateRedirectUrlForMandatoryQuestionNextPage(
       mandatoryQuestion,
-      mandatoryQuestionId,
-      false
+      mandatoryQuestionId
     );
 
-    expect(result.redirect.destination).toBe(
+    expect(result).toBe(
       `/mandatory-questions/mandatoryQuestionId/organisation-charity-commission-number`
     );
   });
@@ -117,13 +113,12 @@ describe('generateRedirectForMandatoryQuestionNextPage', () => {
     };
     const mandatoryQuestionId = 'mandatoryQuestionId';
 
-    const result = generateRedirectForMandatoryQuestionNextPage(
+    const result = generateRedirectUrlForMandatoryQuestionNextPage(
       mandatoryQuestion,
-      mandatoryQuestionId,
-      false
+      mandatoryQuestionId
     );
 
-    expect(result.redirect.destination).toBe(
+    expect(result).toBe(
       `/mandatory-questions/mandatoryQuestionId/funding-amount`
     );
   });
@@ -142,13 +137,12 @@ describe('generateRedirectForMandatoryQuestionNextPage', () => {
     };
     const mandatoryQuestionId = 'mandatoryQuestionId';
 
-    const result = generateRedirectForMandatoryQuestionNextPage(
+    const result = generateRedirectUrlForMandatoryQuestionNextPage(
       mandatoryQuestion,
-      mandatoryQuestionId,
-      false
+      mandatoryQuestionId
     );
 
-    expect(result.redirect.destination).toBe(
+    expect(result).toBe(
       `/mandatory-questions/mandatoryQuestionId/funding-location`
     );
   });
@@ -167,14 +161,11 @@ describe('generateRedirectForMandatoryQuestionNextPage', () => {
     };
     const mandatoryQuestionId = 'mandatoryQuestionId';
 
-    const result = generateRedirectForMandatoryQuestionNextPage(
+    const result = generateRedirectUrlForMandatoryQuestionNextPage(
       mandatoryQuestion,
-      mandatoryQuestionId,
-      false
+      mandatoryQuestionId
     );
 
-    expect(result.redirect.destination).toBe(
-      `/mandatory-questions/mandatoryQuestionId/summary`
-    );
+    expect(result).toBe(`/mandatory-questions/mandatoryQuestionId/summary`);
   });
 });
