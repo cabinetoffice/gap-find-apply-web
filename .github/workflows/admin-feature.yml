@@ -11,6 +11,9 @@ on:
       - TMI2-**
     paths:
       - "packages/admin/**"
+      - ".github/workflows"
+      - "package.json"
+      - "yarn.lock"
 
 jobs:
   build:
