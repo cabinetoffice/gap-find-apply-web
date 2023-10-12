@@ -73,6 +73,7 @@ export default async function getServerSideProps({
     };
   }
 
+  //this is where we update the mandatory question.
   const response = await callServiceMethod(
     req,
     res,
@@ -104,6 +105,7 @@ export default async function getServerSideProps({
   let defaultFields = mandatoryQuestion as Optional<GrantMandatoryQuestionDto>;
   let fieldErrors = [] as ValidationError[];
 
+  //if there are validation errors we fill up the default fields with the values that the user has entered, and field errors with the errors
   if ('fieldErrors' in response) {
     fieldErrors = response.fieldErrors;
     defaultFields = response.body as Optional<GrantMandatoryQuestionDto>;

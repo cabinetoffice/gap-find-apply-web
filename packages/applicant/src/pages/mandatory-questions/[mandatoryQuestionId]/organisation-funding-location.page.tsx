@@ -4,7 +4,7 @@ import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 
 export { getServerSideProps };
-export default function MandatoryQuestionOrganisationAddressPage({
+export default function MandatoryQuestionOrganisationFundingLocationPage({
   csrfToken,
   fieldErrors,
   formAction,
@@ -15,7 +15,7 @@ export default function MandatoryQuestionOrganisationAddressPage({
   return (
     <>
       <>
-        <Layout backBtnUrl={backButtonUrl}>ADDRESS PAGE</Layout>
+        <Layout backBtnUrl={backButtonUrl}>Funding Location PAGE</Layout>
       </>
     </>
   );
