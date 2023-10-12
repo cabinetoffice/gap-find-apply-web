@@ -1,13 +1,13 @@
 name: Admin Promote to Prod Workflow
 
 on:
-  push:
+  pull_request:
     branches:
       - main
     paths:
       - "packages/admin/**"
       - "packages/gap-web-ui/**"
-      - ".github/workflows/admin-pushImage.yml"
+      - ".github/workflows/admin-promoteToProd.yml"
       - "package.json"
       - "yarn.lock"
 

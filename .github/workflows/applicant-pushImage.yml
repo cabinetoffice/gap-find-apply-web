@@ -1,8 +1,7 @@
 name: Applicant CD
 
 on:
-  create:
-  push:
+  pull_request:
     branches:
       - release/**
       - develop

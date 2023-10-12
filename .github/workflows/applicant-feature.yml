@@ -1,0 +1,74 @@
+name: Applicant CI
+
+on:
+  pull_request:
+    branches:
+      - feature/**
+      - GAP-**
+      - fix/**
+      - bug/**
+      - TMI2-**
+    paths:
+      - "packages/applicant/**"
+      - ".github/workflows/applicant-feature.yml"
+      - "package.json"
+      - "yarn.lock"
+
+jobs:
+  build:
+    name: Test app
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Generate .env files
+        run: |
+          cp packages/applicant/.env.example packages/applicant/.env
+
+      - name: Read .nvmrc
+        run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
+        id: nvm
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          cache: 'yarn'
+
+      - name: Install gap-web-ui dependencies
+        run: |
+          yarn workspace gap-web-ui install --immutable
+
+      - name: Build gap-web-ui
+        run: |
+          yarn workspace gap-web-ui build
+
+      - name: Install dependencies
+        run: |
+          yarn workspace applicant install --immutable
+
+      - name: Build application
+        run: |
+          yarn workspace applicant build
+
+      - name: Lint files
+        run: |
+          yarn workspace applicant lint
+
+      - name: Units Tests
+        run: |
+          yarn workspace applicant coverage
+
+      - name: Snyk setup
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --yarn-workspaces --strict-out-of-sync=false
+	
