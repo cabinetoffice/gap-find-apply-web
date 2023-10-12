@@ -3,11 +3,7 @@ name: gap-web-ui CI
 on:
   pull_request:
     branches:
-      - feature/**
-      - GAP-**
-      - fix/**
-      - bug/**
-      - TMI2-**
+      - develop
     paths:
       - "packages/gap-web-ui/**"
       - ".github/workflows/gap-web-ui-feature.yml"

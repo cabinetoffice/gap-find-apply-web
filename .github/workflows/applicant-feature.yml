@@ -3,11 +3,7 @@ name: Applicant CI
 on:
   pull_request:
     branches:
-      - feature/**
-      - GAP-**
-      - fix/**
-      - bug/**
-      - TMI2-**
+      - develop
     paths:
       - "packages/applicant/**"
       - ".github/workflows/applicant-feature.yml"
