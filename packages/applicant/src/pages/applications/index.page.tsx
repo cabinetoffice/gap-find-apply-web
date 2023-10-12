@@ -8,7 +8,6 @@ import {
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import getConfig from 'next/config';
-import Link from 'next/link';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
@@ -17,7 +16,7 @@ export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   const applicationData = await getApplicationsListById(getJwtFromCookies(req));
   return {
     props: {
-      applicationData: applicationData,
+      applicationData,
     },
   };
 };
@@ -77,18 +76,18 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                               {application.applicationName}
                             </p>
                           ) : (
-                            <Link
-                              href={routes.submissions.sections(
-                                application.grantSubmissionId
-                              )}
+                            <a
+                              href={
+                                '/apply/applicant' +
+                                routes.submissions.sections(
+                                  application.grantSubmissionId
+                                )
+                              }
+                              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+                              data-cy={`cy-application-link-${application.applicationName}`}
                             >
-                              <a
-                                className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-                                data-cy={`cy-application-link-${application.applicationName}`}
-                              >
-                                {application.applicationName}
-                              </a>
-                            </Link>
+                              {application.applicationName}
+                            </a>
                           )}
                         </th>
 
