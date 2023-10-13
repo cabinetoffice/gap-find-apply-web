@@ -7,6 +7,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const slug = req.query.slug as string;
+  const grantWebpageUrl = req.query.grantWebpageUrl as string;
+
   try {
     const {
       externalSubmissionUrl,
@@ -14,7 +16,11 @@ export default async function handler(
       grantApplicationId,
       isInternal,
       grantSchemeId,
+      isAdvertOnlyInContentful,
     } = await getAdvertBySlug(getJwtFromCookies(req), slug);
+    if (isAdvertOnlyInContentful) {
+      res.redirect(grantWebpageUrl);
+    }
 
     if (version === 1) {
       const redirectUrl = isInternal
