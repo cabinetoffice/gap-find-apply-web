@@ -16,6 +16,7 @@ import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { SUBMISSION_STATUS_TAGS } from '../../../utils/sectionStatusTags';
 import styles from './sections.module.scss';
+import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -36,6 +37,20 @@ export const getServerSideProps: GetServerSideProps<
 
   const { sections, grantSubmissionId, applicationName, grantSchemeId } =
     await getSubmissionById(submissionId, getJwtFromCookies(req));
+
+  const grantApplicationStatus = await getApplicationStatusBySchemeId(
+    grantSchemeId,
+    getJwtFromCookies(req)
+  );
+
+  if (grantApplicationStatus === 'REMOVED') {
+    return {
+      redirect: {
+        destination: `/grant-is-closed`,
+        permanent: false,
+      },
+    };
+  }
 
   const submissionReady = await isSubmissionReady(
     submissionId,

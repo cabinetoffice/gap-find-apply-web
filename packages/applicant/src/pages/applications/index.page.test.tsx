@@ -133,15 +133,15 @@ describe('View existing applications', () => {
 
     expect(screen.getByRole('link', { name: 'Application 1' })).toHaveProperty(
       'href',
-      'http://localhost/submissions/subId1/sections'
+      'http://localhost/apply/applicant/submissions/subId1/sections'
     );
     expect(screen.getByRole('link', { name: 'Application 2' })).toHaveProperty(
       'href',
-      'http://localhost/submissions/subId2/sections'
+      'http://localhost/apply/applicant/submissions/subId2/sections'
     );
     expect(screen.getByRole('link', { name: 'Application 3' })).toHaveProperty(
       'href',
-      'http://localhost/submissions/subId3/sections'
+      'http://localhost/apply/applicant/submissions/subId3/sections'
     );
   });
 });
