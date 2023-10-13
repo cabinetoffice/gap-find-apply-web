@@ -1,3 +1,4 @@
+import { FC } from 'react';
 import { GetServerSideProps } from 'next';
 import { routes } from '../../utils/routes';
 import Layout from '../../components/partials/Layout';
@@ -12,7 +13,13 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   };
 };
 
-const MandatoryQuestionsBeforeYouStart = () => {
+export type MandatoryQuestionsProps = {
+  schemeId: string;
+};
+
+const MandatoryQuestionsBeforeYouStart: FC<MandatoryQuestionsProps> = ({
+  schemeId,
+}) => {
   return (
     <>
       <Meta title="Before you start" />

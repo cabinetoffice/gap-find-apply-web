@@ -30,7 +30,7 @@ export const getServerSideProps = async ({
     };
   }
 
-  if (process.env.MANDATORY_QUESTIONS_ENABLED) {
+  if (process.env.MANDATORY_QUESTIONS_ENABLED === 'true') {
     const findRedirectCookie = process.env.FIND_REDIRECT_COOKIE;
 
     if (req.cookies[findRedirectCookie]) {
@@ -41,7 +41,7 @@ export const getServerSideProps = async ({
       );
       return {
         redirect: {
-          destination: `/api/redirect-after-find/${slug}`,
+          destination: `/api/redirect-after-find?slug=${slug}`,
           statusCode: 307,
         },
       };

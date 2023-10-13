@@ -46,13 +46,12 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
       }
     );
   } else if (
-    process.env.MANDATORY_QUESTIONS_ENABLED &&
+    process.env.MANDATORY_QUESTIONS_ENABLED === 'true' &&
     redirectFromFindPattern.test({ pathname: req.nextUrl.pathname })
   ) {
     res.cookies.set(
       process.env.FIND_REDIRECT_COOKIE,
-      redirectFromFindPattern.exec({ pathname: req.nextUrl.pathname }).pathname
-        .groups.slug,
+      grabSlug(req.nextUrl.search),
       {
         path: '/',
         secure: true,
@@ -64,6 +63,11 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
 
   return res;
 }
+
+const grabSlug = (string: string) => {
+  const queryParams = new URLSearchParams(string);
+  return queryParams.get('slug');
+};
 
 export const getJwtFromMiddlewareCookies = (req: NextRequest) => {
   const COOKIE_SECRET = process.env.COOKIE_SECRET;
@@ -134,7 +138,7 @@ const newApplicationPattern = new URLPattern({
 });
 
 const redirectFromFindPattern = new URLPattern({
-  pathname: '/api/redirect-from-find?slug=:slug([a-z0-9-]+)',
+  pathname: '/api/redirect-from-find',
 });
 
 const signInDetailsPage = new URLPattern({
