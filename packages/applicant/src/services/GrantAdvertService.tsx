@@ -17,10 +17,11 @@ export async function getAdvertBySlug(
 }
 
 export interface AdvertDto {
-  id: string;
-  externalSubmissionUrl: string;
-  version: number;
-  grantApplicationId: number | null;
-  isInternal: boolean;
-  grantSchemeId: number;
+  id?: string;
+  externalSubmissionUrl?: string;
+  version?: number;
+  grantApplicationId?: number;
+  isInternal?: boolean;
+  grantSchemeId?: number;
+  isAdvertOnlyInContentful: boolean;
 }
