@@ -63,6 +63,8 @@ describe('Middleware', () => {
   });
 
   it('sets find redirect cookie if URL matches find redirect pattern and FF enabled', async () => {
+    const mandatoryQuestionsEnabledBackup =
+      process.env.MANDATORY_QUESTIONS_ENABLED;
     process.env.MANDATORY_QUESTIONS_ENABLED = 'true';
     const slug = 'slug-123';
     const pathname = 'api/redirect-from-find?slug=' + slug;
@@ -75,9 +77,12 @@ describe('Middleware', () => {
     expect(res.cookies.get(process.env.FIND_REDIRECT_COOKIE)).toEqual(
       `?slug=${slug}`
     );
+    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
   });
 
   it('does not set find redirect cookie if URL matches find redirect pattern but FF disabled', async () => {
+    const mandatoryQuestionsEnabledBackup =
+      process.env.MANDATORY_QUESTIONS_ENABLED;
     process.env.MANDATORY_QUESTIONS_ENABLED = 'false';
     const slug = 'slug-123';
     const pathname = 'api/redirect-from-find?slug=' + slug;
@@ -90,5 +95,6 @@ describe('Middleware', () => {
     expect(res.cookies.get(process.env.FIND_REDIRECT_COOKIE)).toEqual(
       undefined
     );
+    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
   });
 });

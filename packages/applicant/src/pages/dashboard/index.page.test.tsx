@@ -97,6 +97,7 @@ describe('getServerSideProps', () => {
   });
 
   it('should return a DescriptionListProps object', async () => {
+    const oneLoginEnabledBackup = process.env.ONE_LOGIN_ENABLED;
     process.env.ONE_LOGIN_ENABLED = 'false';
     const getGrantApplicantSpy = jest
       .spyOn(GrantApplicantService.prototype, 'getGrantApplicant')
@@ -121,9 +122,11 @@ describe('getServerSideProps', () => {
         oneLoginEnabled: false,
       },
     });
+    process.env.ONE_LOGIN_ENABLED = oneLoginEnabledBackup;
   });
 
   it('should return a DescriptionListProps object with detail null', async () => {
+    const oneLoginEnabledBackup = process.env.ONE_LOGIN_ENABLED;
     process.env.ONE_LOGIN_ENABLED = 'false';
     const getGrantApplicantSpy = jest
       .spyOn(GrantApplicantService.prototype, 'getGrantApplicant')
@@ -154,6 +157,7 @@ describe('getServerSideProps', () => {
         oneLoginEnabled: false,
       },
     });
+    process.env.ONE_LOGIN_ENABLED = oneLoginEnabledBackup;
   });
 
   const mockSetHeader = jest.fn();
@@ -185,6 +189,8 @@ describe('getServerSideProps', () => {
   });
 
   it('should redirect to find redirect page', async () => {
+    const mandatoryQuestionsEnabledBackup =
+      process.env.MANDATORY_QUESTIONS_ENABLED;
     process.env.MANDATORY_QUESTIONS_ENABLED = 'true';
     const result = await getServerSideProps(
       getContext(getDefaultContext, {
@@ -209,9 +215,12 @@ describe('getServerSideProps', () => {
         statusCode: 307,
       },
     });
+    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
   });
 
   it('should not redirect to find redirect page', async () => {
+    const mandatoryQuestionsEnabledBackup =
+      process.env.MANDATORY_QUESTIONS_ENABLED;
     process.env.MANDATORY_QUESTIONS_ENABLED = 'false';
     const result = await getServerSideProps(
       getContext(getDefaultContext, {
@@ -230,5 +239,6 @@ describe('getServerSideProps', () => {
       'Set-Cookie',
       `${process.env.FIND_REDIRECT_COOKIE}=deleted; Path=/; Max-Age=0`
     );
+    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
   });
 });
