@@ -20,6 +20,7 @@ export const config = {
     '/submissions/:path*',
     '/grant-is-closed',
     '/sign-in-details',
+    '/api/redirect-from-find',
   ],
 };
 
