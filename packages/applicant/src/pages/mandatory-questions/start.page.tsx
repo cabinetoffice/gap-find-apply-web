@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import { GetServerSideProps } from 'next';
-import { routes } from '../../utils/routes';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
 import { Button } from 'gap-web-ui';
