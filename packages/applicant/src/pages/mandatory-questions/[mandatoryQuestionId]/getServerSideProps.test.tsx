@@ -29,7 +29,7 @@ const spiedGrantMandatoryQuestionServiceUpdateMandatoryQuestion = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
   'updateMandatoryQuestion'
 );
-
+const userTokenNameBackup = process.env.USER_TOKEN_NAME;
 describe('getServerSideProps', () => {
   const getDefaultGrantMandatoryQuestion = (): GrantMandatoryQuestionDto => ({
     schemeId: 1,
@@ -51,7 +51,9 @@ describe('getServerSideProps', () => {
     jest.resetAllMocks();
     process.env.USER_TOKEN_NAME = 'gap-test';
   });
-
+  afterEach(() => {
+    process.env.USER_TOKEN_NAME = userTokenNameBackup;
+  });
   describe('when handling a GET request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
