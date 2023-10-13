@@ -34,14 +34,14 @@ export const getServerSideProps = async ({
     const findRedirectCookie = process.env.FIND_REDIRECT_COOKIE;
 
     if (req.cookies[findRedirectCookie]) {
-      const slug = req.cookies[findRedirectCookie];
+      const queryParams = req.cookies[findRedirectCookie];
       res.setHeader(
         'Set-Cookie',
         `${findRedirectCookie}=deleted; Path=/; Max-Age=0`
       );
       return {
         redirect: {
-          destination: `/api/redirect-after-find?slug=${slug}`,
+          destination: `/api/redirect-after-find${queryParams}`,
           statusCode: 307,
         },
       };

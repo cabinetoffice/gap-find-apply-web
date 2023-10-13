@@ -49,25 +49,16 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
     process.env.MANDATORY_QUESTIONS_ENABLED === 'true' &&
     redirectFromFindPattern.test({ pathname: req.nextUrl.pathname })
   ) {
-    res.cookies.set(
-      process.env.FIND_REDIRECT_COOKIE,
-      grabSlug(req.nextUrl.search),
-      {
-        path: '/',
-        secure: true,
-        httpOnly: true,
-        maxAge: 900,
-      }
-    );
+    res.cookies.set(process.env.FIND_REDIRECT_COOKIE, req.nextUrl.search, {
+      path: '/',
+      secure: true,
+      httpOnly: true,
+      maxAge: 900,
+    });
   }
 
   return res;
 }
-
-const grabSlug = (string: string) => {
-  const queryParams = new URLSearchParams(string);
-  return queryParams.get('slug');
-};
 
 export const getJwtFromMiddlewareCookies = (req: NextRequest) => {
   const COOKIE_SECRET = process.env.COOKIE_SECRET;

@@ -190,7 +190,7 @@ describe('getServerSideProps', () => {
       getContext(getDefaultContext, {
         req: {
           cookies: {
-            [process.env.FIND_REDIRECT_COOKIE]: 'slug-123',
+            [process.env.FIND_REDIRECT_COOKIE]: '?slug=slug-123',
           },
         },
         res: {
@@ -217,7 +217,7 @@ describe('getServerSideProps', () => {
       getContext(getDefaultContext, {
         req: {
           cookies: {
-            [process.env.FIND_REDIRECT_COOKIE]: 'slug-123',
+            [process.env.FIND_REDIRECT_COOKIE]: '?slug=slug-123',
           },
         },
         res: {

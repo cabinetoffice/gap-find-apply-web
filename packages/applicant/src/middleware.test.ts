@@ -72,7 +72,9 @@ describe('Middleware', () => {
     );
     const res = buildMiddlewareResponse(req, process.env.HOST);
 
-    expect(res.cookies.get(process.env.FIND_REDIRECT_COOKIE)).toEqual(slug);
+    expect(res.cookies.get(process.env.FIND_REDIRECT_COOKIE)).toEqual(
+      `?slug=${slug}`
+    );
   });
 
   it('does not set find redirect cookie if URL matches find redirect pattern but FF disabled', async () => {
