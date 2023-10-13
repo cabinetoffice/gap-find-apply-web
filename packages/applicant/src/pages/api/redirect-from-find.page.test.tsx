@@ -14,6 +14,7 @@ const req = (overrides: any = {}) =>
   merge({
     query: {
       slug: 'slug',
+      grantWebpageUrl: 'grantWebpageUrl',
     },
   });
 
@@ -32,6 +33,23 @@ describe('API Handler Tests', () => {
     process.env.HOST = 'http://localhost';
     jest.resetAllMocks();
   });
+  it('should redirect to /grantWebPageUrl when advert is only in contentful', async () => {
+    const advertDTO: AdvertDto = {
+      id: null,
+      version: null,
+      grantApplicationId: null,
+      isInternal: null,
+      grantSchemeId: null,
+      externalSubmissionUrl: null,
+      isAdvertOnlyInContentful: true,
+    };
+
+    (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    await handler(req(), res());
+
+    expect(mockedRedirect).toHaveBeenCalledWith('grantWebpageUrl');
+  });
   it('should redirect to /applications/<applicationId> when advert is version 1 and have internal application', async () => {
     const advertDTO: AdvertDto = {
       id: '123',
@@ -40,6 +58,7 @@ describe('API Handler Tests', () => {
       isInternal: true,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
+      isAdvertOnlyInContentful: false,
     };
 
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
@@ -58,6 +77,7 @@ describe('API Handler Tests', () => {
       isInternal: false,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
+      isAdvertOnlyInContentful: false,
     };
 
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
@@ -75,6 +95,7 @@ describe('API Handler Tests', () => {
       isInternal: true,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
+      isAdvertOnlyInContentful: false,
     };
 
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
@@ -94,6 +115,7 @@ describe('API Handler Tests', () => {
       isInternal: false,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
+      isAdvertOnlyInContentful: false,
     };
 
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
