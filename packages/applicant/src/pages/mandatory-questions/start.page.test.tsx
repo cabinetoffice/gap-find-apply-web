@@ -1,28 +1,22 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import {
+  getPageProps,
+  renderWithRouter,
+} from '../../testUtils/unitTestHelpers';
+import InferProps from '../../types/InferProps';
 import MandatoryQuestionsBeforeYouStart, {
-  MandatoryQuestionsProps,
+  getServerSideProps,
 } from './start.page';
-import { getProps } from 'gap-web-ui';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
-import { createMockRouter } from '../../testUtils/createMockRouter';
 
-function getDefaultProps(): MandatoryQuestionsProps {
-  return {
-    schemeId: '1',
-  };
-}
+const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
+  schemeId: '1',
+});
 
 describe('Mandatory Questions Start', () => {
   test('should render page', () => {
-    render(
-      <RouterContext.Provider
-        value={createMockRouter({
-          pathname: `/applications`,
-        })}
-      >
-        <MandatoryQuestionsBeforeYouStart {...getProps(getDefaultProps)} />
-      </RouterContext.Provider>
+    renderWithRouter(
+      <MandatoryQuestionsBeforeYouStart {...getPageProps(getDefaultProps)} />
     );
 
     screen.getByRole('heading', {

@@ -1,24 +1,18 @@
-import { FC } from 'react';
-import { GetServerSideProps } from 'next';
+import { Button } from 'gap-web-ui';
+import { GetServerSidePropsContext } from 'next';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
-import { Button } from 'gap-web-ui';
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+export async function getServerSideProps({ query }: GetServerSidePropsContext) {
+  const { schemeId } = query as Record<string, string>;
   return {
     props: {
-      schemeId: query.schemeId,
+      schemeId,
     },
   };
-};
+}
 
-export type MandatoryQuestionsProps = {
-  schemeId: string;
-};
-
-const MandatoryQuestionsBeforeYouStart: FC<MandatoryQuestionsProps> = ({
-  schemeId,
-}) => {
+export default function MandatoryQuestionsBeforeYouStart({ schemeId }) {
   return (
     <>
       <Meta title="Before you start" />
@@ -47,6 +41,4 @@ const MandatoryQuestionsBeforeYouStart: FC<MandatoryQuestionsProps> = ({
       </Layout>
     </>
   );
-};
-
-export default MandatoryQuestionsBeforeYouStart;
+}
