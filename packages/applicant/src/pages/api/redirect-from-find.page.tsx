@@ -16,20 +16,20 @@ export default async function handler(
       grantSchemeId,
     } = await getAdvertBySlug(getJwtFromCookies(req), slug);
 
-    // if (version === 1) {
-    //   const redirectUrl = isInternal
-    //     ? `${process.env.HOST}${routes.applications}/${grantApplicationId}`
-    //     : externalSubmissionUrl;
-    //   res.redirect(redirectUrl);
-    // }
-    //
-    // if (version === 2) {
-    res.redirect(
-      `${process.env.HOST}${routes.mandatoryQuestions.startPage(
-        grantSchemeId.toString()
-      )}`
-    );
-    // }
+    if (version === 1) {
+      const redirectUrl = isInternal
+        ? `${process.env.HOST}${routes.applications}/${grantApplicationId}`
+        : externalSubmissionUrl;
+      res.redirect(redirectUrl);
+    }
+
+    if (version === 2) {
+      res.redirect(
+        `${process.env.HOST}${routes.mandatoryQuestions.startPage(
+          grantSchemeId.toString()
+        )}`
+      );
+    }
   } catch (e) {
     const serviceErrorProps = {
       errorInformation: 'There was an error in the service',

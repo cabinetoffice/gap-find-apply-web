@@ -23,7 +23,7 @@ const MandatoryQuestionsBeforeYouStart: FC<MandatoryQuestionsProps> = ({
   return (
     <>
       <Meta title="Before you start" />
-      <Layout backBtnUrl={routes.organisation.index}>
+      <Layout>
         <h1 className="govuk-heading-l">Before you start</h1>
         <p className="govuk-body">
           Before you start, we’d like to ask you a few questions.
