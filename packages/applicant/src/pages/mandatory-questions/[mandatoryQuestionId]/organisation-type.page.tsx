@@ -2,6 +2,10 @@ import Layout from '../../../components/partials/Layout';
 import InferProps from '../../../types/InferProps';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
+import Meta from '../../../components/partials/Meta';
+import { Button, Details, FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
+import { SaveAndCancel } from '../../../components/save-and-cancel/SaveAndCancel';
+import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationTypePage({
@@ -11,12 +15,46 @@ export default function MandatoryQuestionOrganisationTypePage({
   defaultFields,
   mandatoryQuestion,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl = routes.dashboard;
+  const backButtonUrl = routes.mandatoryQuestions.addressPage(
+    mandatoryQuestion.id
+  );
   return (
     <>
-      <>
-        <Layout backBtnUrl={backButtonUrl}>Type PAGE</Layout>
-      </>
+      <Meta
+        title={`${
+          fieldErrors.length > 0 ? 'Error: ' : ''
+        }Organisation details - Apply for a grant`}
+      />
+
+      <Layout backBtnUrl={backButtonUrl}>
+        <FlexibleQuestionPageLayout
+          fieldErrors={fieldErrors}
+          csrfToken={csrfToken}
+          formAction={formAction}
+        >
+          <Radio
+            questionTitle="Choose your organisation type"
+            questionHintText="Choose the option that best describes your organisation"
+            fieldName="type"
+            fieldErrors={fieldErrors}
+            radioOptions={[
+              { label: 'Limited company', value: 'Limited company' },
+              { label: 'Non-limited company', value: 'Non-limited company' },
+              { label: 'Registered charity', value: 'Registered charity' },
+              { label: 'Unregistered charity', value: 'Unregistered charity' },
+              { label: 'Other', value: 'Other' },
+            ]}
+            defaultChecked={defaultFields.orgType}
+          />
+
+          <input type="hidden" value={mandatoryQuestion.id} name="id" />
+
+          <Button
+            text="Save and continue"
+            type={ButtonTypePropertyEnum.Submit}
+          />
+        </FlexibleQuestionPageLayout>
+      </Layout>
     </>
   );
 }
