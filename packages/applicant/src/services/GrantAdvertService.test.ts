@@ -61,7 +61,7 @@ describe('GrantAdvert Service', () => {
 
       expect(axios.get as jest.Mock).toHaveBeenNthCalledWith(
         1,
-        `${BACKEND_HOST}/exists-in-contentful?advertSlug=slug`,
+        `${BACKEND_HOST}/slug/exists-in-contentful`,
         {
           headers: {
             Accept: 'application/json',

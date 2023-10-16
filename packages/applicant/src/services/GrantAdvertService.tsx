@@ -21,7 +21,7 @@ export async function checkIfGrantExistsInContentful(
   jwt: string
 ): Promise<GrantExistsInContentfulDto> {
   const { data } = await axios.get<GrantExistsInContentfulDto>(
-    `${BACKEND_HOST}/grant-adverts/exists-in-contentful?advertSlug=${slug}`,
+    `${BACKEND_HOST}/grant-adverts/${slug}/exists-in-contentful`,
     axiosConfig(jwt)
   );
   return data;
