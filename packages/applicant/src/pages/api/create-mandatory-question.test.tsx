@@ -1,7 +1,7 @@
 import { merge } from 'lodash';
 import { GrantMandatoryQuestionService } from '../../services/GrantMandatoryQuestionService';
 import { routes } from '../../utils/routes';
-import handler from './create-mandatory-question';
+import handler from './create-mandatory-question.page';
 
 jest.mock('../../services/GrantMandatoryQuestionService.ts');
 jest.mock('../../utils/jwt');
@@ -26,10 +26,16 @@ const res = (overrides: any = {}) =>
     },
     overrides
   );
+const backup_host = process.env.HOST;
 
 describe('API Handler Tests', () => {
   beforeEach(() => {
+    process.env.HOST = 'http://localhost';
     jest.resetAllMocks();
+  });
+
+  afterEach(() => {
+    process.env.HOST = backup_host;
   });
 
   it('should redirect to organisation-name page when mandatory question gets created in db', async () => {
@@ -42,7 +48,9 @@ describe('API Handler Tests', () => {
     await handler(req(), res());
 
     expect(mockedRedirect).toHaveBeenCalledWith(
-      routes.mandatoryQuestions.namePage('mandatoryQuestionId')
+      `http://localhost${routes.mandatoryQuestions.namePage(
+        'mandatoryQuestionId'
+      )}`
     );
   });
   it('should redirect to error page when there is an error in the backend', async () => {

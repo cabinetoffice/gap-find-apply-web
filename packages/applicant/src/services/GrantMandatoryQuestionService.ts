@@ -50,7 +50,10 @@ export class GrantMandatoryQuestionService {
     jwt: string
   ): Promise<string> {
     const { data } = await axios.post<string>(
-      `${this.BACKEND_HOST}/grant-mandatory-questions?schemeId=${schemeId}`,
+      `${this.BACKEND_HOST}/grant-mandatory-questions?schemeId=${parseInt(
+        schemeId
+      )}`,
+      {},
       axiosConfig(jwt)
     );
 

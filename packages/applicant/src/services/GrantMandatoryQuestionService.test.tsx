@@ -101,7 +101,7 @@ describe('update mandatoryQuestion', () => {
 describe('create mandatoryQuestion', () => {
   const spy = jest.spyOn(axios, 'post');
 
-  const SCHEME_ID = 'schemeID';
+  const SCHEME_ID = '1';
   it('should send a request to post the mandatory-question', async () => {
     const { serverRuntimeConfig } = getConfig();
     const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -109,11 +109,15 @@ describe('create mandatoryQuestion', () => {
     mock.onPost(expectedUrl).reply(200);
     await subject.createMandatoryQuestion(SCHEME_ID, 'testJwt');
 
-    expect(spy).toHaveBeenCalledWith(expectedUrl, {
-      headers: {
-        Authorization: `Bearer testJwt`,
-        Accept: 'application/json',
-      },
-    });
+    expect(spy).toHaveBeenCalledWith(
+      expectedUrl,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer testJwt`,
+          Accept: 'application/json',
+        },
+      }
+    );
   });
 });
