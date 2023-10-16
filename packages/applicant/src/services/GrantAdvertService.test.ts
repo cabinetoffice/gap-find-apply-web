@@ -1,5 +1,10 @@
 import axios from 'axios';
-import { AdvertDto, getAdvertBySlug } from './GrantAdvertService';
+import {
+  AdvertDto,
+  checkIfGrantExistsInContentful,
+  getAdvertBySlug,
+  GrantExistsInContentfulDto,
+} from './GrantAdvertService';
 
 jest.mock('axios');
 
@@ -13,6 +18,7 @@ const advertDTO: AdvertDto = {
   externalSubmissionUrl: 'http://example.com',
   isAdvertOnlyInContentful: false,
 };
+
 describe('GrantAdvert Service', () => {
   beforeEach(() => {
     jest.resetAllMocks();
@@ -44,6 +50,38 @@ describe('GrantAdvert Service', () => {
       const response = await getAdvertBySlug('testJwt', 'slug');
 
       expect(response).toStrictEqual(advertDTO);
+    });
+  });
+
+  describe('checkIfGrantExistsInContentful', () => {
+    it('Should call axios', async () => {
+      (axios.get as jest.Mock).mockResolvedValue({});
+
+      await checkIfGrantExistsInContentful('slug', 'testJwt');
+
+      expect(axios.get as jest.Mock).toHaveBeenNthCalledWith(
+        1,
+        `${BACKEND_HOST}/exists-in-contentful?advertSlug=slug`,
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: 'Bearer testJwt',
+          },
+        }
+      );
+    });
+
+    it('Should return a the expected data', async () => {
+      const expectedResponse: GrantExistsInContentfulDto = {
+        isAdvertInContentful: true,
+      };
+      (axios.get as jest.Mock).mockResolvedValue({
+        data: expectedResponse,
+      });
+
+      const response = await checkIfGrantExistsInContentful('slug', 'testJwt');
+
+      expect(response).toStrictEqual(expectedResponse);
     });
   });
 });

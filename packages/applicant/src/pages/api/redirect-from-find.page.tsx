@@ -1,5 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getAdvertBySlug } from '../../services/GrantAdvertService';
+import {
+  checkIfGrantExistsInContentful,
+  getAdvertBySlug,
+} from '../../services/GrantAdvertService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 export default async function handler(
@@ -18,7 +21,17 @@ export default async function handler(
       grantSchemeId,
       isAdvertOnlyInContentful,
     } = await getAdvertBySlug(getJwtFromCookies(req), slug);
-    if (isAdvertOnlyInContentful) {
+
+    const { isAdvertInContentful } = await checkIfGrantExistsInContentful(
+      slug,
+      getJwtFromCookies(req)
+    );
+
+    if (!isAdvertInContentful) {
+      throw new Error('Grant does not exist in contentful');
+    }
+
+    if (isAdvertOnlyInContentful && isAdvertInContentful) {
       res.redirect(grantWebpageUrl);
     }
 

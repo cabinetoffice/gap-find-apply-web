@@ -16,6 +16,20 @@ export async function getAdvertBySlug(
   return data;
 }
 
+export async function checkIfGrantExistsInContentful(
+  slug: string,
+  jwt: string
+): Promise<GrantExistsInContentfulDto> {
+  const { data } = await axios.get<GrantExistsInContentfulDto>(
+    `${BACKEND_HOST}/grant-adverts/exists-in-contentful?advertSlug=${slug}`,
+    axiosConfig(jwt)
+  );
+  return data;
+}
+
+export interface GrantExistsInContentfulDto {
+  isAdvertInContentful: boolean;
+}
 export interface AdvertDto {
   id?: string;
   externalSubmissionUrl?: string;
