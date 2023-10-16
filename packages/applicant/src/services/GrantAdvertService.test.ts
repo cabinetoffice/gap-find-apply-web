@@ -16,7 +16,7 @@ const advertDTO: AdvertDto = {
   isInternal: true,
   grantSchemeId: 456,
   externalSubmissionUrl: 'http://example.com',
-  isAdvertOnlyInContentful: false,
+  isAdvertInDatabase: false,
 };
 
 describe('GrantAdvert Service', () => {

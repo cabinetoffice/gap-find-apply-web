@@ -13,15 +13,6 @@ export default async function handler(
   const grantWebpageUrl = req.query.grantWebpageUrl as string;
 
   try {
-    const {
-      externalSubmissionUrl,
-      version,
-      grantApplicationId,
-      isInternal,
-      grantSchemeId,
-      isAdvertOnlyInContentful,
-    } = await getAdvertBySlug(getJwtFromCookies(req), slug);
-
     const { isAdvertInContentful } = await checkIfGrantExistsInContentful(
       slug,
       getJwtFromCookies(req)
@@ -31,7 +22,16 @@ export default async function handler(
       throw new Error('Grant does not exist in contentful');
     }
 
-    if (isAdvertOnlyInContentful && isAdvertInContentful) {
+    const {
+      externalSubmissionUrl,
+      version,
+      grantApplicationId,
+      isInternal,
+      grantSchemeId,
+      isAdvertInDatabase,
+    } = await getAdvertBySlug(getJwtFromCookies(req), slug);
+
+    if (!isAdvertInDatabase && isAdvertInContentful) {
       res.redirect(grantWebpageUrl);
     }
 

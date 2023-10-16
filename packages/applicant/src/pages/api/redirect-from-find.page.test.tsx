@@ -55,7 +55,7 @@ describe('API Handler Tests', () => {
       isInternal: null,
       grantSchemeId: null,
       externalSubmissionUrl: null,
-      isAdvertOnlyInContentful: true,
+      isAdvertInDatabase: false,
     };
 
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
@@ -76,7 +76,7 @@ describe('API Handler Tests', () => {
       isInternal: true,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
-      isAdvertOnlyInContentful: false,
+      isAdvertInDatabase: true,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -98,7 +98,7 @@ describe('API Handler Tests', () => {
       isInternal: false,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
-      isAdvertOnlyInContentful: false,
+      isAdvertInDatabase: true,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -119,7 +119,7 @@ describe('API Handler Tests', () => {
       isInternal: true,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
-      isAdvertOnlyInContentful: false,
+      isAdvertInDatabase: true,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -142,7 +142,7 @@ describe('API Handler Tests', () => {
       isInternal: false,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
-      isAdvertOnlyInContentful: false,
+      isAdvertInDatabase: true,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(

@@ -37,5 +37,5 @@ export interface AdvertDto {
   grantApplicationId?: number;
   isInternal?: boolean;
   grantSchemeId?: number;
-  isAdvertOnlyInContentful: boolean;
+  isAdvertInDatabase: boolean;
 }
