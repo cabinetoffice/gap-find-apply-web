@@ -1,5 +1,10 @@
 import { merge } from 'lodash';
-import { AdvertDto, getAdvertBySlug } from '../../services/GrantAdvertService';
+import {
+  AdvertDto,
+  GrantExistsInContentfulDto,
+  checkIfGrantExistsInContentful,
+  getAdvertBySlug,
+} from '../../services/GrantAdvertService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import handler from './redirect-from-find.page';
 
@@ -27,12 +32,21 @@ const res = (overrides: any = {}) =>
     },
     overrides
   );
+const backup_host = process.env.HOST;
+
+const advertIsInContenful: GrantExistsInContentfulDto = {
+  isAdvertInContentful: true,
+};
 
 describe('API Handler Tests', () => {
   beforeEach(() => {
     process.env.HOST = 'http://localhost';
     jest.resetAllMocks();
   });
+  afterEach(() => {
+    process.env.HOST = backup_host;
+  });
+
   it('should redirect to /grantWebPageUrl when advert is only in contentful', async () => {
     const advertDTO: AdvertDto = {
       id: null,
@@ -41,11 +55,15 @@ describe('API Handler Tests', () => {
       isInternal: null,
       grantSchemeId: null,
       externalSubmissionUrl: null,
-      isAdvertOnlyInContentful: true,
+      isAdvertInDatabase: false,
     };
 
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
+      advertIsInContenful
+    );
+
     await handler(req(), res());
 
     expect(mockedRedirect).toHaveBeenCalledWith('grantWebpageUrl');
@@ -58,9 +76,12 @@ describe('API Handler Tests', () => {
       isInternal: true,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
-      isAdvertOnlyInContentful: false,
+      isAdvertInDatabase: true,
     };
 
+    (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
+      advertIsInContenful
+    );
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     await handler(req(), res());
@@ -77,9 +98,12 @@ describe('API Handler Tests', () => {
       isInternal: false,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
-      isAdvertOnlyInContentful: false,
+      isAdvertInDatabase: true,
     };
 
+    (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
+      advertIsInContenful
+    );
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     await handler(req(), res());
@@ -95,9 +119,12 @@ describe('API Handler Tests', () => {
       isInternal: true,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
-      isAdvertOnlyInContentful: false,
+      isAdvertInDatabase: true,
     };
 
+    (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
+      advertIsInContenful
+    );
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     await handler(req(), res());
@@ -115,9 +142,12 @@ describe('API Handler Tests', () => {
       isInternal: false,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
-      isAdvertOnlyInContentful: false,
+      isAdvertInDatabase: true,
     };
 
+    (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
+      advertIsInContenful
+    );
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     await handler(req(), res());
@@ -130,6 +160,32 @@ describe('API Handler Tests', () => {
     (getAdvertBySlug as jest.Mock).mockRejectedValue(new Error('error'));
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     await handler(req(), res());
+    const serviceErrorProps = {
+      errorInformation: 'There was an error in the service',
+      linkAttributes: {
+        href: '/dashboard',
+        linkText: 'Go back to your dashboard',
+        linkInformation: '',
+      },
+    };
+    expect(mockedRedirect).toHaveBeenCalledWith(
+      `http://localhost/service-error?serviceErrorProps=${JSON.stringify(
+        serviceErrorProps
+      )}`
+    );
+  });
+
+  it('should redirect to the service Error when there the grant does not exist in contentful', async () => {
+    (checkIfGrantExistsInContentful as jest.Mock).mockReturnValue({
+      isAdvertInContentful: false,
+    });
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    try {
+      await handler(req(), res());
+    } catch (e) {
+      expect(e.message).toBe('Grant does not exist in contentful');
+    }
+
     const serviceErrorProps = {
       errorInformation: 'There was an error in the service',
       linkAttributes: {
