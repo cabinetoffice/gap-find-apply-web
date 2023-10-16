@@ -51,6 +51,11 @@ describe('Api.submissions.question', () => {
     );
   });
 });
+describe('Api.createMandatoryQuestion', () => {
+  const schemeId = 'schemeId';
+  const expectedURL = `/api/create-mandatory-question?schemeId=${schemeId}`;
+  expect(routes.api.createMandatoryQuestion(schemeId)).toBe(expectedURL);
+});
 describe('Mandatory Questions Routes', () => {
   it('should generate the correct start page URL', () => {
     const schemeId = 'exampleSchemeId';

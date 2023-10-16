@@ -44,6 +44,18 @@ export class GrantMandatoryQuestionService {
 
     return data;
   }
+
+  public async createMandatoryQuestion(
+    schemeId: string,
+    jwt: string
+  ): Promise<string> {
+    const { data } = await axios.post<string>(
+      `${this.BACKEND_HOST}/grant-mandatory-questions?schemeId=${schemeId}`,
+      axiosConfig(jwt)
+    );
+
+    return data;
+  }
 }
 export interface GrantMandatoryQuestionDto {
   name?: string;

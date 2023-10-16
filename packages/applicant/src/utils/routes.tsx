@@ -72,5 +72,7 @@ export const routes = {
           ? `/api/isNewApplicant?migrationStatus=${migrationStatus}`
           : `/api/isNewApplicant`,
     },
+    createMandatoryQuestion: (schemeId: string) =>
+      `/api/create-mandatory-question?schemeId=${schemeId}`,
   },
 };

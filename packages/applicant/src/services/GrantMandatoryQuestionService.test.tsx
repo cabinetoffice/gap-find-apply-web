@@ -30,7 +30,7 @@ afterAll(() => {
   mock.reset();
 });
 
-describe('Axios call to get organisation data', () => {
+describe('Axios call to get mandatory question data', () => {
   const spy = jest.spyOn(axios, 'get');
 
   it('should get mandatoryQuestion data', async () => {
@@ -70,26 +70,46 @@ describe('Axios call to get organisation data', () => {
   });
 });
 
-describe('updateOrganisation', () => {
+describe('update mandatoryQuestion', () => {
   const spy = jest.spyOn(axios, 'patch');
 
   const MANDATORY_QUESTION_ID = 'a048d000003Sk39AAC';
-  it('should send a request to update the organisation', async () => {
-    const organisationData: GrantMandatoryQuestionDto = {
+  it('should send a request to update the mandatory-question', async () => {
+    const mandatoryQuestionData: GrantMandatoryQuestionDto = {
       name: 'AND Digital',
     };
 
     const { serverRuntimeConfig } = getConfig();
     const BACKEND_HOST = serverRuntimeConfig.backendHost;
     const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions/${MANDATORY_QUESTION_ID}`;
-    mock.onPatch(expectedUrl, organisationData).reply(200);
+    mock.onPatch(expectedUrl, mandatoryQuestionData).reply(200);
     await subject.updateMandatoryQuestion(
       'testJwt',
       MANDATORY_QUESTION_ID,
-      organisationData
+      mandatoryQuestionData
     );
 
-    expect(spy).toHaveBeenCalledWith(expectedUrl, organisationData, {
+    expect(spy).toHaveBeenCalledWith(expectedUrl, mandatoryQuestionData, {
+      headers: {
+        Authorization: `Bearer testJwt`,
+        Accept: 'application/json',
+      },
+    });
+  });
+});
+
+describe('create mandatoryQuestion', () => {
+  const spy = jest.spyOn(axios, 'post');
+
+  const SCHEME_ID = 'schemeID';
+  it('should send a request to post the mandatory-question', async () => {
+    const { serverRuntimeConfig } = getConfig();
+    const BACKEND_HOST = serverRuntimeConfig.backendHost;
+    const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions?schemeId=${SCHEME_ID}`;
+    mock.onPost(expectedUrl).reply(200);
+    await subject.createMandatoryQuestion(SCHEME_ID, 'testJwt');
+
+    expect(spy).toHaveBeenCalledWith(expectedUrl, {
       headers: {
         Authorization: `Bearer testJwt`,
         Accept: 'application/json',
