@@ -1,11 +1,11 @@
 import {
+  Button,
   ButtonTypePropertyEnum,
   FlexibleQuestionPageLayout,
   TextInput,
 } from 'gap-web-ui';
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
-import { SaveAndCancel } from '../../../components/save-and-cancel/SaveAndCancel';
 import InferProps from '../../../types/InferProps';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
