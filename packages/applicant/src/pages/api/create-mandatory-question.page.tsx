@@ -7,18 +7,10 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const schemeId = req.query.schemeId as string;
-  console.log('schemeId', schemeId);
+
   try {
     const grantMandatoryQuestionService =
       GrantMandatoryQuestionService.getInstance();
-    console.log('grantMandatoryQuestionService', grantMandatoryQuestionService);
-    console.log(
-      'BANANA',
-      await grantMandatoryQuestionService.createMandatoryQuestion(
-        schemeId,
-        getJwtFromCookies(req)
-      )
-    );
     const mandatoryQuestionId =
       await grantMandatoryQuestionService.createMandatoryQuestion(
         schemeId,
