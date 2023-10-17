@@ -46,7 +46,6 @@ export class GrantMandatoryQuestionService {
   }
 }
 export interface GrantMandatoryQuestionDto {
-  id: string;
   name?: string;
   addressLine1?: string;
   addressLine2?: string;

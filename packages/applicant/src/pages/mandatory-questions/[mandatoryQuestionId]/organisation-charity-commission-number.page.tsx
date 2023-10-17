@@ -14,16 +14,16 @@ export default function MandatoryQuestionOrganisationCharityCommissionNumberPage
   formAction,
   defaultFields,
   mandatoryQuestion,
+  mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl = routes.mandatoryQuestions.companiesHouseNumberPage(
-    mandatoryQuestion.id
-  );
+  const backButtonUrl =
+    routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
   return (
     <>
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Organisation details - Apply for a grant`}
+        }Charity Commission number - Apply for a grant`}
       />
 
       <Layout backBtnUrl={backButtonUrl}>
@@ -57,8 +57,6 @@ export default function MandatoryQuestionOrganisationCharityCommissionNumberPage
             fieldErrors={fieldErrors}
             width="20"
           />
-
-          <input type="hidden" value={mandatoryQuestion.id} name="id" />
 
           <Button
             text="Save and continue"

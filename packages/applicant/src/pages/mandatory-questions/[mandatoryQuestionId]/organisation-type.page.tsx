@@ -14,16 +14,16 @@ export default function MandatoryQuestionOrganisationTypePage({
   formAction,
   defaultFields,
   mandatoryQuestion,
+  mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl = routes.mandatoryQuestions.addressPage(
-    mandatoryQuestion.id
-  );
+  const backButtonUrl =
+    routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
   return (
     <>
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Organisation details - Apply for a grant`}
+        }Organisation type - Apply for a grant`}
       />
 
       <Layout backBtnUrl={backButtonUrl}>
@@ -46,8 +46,6 @@ export default function MandatoryQuestionOrganisationTypePage({
             ]}
             defaultChecked={defaultFields.orgType}
           />
-
-          <input type="hidden" value={mandatoryQuestion.id} name="id" />
 
           <Button
             text="Save and continue"

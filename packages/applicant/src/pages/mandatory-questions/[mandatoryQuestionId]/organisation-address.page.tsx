@@ -14,10 +14,9 @@ export default function MandatoryQuestionOrganisationAddressPage({
   formAction,
   defaultFields,
   mandatoryQuestion,
+  mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl = routes.mandatoryQuestions.namePage(
-    mandatoryQuestion.id
-  );
+  const backButtonUrl = routes.mandatoryQuestions.namePage(mandatoryQuestionId);
   const commonAddressInputProps = {
     boldHeading: false,
     titleSize: 's',
@@ -29,7 +28,7 @@ export default function MandatoryQuestionOrganisationAddressPage({
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Organisation details - Apply for a grant`}
+        }Organisation address - Apply for a grant`}
       />
 
       <Layout backBtnUrl={backButtonUrl}>
@@ -82,8 +81,6 @@ export default function MandatoryQuestionOrganisationAddressPage({
             width="10"
             {...commonAddressInputProps}
           />
-
-          <input type="hidden" value={mandatoryQuestion.id} name="id" />
 
           <Button
             text="Save and continue"
