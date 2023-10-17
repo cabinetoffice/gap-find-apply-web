@@ -10,12 +10,10 @@ import {
   getContext,
   mockServiceMethod,
 } from '../../../testUtils/unitTestHelpers';
-import { generateRedirectUrlForMandatoryQuestionNextPage } from '../../../utils/mandatoryQuestionUtils';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 
 jest.mock('next/dist/server/api-utils/node');
-jest.mock('../../../utils/mandatoryQuestionUtils');
 
 const spiedGrantMandatoryQuestionServiceGetMandatoryQuestion = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
@@ -64,9 +62,6 @@ describe('getServerSideProps', () => {
         spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
         getDefaultGrantMandatoryQuestion
       );
-      (
-        generateRedirectUrlForMandatoryQuestionNextPage as jest.Mock
-      ).mockReturnValue('/nextpage');
 
       const response = await getServerSideProps(getContext(getDefaultContext));
 
