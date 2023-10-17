@@ -71,7 +71,7 @@ export interface GrantMandatoryQuestionDto {
   companiesHouseNumber?: string;
   orgType?: string;
   fundingAmount?: string;
-  fundingLocation?: string;
+  fundingLocation?: string[];
   schemeId?: number;
   submissionId?: string;
 }

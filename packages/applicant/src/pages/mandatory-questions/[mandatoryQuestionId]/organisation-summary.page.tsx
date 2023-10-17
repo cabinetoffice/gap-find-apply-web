@@ -10,6 +10,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
   formAction,
   defaultFields,
   mandatoryQuestion,
+  mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
   const backButtonUrl = routes.dashboard;
   return (
