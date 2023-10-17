@@ -19,6 +19,7 @@ describe('Organisation name page', () => {
     mandatoryQuestion: {
       schemeId: 1,
     },
+    mandatoryQuestionId: 'mandatoryQuestionId',
   });
 
   it('should display a heading', () => {

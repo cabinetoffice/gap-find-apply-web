@@ -118,6 +118,7 @@ export default async function getServerSideProps({
       fieldErrors,
       defaultFields,
       mandatoryQuestion,
+      mandatoryQuestionId,
     },
   };
 }

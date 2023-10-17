@@ -78,6 +78,7 @@ describe('getServerSideProps', () => {
           formAction: '/testResolvedURL',
           defaultFields: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestionId: 'mandatoryQuestionId',
         },
       });
     });
@@ -157,6 +158,7 @@ describe('getServerSideProps', () => {
           formAction: '/testResolvedURL',
           defaultFields: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestionId: 'mandatoryQuestionId',
         },
       });
     });
@@ -269,6 +271,7 @@ describe('getServerSideProps', () => {
           formAction: '/testResolvedURL',
           defaultFields: { name: 'test name' },
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestionId: 'mandatoryQuestionId',
         },
       });
     });
