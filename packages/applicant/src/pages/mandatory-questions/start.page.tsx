@@ -1,7 +1,9 @@
-import { Button } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
+import Link from 'next/link';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
+import InferProps from '../../types/InferProps';
+import { routes } from '../../utils/routes';
 
 export async function getServerSideProps({ query }: GetServerSidePropsContext) {
   const { schemeId } = query as Record<string, string>;
@@ -12,7 +14,9 @@ export async function getServerSideProps({ query }: GetServerSidePropsContext) {
   };
 }
 
-export default function MandatoryQuestionsBeforeYouStart({ schemeId }) {
+export default function MandatoryQuestionsBeforeYouStart({
+  schemeId,
+}: InferProps<typeof getServerSideProps>) {
   return (
     <>
       <Meta title="Before you start" />
@@ -37,7 +41,17 @@ export default function MandatoryQuestionsBeforeYouStart({ schemeId }) {
             your Charity Commission number (if you have one)
           </li>
         </ul>
-        <Button text="Continue" />
+
+        <Link href={routes.api.createMandatoryQuestion(schemeId)}>
+          <a
+            className="govuk-button"
+            data-module="govuk-button"
+            aria-disabled="false"
+            role="button"
+          >
+            Continue
+          </a>
+        </Link>
       </Layout>
     </>
   );
