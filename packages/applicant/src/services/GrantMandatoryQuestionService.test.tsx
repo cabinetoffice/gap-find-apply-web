@@ -52,12 +52,13 @@ describe('Axios call to get mandatory question data', () => {
     };
     const { serverRuntimeConfig } = getConfig();
     const BACKEND_HOST = serverRuntimeConfig.backendHost;
-    const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions/${MANDATORY_QUESTION_ID}`;
+    const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions/${MANDATORY_QUESTION_ID}?url=testUrl`;
     mock.onGet(expectedUrl).reply(200, MockMandatoryQuestionData);
 
     const result = await subject.getMandatoryQuestionById(
-      'testJwt',
-      MANDATORY_QUESTION_ID
+      MANDATORY_QUESTION_ID,
+      'testUrl',
+      'testJwt'
     );
     expect(result).toEqual(MockMandatoryQuestionData);
     expect(spy).toBeCalled();
