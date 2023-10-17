@@ -45,11 +45,9 @@ export default function MandatoryQuestionOrganisationNamePage({
               width="30"
             />
 
-            <SaveAndCancel
+            <Button
+              text="Save and continue"
               type={ButtonTypePropertyEnum.Submit}
-              saveButton={{
-                name: 'Save and continue',
-              }}
             />
           </FlexibleQuestionPageLayout>
         </Layout>
