@@ -6,6 +6,7 @@ on:
       - develop
     paths:
       - "packages/applicant/**"
+      - "packages/gap-web-ui/**"  
       - ".github/workflows/applicant-feature.yml"
       - "package.json"
       - "yarn.lock"
@@ -45,7 +46,7 @@ jobs:
         run: |
           yarn workspace applicant lint
 
-      - name: Build application
+      - name: Build gap-web-ui
         run: |
           yarn workspace gap-web-ui build
       

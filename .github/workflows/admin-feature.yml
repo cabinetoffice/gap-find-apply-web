@@ -6,6 +6,7 @@ on:
       - develop
     paths:
       - "packages/admin/**"
+      - "packages/gap-web-ui/**"
       - ".github/workflows/admin-feature.yml"
       - "package.json"
       - "yarn.lock"
@@ -46,7 +47,7 @@ jobs:
         run: |
           yarn workspace admin lint
 
-      - name: Build application
+      - name: Build gap-web-ui
         run: |
           yarn workspace gap-web-ui build
 
