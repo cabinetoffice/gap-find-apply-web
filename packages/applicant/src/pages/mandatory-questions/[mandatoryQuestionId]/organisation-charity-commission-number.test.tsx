@@ -4,17 +4,17 @@ import {
   renderWithRouter,
 } from '../../../testUtils/unitTestHelpers';
 import InferProps from '../../../types/InferProps';
-import MandatoryQuestionOrganisationNamePage, {
+import MandatoryQuestionOrganisationCharityCommissionNumberPage, {
   getServerSideProps,
-} from './organisation-name.page';
+} from './organisation-charity-commission-number.page';
 
-describe('Organisation name page', () => {
+describe('Organisation Charity Commission Number page', () => {
   const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
     fieldErrors: [],
     csrfToken: 'testCSRFToken',
     formAction: 'testFormAction',
     defaultFields: {
-      name: '',
+      charityCommissionNumber: '',
     },
     mandatoryQuestion: {
       schemeId: 1,
@@ -24,32 +24,33 @@ describe('Organisation name page', () => {
 
   it('should display a heading', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationCharityCommissionNumberPage
         {...getPageProps(getDefaultProps)}
       />
     );
 
     screen.getByRole('heading', {
-      name: 'Enter the name of your organisation',
+      name: 'Enter your Charity Commission number (if you have one)',
       level: 1,
     });
   });
 
   it('should display a question hint text', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationCharityCommissionNumberPage
         {...getPageProps(getDefaultProps)}
       />
     );
 
     screen.getByText(
-      'This is the official name of your organisation. It could be the name that is registered with Companies House or the Charity Commission'
+      'Funding organisation might use this to identify your organisation when you apply for a grant. It might also be used to check your organisation is legitimate.'
     );
+    screen.getByText('Search for your charity number (opens in new tab)');
   });
 
   it('should display text input with no default', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationCharityCommissionNumberPage
         {...getPageProps(getDefaultProps)}
       />
     );
@@ -59,15 +60,15 @@ describe('Organisation name page', () => {
 
   it('should display text input with a default', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationCharityCommissionNumberPage
         {...getPageProps(getDefaultProps, {
           defaultFields: {
-            name: 'AND Digital',
+            charityCommissionNumber: '1234',
           },
         })}
       />
     );
 
-    expect(screen.getByRole('textbox')).toHaveAttribute('value', 'AND Digital');
+    expect(screen.getByRole('textbox')).toHaveAttribute('value', '1234');
   });
 });

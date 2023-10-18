@@ -4,9 +4,9 @@ import {
   renderWithRouter,
 } from '../../../testUtils/unitTestHelpers';
 import InferProps from '../../../types/InferProps';
-import MandatoryQuestionOrganisationNamePage, {
+import MandatoryQuestionOrganisationFundingAmountPage, {
   getServerSideProps,
-} from './organisation-name.page';
+} from './organisation-funding-amount.page';
 
 describe('Organisation name page', () => {
   const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
@@ -14,7 +14,7 @@ describe('Organisation name page', () => {
     csrfToken: 'testCSRFToken',
     formAction: 'testFormAction',
     defaultFields: {
-      name: '',
+      fundingAmount: '',
     },
     mandatoryQuestion: {
       schemeId: 1,
@@ -24,32 +24,30 @@ describe('Organisation name page', () => {
 
   it('should display a heading', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationFundingAmountPage
         {...getPageProps(getDefaultProps)}
       />
     );
 
     screen.getByRole('heading', {
-      name: 'Enter the name of your organisation',
+      name: 'How much funding are you applying for?',
       level: 1,
     });
   });
 
   it('should display a question hint text', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationFundingAmountPage
         {...getPageProps(getDefaultProps)}
       />
     );
 
-    screen.getByText(
-      'This is the official name of your organisation. It could be the name that is registered with Companies House or the Charity Commission'
-    );
+    screen.getByText('Please enter whole pounds only');
   });
 
   it('should display text input with no default', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationFundingAmountPage
         {...getPageProps(getDefaultProps)}
       />
     );
@@ -59,15 +57,15 @@ describe('Organisation name page', () => {
 
   it('should display text input with a default', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationFundingAmountPage
         {...getPageProps(getDefaultProps, {
           defaultFields: {
-            name: 'AND Digital',
+            fundingAmount: '1234',
           },
         })}
       />
     );
 
-    expect(screen.getByRole('textbox')).toHaveAttribute('value', 'AND Digital');
+    expect(screen.getByRole('textbox')).toHaveAttribute('value', '1234');
   });
 });
