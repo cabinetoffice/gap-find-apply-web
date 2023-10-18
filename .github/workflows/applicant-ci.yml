@@ -53,9 +53,23 @@ jobs:
         run: |
           yarn workspace applicant lint
 
+      - name: Restore gap-web-ui cache
+        id: restore-gap-web-ui-cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ github.workspace }}/packages/gap-web-ui/dist
+          key: ${{ runner.os }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', '**/*.map') }}
+
       - name: Build gap-web-ui
         run: |
           yarn workspace gap-web-ui build
+
+      - name: Save gap-web-ui cache
+        if: steps.restore-gap-web-ui-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/packages/gap-web-ui/dist
+          key: ${{ runner.os }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', '**/*.map') }}
       
       - name: Units Tests
         run: |
