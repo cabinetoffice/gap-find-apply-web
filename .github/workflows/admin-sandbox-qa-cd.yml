@@ -151,6 +151,9 @@ jobs:
         with:
           name: ${{ needs.build.outputs.docker-image-name }}
           path: ${{ needs.build.outputs.docker-image-name }}.tar
+
+      - name: Load Docker image
+        run: docker load --input ${{ needs.build.outputs.docker-image-name }}.tar
             
       - name: Push Docker image to AWS ECR
         env:
