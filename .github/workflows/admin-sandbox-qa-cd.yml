@@ -103,7 +103,7 @@ jobs:
       - name: Generate Docker image name
         id: docker-image-name
         run: |
-          NAME=${{ (github.ref == 'refs/heads/develop' && 'admin-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'admin-qa-image') }}
+          NAME=${{ (github.ref == 'refs/heads/admin-cd-store-docker-image-in-artefact' && 'admin-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'admin-qa-image') }}
           echo "name=$NAME" >> $GITHUB_OUTPUT
         
       - name: Save Docker image
