@@ -5,6 +5,7 @@ on:
     branches:
       - release/**
       - develop
+      - workflows-cache-next-build
     paths:
       - "packages/admin/**"
       - "packages/gap-web-ui/**"
@@ -39,6 +40,12 @@ jobs:
           with:
             node-version: "${{ steps.nvm.outputs.NVMRC }}"
             cache: 'yarn'
+
+        - name: Cache next build
+          uses: actions/cache@v3
+          with:
+            path: ${{ github.workspace }}/packages/admin/.next/cache
+            key: ${{ runner.os }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
 
         - name: Install dependencies
           run: |
@@ -92,6 +99,19 @@ jobs:
           GIT_COUNT=$(git rev-list $GITHUB_SHA --count)
           echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
           echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            ${{ github.workspace }}/packages/admin/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-
   
       - name: Build Docker image
         env:
@@ -101,7 +121,7 @@ jobs:
       - name: Generate Docker image name
         id: docker-image-name
         run: |
-          NAME=${{ (github.ref == 'refs/heads/develop' && 'admin-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'admin-qa-image') }}
+          NAME=${{ (github.ref == 'refs/heads/workflows-cache-next-build' && 'admin-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'admin-qa-image') }}
           echo "name=$NAME" >> $GITHUB_OUTPUT
         
       - name: Save Docker image
@@ -162,7 +182,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          ENV_TAG=${{ (github.ref == 'refs/heads/develop' && 'develop') || (startsWith(github.ref, 'refs/heads/release') && 'qa') }}
+          ENV_TAG=${{ (github.ref == 'refs/heads/workflows-cache-next-build' && 'develop') || (startsWith(github.ref, 'refs/heads/release') && 'qa') }}
           docker tag $ECR_REGISTRY/gap-apply-admin-web:${{ env.BUILD_VERSION }} $ECR_REGISTRY/gap-apply-admin-web:$ENV_TAG
           docker push $ECR_REGISTRY/gap-apply-admin-web:$ENV_TAG
   
