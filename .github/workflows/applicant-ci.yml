@@ -44,14 +44,14 @@ jobs:
         run: yarn workspace applicant lint
 
       - name: gap-web-ui cache
-        id: restore-gap-web-ui-cache
+        id: gap-web-ui-cache
         uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/packages/gap-web-ui/dist
-          key: ${{ runner.os }}-${{ hashFiles('/packages/gap-web-ui/**/*.js', '/packages/gap-web-ui/**/*.jsx', '/packages/gap-web-ui/**/*.ts', '/packages/gap-web-ui/**/*.tsx') }}
+          key: ${{ hashFiles('**/packages/gap-web-ui/**/*.js', '**/packages/gap-web-ui/**/*.jsx', '**/packages/gap-web-ui/**/*.ts', '**/packages/gap-web-ui/**/*.tsx') }}
 
       - name: Build gap-web-ui
-        if: steps.restore-gap-web-ui-cache.outputs.cache-hit != 'true'
+        if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
         run: yarn workspace gap-web-ui build
 
       - name: Units Tests
@@ -62,7 +62,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/packages/applicant/.next/cache
-          key: ${{ runner.os }}-${{ hashFiles('/packages/applicant/**/*.js', '/packages/applicant/**/*.jsx', '/packages/applicant/**/*.ts', '/packages/applicant/**/*.tsx') }}
+          key: ${{ hashFiles('**/packages/applicant/**/*.js', '**/packages/applicant/**/*.jsx', '**/packages/applicant/**/*.ts', '**/packages/applicant/**/*.tsx') }}
 
       - name: Build application
         run: yarn workspace applicant build
@@ -72,4 +72,4 @@ jobs:
         uses: actions/cache/save@v3
         with:
           path: ${{ github.workspace }}/packages/applicant/.next/cache
-          key: ${{ runner.os }}-${{ hashFiles('/packages/applicant/**/*.js', '/packages/applicant/**/*.jsx', '/packages/applicant/**/*.ts', '/packages/applicant/**/*.tsx') }}
+          key: ${{ hashFiles('/packages/applicant/**/*.js', '/packages/applicant/**/*.jsx', '/packages/applicant/**/*.ts', '/packages/applicant/**/*.tsx') }}
