@@ -72,4 +72,4 @@ jobs:
         uses: actions/cache/save@v3
         with:
           path: ${{ github.workspace }}/packages/applicant/.next/cache
-          key: ${{ hashFiles('/packages/applicant/**/*.js', '/packages/applicant/**/*.jsx', '/packages/applicant/**/*.ts', '/packages/applicant/**/*.tsx') }}
+          key: ${{ hashFiles('**/packages/applicant/**/*.js', '**/packages/applicant/**/*.jsx', '**/packages/applicant/**/*.ts', '**/packages/applicant/**/*.tsx') }}
