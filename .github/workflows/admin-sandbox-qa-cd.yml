@@ -104,7 +104,8 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v3
+      - name: Cache next build & dependencies
+        uses: actions/cache@v3
         with:
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
