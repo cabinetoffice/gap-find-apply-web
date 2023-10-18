@@ -8,10 +8,6 @@ import {
 import { Optional } from '../../../testUtils/unitTestHelpers';
 import callServiceMethod from '../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../utils/jwt';
-import {
-  checkIfPageHaveAlreadyBeenAnswered,
-  generateRedirectUrlForMandatoryQuestionNextPage,
-} from '../../../utils/mandatoryQuestionUtils';
 import { routes } from '../../../utils/routes';
 
 export default async function getServerSideProps({
@@ -33,8 +29,9 @@ export default async function getServerSideProps({
   try {
     mandatoryQuestion =
       await grantMandatoryQuestionService.getMandatoryQuestionById(
-        jwt,
-        mandatoryQuestionId
+        mandatoryQuestionId,
+        resolvedUrl,
+        jwt
       );
   } catch (e) {
     const serviceErrorProps = {
@@ -53,18 +50,11 @@ export default async function getServerSideProps({
       },
     };
   }
-
-  const nextNotAnsweredPage = generateRedirectUrlForMandatoryQuestionNextPage(
-    mandatoryQuestion,
-    mandatoryQuestionId
-  );
+  const { isPageAlreadyAnswered, nextNotAnsweredPage } = mandatoryQuestion;
   //only when someone access this page from the summary page,
   //  we want to show the default value
   //otherwise we gonna send it to the next non filled page
-  if (
-    checkIfPageHaveAlreadyBeenAnswered(mandatoryQuestion, resolvedUrl) &&
-    !fromSummaryPage
-  ) {
+  if (isPageAlreadyAnswered && !fromSummaryPage) {
     return {
       redirect: {
         destination: nextNotAnsweredPage,
@@ -84,9 +74,11 @@ export default async function getServerSideProps({
         body
       ),
     //where we want to go after we update the mandatory question
-    fromSummaryPage
-      ? routes.mandatoryQuestions.summaryPage(mandatoryQuestionId)
-      : nextNotAnsweredPage,
+    (result) => {
+      return fromSummaryPage
+        ? routes.mandatoryQuestions.summaryPage(mandatoryQuestionId)
+        : result;
+    },
     {
       errorInformation:
         'Something went wrong while trying to update your organisation details',
