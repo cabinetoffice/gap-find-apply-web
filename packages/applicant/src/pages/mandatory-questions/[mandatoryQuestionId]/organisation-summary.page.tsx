@@ -3,12 +3,9 @@ import InferProps from '../../../types/InferProps';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 import Meta from '../../../components/partials/Meta';
-import ProcessAddress from '../../organisation/processAddress';
 import Link from 'next/link';
 import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 import { Button } from 'gap-web-ui';
-import { ManageOrganisationDetailsProps } from '../../organisation/index.page';
-import { FC } from 'react';
 
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationSummaryPage({
@@ -19,7 +16,6 @@ export default function MandatoryQuestionOrganisationSummaryPage({
   mandatoryQuestion,
   mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl = routes.dashboard;
   const mandatoryQuestionDetails = [
     {
       id: 'organisationName',
