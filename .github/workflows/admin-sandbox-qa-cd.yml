@@ -99,23 +99,6 @@ jobs:
           GIT_COUNT=$(git rev-list $GITHUB_SHA --count)
           echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
           echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
-
-      - name: Cache next build
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/packages/admin/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-
   
       - name: Build Docker image
         env:
