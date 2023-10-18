@@ -99,10 +99,6 @@ jobs:
           echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
           echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
       - name: Cache next build
         uses: actions/cache@v3
         with:
