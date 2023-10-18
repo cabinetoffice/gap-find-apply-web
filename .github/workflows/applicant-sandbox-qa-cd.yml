@@ -8,15 +8,12 @@ on:
     paths:
       - "packages/applicant/**"
       - "packages/gap-web-ui/**"
-      - ".github/workflows/applicant-pushImage.yml"
+      - ".github/workflows/applicant-sandbox-qa-cd.yml"
       - "package.json"
       - "yarn.lock"
 
-env:
-  AWS_REGION: eu-west-2
-
 jobs:
-  build:
+  test:
       name: Test app
 
       runs-on: ubuntu-latest
@@ -66,8 +63,40 @@ jobs:
           run: |
             yarn workspace gap-web-ui coverage
 
-  imageBuild:
-    needs: build
+  build:
+    environment: AWS
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch all commits since we use the total commit count to determine the build version
+          fetch-depth: 0
+
+      - name: Setup AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Determine & set BUILD_VERSION
+        run: |
+          GIT_COUNT=$(git rev-list $GITHUB_SHA --count)
+          echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
+          echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
+
+      - name: Build, tag and push Docker image to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: docker build --build-arg APP_NAME=applicant -t $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }} .
+
+  deploy:
+    needs: [build, test]
 
     environment: AWS
     runs-on: ubuntu-latest
@@ -83,7 +112,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: eu-west-2
 
       - name: Login to AWS ECR
         id: login-ecr
@@ -98,9 +127,7 @@ jobs:
       - name: Build, tag and push Docker image to AWS ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          docker build --build-arg APP_NAME=applicant -t $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }} .
-          docker push $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }}
+        run: docker push $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }}
 
       - name: Create env tag
         env:

@@ -6,12 +6,13 @@ on:
       - develop
     paths:
       - "packages/admin/**"
-      - ".github/workflows/admin-feature.yml"
+      - "packages/gap-web-ui/**"
+      - ".github/workflows/admin-ci.yml"
       - "package.json"
       - "yarn.lock"
 
 jobs:
-  build:
+  test:
     name: Test app
 
     runs-on: ubuntu-latest
@@ -46,7 +47,7 @@ jobs:
         run: |
           yarn workspace admin lint
 
-      - name: Build application
+      - name: Build gap-web-ui
         run: |
           yarn workspace gap-web-ui build
 

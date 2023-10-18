@@ -7,15 +7,12 @@ on:
     paths:
       - "packages/admin/**"
       - "packages/gap-web-ui/**"
-      - ".github/workflows/admin-promoteToProd.yml"
+      - ".github/workflows/admin-prod-cd.yml"
       - "package.json"
       - "yarn.lock"
 
-env:
-  AWS_REGION: eu-west-2
-
 jobs:
-  promoteToProd:
+  deploy:
     environment: AWS
     runs-on: ubuntu-latest
 
@@ -25,7 +22,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: eu-west-2
 
       - name: Login to AWS ECR
         id: login-ecr
