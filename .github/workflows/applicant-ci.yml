@@ -70,7 +70,6 @@ jobs:
           path: ${{ github.workspace }}/packages/applicant/.next/cache
           key: ${{ runner.os }}-${{ hashFiles('**/packages/applicant/**/*.js', '**/packages/applicant/**/*.jsx', '**/packages/applicant/**/*.ts', '**/packages/applicant/**/*.tsx') }}
 
-          
       - name: Build application
         run: yarn workspace applicant build
 
