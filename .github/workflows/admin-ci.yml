@@ -39,6 +39,11 @@ jobs:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
           cache: 'yarn'
 
+      - uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+
       - name: Install dependencies
         run: |
           yarn install --immutable
