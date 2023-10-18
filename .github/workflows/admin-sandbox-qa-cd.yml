@@ -106,6 +106,8 @@ jobs:
           echo "name=$NAME" >> $GITHUB_OUTPUT
         
       - name: Save Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: docker save --output ${{ steps.docker-image-name.outputs.name }}.tar $ECR_REGISTRY/gap-apply-admin-web:${{ env.BUILD_VERSION }}
 
       - name: Upload Docker image
