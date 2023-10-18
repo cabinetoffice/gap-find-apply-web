@@ -4,17 +4,17 @@ import {
   renderWithRouter,
 } from '../../../testUtils/unitTestHelpers';
 import InferProps from '../../../types/InferProps';
-import MandatoryQuestionOrganisationNamePage, {
+import MandatoryQuestionOrganisationCompaniesHouseNumberPage, {
   getServerSideProps,
-} from './organisation-name.page';
+} from './organisation-companies-house-number.page';
 
-describe('Organisation name page', () => {
+describe('Organisation Companies House Number page', () => {
   const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
     fieldErrors: [],
     csrfToken: 'testCSRFToken',
     formAction: 'testFormAction',
     defaultFields: {
-      name: '',
+      companiesHouseNumber: '',
     },
     mandatoryQuestion: {
       schemeId: 1,
@@ -24,32 +24,33 @@ describe('Organisation name page', () => {
 
   it('should display a heading', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationCompaniesHouseNumberPage
         {...getPageProps(getDefaultProps)}
       />
     );
 
     screen.getByRole('heading', {
-      name: 'Enter the name of your organisation',
+      name: 'Enter your Companies House number (if you have one)',
       level: 1,
     });
   });
 
   it('should display a question hint text', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationCompaniesHouseNumberPage
         {...getPageProps(getDefaultProps)}
       />
     );
 
     screen.getByText(
-      'This is the official name of your organisation. It could be the name that is registered with Companies House or the Charity Commission'
+      'Funding organisation might use this to identify your organisation when you apply for a grant. It might also be used to check your organisation is legitimate.'
     );
+    screen.getByText('Search for your company number (opens in new tab)');
   });
 
   it('should display text input with no default', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationCompaniesHouseNumberPage
         {...getPageProps(getDefaultProps)}
       />
     );
@@ -59,15 +60,15 @@ describe('Organisation name page', () => {
 
   it('should display text input with a default', () => {
     renderWithRouter(
-      <MandatoryQuestionOrganisationNamePage
+      <MandatoryQuestionOrganisationCompaniesHouseNumberPage
         {...getPageProps(getDefaultProps, {
           defaultFields: {
-            name: 'AND Digital',
+            companiesHouseNumber: '1234',
           },
         })}
       />
     );
 
-    expect(screen.getByRole('textbox')).toHaveAttribute('value', 'AND Digital');
+    expect(screen.getByRole('textbox')).toHaveAttribute('value', '1234');
   });
 });
