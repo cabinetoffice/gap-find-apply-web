@@ -100,10 +100,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: docker build --build-arg APP_NAME=applicant -t $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }} .
 
- deploy:
-    needs: |
-      build
-      test
+  deploy:
+    needs: [build, test]
 
     environment: AWS
     runs-on: ubuntu-latest
