@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 import { Button } from 'gap-web-ui';
 import { ManageOrganisationDetailsProps } from '../../organisation/index.page';
+import { FC } from 'react';
 
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationSummaryPage({
@@ -19,7 +20,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
   mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
   const backButtonUrl = routes.dashboard;
-  const organisationDetails = [
+  const mandatoryQuestionDetails = [
     {
       id: 'organisationName',
       label: 'Name',
@@ -101,49 +102,49 @@ export default function MandatoryQuestionOrganisationSummaryPage({
               they can run checks to prevent fraud.
             </p>
             <dl className="govuk-summary-list">
-              {organisationDetails &&
-                organisationDetails.map((organisationDetail) => {
+              {mandatoryQuestionDetails &&
+                mandatoryQuestionDetails.map((mandatoryQuestionDetail) => {
                   return (
                     <div
                       className="govuk-summary-list__row"
-                      key={'row-' + organisationDetail.id}
+                      key={'row-' + mandatoryQuestionDetail.id}
                     >
                       <dt
                         className="govuk-summary-list__key"
-                        data-cy={`cy-organisation-details-${organisationDetail.label}`}
+                        data-cy={`cy-organisation-details-${mandatoryQuestionDetail.label}`}
                       >
-                        {organisationDetail.label}
+                        {mandatoryQuestionDetail.label}
                       </dt>
-                      {organisationDetail.id === 'organisationAddress' ? (
-                        <ProcessAddress
-                          data={organisationDetail.value}
-                          id={organisationDetail.id}
-                          cyTag={organisationDetail.label}
+                      {['organisationAddress', 'fundingLocation'].includes(
+                        mandatoryQuestionDetail.id
+                      ) ? (
+                        <DisplayArrayData
+                          data={mandatoryQuestionDetail.value}
+                          id={mandatoryQuestionDetail.id}
+                          cyTag={mandatoryQuestionDetail.label}
                         />
                       ) : (
                         <dd
                           className="govuk-summary-list__value"
-                          id={organisationDetail.id}
-                          data-cy={`cy-organisation-value-${organisationDetail.label}`}
+                          id={mandatoryQuestionDetail.id}
+                          data-cy={`cy-organisation-value-${mandatoryQuestionDetail.label}`}
                         >
-                          {organisationDetail.value
-                            ? organisationDetail.value
+                          {mandatoryQuestionDetail.value
+                            ? mandatoryQuestionDetail.value
                             : '-'}
                         </dd>
                       )}
                       <dd className="govuk-summary-list__actions">
                         <Link
-                          href={
-                            organisationDetail.url + '?fromSummaryPage=true'
-                          }
+                          href={`${mandatoryQuestionDetail.url}?fromSummaryPage=true`}
                         >
                           <a
                             className="govuk-link govuk-link--no-visited-state"
-                            data-cy={`cy-organisation-details-navigation-${organisationDetail.id}`}
+                            data-cy={`cy-organisation-details-navigation-${mandatoryQuestionDetail.id}`}
                           >
-                            {organisationDetail.status}
+                            {mandatoryQuestionDetail.status}
                             <span className="govuk-visually-hidden">
-                              {organisationDetail.url}?fromSummaryPage=true
+                              {mandatoryQuestionDetail.url}?fromSummaryPage=true
                             </span>
                           </a>
                         </Link>
@@ -163,3 +164,36 @@ export default function MandatoryQuestionOrganisationSummaryPage({
     </>
   );
 }
+
+const DisplayArrayData = ({ data, id, cyTag }) => {
+  const dataToDisplay = Array.isArray(data) ? data : data.split(',');
+
+  return data ? (
+    <>
+      <dd
+        className="govuk-summary-list__value"
+        data-cy={`cy-organisation-value-${cyTag}`}
+      >
+        <ul className="govuk-list">
+          {dataToDisplay.map((line: string, index: number, array: string[]) => {
+            if (line) {
+              return (
+                <li key={index}>
+                  {index === array.length - 1 ? line : `${line},`}
+                </li>
+              );
+            }
+          })}
+        </ul>
+      </dd>
+    </>
+  ) : (
+    <dd
+      className="govuk-summary-list__value"
+      id={id}
+      data-cy={'cy-organisation-no-data-' + id}
+    >
+      -
+    </dd>
+  );
+};
