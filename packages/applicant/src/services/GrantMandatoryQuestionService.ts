@@ -21,11 +21,12 @@ export class GrantMandatoryQuestionService {
   }
 
   public async getMandatoryQuestionById(
-    jwt: string,
-    mandatoryQuestionId: string
+    mandatoryQuestionId: string,
+    url: string,
+    jwt: string
   ): Promise<GrantMandatoryQuestionDto> {
     const { data } = await axios.get<GrantMandatoryQuestionDto>(
-      `${this.BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}`,
+      `${this.BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}?url=${url}`,
       axiosConfig(jwt)
     );
     return data;
@@ -74,4 +75,6 @@ export interface GrantMandatoryQuestionDto {
   fundingLocation?: string[];
   schemeId?: number;
   submissionId?: string;
+  isPageAlreadyAnswered?: boolean;
+  nextNotAnsweredPage?: string;
 }
