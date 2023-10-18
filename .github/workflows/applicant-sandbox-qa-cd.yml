@@ -64,8 +64,6 @@ jobs:
             yarn workspace gap-web-ui coverage
 
   build:
-    needs: build
-
     environment: AWS
     runs-on: ubuntu-latest
 
