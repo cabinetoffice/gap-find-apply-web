@@ -5,7 +5,6 @@ on:
     branches:
       - release/**
       - develop
-      - admin-cd-store-docker-image-in-artefact
     paths:
       - "packages/admin/**"
       - "packages/gap-web-ui/**"
@@ -93,6 +92,18 @@ jobs:
           GIT_COUNT=$(git rev-list $GITHUB_SHA --count)
           echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
           echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
+
+      - uses: actions/cache@v3
+        with:
+          # See here for caching with `yarn` https://github.com/actions/cache/blob/main/examples.md#node---yarn or you can leverage caching with actions/setup-node https://github.com/actions/setup-node
+          path: |
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
   
       - name: Build Docker image
         env:
@@ -102,7 +113,7 @@ jobs:
       - name: Generate Docker image name
         id: docker-image-name
         run: |
-          NAME=${{ (github.ref == 'refs/heads/admin-cd-store-docker-image-in-artefact' && 'admin-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'admin-qa-image') }}
+          NAME=${{ (github.ref == 'refs/heads/develop' && 'admin-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'admin-qa-image') }}
           echo "name=$NAME" >> $GITHUB_OUTPUT
         
       - name: Save Docker image
