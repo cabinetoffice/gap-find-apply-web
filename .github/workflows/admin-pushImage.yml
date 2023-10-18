@@ -100,9 +100,7 @@ jobs:
         run: docker build --build-arg APP_NAME=admin -t $ECR_REGISTRY/gap-apply-admin-web:${{ env.BUILD_VERSION }} .
   
   deploy:
-    needs: |
-      build
-      test
+    needs: [build, test]
 
     environment: AWS
     runs-on: ubuntu-latest
