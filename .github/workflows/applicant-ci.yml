@@ -38,8 +38,9 @@ jobs:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
           cache: 'yarn'
 
-      - name: Cache next build
-        uses: actions/cache@v3
+      - name: Restore next cache
+        id: restore-next-cache
+        uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/packages/applicant/.next/cache
           key: ${{ runner.os }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
@@ -63,3 +64,10 @@ jobs:
       - name: Build application
         run: |
           yarn workspace applicant build
+
+      - name: Save next cache
+        if: steps.restore-next-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/packages/applicant/.next/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
