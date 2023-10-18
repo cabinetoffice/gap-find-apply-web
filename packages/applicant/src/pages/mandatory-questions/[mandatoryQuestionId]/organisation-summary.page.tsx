@@ -102,56 +102,55 @@ export default function MandatoryQuestionOrganisationSummaryPage({
               they can run checks to prevent fraud.
             </p>
             <dl className="govuk-summary-list">
-              {mandatoryQuestionDetails &&
-                mandatoryQuestionDetails.map((mandatoryQuestionDetail) => {
-                  return (
-                    <div
-                      className="govuk-summary-list__row"
-                      key={'row-' + mandatoryQuestionDetail.id}
+              {mandatoryQuestionDetails?.map((mandatoryQuestionDetail) => {
+                return (
+                  <div
+                    className="govuk-summary-list__row"
+                    key={'row-' + mandatoryQuestionDetail.id}
+                  >
+                    <dt
+                      className="govuk-summary-list__key"
+                      data-cy={`cy-organisation-details-${mandatoryQuestionDetail.label}`}
                     >
-                      <dt
-                        className="govuk-summary-list__key"
-                        data-cy={`cy-organisation-details-${mandatoryQuestionDetail.label}`}
+                      {mandatoryQuestionDetail.label}
+                    </dt>
+                    {['organisationAddress', 'fundingLocation'].includes(
+                      mandatoryQuestionDetail.id
+                    ) ? (
+                      <DisplayArrayData
+                        data={mandatoryQuestionDetail.value}
+                        id={mandatoryQuestionDetail.id}
+                        cyTag={mandatoryQuestionDetail.label}
+                      />
+                    ) : (
+                      <dd
+                        className="govuk-summary-list__value"
+                        id={mandatoryQuestionDetail.id}
+                        data-cy={`cy-organisation-value-${mandatoryQuestionDetail.label}`}
                       >
-                        {mandatoryQuestionDetail.label}
-                      </dt>
-                      {['organisationAddress', 'fundingLocation'].includes(
-                        mandatoryQuestionDetail.id
-                      ) ? (
-                        <DisplayArrayData
-                          data={mandatoryQuestionDetail.value}
-                          id={mandatoryQuestionDetail.id}
-                          cyTag={mandatoryQuestionDetail.label}
-                        />
-                      ) : (
-                        <dd
-                          className="govuk-summary-list__value"
-                          id={mandatoryQuestionDetail.id}
-                          data-cy={`cy-organisation-value-${mandatoryQuestionDetail.label}`}
-                        >
-                          {mandatoryQuestionDetail.value
-                            ? mandatoryQuestionDetail.value
-                            : '-'}
-                        </dd>
-                      )}
-                      <dd className="govuk-summary-list__actions">
-                        <Link
-                          href={`${mandatoryQuestionDetail.url}?fromSummaryPage=true`}
-                        >
-                          <a
-                            className="govuk-link govuk-link--no-visited-state"
-                            data-cy={`cy-organisation-details-navigation-${mandatoryQuestionDetail.id}`}
-                          >
-                            {mandatoryQuestionDetail.status}
-                            <span className="govuk-visually-hidden">
-                              {mandatoryQuestionDetail.url}?fromSummaryPage=true
-                            </span>
-                          </a>
-                        </Link>
+                        {mandatoryQuestionDetail.value
+                          ? mandatoryQuestionDetail.value
+                          : '-'}
                       </dd>
-                    </div>
-                  );
-                })}
+                    )}
+                    <dd className="govuk-summary-list__actions">
+                      <Link
+                        href={`${mandatoryQuestionDetail.url}?fromSummaryPage=true`}
+                      >
+                        <a
+                          className="govuk-link govuk-link--no-visited-state"
+                          data-cy={`cy-organisation-details-navigation-${mandatoryQuestionDetail.id}`}
+                        >
+                          {mandatoryQuestionDetail.status}
+                          <span className="govuk-visually-hidden">
+                            {mandatoryQuestionDetail.url}?fromSummaryPage=true
+                          </span>
+                        </a>
+                      </Link>
+                    </dd>
+                  </div>
+                );
+              })}
             </dl>
 
             <Button
