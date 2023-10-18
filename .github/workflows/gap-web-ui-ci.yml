@@ -24,8 +24,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Read .nvmrc
-        run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
         id: nvm
+        run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
 
       - name: Setup node
         uses: actions/setup-node@v3
@@ -34,13 +34,10 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: |
-          yarn install --immutable
+        run: yarn install --immutable
 
       - name: Build application
-        run: |
-          yarn workspace gap-web-ui build
+        run: yarn workspace gap-web-ui build
 
       - name: Units Tests
-        run: |
-          yarn workspace gap-web-ui coverage
+        run: yarn workspace gap-web-ui jest --ci
