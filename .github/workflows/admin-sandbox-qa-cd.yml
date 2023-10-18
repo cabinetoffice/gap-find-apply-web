@@ -31,7 +31,7 @@ jobs:
             sed -i -e '/TINYMCE_API_KEY=/s/$/${{ secrets.TINYMCE_API_KEY }}/g' packages/admin/.env
 
         - name: Read .nvmrc
-          run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
+          run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
           id: nvm
 
         - name: Setup node

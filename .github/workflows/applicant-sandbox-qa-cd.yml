@@ -30,7 +30,7 @@ jobs:
             cp packages/applicant/.env.example packages/applicant/.env
 
         - name: Read .nvmrc
-          run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
+          run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
           id: nvm
 
         - name: Setup node
