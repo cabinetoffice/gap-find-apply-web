@@ -60,7 +60,7 @@ export default function MandatoryQuestionOrganisationAddressPage({
 
           <TextInput
             questionTitle="Town or City"
-            fieldName="town"
+            fieldName="city"
             defaultValue={defaultFields.city}
             width="20"
             {...commonAddressInputProps}

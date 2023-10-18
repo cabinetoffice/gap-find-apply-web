@@ -17,7 +17,8 @@ export default function MandatoryQuestionOrganisationTypePage({
   mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
   const backButtonUrl =
-    routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
+    routes.mandatoryQuestions.addressPage(mandatoryQuestionId) +
+    '?fromSummaryPage=true';
   return (
     <>
       <Meta
@@ -35,7 +36,7 @@ export default function MandatoryQuestionOrganisationTypePage({
           <Radio
             questionTitle="Choose your organisation type"
             questionHintText="Choose the option that best describes your organisation"
-            fieldName="type"
+            fieldName="orgType"
             fieldErrors={fieldErrors}
             radioOptions={[
               { label: 'Limited company', value: 'Limited company' },
