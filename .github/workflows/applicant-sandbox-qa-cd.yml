@@ -64,8 +64,10 @@ jobs:
             yarn workspace gap-web-ui coverage
 
   build:
-    environment: AWS
     runs-on: ubuntu-latest
+
+    outputs:
+      docker-image-name: ${{ steps.docker-image-name.outputs.name }}
 
     steps:
       - uses: actions/checkout@v4
@@ -90,10 +92,28 @@ jobs:
           echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
           echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
 
-      - name: Build, tag and push Docker image to AWS ECR
+      - name: Build Docker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: docker build --build-arg APP_NAME=applicant -t $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }} .
+
+      - name: Generate Docker image name
+        id: docker-image-name
+        run: |
+          NAME=${{ (github.ref == 'refs/heads/develop' && 'applicant-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'applicant-qa-image') }}
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+        
+      - name: Save Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: docker save --output ${{ steps.docker-image-name.outputs.name }}.tar $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }}
+
+      - name: Upload Docker image
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.docker-image-name.outputs.name }}
+          path: ${{ steps.docker-image-name.outputs.name }}.tar
+          retention-days: 1
 
   deploy:
     needs: [build, test]
@@ -124,7 +144,15 @@ jobs:
           echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
           echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
 
-      - name: Build, tag and push Docker image to AWS ECR
+      - name: Download Docker image
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.build.outputs.docker-image-name }}
+
+      - name: Load Docker image
+        run: docker load --input ${{ needs.build.outputs.docker-image-name }}.tar
+
+      - name: Push Docker image to AWS ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: docker push $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }}
