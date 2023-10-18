@@ -28,8 +28,8 @@ jobs:
         run: cp packages/applicant/.env.example packages/applicant/.env
 
       - name: Read .nvmrc
-        run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
         id: nvm
+        run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
 
       - name: Setup node
         uses: actions/setup-node@v3
@@ -91,4 +91,4 @@ jobs:
           key: ${{ steps.applicant-next-cache-name.outputs.name }}
 
       - name: Units Tests
-        run: yarn workspace applicant coverage
+        run: yarn workspace applicant jest --ci
