@@ -1,4 +1,4 @@
-name: Applicant CD
+name: Admin CD
 
 on:
   push:
@@ -6,9 +6,9 @@ on:
       - release/**
       - develop
     paths:
-      - "packages/applicant/**"
+      - "packages/admin/**"
       - "packages/gap-web-ui/**"
-      - ".github/workflows/applicant-pushImage.yml"
+      - ".github/workflows/admin-sandbox-qa-cd.yml"
       - "package.json"
       - "yarn.lock"
 
@@ -30,7 +30,8 @@ jobs:
 
         - name: Generate .env files
           run: |
-            cp packages/applicant/.env.example packages/applicant/.env
+            cp packages/admin/.env.example packages/admin/.env
+            sed -i -e '/TINYMCE_API_KEY=/s/$/${{ secrets.TINYMCE_API_KEY }}/g' packages/admin/.env
 
         - name: Read .nvmrc
           run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
@@ -52,23 +53,21 @@ jobs:
 
         - name: Build application
           run: |
-            yarn workspace applicant build
+            yarn workspace admin build
 
         - name: Lint files
           run: |
-            yarn workspace applicant lint
+            yarn workspace admin lint
 
         - name: Units tests
           run: |
-            yarn workspace applicant coverage
+            yarn workspace admin coverage
 
         - name: Gap-web-ui units tests
           run: |
             yarn workspace gap-web-ui coverage
 
   build:
-    needs: build
-
     environment: AWS
     runs-on: ubuntu-latest
 
@@ -77,14 +76,14 @@ jobs:
         with:
           # Fetch all commits since we use the total commit count to determine the build version
           fetch-depth: 0
-
+      
       - name: Setup AWS credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-
+  
       - name: Login to AWS ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -94,12 +93,12 @@ jobs:
           GIT_COUNT=$(git rev-list $GITHUB_SHA --count)
           echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
           echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
-
+  
       - name: Build, tag and push Docker image to AWS ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: docker build --build-arg APP_NAME=applicant -t $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }} .
-
+        run: docker build --build-arg APP_NAME=admin -t $ECR_REGISTRY/gap-apply-admin-web:${{ env.BUILD_VERSION }} .
+  
   deploy:
     needs: [build, test]
 
@@ -111,42 +110,42 @@ jobs:
         with:
           # Fetch all commits since we use the total commit count to determine the build version
           fetch-depth: 0
-
+  
       - name: Setup AWS credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-
+  
       - name: Login to AWS ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
+  
       - name: Determine & set BUILD_VERSION
         run: |
           GIT_COUNT=$(git rev-list $GITHUB_SHA --count)
           echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
           echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
-
+  
       - name: Build, tag and push Docker image to AWS ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: docker push $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }}
-
+        run: docker push $ECR_REGISTRY/gap-apply-admin-web:${{ env.BUILD_VERSION }}
+  
       - name: Create env tag
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           ENV_TAG=${{ (github.ref == 'refs/heads/develop' && 'develop') || (startsWith(github.ref, 'refs/heads/release') && 'qa') }}
-          docker tag $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }} $ECR_REGISTRY/gap-apply-applicant-web:$ENV_TAG
-          docker push $ECR_REGISTRY/gap-apply-applicant-web:$ENV_TAG
-
+          docker tag $ECR_REGISTRY/gap-apply-admin-web:${{ env.BUILD_VERSION }} $ECR_REGISTRY/gap-apply-admin-web:$ENV_TAG
+          docker push $ECR_REGISTRY/gap-apply-admin-web:$ENV_TAG
+  
       - name: Create release tag - if we are committing to a release branch
         if: ${{ startsWith(github.ref, 'refs/heads/release/') }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           RELEASE_VERSION=V_${GITHUB_REF##*/}
-          docker tag $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }} $ECR_REGISTRY/gap-apply-applicant-web:$RELEASE_VERSION
-          docker push $ECR_REGISTRY/gap-apply-applicant-web:$RELEASE_VERSION
+          docker tag $ECR_REGISTRY/gap-apply-admin-web:${{ env.BUILD_VERSION }} $ECR_REGISTRY/gap-apply-admin-web:$RELEASE_VERSION
+          docker push $ECR_REGISTRY/gap-apply-admin-web:$RELEASE_VERSION

@@ -1,17 +1,18 @@
-name: gap-web-ui CI
+name: Applicant CI
 
 on:
   pull_request:
     branches:
       - develop
     paths:
-      - "packages/gap-web-ui/**"
-      - ".github/workflows/gap-web-ui-feature.yml"
+      - "packages/applicant/**"
+      - "packages/gap-web-ui/**"  
+      - ".github/workflows/applicant-ci.yml"
       - "package.json"
       - "yarn.lock"
 
 jobs:
-  build:
+  test:
     name: Test app
 
     runs-on: ubuntu-latest
@@ -22,6 +23,10 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Generate .env files
+        run: |
+          cp packages/applicant/.env.example packages/applicant/.env
 
       - name: Read .nvmrc
         run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
@@ -37,10 +42,18 @@ jobs:
         run: |
           yarn install --immutable
 
-      - name: Build application
+      - name: Lint files
+        run: |
+          yarn workspace applicant lint
+
+      - name: Build gap-web-ui
         run: |
           yarn workspace gap-web-ui build
-
+      
       - name: Units Tests
         run: |
-          yarn workspace gap-web-ui coverage
+          yarn workspace applicant coverage
+          
+      - name: Build application
+        run: |
+          yarn workspace applicant build

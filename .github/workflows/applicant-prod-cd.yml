@@ -7,7 +7,7 @@ on:
     paths:
       - "packages/applicant/**"
       - "packages/gap-web-ui/**"
-      - ".github/workflows/applicant-promoteToProd.yml"
+      - ".github/workflows/applicant-prod-cd.yml"
       - "package.json"
       - "yarn.lock"
 
@@ -15,7 +15,7 @@ env:
   AWS_REGION: eu-west-2
 
 jobs:
-  promoteToProd:
+  deploy:
     environment: AWS
     runs-on: ubuntu-latest
 

@@ -1,18 +1,17 @@
-name: Admin CI
+name: gap-web-ui CI
 
 on:
   pull_request:
     branches:
       - develop
     paths:
-      - "packages/admin/**"
       - "packages/gap-web-ui/**"
-      - ".github/workflows/admin-feature.yml"
+      - ".github/workflows/gap-web-ui-ci.yml"
       - "package.json"
       - "yarn.lock"
 
 jobs:
-  build:
+  test:
     name: Test app
 
     runs-on: ubuntu-latest
@@ -23,11 +22,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Generate .env files
-        run: |
-          cp packages/admin/.env.example packages/admin/.env
-          sed -i -e '/TINYMCE_API_KEY=/s/$/${{ secrets.TINYMCE_API_KEY }}/g' packages/admin/.env
 
       - name: Read .nvmrc
         run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
@@ -42,19 +36,11 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install --immutable
-      
-      - name: Lint files
-        run: |
-          yarn workspace admin lint
 
-      - name: Build gap-web-ui
+      - name: Build application
         run: |
           yarn workspace gap-web-ui build
 
       - name: Units Tests
         run: |
-          yarn workspace admin coverage
-
-      - name: Build application
-        run: |
-          yarn workspace admin build
+          yarn workspace gap-web-ui coverage
