@@ -23,7 +23,7 @@ export default async function handler(
       )}`
     );
   } catch (e) {
-    console.log('e', e);
+    console.error('error: ', e);
     const serviceErrorProps = {
       errorInformation: 'There was an error in the service',
       linkAttributes: {
