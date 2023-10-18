@@ -5,7 +5,6 @@ on:
     branches:
       - release/**
       - develop
-      - workflows-cache-next-build
     paths:
       - "packages/applicant/**"
       - "packages/gap-web-ui/**"
@@ -101,7 +100,7 @@ jobs:
       - name: Generate Docker image name
         id: docker-image-name
         run: |
-          NAME=${{ (github.ref == 'refs/heads/workflows-cache-next-build' && 'applicant-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'applicant-qa-image') }}
+          NAME=${{ (github.ref == 'refs/heads/develop' && 'applicant-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'applicant-qa-image') }}
           echo "name=$NAME" >> $GITHUB_OUTPUT
         
       - name: Save Docker image
@@ -162,7 +161,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          ENV_TAG=${{ (github.ref == 'refs/heads/workflows-cache-next-build' && 'develop') || (startsWith(github.ref, 'refs/heads/release') && 'qa') }}
+          ENV_TAG=${{ (github.ref == 'refs/heads/develop' && 'develop') || (startsWith(github.ref, 'refs/heads/release') && 'qa') }}
           docker tag $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }} $ECR_REGISTRY/gap-apply-applicant-web:$ENV_TAG
           docker push $ECR_REGISTRY/gap-apply-applicant-web:$ENV_TAG
 
