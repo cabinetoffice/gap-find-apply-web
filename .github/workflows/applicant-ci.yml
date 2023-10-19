@@ -67,7 +67,7 @@ jobs:
       - name: Generate applicant next cache name
         id: applicant-next-cache-name
         run: |
-          NAME=applicant-next-cache-${{ hashFiles('**/packages/applicant/src/**/*.js', '**/packages/applicant/src/**/*.jsx', '**/packages/applicant/src/**/*.ts', '**/packages/applicant/src/**/*.tsx') }}
+          NAME=applicant-next-cache-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/packages/applicant/src/**/*.js', '**/packages/applicant/src/**/*.jsx', '**/packages/applicant/src/**/*.ts', '**/packages/applicant/src/**/*.tsx') }}
           echo "name=$NAME" >> $GITHUB_OUTPUT
 
       - name: Restore next cache
@@ -76,6 +76,7 @@ jobs:
         with:
           path: ${{ github.workspace }}/packages/applicant/.next/cache
           key: ${{ steps.applicant-next-cache-name.outputs.name }}
+          restore-keys: applicant-next-cache-${{ hashFiles('**/yarn.lock') }}-
 
       - name: Build application
         run: yarn workspace applicant build

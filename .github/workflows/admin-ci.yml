@@ -69,7 +69,7 @@ jobs:
       - name: Generate admin next cache name
         id: admin-next-cache-name
         run: |
-          NAME=admin-next-cache-${{ hashFiles('**/packages/admin/src/**/*.js', '**/packages/admin/src/**/*.jsx', '**/packages/admin/src/**/*.ts', '**/packages/admin/src/**/*.tsx') }}
+          NAME=admin-next-cache-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/packages/admin/src/**/*.js', '**/packages/admin/src/**/*.jsx', '**/packages/admin/src/**/*.ts', '**/packages/admin/src/**/*.tsx') }}
           echo "name=$NAME" >> $GITHUB_OUTPUT
 
       - name: Restore next cache
@@ -78,6 +78,7 @@ jobs:
         with:
           path: ${{ github.workspace }}/packages/admin/.next/cache
           key: ${{ steps.admin-next-cache-name.outputs.name }}
+          restore-keys: admin-next-cache-${{ hashFiles('**/yarn.lock') }}-
 
       - name: Build application
         run: yarn workspace admin build
