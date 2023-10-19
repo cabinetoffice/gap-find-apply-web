@@ -52,7 +52,9 @@ export default async function callServiceMethod<
     body = removeAllCarriageReturns(body);
 
     await validateCSRFCookie(req, res, body);
+
     handleMandatoryQuestionFundingLocation<B>(req, body);
+
     const result = await serviceFunc(body);
     return {
       redirect: {

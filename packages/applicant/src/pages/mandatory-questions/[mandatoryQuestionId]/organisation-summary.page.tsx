@@ -8,15 +8,12 @@ import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 
 export { getServerSideProps };
-export default function MandatoryQuestionOrganisationSummaryPage({
-  csrfToken,
-  fieldErrors,
-  formAction,
-  defaultFields,
+
+export const generateMandatoryQuestionDetails = (
   mandatoryQuestion,
-  mandatoryQuestionId,
-}: InferProps<typeof getServerSideProps>) {
-  const mandatoryQuestionDetails = [
+  mandatoryQuestionId
+): MandatoryQuestionDetails[] => {
+  return [
     {
       id: 'organisationName',
       label: 'Name',
@@ -46,7 +43,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
     },
     {
       id: 'organisationCompaniesHouseNumber',
-      label: 'Companies house number',
+      label: 'Companies House number',
       value: mandatoryQuestion?.companiesHouseNumber,
       url: routes.mandatoryQuestions.companiesHouseNumberPage(
         mandatoryQuestionId
@@ -55,7 +52,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
     },
     {
       id: 'organisationCharity',
-      label: 'Charity commission number',
+      label: 'Charity Commission number',
       value: mandatoryQuestion?.charityCommissionNumber,
       url: routes.mandatoryQuestions.charityCommissionNumberPage(
         mandatoryQuestionId
@@ -64,7 +61,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
     },
     {
       id: 'fundingAmount',
-      label: 'Funding amount',
+      label: 'How much funding are you appliying for?',
       value: mandatoryQuestion?.fundingAmount,
       url: routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId),
       status: 'Change',
@@ -72,12 +69,26 @@ export default function MandatoryQuestionOrganisationSummaryPage({
     },
     {
       id: 'fundingLocation',
-      label: 'Funding location',
+      label: 'Where will this funding be spent?',
       value: mandatoryQuestion?.fundingLocation,
       url: routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId),
       status: 'Change',
     },
   ];
+};
+
+export default function MandatoryQuestionOrganisationSummaryPage({
+  csrfToken,
+  fieldErrors,
+  formAction,
+  defaultFields,
+  mandatoryQuestion,
+  mandatoryQuestionId,
+}: InferProps<typeof getServerSideProps>) {
+  const mandatoryQuestionDetails = generateMandatoryQuestionDetails(
+    mandatoryQuestion,
+    mandatoryQuestionId
+  );
   return (
     <>
       <Meta title="Organisation details - Apply for a grant" />
@@ -115,7 +126,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                       mandatoryQuestionDetail.id
                     ) ? (
                       <DisplayArrayData
-                        data={mandatoryQuestionDetail.value}
+                        data={mandatoryQuestionDetail.value as string[]}
                         id={mandatoryQuestionDetail.id}
                         cyTag={mandatoryQuestionDetail.label}
                       />
@@ -162,17 +173,29 @@ export default function MandatoryQuestionOrganisationSummaryPage({
   );
 }
 
-const DisplayArrayData = ({ data, id, cyTag }) => {
-  const dataToDisplay = Array.isArray(data) ? data : data.split(',');
+interface MandatoryQuestionDetails {
+  id?: string;
+  label?: string;
+  value?: string | string[];
+  url?: string;
+  status?: 'Change';
+  showCurrency?: boolean;
+}
+interface DisplayArrayDataProps {
+  data: string[];
+  id: string;
+  cyTag: string;
+}
 
-  return data ? (
+const DisplayArrayData = ({ data, id, cyTag }: DisplayArrayDataProps) => {
+  return data.length > 0 ? (
     <>
       <dd
         className="govuk-summary-list__value"
         data-cy={`cy-organisation-value-${cyTag}`}
       >
         <ul className="govuk-list">
-          {dataToDisplay.map((line: string, index: number, array: string[]) => {
+          {data.map((line: string, index: number, array: string[]) => {
             if (line) {
               return (
                 <li key={index}>

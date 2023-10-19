@@ -43,7 +43,7 @@ describe('Organisation name page', () => {
     );
 
     screen.getByText(
-      'This is the official name of your organisation. It could be the name that is registered with Companies House or the Charity Commission'
+      'This is the official name of your organisation. It could be the name that is registered with Companies House or the Charities Commission'
     );
   });
 

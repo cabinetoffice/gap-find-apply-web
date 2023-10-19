@@ -5,31 +5,33 @@ import {
   renderWithRouter,
 } from '../../../testUtils/unitTestHelpers';
 import InferProps from '../../../types/InferProps';
-import { routes } from '../../../utils/routes';
 import MandatoryQuestionOrganisationSummaryPage, {
+  generateMandatoryQuestionDetails,
   getServerSideProps,
 } from './organisation-summary.page';
 
 describe('Organisation summary page', () => {
+  const mandatoryQuestion = {
+    schemeId: 1,
+    name: 'Test Organisation',
+    addressLine1: 'Test Address 1',
+    addressLine2: 'Test Address 2',
+    city: 'Test City',
+    county: 'Test County',
+    postcode: 'Test Postcode',
+    orgType: 'Test Organisation Type',
+    companiesHouseNumber: 'Test Companies House Number',
+    charityCommissionNumber: 'Test Charity Commission Number',
+    fundingAmount: '1000',
+    fundingLocation: ['Test Funding Location'],
+  };
+
   const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
     fieldErrors: [],
     csrfToken: 'testCSRFToken',
     formAction: 'testFormAction',
     defaultFields: {},
-    mandatoryQuestion: {
-      schemeId: 1,
-      name: 'Test Organisation',
-      addressLine1: 'Test Address 1',
-      addressLine2: 'Test Address 2',
-      city: 'Test City',
-      county: 'Test County',
-      postcode: 'Test Postcode',
-      orgType: 'Test Organisation Type',
-      companiesHouseNumber: 'Test Companies House Number',
-      charityCommissionNumber: 'Test Charity Commission Number',
-      fundingAmount: '1000',
-      fundingLocation: ['Test Funding Location'],
-    },
+    mandatoryQuestion,
     mandatoryQuestionId: 'mandatoryQuestionId',
   });
 
@@ -51,71 +53,10 @@ describe('Organisation summary page', () => {
         {...getPageProps(getDefaultProps)}
       />
     );
-
-    const mandatoryQuestionDetails = [
-      {
-        id: 'organisationName',
-        label: 'Name',
-        value: 'Test Organisation',
-        url: routes.mandatoryQuestions.namePage('mandatoryQuestionId'),
-        status: 'Change',
-      },
-      {
-        id: 'organisationAddress',
-        label: 'Address',
-        value: [
-          'Test Address 1,',
-          'Test Address 2,',
-          'Test City,',
-          'Test County,',
-          'Test Postcode',
-        ],
-        url: routes.mandatoryQuestions.addressPage('mandatoryQuestionId'),
-        status: 'Change',
-      },
-      {
-        id: 'organisationType',
-        label: 'Type of organisation',
-        value: 'Test Organisation Type',
-        url: routes.mandatoryQuestions.typePage('mandatoryQuestionId'),
-        status: 'Change',
-      },
-      {
-        id: 'organisationCompaniesHouseNumber',
-        label: 'Companies house number',
-        value: 'Test Companies House Number',
-        url: routes.mandatoryQuestions.companiesHouseNumberPage(
-          'mandatoryQuestionId'
-        ),
-        status: 'Change',
-      },
-      {
-        id: 'organisationCharity',
-        label: 'Charity commission number',
-        value: 'Test Charity Commission Number',
-        url: routes.mandatoryQuestions.charityCommissionNumberPage(
-          'mandatoryQuestionId'
-        ),
-        status: 'Change',
-      },
-      {
-        id: 'fundingAmount',
-        label: 'Funding amount',
-        value: '1000',
-        url: routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
-        status: 'Change',
-        showCurrency: true,
-      },
-      {
-        id: 'fundingLocation',
-        label: 'Funding location',
-        value: ['Test Funding Location'],
-        url: routes.mandatoryQuestions.fundingLocationPage(
-          'mandatoryQuestionId'
-        ),
-        status: 'Change',
-      },
-    ];
+    const mandatoryQuestionDetails = generateMandatoryQuestionDetails(
+      mandatoryQuestion,
+      'mandatoryQuestionId'
+    );
 
     mandatoryQuestionDetails.forEach((detail) => {
       const labelElement = screen.getByText(detail.label);
@@ -123,11 +64,13 @@ describe('Organisation summary page', () => {
 
       if (Array.isArray(detail.value)) {
         detail.value.forEach((v) => {
-          const valueElement = screen.getByText(v);
+          const valueElement = screen.getByText(new RegExp(`${v}`));
           expect(valueElement).toBeInTheDocument();
         });
       } else {
-        const valueElement = screen.getByText(detail.value);
+        const valueElement = screen.getByText(
+          detail.showCurrency ? `£ ${detail.value}` : detail.value
+        );
         expect(valueElement).toBeInTheDocument();
       }
     });
