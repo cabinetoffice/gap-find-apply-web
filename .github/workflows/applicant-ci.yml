@@ -12,8 +12,8 @@ on:
       - "yarn.lock"
 
 jobs:
-  test:
-    name: Test app
+  build:
+    name: Build app
 
     runs-on: ubuntu-latest
 
@@ -90,5 +90,48 @@ jobs:
       - name: Lint files
         run: yarn workspace applicant lint
 
-      - name: Units Tests
-        run: yarn workspace applicant jest --ci
+      - name: Cache node modules
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: node-modules-${{ github.sha }}
+
+  unit-tests:
+    name: Test app
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    needs: build
+
+    strategy:
+      matrix:
+        shard: [1, 2, 3, 4]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Read .nvmrc
+        id: nvm
+        run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          cache: 'yarn'
+        
+      - name: Restore node_modules
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: node-modules-${{ github.sha }}
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Unit tests
+        run: yarn workspace applicant jest --ci --shard=${{ matrix.shard }}/${{ strategy.job-total }}
