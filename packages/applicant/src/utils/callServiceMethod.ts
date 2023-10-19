@@ -101,7 +101,6 @@ export function handleMandatoryQuestionFundingLocation<
       .endsWith('organisation-funding-location')
   ) {
     if ('fundingLocation' in body) {
-      // Safely access and manipulate the fundingLocation property
       const fundingLocation = body.fundingLocation;
       if (typeof fundingLocation === 'string') {
         body.fundingLocation = [fundingLocation];
