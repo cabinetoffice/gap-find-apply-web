@@ -94,40 +94,45 @@ const UnpublishConfirmationPage = ({
       <CustomLink isBackButton href={backHref} />
 
       <div className="govuk-!-padding-top-7">
-        <FlexibleQuestionPageLayout
-          formAction={formAction}
-          fieldErrors={fieldErrors}
-          csrfToken={csrfToken}
-        >
-          <Radio
-            questionTitle="Are you sure you want to unpublish this application form?"
-            questionHintText={
-              <p className="govuk-body">
-                Once unpublished, your application form will no longer appear on{' '}
-                <a
-                  href={publicRuntimeConfig.FIND_A_GRANT_URL}
-                  className="govuk-link"
-                >
-                  Find a grant
-                </a>
-                . You will be able to edit the application form and re-publish.
-              </p>
-            }
-            fieldName="confirmation"
-            fieldErrors={fieldErrors}
-          />
-          <div className="govuk-button-group">
-            <button
-              className="govuk-button"
-              data-module="govuk-button"
-              data-cy="cy_unpublishConfirmation-ConfirmButton"
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds">
+            <FlexibleQuestionPageLayout
+              formAction={formAction}
+              fieldErrors={fieldErrors}
+              csrfToken={csrfToken}
             >
-              Confirm
-            </button>
+              <Radio
+                questionTitle="Are you sure you want to unpublish this application form?"
+                questionHintText={
+                  <p className="govuk-body">
+                    Once unpublished, your application form will no longer
+                    appear on{' '}
+                    <a
+                      href={publicRuntimeConfig.FIND_A_GRANT_URL}
+                      className="govuk-link"
+                    >
+                      Find a grant
+                    </a>{' '}
+                    and applications cannot be submitted.
+                  </p>
+                }
+                fieldName="confirmation"
+                fieldErrors={fieldErrors}
+              />
+              <div className="govuk-button-group">
+                <button
+                  className="govuk-button"
+                  data-module="govuk-button"
+                  data-cy="cy_unpublishConfirmation-ConfirmButton"
+                >
+                  Confirm
+                </button>
 
-            <CustomLink href={backHref}>Cancel</CustomLink>
+                <CustomLink href={backHref}>Cancel</CustomLink>
+              </div>
+            </FlexibleQuestionPageLayout>
           </div>
-        </FlexibleQuestionPageLayout>
+        </div>
       </div>
     </>
   );

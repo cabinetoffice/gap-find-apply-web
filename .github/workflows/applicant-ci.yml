@@ -1,0 +1,94 @@
+name: Applicant CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - "packages/applicant/**"
+      - "packages/gap-web-ui/**"  
+      - ".github/workflows/applicant-ci.yml"
+      - "package.json"
+      - "yarn.lock"
+
+jobs:
+  test:
+    name: Test app
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Generate .env files
+        run: cp packages/applicant/.env.example packages/applicant/.env
+
+      - name: Read .nvmrc
+        id: nvm
+        run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Generate gap-web-ui cache name
+        id: gap-web-ui-cache-name
+        run: |
+          NAME=gap-web-ui-${{ hashFiles('**/packages/gap-web-ui/**/*.js', '**/packages/gap-web-ui/**/*.jsx', '**/packages/gap-web-ui/**/*.ts', '**/packages/gap-web-ui/**/*.tsx') }}
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+
+      - name: Restore gap-web-ui cache
+        id: gap-web-ui-cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ github.workspace }}/packages/gap-web-ui/dist
+          key: ${{ steps.gap-web-ui-cache-name.outputs.name }}
+
+      - name: Build gap-web-ui
+        if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
+        run: yarn workspace gap-web-ui build
+
+      - name: Save gap-web-ui cache
+        if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/packages/gap-web-ui/dist
+          key: ${{ steps.gap-web-ui-cache-name.outputs.name }}
+
+      - name: Generate applicant next cache name
+        id: applicant-next-cache-name
+        run: |
+          NAME=applicant-next-cache-${{ hashFiles('**/packages/applicant/src/**/*.js', '**/packages/applicant/src/**/*.jsx', '**/packages/applicant/src/**/*.ts', '**/packages/applicant/src/**/*.tsx') }}
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+
+      - name: Restore next cache
+        id: restore-next-cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ github.workspace }}/packages/applicant/.next/cache
+          key: ${{ steps.applicant-next-cache-name.outputs.name }}
+
+      - name: Build application
+        run: yarn workspace applicant build
+
+      - name: Save next cache
+        if: steps.restore-next-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/packages/applicant/.next/cache
+          key: ${{ steps.applicant-next-cache-name.outputs.name }}
+      
+      - name: Lint files
+        run: yarn workspace applicant lint
+
+      - name: Units Tests
+        run: yarn workspace applicant jest --ci
