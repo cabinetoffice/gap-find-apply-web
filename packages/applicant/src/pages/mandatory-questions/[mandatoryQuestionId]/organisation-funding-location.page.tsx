@@ -51,7 +51,7 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
               options={[
                 'North East England',
                 'North West England',
-                'Yorkshire and The Humber',
+                'Yorkshire and the Humber',
                 'East Midlands (England)',
                 'West Midlands',
                 'East England',
