@@ -88,7 +88,7 @@ export default async function callServiceMethod<
 //the backend needs the result of a checkbox to be a list of strings, even if there is only one value
 export function handleMandatoryQuestionFundingLocation<
   B extends Record<string, any>
->(req: GetServerSidePropsContext['req'], body: Body<B>) {
+>(req: GetServerSidePropsContext['req'], body: Body<B> & FundingLocationBody) {
   if (req.url === undefined) {
     return;
   }
@@ -163,3 +163,7 @@ function removeAllCarriageReturns<T extends Record<string, string>>(obj: T) {
     {} as any
   ) as T;
 }
+
+type FundingLocationBody = {
+  fundingLocation?: string | string[];
+};
