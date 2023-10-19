@@ -72,9 +72,8 @@ jobs:
           NAME=admin-next-cache-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/packages/admin/src/**/*.js', '**/packages/admin/src/**/*.jsx', '**/packages/admin/src/**/*.ts', '**/packages/admin/src/**/*.tsx') }}
           echo "name=$NAME" >> $GITHUB_OUTPUT
 
-      - name: Restore next cache
-        id: restore-next-cache
-        uses: actions/cache/restore@v3
+      - name: Next admin cache
+        uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/packages/admin/.next/cache
           key: ${{ steps.admin-next-cache-name.outputs.name }}
@@ -83,13 +82,6 @@ jobs:
       - name: Build application
         run: yarn workspace admin build
 
-      - name: Save next cache
-        if: steps.restore-next-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
-        with:
-          path: ${{ github.workspace }}/packages/admin/.next/cache
-          key: ${{ steps.admin-next-cache-name.outputs.name }}
-                
       - name: Lint files
         run: yarn workspace admin lint
 
