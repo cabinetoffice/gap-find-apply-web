@@ -20,6 +20,9 @@ jobs:
     permissions:
       contents: read
 
+    outputs:
+      gap-web-ui-cache-name: ${{ steps.gap-web-ui-cache-name.outputs.name }}
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -132,6 +135,12 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --immutable
+
+      - name: Restore gap-web-ui cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ github.workspace }}/packages/gap-web-ui/dist
+          key: ${{ needs.build.outputs.gap-web-ui-cache-name }}
 
       - name: Unit tests
         run: yarn workspace applicant jest --ci --shard=${{ matrix.shard }}/${{ strategy.job-total }}
