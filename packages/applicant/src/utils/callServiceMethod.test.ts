@@ -1,6 +1,6 @@
-import callServiceMethod from './callServiceMethod';
 import { parseBody } from 'next/dist/server/api-utils/node';
 import { ServiceError } from '../pages/service-error/index.page';
+import callServiceMethod from './callServiceMethod';
 
 jest.mock('next/dist/server/api-utils/node', () => ({
   parseBody: jest.fn(),
@@ -93,6 +93,83 @@ describe('callServiceMethod', () => {
 
     expect(serviceFunc).toHaveBeenCalledTimes(1);
     expect(serviceFunc).toHaveBeenCalledWith({ testBody: true });
+  });
+
+  it('handles the special case for mandatoryQuestion__stringToArray', async () => {
+    (parseBody as jest.Mock).mockResolvedValue({ fundingLocation: 'text' });
+    const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
+    const redirectTo = jest.fn(() => 'testDestination');
+    const req = {
+      fundingLocation: 'text',
+      method: 'POST',
+      url: '/mandatory-questions/organisation-funding-location',
+    } as any;
+    const res = {} as any;
+
+    await callServiceMethod(
+      req,
+      res,
+      serviceFunc,
+      redirectTo,
+      {} as ServiceError
+    );
+
+    expect(serviceFunc).toHaveBeenCalledTimes(1);
+    expect(serviceFunc).toHaveBeenCalledWith({ fundingLocation: ['text'] });
+  });
+
+  it('handles the special case for mandatoryQuestion__arrayStaysArray', async () => {
+    (parseBody as jest.Mock).mockResolvedValue({
+      fundingLocation: ['text', 'second'],
+    });
+    const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
+    const redirectTo = jest.fn(() => 'testDestination');
+    const req = {
+      fundingLocation: 'text',
+      method: 'POST',
+      url: '/mandatory-questions/organisation-funding-location',
+    } as any;
+    const res = {} as any;
+
+    await callServiceMethod(
+      req,
+      res,
+      serviceFunc,
+      redirectTo,
+      {} as ServiceError
+    );
+
+    expect(serviceFunc).toHaveBeenCalledTimes(1);
+    expect(serviceFunc).toHaveBeenCalledWith({
+      fundingLocation: ['text', 'second'],
+    });
+  });
+
+  it('handles the special case for mandatoryQuestion__urlIsNotMatchingTheConditions', async () => {
+    (parseBody as jest.Mock).mockResolvedValue({
+      fundingLocation: 'not matching the conditions',
+    });
+    const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
+    const redirectTo = jest.fn(() => 'testDestination');
+    const req = {
+      fundingLocation: 'text',
+      method: 'POST',
+      url: '/mandatory-question/organisation-funding-locatio',
+    } as any;
+    const res = {} as any;
+
+    await callServiceMethod(
+      req,
+      res,
+      serviceFunc,
+      redirectTo,
+      {} as ServiceError
+    );
+
+    expect(serviceFunc).toHaveBeenCalledTimes(1);
+    expect(serviceFunc).toHaveBeenCalledWith({
+      fundingLocation: 'not matching the conditions',
+    });
   });
 
   it('calls parseBody with provided req object', async () => {

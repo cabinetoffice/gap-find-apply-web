@@ -1,11 +1,11 @@
+import { Button } from 'gap-web-ui';
+import Link from 'next/link';
+import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 import Layout from '../../../components/partials/Layout';
+import Meta from '../../../components/partials/Meta';
 import InferProps from '../../../types/InferProps';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
-import Meta from '../../../components/partials/Meta';
-import Link from 'next/link';
-import { ButtonTypePropertyEnum } from '../../../components/button/Button';
-import { Button } from 'gap-web-ui';
 
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationSummaryPage({
@@ -68,6 +68,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
       value: mandatoryQuestion?.fundingAmount,
       url: routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId),
       status: 'Change',
+      showCurrency: true,
     },
     {
       id: 'fundingLocation',
@@ -124,6 +125,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                         id={mandatoryQuestionDetail.id}
                         data-cy={`cy-organisation-value-${mandatoryQuestionDetail.label}`}
                       >
+                        {mandatoryQuestionDetail.showCurrency ? '£ ' : ''}
                         {mandatoryQuestionDetail.value
                           ? mandatoryQuestionDetail.value
                           : '-'}

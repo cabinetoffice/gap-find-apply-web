@@ -1,14 +1,14 @@
-import Layout from '../../../components/partials/Layout';
-import InferProps from '../../../types/InferProps';
-import { routes } from '../../../utils/routes';
-import getServerSideProps from './getServerSideProps';
-import Meta from '../../../components/partials/Meta';
 import {
   Button,
   ButtonTypePropertyEnum,
-  FlexibleQuestionPageLayout,
   Checkboxes,
+  FlexibleQuestionPageLayout,
 } from 'gap-web-ui';
+import Layout from '../../../components/partials/Layout';
+import Meta from '../../../components/partials/Meta';
+import InferProps from '../../../types/InferProps';
+import { routes } from '../../../utils/routes';
+import getServerSideProps from './getServerSideProps';
 
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationFundingLocationPage({
@@ -52,7 +52,7 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
                 'North East England',
                 'North West England',
                 'Yorkshire and The Humber',
-                'East Midlands(England)',
+                'East Midlands (England)',
                 'West Midlands',
                 'East England',
                 'London',

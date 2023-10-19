@@ -1,7 +1,7 @@
-import { ValidationError } from 'gap-web-ui';
-import { parseBody } from 'next/dist/server/api-utils/node';
 import csurf from 'csurf';
+import { ValidationError } from 'gap-web-ui';
 import { GetServerSidePropsContext, Redirect } from 'next';
+import { parseBody } from 'next/dist/server/api-utils/node';
 import { ServiceError } from '../pages/service-error/index.page';
 
 type Body<T> = T & {
@@ -45,7 +45,6 @@ export default async function callServiceMethod<
     await initialiseCSRFCookie(req, res);
     return { nonPost: true };
   }
-
   // Otherwise, validate the CSRF cookie & call the service method
   let body: Body<B>;
   try {
@@ -53,7 +52,7 @@ export default async function callServiceMethod<
     body = removeAllCarriageReturns(body);
 
     await validateCSRFCookie(req, res, body);
-
+    handleMandatoryQuestionFundingLocation<B>(req, body);
     const result = await serviceFunc(body);
     return {
       redirect: {
@@ -63,6 +62,7 @@ export default async function callServiceMethod<
       },
     };
   } catch (err: any) {
+    console.log('err', err);
     // If there is a validation error
     if (err.response?.data?.errors) {
       return {
@@ -79,6 +79,34 @@ export default async function callServiceMethod<
         statusCode: 302,
       },
     };
+  }
+}
+
+// Special case for the Mandatory Questions..
+//the backend needs the result of a checkbox to be a list of strings, even if there is only one value
+export function handleMandatoryQuestionFundingLocation<
+  B extends Record<string, any>
+>(req: GetServerSidePropsContext['req'], body: Body<B>) {
+  if (req.url === undefined) {
+    return;
+  }
+  if (
+    req.url.startsWith('/mandatory-questions') &&
+    req.url
+      .split('/')
+      .pop()
+      .split('?')[0]
+      .endsWith('organisation-funding-location')
+  ) {
+    if ('fundingLocation' in body) {
+      // Safely access and manipulate the fundingLocation property
+      const fundingLocation = body.fundingLocation;
+      if (typeof fundingLocation === 'string') {
+        body.fundingLocation = [fundingLocation];
+      }
+    } else {
+      body.fundingLocation = [];
+    }
   }
 }
 

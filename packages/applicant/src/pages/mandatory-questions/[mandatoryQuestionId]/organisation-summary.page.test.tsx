@@ -1,14 +1,14 @@
 import { screen } from '@testing-library/react';
+import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 import {
   getPageProps,
   renderWithRouter,
 } from '../../../testUtils/unitTestHelpers';
 import InferProps from '../../../types/InferProps';
+import { routes } from '../../../utils/routes';
 import MandatoryQuestionOrganisationSummaryPage, {
   getServerSideProps,
 } from './organisation-summary.page';
-import { routes } from '../../../utils/routes';
-import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 
 describe('Organisation summary page', () => {
   const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
@@ -104,6 +104,7 @@ describe('Organisation summary page', () => {
         value: '1000',
         url: routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
         status: 'Change',
+        showCurrency: true,
       },
       {
         id: 'fundingLocation',
