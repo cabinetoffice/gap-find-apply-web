@@ -198,7 +198,7 @@ const DisplayArrayData = ({ data, id, cyTag }: DisplayArrayDataProps) => {
           {data.map((line: string, index: number, array: string[]) => {
             if (line) {
               return (
-                <li key={index}>
+                <li key={line}>
                   {index === array.length - 1 ? line : `${line},`}
                 </li>
               );
