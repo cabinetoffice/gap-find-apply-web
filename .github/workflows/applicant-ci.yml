@@ -40,9 +40,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Lint files
-        run: yarn workspace applicant lint
-
       - name: Generate gap-web-ui cache name
         id: gap-web-ui-cache-name
         run: |
@@ -89,6 +86,9 @@ jobs:
         with:
           path: ${{ github.workspace }}/packages/applicant/.next/cache
           key: ${{ steps.applicant-next-cache-name.outputs.name }}
+      
+      - name: Lint files
+        run: yarn workspace applicant lint
 
       - name: Units Tests
         run: yarn workspace applicant jest --ci
