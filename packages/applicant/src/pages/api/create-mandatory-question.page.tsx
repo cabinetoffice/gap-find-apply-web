@@ -11,17 +11,33 @@ export default async function handler(
   try {
     const grantMandatoryQuestionService =
       GrantMandatoryQuestionService.getInstance();
-    const mandatoryQuestionId =
+    const mandatoryQuestion =
       await grantMandatoryQuestionService.createMandatoryQuestion(
         schemeId,
         getJwtFromCookies(req)
       );
 
-    res.redirect(
-      `${process.env.HOST}${routes.mandatoryQuestions.namePage(
-        mandatoryQuestionId
-      )}`
+    const organisationProfileKeys = [
+      'name',
+      'addressLine1',
+      'city',
+      'postcode',
+      'orgType',
+      'companiesHouseNumber',
+      'charityCommissionNumber',
+    ];
+    const areOrganisationProfileQuestionsComplete =
+      organisationProfileKeys.every((key) => mandatoryQuestion[key] !== null);
+    console.log(
+      'areOrganisationProfileQuestionsComplete',
+      areOrganisationProfileQuestionsComplete
     );
+    const redirectionUrl = areOrganisationProfileQuestionsComplete
+      ? routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestion.id)
+      : routes.mandatoryQuestions.namePage(mandatoryQuestion.id);
+
+    console.log('redirectionUrl', redirectionUrl);
+    return res.redirect(`${process.env.HOST}${redirectionUrl}`);
   } catch (e) {
     console.error('error: ', e);
     const serviceErrorProps = {
@@ -32,6 +48,6 @@ export default async function handler(
         linkInformation: '',
       },
     };
-    res.redirect(routes.serviceError(serviceErrorProps));
+    return res.redirect(routes.serviceError(serviceErrorProps));
   }
 }

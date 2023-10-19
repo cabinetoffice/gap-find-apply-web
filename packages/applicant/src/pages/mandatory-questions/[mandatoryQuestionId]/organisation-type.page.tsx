@@ -1,11 +1,10 @@
+import { Button, FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
+import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 import Layout from '../../../components/partials/Layout';
+import Meta from '../../../components/partials/Meta';
 import InferProps from '../../../types/InferProps';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
-import Meta from '../../../components/partials/Meta';
-import { Button, Details, FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
-import { SaveAndCancel } from '../../../components/save-and-cancel/SaveAndCancel';
-import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationTypePage({
@@ -17,8 +16,7 @@ export default function MandatoryQuestionOrganisationTypePage({
   mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
   const backButtonUrl =
-    routes.mandatoryQuestions.addressPage(mandatoryQuestionId) +
-    '?fromSummaryPage=true';
+    routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
   return (
     <>
       <Meta

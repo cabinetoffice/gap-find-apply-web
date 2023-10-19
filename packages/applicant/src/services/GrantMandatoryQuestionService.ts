@@ -22,11 +22,10 @@ export class GrantMandatoryQuestionService {
 
   public async getMandatoryQuestionById(
     mandatoryQuestionId: string,
-    url: string,
     jwt: string
   ): Promise<GrantMandatoryQuestionDto> {
     const { data } = await axios.get<GrantMandatoryQuestionDto>(
-      `${this.BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}?url=${url}`,
+      `${this.BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}`,
       axiosConfig(jwt)
     );
     return data;
@@ -35,10 +34,11 @@ export class GrantMandatoryQuestionService {
   public async updateMandatoryQuestion(
     jwt: string,
     mandatoryQuestionId: string,
+    url: string,
     body: GrantMandatoryQuestionDto
   ): Promise<string> {
     const { data } = await axios.patch<string>(
-      `${this.BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}`,
+      `${this.BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}?url=${url}`,
       body,
       axiosConfig(jwt)
     );
@@ -49,8 +49,8 @@ export class GrantMandatoryQuestionService {
   public async createMandatoryQuestion(
     schemeId: string,
     jwt: string
-  ): Promise<string> {
-    const { data } = await axios.post<string>(
+  ): Promise<GrantMandatoryQuestionDto> {
+    const { data } = await axios.post<GrantMandatoryQuestionDto>(
       `${this.BACKEND_HOST}/grant-mandatory-questions?schemeId=${parseInt(
         schemeId
       )}`,
@@ -62,6 +62,7 @@ export class GrantMandatoryQuestionService {
   }
 }
 export interface GrantMandatoryQuestionDto {
+  id?: string;
   name?: string;
   addressLine1?: string;
   addressLine2?: string;
@@ -75,6 +76,4 @@ export interface GrantMandatoryQuestionDto {
   fundingLocation?: string[];
   schemeId?: number;
   submissionId?: string;
-  isPageAlreadyAnswered?: boolean;
-  nextNotAnsweredPage?: string;
 }
