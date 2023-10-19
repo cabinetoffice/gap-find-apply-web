@@ -70,6 +70,7 @@ jobs:
           NAME=applicant-next-cache-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/packages/applicant/src/**/*.js', '**/packages/applicant/src/**/*.jsx', '**/packages/applicant/src/**/*.ts', '**/packages/applicant/src/**/*.tsx') }}
           echo "name=$NAME" >> $GITHUB_OUTPUT
 
+      # Based on steps described here - https://nextjs.org/docs/pages/building-your-application/deploying/ci-build-caching#github-actions
       - name: Next applicant cache
         uses: actions/cache@v3
         with:

@@ -73,6 +73,7 @@ jobs:
             NAME=admin-next-cache-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/packages/admin/src/**/*.js', '**/packages/admin/src/**/*.jsx', '**/packages/admin/src/**/*.ts', '**/packages/admin/src/**/*.tsx') }}
             echo "name=$NAME" >> $GITHUB_OUTPUT
 
+        # Based on steps described here - https://nextjs.org/docs/pages/building-your-application/deploying/ci-build-caching#github-actions
         - name: Next admin cache
           uses: actions/cache@v3
           with:
@@ -113,7 +114,7 @@ jobs:
   
       - name: Login to AWS ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Determine & set BUILD_VERSION
         run: |
@@ -165,7 +166,7 @@ jobs:
   
       - name: Login to AWS ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
   
       - name: Determine & set BUILD_VERSION
         run: |
