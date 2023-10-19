@@ -70,25 +70,19 @@ jobs:
         - name: Generate admin next cache name
           id: admin-next-cache-name
           run: |
-            NAME=admin-next-cache-${{ hashFiles('**/packages/admin/src/**/*.js', '**/packages/admin/src/**/*.jsx', '**/packages/admin/src/**/*.ts', '**/packages/admin/src/**/*.tsx') }}
+            NAME=admin-next-cache-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/packages/admin/src/**/*.js', '**/packages/admin/src/**/*.jsx', '**/packages/admin/src/**/*.ts', '**/packages/admin/src/**/*.tsx') }}
             echo "name=$NAME" >> $GITHUB_OUTPUT
 
-        - name: Restore next cache
-          id: restore-next-cache
-          uses: actions/cache/restore@v3
+        # Based on steps described here - https://nextjs.org/docs/pages/building-your-application/deploying/ci-build-caching#github-actions
+        - name: Next admin cache
+          uses: actions/cache@v3
           with:
             path: ${{ github.workspace }}/packages/admin/.next/cache
             key: ${{ steps.admin-next-cache-name.outputs.name }}
+            restore-keys: admin-next-cache-${{ hashFiles('**/yarn.lock') }}-
 
         - name: Build application
           run: yarn workspace admin build
-
-        - name: Save next cache
-          if: steps.restore-next-cache.outputs.cache-hit != 'true'
-          uses: actions/cache/save@v3
-          with:
-            path: ${{ github.workspace }}/packages/admin/.next/cache
-            key: ${{ steps.admin-next-cache-name.outputs.name }}
 
         - name: Lint files
           run: yarn workspace admin lint
@@ -120,7 +114,7 @@ jobs:
   
       - name: Login to AWS ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Determine & set BUILD_VERSION
         run: |
@@ -172,7 +166,7 @@ jobs:
   
       - name: Login to AWS ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
   
       - name: Determine & set BUILD_VERSION
         run: |

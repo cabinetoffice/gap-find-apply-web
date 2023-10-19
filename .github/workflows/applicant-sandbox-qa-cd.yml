@@ -70,25 +70,19 @@ jobs:
         - name: Generate applicant next cache name
           id: applicant-next-cache-name
           run: |
-            NAME=applicant-next-cache-${{ hashFiles('**/packages/applicant/src/**/*.js', '**/packages/applicant/src/**/*.jsx', '**/packages/applicant/src/**/*.ts', '**/packages/applicant/src/**/*.tsx') }}
+            NAME=applicant-next-cache-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/packages/applicant/src/**/*.js', '**/packages/applicant/src/**/*.jsx', '**/packages/applicant/src/**/*.ts', '**/packages/applicant/src/**/*.tsx') }}
             echo "name=$NAME" >> $GITHUB_OUTPUT
 
-        - name: Restore next cache
-          id: restore-next-cache
-          uses: actions/cache/restore@v3
+        # Based on steps described here - https://nextjs.org/docs/pages/building-your-application/deploying/ci-build-caching#github-actions
+        - name: Next applicant cache
+          uses: actions/cache@v3
           with:
             path: ${{ github.workspace }}/packages/applicant/.next/cache
             key: ${{ steps.applicant-next-cache-name.outputs.name }}
+            restore-keys: applicant-next-cache-${{ hashFiles('**/yarn.lock') }}-
 
         - name: Build application
           run: yarn workspace applicant build
-
-        - name: Save next cache
-          if: steps.restore-next-cache.outputs.cache-hit != 'true'
-          uses: actions/cache/save@v3
-          with:
-            path: ${{ github.workspace }}/packages/applicant/.next/cache
-            key: ${{ steps.applicant-next-cache-name.outputs.name }}
 
         - name: Lint files
           run: yarn workspace applicant lint
@@ -120,7 +114,7 @@ jobs:
 
       - name: Login to AWS ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Determine & set BUILD_VERSION
         run: |
@@ -172,7 +166,7 @@ jobs:
 
       - name: Login to AWS ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Determine & set BUILD_VERSION
         run: |
