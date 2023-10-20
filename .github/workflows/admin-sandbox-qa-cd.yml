@@ -31,7 +31,7 @@ jobs:
             sed -i -e '/TINYMCE_API_KEY=/s/$/${{ secrets.TINYMCE_API_KEY }}/g' packages/admin/.env
 
         - name: Read .nvmrc
-          run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
+          run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
           id: nvm
 
         - name: Setup node
@@ -41,28 +41,57 @@ jobs:
             cache: 'yarn'
 
         - name: Install dependencies
+          run: yarn install --immutable
+
+        - name: Generate gap-web-ui cache name
+          id: gap-web-ui-cache-name
           run: |
-            yarn install --immutable
+            NAME=gap-web-ui-${{ hashFiles('**/packages/gap-web-ui/**/*.js', '**/packages/gap-web-ui/**/*.jsx', '**/packages/gap-web-ui/**/*.ts', '**/packages/gap-web-ui/**/*.tsx') }}
+            echo "name=$NAME" >> $GITHUB_OUTPUT
+
+        - name: Restore gap-web-ui cache
+          id: gap-web-ui-cache
+          uses: actions/cache/restore@v3
+          with:
+            path: ${{ github.workspace }}/packages/gap-web-ui/dist
+            key: ${{ steps.gap-web-ui-cache-name.outputs.name }}
 
         - name: Build gap-web-ui
+          if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
+          run: yarn workspace gap-web-ui build
+
+        - name: Save gap-web-ui cache
+          if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
+          uses: actions/cache/save@v3
+          with:
+            path: ${{ github.workspace }}/packages/gap-web-ui/dist
+            key: ${{ steps.gap-web-ui-cache-name.outputs.name }}
+
+        - name: Generate admin next cache name
+          id: admin-next-cache-name
           run: |
-            yarn workspace gap-web-ui build
+            NAME=admin-next-cache-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/packages/admin/src/**/*.js', '**/packages/admin/src/**/*.jsx', '**/packages/admin/src/**/*.ts', '**/packages/admin/src/**/*.tsx') }}
+            echo "name=$NAME" >> $GITHUB_OUTPUT
+
+        # Based on steps described here - https://nextjs.org/docs/pages/building-your-application/deploying/ci-build-caching#github-actions
+        - name: Next admin cache
+          uses: actions/cache@v3
+          with:
+            path: ${{ github.workspace }}/packages/admin/.next/cache
+            key: ${{ steps.admin-next-cache-name.outputs.name }}
+            restore-keys: admin-next-cache-${{ hashFiles('**/yarn.lock') }}-
 
         - name: Build application
-          run: |
-            yarn workspace admin build
+          run: yarn workspace admin build
 
         - name: Lint files
-          run: |
-            yarn workspace admin lint
+          run: yarn workspace admin lint
 
         - name: Units tests
-          run: |
-            yarn workspace admin coverage
+          run: yarn workspace admin jest --ci
 
         - name: Gap-web-ui units tests
-          run: |
-            yarn workspace gap-web-ui coverage
+          run: yarn workspace gap-web-ui jest --ci
 
   build:
     runs-on: ubuntu-latest
@@ -85,7 +114,7 @@ jobs:
   
       - name: Login to AWS ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Determine & set BUILD_VERSION
         run: |
@@ -137,7 +166,7 @@ jobs:
   
       - name: Login to AWS ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
   
       - name: Determine & set BUILD_VERSION
         run: |

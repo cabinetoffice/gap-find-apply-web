@@ -56,8 +56,8 @@ describe('Funding Location page', () => {
     const values = [
       'North East England',
       'North West England',
-      'Yorkshire and The Humber',
-      'East Midlands(England)',
+      'Yorkshire and the Humber',
+      'East Midlands (England)',
       'West Midlands',
       'East England',
       'London',
@@ -89,8 +89,8 @@ describe('Funding Location page', () => {
     const keys = [
       'North East England',
       'North West England',
-      'Yorkshire and The Humber',
-      'East Midlands(England)',
+      'Yorkshire and the Humber',
+      'East Midlands (England)',
       'West Midlands',
       'East England',
       'London',
@@ -105,8 +105,8 @@ describe('Funding Location page', () => {
     const values = {
       'North East England': false,
       'North West England': false,
-      'Yorkshire and The Humber': false,
-      'East Midlands(England)': false,
+      'Yorkshire and the Humber': false,
+      'East Midlands (England)': false,
       'West Midlands': false,
       'East England': false,
       London: true,
