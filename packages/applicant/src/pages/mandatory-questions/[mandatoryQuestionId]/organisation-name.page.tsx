@@ -38,7 +38,7 @@ export default function MandatoryQuestionOrganisationNamePage({
           >
             <TextInput
               questionTitle="Enter the name of your organisation"
-              questionHintText="This is the official name of your organisation. It could be the name that is registered with Companies House or the Charity Commission"
+              questionHintText="This is the official name of your organisation. It could be the name that is registered with Companies House or the Charities Commission"
               fieldName="name"
               defaultValue={defaultFields.name}
               fieldErrors={fieldErrors}
