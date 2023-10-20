@@ -40,8 +40,6 @@ describe('getServerSideProps', () => {
     orgType: null,
     fundingAmount: null,
     fundingLocation: null,
-    isPageAlreadyAnswered: false,
-    nextNotAnsweredPage: '/nextpage',
   });
 
   beforeEach(() => {
@@ -51,6 +49,7 @@ describe('getServerSideProps', () => {
   afterEach(() => {
     process.env.USER_TOKEN_NAME = userTokenNameBackup;
   });
+
   describe('when handling a GET request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
@@ -87,12 +86,7 @@ describe('getServerSideProps', () => {
 
       expect(
         spiedGrantMandatoryQuestionServiceGetMandatoryQuestion
-      ).toHaveBeenNthCalledWith(
-        1,
-        'mandatoryQuestionId',
-        '/testResolvedURL',
-        'testSessionId'
-      );
+      ).toHaveBeenNthCalledWith(1, 'mandatoryQuestionId', 'testSessionId');
     });
 
     it('should redirect to errorPage if some error happens to the backend call', async () => {
@@ -107,54 +101,6 @@ describe('getServerSideProps', () => {
           destination:
             '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to get the page you requested","linkAttributes":{"href":"/testResolvedURL","linkText":"Please return","linkInformation":" and try again."}}',
           statusCode: 302,
-        },
-      });
-    });
-
-    it('should redirect to next not answered page if the page we are accessing has already been answered, and the url does not have the fromSummaryPage query param as true', async () => {
-      mockServiceMethod(
-        spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
-        getDefaultGrantMandatoryQuestion,
-        { isPageAlreadyAnswered: true }
-      );
-
-      const response = await getServerSideProps(getContext(getDefaultContext));
-
-      expectObjectEquals(response, {
-        redirect: {
-          destination: '/nextpage',
-          statusCode: 302,
-        },
-      });
-    });
-    it('should not redirect to next not answered page if the page we are accessing has already been answered and the url have the fromSummaryPage query param as true', async () => {
-      const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
-        params: { mandatoryQuestionId: 'mandatoryQuestionId' },
-        query: { fromSummaryPage: 'true' },
-      });
-
-      mockServiceMethod(
-        spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
-        getDefaultGrantMandatoryQuestion,
-        { isPageAlreadyAnswered: true }
-      );
-
-      const response = await getServerSideProps(getContext(getDefaultContext));
-
-      expectObjectEquals(response, {
-        props: {
-          csrfToken: 'testCSRFToken',
-          fieldErrors: [],
-          formAction: '/testResolvedURL',
-          defaultFields: {
-            ...getDefaultGrantMandatoryQuestion(),
-            isPageAlreadyAnswered: true,
-          },
-          mandatoryQuestion: {
-            ...getDefaultGrantMandatoryQuestion(),
-            isPageAlreadyAnswered: true,
-          },
-          mandatoryQuestionId: 'mandatoryQuestionId',
         },
       });
     });
@@ -188,9 +134,15 @@ describe('getServerSideProps', () => {
 
       expect(
         spiedGrantMandatoryQuestionServiceUpdateMandatoryQuestion
-      ).toHaveBeenNthCalledWith(1, 'testSessionId', 'mandatoryQuestionId', {
-        name: 'test name',
-      });
+      ).toHaveBeenNthCalledWith(
+        1,
+        'testSessionId',
+        'mandatoryQuestionId',
+        '/testResolvedURL',
+        {
+          name: 'test name',
+        }
+      );
     });
 
     it.skip('Should redirect to the next available page after successfully updating', async () => {

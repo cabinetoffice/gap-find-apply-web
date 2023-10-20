@@ -26,17 +26,20 @@ export default async function handler(
       'companiesHouseNumber',
       'charityCommissionNumber',
     ];
+
     const areOrganisationProfileQuestionsComplete =
-      organisationProfileKeys.every((key) => mandatoryQuestion[key] !== null);
-    console.log(
-      'areOrganisationProfileQuestionsComplete',
-      areOrganisationProfileQuestionsComplete
-    );
+      organisationProfileKeys.every(
+        (key) => mandatoryQuestion[key] !== undefined
+      ) &&
+      organisationProfileKeys.every((key) => mandatoryQuestion[key] !== null) &&
+      organisationProfileKeys
+        .filter((key) => key !== 'orgType')
+        .every((key) => mandatoryQuestion[key] !== '');
+
     const redirectionUrl = areOrganisationProfileQuestionsComplete
       ? routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestion.id)
       : routes.mandatoryQuestions.namePage(mandatoryQuestion.id);
 
-    console.log('redirectionUrl', redirectionUrl);
     return res.redirect(`${process.env.HOST}${redirectionUrl}`);
   } catch (e) {
     console.error('error: ', e);

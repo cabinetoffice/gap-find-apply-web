@@ -64,7 +64,6 @@ export default async function getServerSideProps({
       ),
     //the above method will return a string with the next page url
     (result) => {
-      console.log('result', result);
       return fromSummaryPage
         ? routes.mandatoryQuestions.summaryPage(mandatoryQuestionId)
         : result;

@@ -52,12 +52,11 @@ describe('Axios call to get mandatory question data', () => {
     };
     const { serverRuntimeConfig } = getConfig();
     const BACKEND_HOST = serverRuntimeConfig.backendHost;
-    const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions/${MANDATORY_QUESTION_ID}?url=testUrl`;
+    const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions/${MANDATORY_QUESTION_ID}`;
     mock.onGet(expectedUrl).reply(200, MockMandatoryQuestionData);
 
     const result = await subject.getMandatoryQuestionById(
       MANDATORY_QUESTION_ID,
-      'testUrl',
       'testJwt'
     );
     expect(result).toEqual(MockMandatoryQuestionData);
@@ -82,11 +81,12 @@ describe('update mandatoryQuestion', () => {
 
     const { serverRuntimeConfig } = getConfig();
     const BACKEND_HOST = serverRuntimeConfig.backendHost;
-    const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions/${MANDATORY_QUESTION_ID}`;
+    const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions/${MANDATORY_QUESTION_ID}?url=url`;
     mock.onPatch(expectedUrl, mandatoryQuestionData).reply(200);
     await subject.updateMandatoryQuestion(
       'testJwt',
       MANDATORY_QUESTION_ID,
+      'url',
       mandatoryQuestionData
     );
 
