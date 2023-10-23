@@ -67,10 +67,22 @@ export const routes = {
         `/api/submissions/${grantSubmissionId}/sections/${sectionId}/questions/${questionId}`,
     },
     isNewApplicant: {
-      index: (migrationStatus?) =>
-        migrationStatus
-          ? `/api/isNewApplicant?migrationStatus=${migrationStatus}`
-          : `/api/isNewApplicant`,
+      index: (applyMigrationStatus?, findMigrationStatus?) => {
+        let url = `/api/isNewApplicant`;
+
+        if (applyMigrationStatus) {
+          url += `?applyMigrationStatus=${applyMigrationStatus}`;
+        }
+        if (applyMigrationStatus && findMigrationStatus) {
+          url += `&`;
+        }
+        if (findMigrationStatus && !applyMigrationStatus) {
+          url += `?findMigrationStatus=${findMigrationStatus}`;
+        } else if (findMigrationStatus) {
+          url += `${findMigrationStatus}`;
+        }
+        return url;
+      },
     },
     createMandatoryQuestion: (schemeId: string) =>
       `/api/create-mandatory-question?schemeId=${schemeId}`,

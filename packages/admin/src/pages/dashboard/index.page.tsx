@@ -25,13 +25,19 @@ export const getServerSideProps = async ({
   const schemes = await getUserSchemes(paginationParams, sessionCookie);
   const userDetails: UserDetails = await getLoggedInUsersDetails(sessionCookie);
 
-  const migrationStatus = query?.migrationStatus ?? null;
-  const oneLoginTransferErrorEnabled =
+  const applyMigrationStatus = query?.applyMigrationStatus ?? null;
+  const findMigrationStatus = query?.findMigrationStatus ?? null;
+
+  const oneLoginMatchingAccountBannerEnabled =
     process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
+
   const showMigrationSuccessBanner =
-    oneLoginTransferErrorEnabled && migrationStatus === 'success';
+    oneLoginMatchingAccountBannerEnabled &&
+    (applyMigrationStatus === 'success' || findMigrationStatus === 'success');
+
   const showMigrationErrorBanner =
-    oneLoginTransferErrorEnabled && migrationStatus === 'error';
+    oneLoginMatchingAccountBannerEnabled &&
+    (applyMigrationStatus === 'error' || findMigrationStatus === 'error');
 
   return {
     props: {

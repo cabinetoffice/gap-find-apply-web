@@ -13,10 +13,18 @@ export default async function handler(
   if (!doesApplicantExist) {
     await grantApplicantService.createAnApplicant(getJwtFromCookies(req));
   }
+  const applyMigrationStatus = req.query?.applyMigrationStatus as string;
+  const findMigrationStatus = req.query?.findMigrationStatus as string;
+  let url = process.env.APPLICANT_FRONTEND_URL;
 
-  req.query.migrationStatus
-    ? res.redirect(
-        `${process.env.APPLICANT_FRONTEND_URL}?migrationStatus=${req.query.migrationStatus}`
-      )
-    : res.redirect(process.env.APPLICANT_FRONTEND_URL);
+  if (applyMigrationStatus) {
+    url += `?applyMigrationStatus=${applyMigrationStatus}`;
+  }
+  if (applyMigrationStatus && findMigrationStatus) {
+    url += `&`;
+  }
+  if (findMigrationStatus) {
+    url += `?findMigrationStatus=${findMigrationStatus}`;
+  }
+  res.redirect(url);
 }
