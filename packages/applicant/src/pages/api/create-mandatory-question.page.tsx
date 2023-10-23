@@ -28,13 +28,10 @@ export default async function handler(
     ];
 
     const areOrganisationProfileQuestionsComplete =
-      organisationProfileKeys.every(
-        (key) => mandatoryQuestion[key] !== undefined
-      ) &&
-      organisationProfileKeys.every((key) => mandatoryQuestion[key] !== null) &&
-      organisationProfileKeys
-        .filter((key) => key !== 'orgType')
-        .every((key) => mandatoryQuestion[key] !== '');
+      organisationProfileKeys.every((key) => {
+        const value = mandatoryQuestion[key];
+        return value !== null && value !== undefined && value !== '';
+      });
 
     const redirectionUrl = areOrganisationProfileQuestionsComplete
       ? routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestion.id)
