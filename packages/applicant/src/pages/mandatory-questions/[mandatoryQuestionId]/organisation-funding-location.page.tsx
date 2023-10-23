@@ -20,8 +20,7 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
   mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
   const backButtonUrl =
-    routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId) +
-    '?fromSummaryPage=true';
+    routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
   return (
     <>
       <>

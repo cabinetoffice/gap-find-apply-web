@@ -1,5 +1,8 @@
 import { merge } from 'lodash';
-import { GrantMandatoryQuestionService } from '../../services/GrantMandatoryQuestionService';
+import {
+  GrantMandatoryQuestionDto,
+  GrantMandatoryQuestionService,
+} from '../../services/GrantMandatoryQuestionService';
 import { routes } from '../../utils/routes';
 import handler from './create-mandatory-question.page';
 
@@ -38,17 +41,43 @@ describe('API Handler Tests', () => {
     process.env.HOST = backup_host;
   });
 
-  it('should redirect to organisation-name page when mandatory question gets created in db', async () => {
+  const grantMandatoryQuestion: GrantMandatoryQuestionDto = {
+    id: 'mandatoryQuestionId',
+    schemeId: 2,
+    name: 'name',
+    city: 'city',
+    postcode: 'postcode',
+    orgType: 'orgType',
+    companiesHouseNumber: 'companiesHouseNumber',
+    charityCommissionNumber: 'charityCommissionNumber',
+  };
+  it('should redirect to organisation-name page when mandatory question gets created in db and NONE or SOME of the organisation profile have been filled in the applicant organisation Profile', async () => {
     GrantMandatoryQuestionService.getInstance.mockReturnValue({
       createMandatoryQuestion: jest
         .fn()
-        .mockResolvedValue('mandatoryQuestionId'),
+        .mockResolvedValue(grantMandatoryQuestion),
     });
 
     await handler(req(), res());
 
     expect(mockedRedirect).toHaveBeenCalledWith(
       `http://localhost${routes.mandatoryQuestions.namePage(
+        'mandatoryQuestionId'
+      )}`
+    );
+  });
+  it('should redirect to fundingAmount page when mandatory question gets created in db and ALL of the organisation profile have been filled in the applicant organisation Profile', async () => {
+    GrantMandatoryQuestionService.getInstance.mockReturnValue({
+      createMandatoryQuestion: jest.fn().mockResolvedValue({
+        ...grantMandatoryQuestion,
+        addressLine1: 'addressLine1',
+      }),
+    });
+
+    await handler(req(), res());
+
+    expect(mockedRedirect).toHaveBeenCalledWith(
+      `http://localhost${routes.mandatoryQuestions.fundingAmountPage(
         'mandatoryQuestionId'
       )}`
     );

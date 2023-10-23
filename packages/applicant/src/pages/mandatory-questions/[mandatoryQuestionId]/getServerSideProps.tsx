@@ -30,7 +30,6 @@ export default async function getServerSideProps({
     mandatoryQuestion =
       await grantMandatoryQuestionService.getMandatoryQuestionById(
         mandatoryQuestionId,
-        resolvedUrl,
         jwt
       );
   } catch (e) {
@@ -50,30 +49,20 @@ export default async function getServerSideProps({
       },
     };
   }
-  const { isPageAlreadyAnswered, nextNotAnsweredPage } = mandatoryQuestion;
-  //only when someone access this page from the summary page,
-  //  we want to show the default value
-  //otherwise we gonna send it to the next non filled page
-  if (isPageAlreadyAnswered && !fromSummaryPage) {
-    return {
-      redirect: {
-        destination: nextNotAnsweredPage,
-        statusCode: 302,
-      },
-    };
-  }
 
   //this is where we update the mandatory question.
   const response = await callServiceMethod(
     req,
     res,
+    //the post/patch request that we are making to the backend
     (body) =>
       grantMandatoryQuestionService.updateMandatoryQuestion(
         jwt,
         mandatoryQuestionId,
+        resolvedUrl,
         body
       ),
-    //where we want to go after we update the mandatory question
+    //the above method will return a string with the next page url
     (result) => {
       return fromSummaryPage
         ? routes.mandatoryQuestions.summaryPage(mandatoryQuestionId)
