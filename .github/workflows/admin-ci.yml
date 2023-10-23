@@ -76,7 +76,7 @@ jobs:
         uses: actions/cache/save@v3
         with:
           path: ${{ github.workspace }}/packages/gap-web-ui/dist
-          key: ${{ steps.gap-web-ui-cache.outputs.name }}
+          key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
 
       # Based on steps described here - https://nextjs.org/docs/pages/building-your-application/deploying/ci-build-caching#github-actions
       - name: Next admin cache
