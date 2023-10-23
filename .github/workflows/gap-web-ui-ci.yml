@@ -23,6 +23,12 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Generate gap-web-ui hash
+        id: gap-web-ui-hash
+        run: |
+          NAME=${{ hashFiles('**/packages/gap-web-ui/**/*.js', '**/packages/gap-web-ui/**/*.jsx', '**/packages/gap-web-ui/**/*.ts', '**/packages/gap-web-ui/**/*.tsx') }}
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+
       - name: Read .nvmrc
         id: nvm
         run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
@@ -36,18 +42,12 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Generate gap-web-ui cache name
-        id: gap-web-ui-cache-name
-        run: |
-          NAME=gap-web-ui-${{ hashFiles('**/packages/gap-web-ui/**/*.js', '**/packages/gap-web-ui/**/*.jsx', '**/packages/gap-web-ui/**/*.ts', '**/packages/gap-web-ui/**/*.tsx') }}
-          echo "name=$NAME" >> $GITHUB_OUTPUT
-
       - name: Restore gap-web-ui cache
         id: gap-web-ui-cache
         uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/packages/gap-web-ui/dist
-          key: ${{ steps.gap-web-ui-cache-name.outputs.name }}
+          key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
 
       - name: Build gap-web-ui
         if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
@@ -58,7 +58,7 @@ jobs:
         uses: actions/cache/save@v3
         with:
           path: ${{ github.workspace }}/packages/gap-web-ui/dist
-          key: ${{ steps.gap-web-ui-cache-name.outputs.name }}
+          key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
 
       - name: Units Tests
         run: yarn workspace gap-web-ui jest --ci
