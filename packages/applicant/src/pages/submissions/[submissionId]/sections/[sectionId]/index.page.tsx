@@ -15,15 +15,92 @@ import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import { routes } from '../../../../../utils/routes';
 import { ProcessMultiResponse } from './processMultiResponse';
+import { GrantMandatoryQuestionService } from '../../../../../services/GrantMandatoryQuestionService';
 
 const { publicRuntimeConfig } = getConfig();
 
 export interface SectionRecapPage {
   submissionId: string;
   section: SectionData;
+  mandatoryQuestionId: string;
   csrfToken: string;
   fieldErrors: ValidationError[];
 }
+
+async function getMandatoryQuestionId(
+  submissionId: string,
+  sectionId: string,
+  jwt: string
+) {
+  if (sectionId === 'ORGANISATION_DETAILS' || sectionId === 'FUNDING_DETAILS') {
+    const res =
+      await GrantMandatoryQuestionService.getInstance().getMandatoryQuestionBySubmissionId(
+        submissionId,
+        jwt
+      );
+    return res.id ? res.id.toString() : '';
+  }
+}
+
+const getQuestionUrl = (
+  sectionId: string,
+  questionId: string,
+  mandatoryQuestionId: string,
+  submissionId: string
+) => {
+  const queryParam = `?fromSubmissionPage=true&submissionId=${submissionId}&sectionId=${sectionId}`;
+  if (sectionId === 'ORGANISATION_DETAILS') {
+    switch (questionId) {
+      case 'APPLICANT_ORG_NAME': {
+        return (
+          routes.mandatoryQuestions.namePage(mandatoryQuestionId) + queryParam
+        );
+      }
+      case 'APPLICANT_ORG_ADDRESS': {
+        return (
+          routes.mandatoryQuestions.addressPage(mandatoryQuestionId) +
+          queryParam
+        );
+      }
+      case 'APPLICANT_TYPE': {
+        return (
+          routes.mandatoryQuestions.typePage(mandatoryQuestionId) + queryParam
+        );
+      }
+      case 'APPLICANT_ORG_COMPANIES_HOUSE': {
+        return (
+          routes.mandatoryQuestions.companiesHouseNumberPage(
+            mandatoryQuestionId
+          ) + queryParam
+        );
+      }
+      case 'APPLICANT_ORG_CHARITY_NUMBER': {
+        return (
+          routes.mandatoryQuestions.charityCommissionNumberPage(
+            mandatoryQuestionId
+          ) + queryParam
+        );
+      }
+    }
+  } else if (sectionId === 'FUNDING_DETAILS') {
+    switch (questionId) {
+      case 'APPLICANT_AMOUNT': {
+        return (
+          routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId) +
+          queryParam
+        );
+      }
+      case 'BENEFITIARY_LOCATION': {
+        return (
+          routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId) +
+          queryParam
+        );
+      }
+    }
+  } else {
+    return routes.submissions.question(submissionId, sectionId, questionId);
+  }
+};
 
 export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
   req,
@@ -32,11 +109,14 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
 }) => {
   const submissionId = params.submissionId.toString();
   const sectionId = params.sectionId.toString();
-  const section = await getSectionById(
+  const jwt = getJwtFromCookies(req);
+  const mandatoryQuestionId = await getMandatoryQuestionId(
     submissionId,
     sectionId,
-    getJwtFromCookies(req)
+    jwt
   );
+  const section = await getSectionById(submissionId, sectionId, jwt);
+
   let fieldErrors = [] as ValidationError[];
   const response = await callServiceMethod(
     req,
@@ -69,6 +149,7 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
     props: {
       submissionId,
       section,
+      mandatoryQuestionId,
       csrfToken: (req as any).csrfToken?.() || '',
       fieldErrors,
     },
@@ -78,11 +159,39 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
 export default function SectionRecap({
   submissionId,
   section,
+  mandatoryQuestionId,
   csrfToken,
   fieldErrors,
 }: SectionRecapPage) {
   const { sectionTitle, questions, sectionId } = section;
   const lastQuestionIndex = questions.length - 1;
+
+  function sectionSummary(sectionId: string) {
+    let sectionSummary = null;
+    if (sectionId === 'Your Organisation' || sectionId === 'Funding') {
+      sectionSummary = (
+        <div className="govuk-body">
+          <p className="govuk-body">
+            This information has been taken from the answers you provided
+            earlier. You can change anything you need to.
+            {sectionId === 'Your Organisation' && (
+              <> Any changes you make will be saved to your profile.</>
+            )}
+          </p>
+          <p className="govuk-body">
+            When you are finished, you can mark this section as
+            &apos;completed&apos;.
+          </p>
+          <p className="govuk-body govuk-!-padding-bottom-4">
+            You will still be able to come back and change this section until
+            you submit the whole application form.
+          </p>
+        </div>
+      );
+    }
+    return sectionSummary;
+  }
+
   return (
     <>
       <Meta
@@ -107,8 +216,14 @@ export default function SectionRecap({
               tabIndex={-1}
               data-cy="cy-manage-section-header"
             >
-              Summary of {sectionTitle}
+              {sectionTitle === 'Your Organisation' ||
+              sectionTitle === 'Funding'
+                ? sectionTitle
+                : `Summary of ${sectionTitle}`}
             </h1>
+
+            {sectionSummary(sectionTitle)}
+
             <dl className="govuk-summary-list">
               {questions.map(
                 (
@@ -151,10 +266,11 @@ export default function SectionRecap({
                       )}
                       <dd className="govuk-summary-list__actions">
                         <Link
-                          href={routes.submissions.question(
-                            submissionId,
+                          href={getQuestionUrl(
                             sectionId,
-                            questionId
+                            questionId,
+                            mandatoryQuestionId,
+                            submissionId
                           )}
                         >
                           <a
@@ -173,7 +289,6 @@ export default function SectionRecap({
                 }
               )}
             </dl>
-
             <form
               action={
                 publicRuntimeConfig.subPath +
