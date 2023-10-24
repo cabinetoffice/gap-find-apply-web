@@ -53,7 +53,7 @@ export default async function callServiceMethod<
 
     await validateCSRFCookie(req, res, body);
 
-    handleMandatoryQuestionFundingLocation<B>(req, body);
+    handleMandatoryQuestionFundingLocationAndOrgTypeSpecialCases<B>(req, body);
 
     const result = await serviceFunc(body);
     return {
@@ -85,13 +85,18 @@ export default async function callServiceMethod<
 }
 
 // Special case for the Mandatory Questions..
-//the backend needs the result of a checkbox to be a list of strings, even if there is only one value
-export function handleMandatoryQuestionFundingLocation<
+
+export function handleMandatoryQuestionFundingLocationAndOrgTypeSpecialCases<
   B extends Record<string, any>
->(req: GetServerSidePropsContext['req'], body: Body<B> & FundingLocationBody) {
+>(
+  req: GetServerSidePropsContext['req'],
+  body: (Body<B> & FundingLocationBody) | (Body<B> & OrgTypeBody)
+) {
   if (req.url === undefined) {
     return;
   }
+  // funding location case (if only one checkbox has been selected, the backend needs the result to be a list of strings,
+  // if nothing has been selected, the backend needs an empty list, so validation can kick in)
   if (
     req.url.startsWith('/mandatory-questions') &&
     req.url
@@ -107,6 +112,17 @@ export function handleMandatoryQuestionFundingLocation<
       }
     } else {
       body.fundingLocation = [];
+    }
+  }
+
+  // org type case (no radio button have been selected, meaning that in the body there won't be any orgType property,
+  //so we need to add it with an empty string value, so the validation can kick in)
+  if (
+    req.url.startsWith('/mandatory-questions') &&
+    req.url.split('/').pop().split('?')[0].endsWith('organisation-type')
+  ) {
+    if (body.orgType === undefined) {
+      body.orgType = '';
     }
   }
 }
@@ -166,4 +182,8 @@ function removeAllCarriageReturns<T extends Record<string, string>>(obj: T) {
 
 type FundingLocationBody = {
   fundingLocation?: string | string[];
+};
+
+type OrgTypeBody = {
+  orgType?: string;
 };

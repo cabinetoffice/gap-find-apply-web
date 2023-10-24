@@ -95,7 +95,7 @@ describe('callServiceMethod', () => {
     expect(serviceFunc).toHaveBeenCalledWith({ testBody: true });
   });
 
-  it('handles the special case for mandatoryQuestion__stringToArray', async () => {
+  it('handles the special case for mandatoryQuestion funding location__stringToArray', async () => {
     (parseBody as jest.Mock).mockResolvedValue({ fundingLocation: 'text' });
     const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
     const redirectTo = jest.fn(() => 'testDestination');
@@ -118,7 +118,7 @@ describe('callServiceMethod', () => {
     expect(serviceFunc).toHaveBeenCalledWith({ fundingLocation: ['text'] });
   });
 
-  it('handles the special case for mandatoryQuestion__arrayStaysArray', async () => {
+  it('handles the special case for mandatoryQuestion funding location__arrayStaysArray', async () => {
     (parseBody as jest.Mock).mockResolvedValue({
       fundingLocation: ['text', 'second'],
     });
@@ -145,7 +145,7 @@ describe('callServiceMethod', () => {
     });
   });
 
-  it('handles the special case for mandatoryQuestion__urlIsNotMatchingTheConditions', async () => {
+  it('handles the special case for mandatoryQuestion funding location__urlIsNotMatchingTheConditions', async () => {
     (parseBody as jest.Mock).mockResolvedValue({
       fundingLocation: 'not matching the conditions',
     });
@@ -169,6 +169,56 @@ describe('callServiceMethod', () => {
     expect(serviceFunc).toHaveBeenCalledTimes(1);
     expect(serviceFunc).toHaveBeenCalledWith({
       fundingLocation: 'not matching the conditions',
+    });
+  });
+
+  it('handles the special case for mandatoryQuestion orgType__addEmptyString', async () => {
+    (parseBody as jest.Mock).mockResolvedValue({});
+    const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
+    const redirectTo = jest.fn(() => 'testDestination');
+    const req = {
+      method: 'POST',
+      url: '/mandatory-questions/organisation-type',
+    } as any;
+    const res = {} as any;
+
+    await callServiceMethod(
+      req,
+      res,
+      serviceFunc,
+      redirectTo,
+      {} as ServiceError
+    );
+
+    expect(serviceFunc).toHaveBeenCalledTimes(1);
+    expect(serviceFunc).toHaveBeenCalledWith({
+      orgType: '',
+    });
+  });
+
+  it('handles the special case for mandatoryQuestion orgType__doNothing', async () => {
+    (parseBody as jest.Mock).mockResolvedValue({
+      orgType: 'not matching the conditions',
+    });
+    const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
+    const redirectTo = jest.fn(() => 'testDestination');
+    const req = {
+      method: 'POST',
+      url: '/mandatory-questions/organisation-type',
+    } as any;
+    const res = {} as any;
+
+    await callServiceMethod(
+      req,
+      res,
+      serviceFunc,
+      redirectTo,
+      {} as ServiceError
+    );
+
+    expect(serviceFunc).toHaveBeenCalledTimes(1);
+    expect(serviceFunc).toHaveBeenCalledWith({
+      orgType: 'not matching the conditions',
     });
   });
 
