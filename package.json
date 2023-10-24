@@ -33,7 +33,11 @@
     "trim": "^0.0.3",
     "trim-newlines": "^3.0.0",
     "glob-parent": "^6.0.1",
-    "postcss": "8.4.14"
+    "postcss": "8.4.14",
+    "semver": "^7.5.2",
+    "word-wrap": "^1.2.4",
+    "@babel/traverse": "7.23.2",
+    "tinymce": "6.7.1"
   },
   "packageManager": "yarn@3.6.0"
 }

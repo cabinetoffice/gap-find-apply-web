@@ -16,6 +16,26 @@ export const routes = {
     name: '/organisation/name',
     type: '/organisation/type',
   },
+  mandatoryQuestions: {
+    startPage: (schemeId: string) =>
+      `/mandatory-questions/start?schemeId=${schemeId}`,
+    namePage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-name`,
+    addressPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-address`,
+    typePage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-type`,
+    companiesHouseNumberPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-companies-house-number`,
+    charityCommissionNumberPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-charity-commission-number`,
+    fundingAmountPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-funding-amount`,
+    fundingLocationPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-funding-location`,
+    summaryPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/organisation-summary`,
+  },
   applications: '/applications',
   submissions: {
     index: '/submissions',
@@ -33,6 +53,8 @@ export const routes = {
       `/submissions/${grantSubmissionId}/submission-confirmation`,
   },
   findAGrant: publicRuntimeConfig.FIND_A_GRANT_URL,
+  serviceError: (serviceErrorProps) =>
+    `/service-error?serviceErrorProps=${JSON.stringify(serviceErrorProps)}`,
   api: {
     submissions: {
       section: (grantSubmissionId: string, sectionId: string) =>
@@ -50,5 +72,7 @@ export const routes = {
           ? `/api/isNewApplicant?migrationStatus=${migrationStatus}`
           : `/api/isNewApplicant`,
     },
+    createMandatoryQuestion: (schemeId: string) =>
+      `/api/create-mandatory-question?schemeId=${schemeId}`,
   },
 };
