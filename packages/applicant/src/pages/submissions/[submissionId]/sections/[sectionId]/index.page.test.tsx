@@ -16,10 +16,13 @@ import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSi
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import { routes } from '../../../../../utils/routes';
 import SectionRecap, {
+  getMandatoryQuestionId,
+  getQuestionUrl,
   getServerSideProps,
   SectionRecapPage,
 } from './index.page';
 
+jest.mock('../../../../../services/GrantMandatoryQuestionService');
 jest.mock('../../../../../services/SubmissionService');
 jest.mock('../../../../../utils/jwt');
 jest.mock('next/dist/server/api-utils/node');
@@ -104,6 +107,7 @@ const pageProps: SectionRecapPage = {
   section: SECTION_MOCK,
   fieldErrors: [],
   csrfToken: 'csrfToken',
+  mandatoryQuestionId: '',
 };
 
 afterEach(() => {
@@ -237,6 +241,155 @@ describe('getServerSideProps', () => {
       ctx as any
     )) as NextGetServerSidePropsResponse;
     expect(response).toEqual(expectedProps);
+  });
+});
+
+describe('getSectionUrl', () => {
+  it('should return the correct URL for APPLICANT_ORG_NAME in ORGANISATION_DETAILS', () => {
+    const sectionId = 'ORGANISATION_DETAILS';
+    const questionId = 'APPLICANT_ORG_NAME';
+    const mandatoryQuestionId = '123';
+    const submissionId = '456';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-name?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
+
+    expect(
+      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for APPLICANT_ORG_ADDRESS in ORGANISATION_DETAILS', () => {
+    const sectionId = 'ORGANISATION_DETAILS';
+    const questionId = 'APPLICANT_ORG_ADDRESS';
+    const mandatoryQuestionId = '123';
+    const submissionId = '456';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-address?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
+
+    expect(
+      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for APPLICANT_TYPE in ORGANISATION_DETAILS', () => {
+    const sectionId = 'ORGANISATION_DETAILS';
+    const questionId = 'APPLICANT_TYPE';
+    const mandatoryQuestionId = '123';
+    const submissionId = '456';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-type?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
+
+    expect(
+      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for APPLICANT_ORG_COMPANIES_HOUSE in ORGANISATION_DETAILS', () => {
+    const sectionId = 'ORGANISATION_DETAILS';
+    const questionId = 'APPLICANT_ORG_COMPANIES_HOUSE';
+    const mandatoryQuestionId = '123';
+    const submissionId = '456';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-companies-house-number?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
+
+    expect(
+      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for APPLICANT_ORG_CHARITY_NUMBER in ORGANISATION_DETAILS', () => {
+    const sectionId = 'ORGANISATION_DETAILS';
+    const questionId = 'APPLICANT_ORG_CHARITY_NUMBER';
+    const mandatoryQuestionId = '123';
+    const submissionId = '456';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-charity-commission-number?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
+
+    expect(
+      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for APPLICANT_AMOUNT in FUNDING_DETAILS', () => {
+    const sectionId = 'FUNDING_DETAILS';
+    const questionId = 'APPLICANT_AMOUNT';
+    const mandatoryQuestionId = '123';
+    const submissionId = '456';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-funding-amount?fromSubmissionPage=true&submissionId=456&sectionId=FUNDING_DETAILS';
+
+    expect(
+      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for BENEFITIARY_LOCATION in FUNDING_DETAILS', () => {
+    const sectionId = 'FUNDING_DETAILS';
+    const questionId = 'BENEFITIARY_LOCATION';
+    const mandatoryQuestionId = '123';
+    const submissionId = '456';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-funding-location?fromSubmissionPage=true&submissionId=456&sectionId=FUNDING_DETAILS';
+
+    expect(
+      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for a given sectionId and questionId if sectionId is not ORGANISATION_DETAILS or FUNDING_DETAILS', () => {
+    const sectionId = 'ELIGIBILITY';
+    const questionId = 'SOME_QUESTION';
+    const mandatoryQuestionId = '123';
+    const submissionId = '456';
+
+    const expectedUrl =
+      '/submissions/456/sections/ELIGIBILITY/questions/SOME_QUESTION';
+
+    expect(
+      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+    ).toBe(expectedUrl);
+  });
+});
+
+describe('getMandatoryQuestionId', () => {
+  it('should return the mandatory question id as a string when sectionId is "ORGANISATION_DETAILS" and getMandatoryQuestionBySubmissionId returns a valid response with an id', async () => {
+    const submissionId = 'validSubmissionId';
+    const sectionId = 'ORGANISATION_DETAILS';
+    const jwt = 'validJwt';
+
+    const mockResponse = {
+      id: 12345,
+    };
+    const mockService = {
+      getMandatoryQuestionBySubmissionId: jest
+        .fn()
+        .mockResolvedValue(mockResponse),
+    };
+
+    const result = await getMandatoryQuestionId(submissionId, sectionId, jwt);
+
+    expect(result).toBe(mockResponse.id.toString());
+    expect(mockService.getMandatoryQuestionBySubmissionId).toHaveBeenCalledWith(
+      submissionId,
+      jwt
+    );
+  });
+
+  it('should return an empty string when sectionId is not "ORGANISATION_DETAILS" or "FUNDING_DETAILS"', async () => {
+    const submissionId = 'validSubmissionId';
+    const sectionId = 'OTHER_SECTION';
+    const jwt = 'validJwt';
+
+    const result = await getMandatoryQuestionId(submissionId, sectionId, jwt);
+
+    expect(result).toBe('');
   });
 });
 

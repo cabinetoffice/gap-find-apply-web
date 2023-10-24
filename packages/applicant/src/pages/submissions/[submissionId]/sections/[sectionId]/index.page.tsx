@@ -27,7 +27,7 @@ export interface SectionRecapPage {
   fieldErrors: ValidationError[];
 }
 
-async function getMandatoryQuestionId(
+export async function getMandatoryQuestionId(
   submissionId: string,
   sectionId: string,
   jwt: string
@@ -42,7 +42,7 @@ async function getMandatoryQuestionId(
   }
 }
 
-const getQuestionUrl = (
+export const getQuestionUrl = (
   sectionId: string,
   questionId: string,
   mandatoryQuestionId: string,
