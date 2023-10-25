@@ -27,27 +27,13 @@ export interface SectionRecapPage {
   fieldErrors: ValidationError[];
 }
 
-export async function getMandatoryQuestionId(
-  submissionId: string,
-  sectionId: string,
-  jwt: string
-) {
-  if (sectionId === 'ORGANISATION_DETAILS' || sectionId === 'FUNDING_DETAILS') {
-    const res =
-      await GrantMandatoryQuestionService.getInstance().getMandatoryQuestionBySubmissionId(
-        submissionId,
-        jwt
-      );
-    return res.id ? res.id.toString() : '';
-  }
-}
-
 export const getQuestionUrl = (
   sectionId: string,
   questionId: string,
   mandatoryQuestionId: string,
   submissionId: string
 ) => {
+  // TODO: Check mandatoryquestionId exists
   const queryParam = `?fromSubmissionPage=true&submissionId=${submissionId}&sectionId=${sectionId}`;
   if (sectionId === 'ORGANISATION_DETAILS') {
     switch (questionId) {
@@ -110,11 +96,21 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
   const submissionId = params.submissionId.toString();
   const sectionId = params.sectionId.toString();
   const jwt = getJwtFromCookies(req);
-  const mandatoryQuestionId = await getMandatoryQuestionId(
-    submissionId,
-    sectionId,
-    jwt
-  );
+
+  const isOrganisationDetailsOrFunding =
+    sectionId === 'ORGANISATION_DETAILS' || sectionId === 'FUNDING_DETAILS';
+  let mandatoryQuestionId;
+  if (isOrganisationDetailsOrFunding) {
+    const mandatoryQuestionService =
+      GrantMandatoryQuestionService.getInstance();
+    const mandatoryQuestionDto =
+      await mandatoryQuestionService.getMandatoryQuestionBySubmissionId(
+        submissionId,
+        jwt
+      );
+    mandatoryQuestionId = mandatoryQuestionDto.id;
+  }
+
   const section = await getSectionById(submissionId, sectionId, jwt);
 
   let fieldErrors = [] as ValidationError[];

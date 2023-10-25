@@ -16,13 +16,16 @@ import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSi
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import { routes } from '../../../../../utils/routes';
 import SectionRecap, {
-  getMandatoryQuestionId,
   getQuestionUrl,
   getServerSideProps,
   SectionRecapPage,
 } from './index.page';
+import {
+  GrantMandatoryQuestionService,
+  GrantMandatoryQuestionBySubmissionIdDto,
+} from '../../../../../services/GrantMandatoryQuestionService';
+import { mockServiceMethod } from '../../../../../testUtils/unitTestHelpers';
 
-jest.mock('../../../../../services/GrantMandatoryQuestionService');
 jest.mock('../../../../../services/SubmissionService');
 jest.mock('../../../../../utils/jwt');
 jest.mock('next/dist/server/api-utils/node');
@@ -110,6 +113,29 @@ const pageProps: SectionRecapPage = {
   mandatoryQuestionId: '',
 };
 
+const spiedGetMandatoryQuestionBySubmissionId = jest.spyOn(
+  GrantMandatoryQuestionService.prototype,
+  'getMandatoryQuestionBySubmissionId'
+);
+
+const mockMandatoryQuestionDto =
+  (): GrantMandatoryQuestionBySubmissionIdDto => ({
+    id: '87654321',
+    schemeId: 1,
+    submissionId: '12345678',
+    name: null,
+    addressLine1: null,
+    addressLine2: null,
+    city: null,
+    county: null,
+    postcode: null,
+    charityCommissionNumber: null,
+    companiesHouseNumber: null,
+    orgType: null,
+    fundingAmount: null,
+    fundingLocation: null,
+  });
+
 afterEach(() => {
   jest.resetAllMocks();
 });
@@ -118,6 +144,10 @@ describe('getServerSideProps', () => {
   it('should return sections and expected props', async () => {
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    mockServiceMethod(
+      spiedGetMandatoryQuestionBySubmissionId,
+      mockMandatoryQuestionDto
+    );
 
     const response = await getServerSideProps(context);
 
@@ -127,6 +157,7 @@ describe('getServerSideProps', () => {
         section: SECTION_MOCK,
         fieldErrors: [],
         csrfToken: 'testCSRFToken',
+        mandatoryQuestionId: undefined,
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -140,6 +171,10 @@ describe('getServerSideProps', () => {
   it('should return sections and expected props with no csrf Token', async () => {
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    mockServiceMethod(
+      spiedGetMandatoryQuestionBySubmissionId,
+      mockMandatoryQuestionDto
+    );
 
     const response = await getServerSideProps(contextNoToken);
 
@@ -149,6 +184,93 @@ describe('getServerSideProps', () => {
         section: SECTION_MOCK,
         fieldErrors: [],
         csrfToken: '',
+        mandatoryQuestionId: undefined,
+      },
+    });
+    expect(getSectionById).toHaveBeenCalled();
+    expect(getSectionById).toHaveBeenCalledWith(
+      context.params.submissionId,
+      context.params.sectionId,
+      'testJwt'
+    );
+  });
+
+  it('ahould return non-undefined mandatoryQuestionId when section is ORGANISATION_DETAILS', async () => {
+    const SECTION_MOCK: SectionData = {
+      sectionId: 'ORGANISATION_DETAILS',
+      sectionStatus: 'NOT_STARTED',
+      sectionTitle: 'TEST_TITLE',
+      questions: [numeric, shortAnswerWithResponse, shortAnswer],
+    };
+
+    const context = {
+      params: {
+        submissionId: '12345678',
+        sectionId: 'ORGANISATION_DETAILS',
+      },
+      req: {},
+      res: {},
+    } as unknown as GetServerSidePropsContext;
+
+    (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    mockServiceMethod(
+      spiedGetMandatoryQuestionBySubmissionId,
+      mockMandatoryQuestionDto
+    );
+
+    const response = await getServerSideProps(context);
+
+    expect(response).toEqual({
+      props: {
+        submissionId: '12345678',
+        section: SECTION_MOCK,
+        fieldErrors: [],
+        csrfToken: '',
+        mandatoryQuestionId: '87654321',
+      },
+    });
+    expect(getSectionById).toHaveBeenCalled();
+    expect(getSectionById).toHaveBeenCalledWith(
+      context.params.submissionId,
+      context.params.sectionId,
+      'testJwt'
+    );
+  });
+
+  it('ahould return non-undefined mandatoryQuestionId when section is FUNDING_DETAILS', async () => {
+    const SECTION_MOCK: SectionData = {
+      sectionId: 'FUNDING_DETAILS',
+      sectionStatus: 'NOT_STARTED',
+      sectionTitle: 'TEST_TITLE',
+      questions: [numeric, shortAnswerWithResponse, shortAnswer],
+    };
+
+    const context = {
+      params: {
+        submissionId: '12345678',
+        sectionId: 'FUNDING_DETAILS',
+      },
+      req: {},
+      res: {},
+    } as unknown as GetServerSidePropsContext;
+
+    (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    mockServiceMethod(
+      spiedGetMandatoryQuestionBySubmissionId,
+      mockMandatoryQuestionDto
+    );
+
+    const response = await getServerSideProps(context);
+
+    expect(response).toEqual({
+      props: {
+        submissionId: '12345678',
+        section: SECTION_MOCK,
+        fieldErrors: [],
+        csrfToken: '',
+        mandatoryQuestionId: '87654321',
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -355,41 +477,6 @@ describe('getSectionUrl', () => {
     expect(
       getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
     ).toBe(expectedUrl);
-  });
-});
-
-describe('getMandatoryQuestionId', () => {
-  it('should return the mandatory question id as a string when sectionId is "ORGANISATION_DETAILS" and getMandatoryQuestionBySubmissionId returns a valid response with an id', async () => {
-    const submissionId = 'validSubmissionId';
-    const sectionId = 'ORGANISATION_DETAILS';
-    const jwt = 'validJwt';
-
-    const mockResponse = {
-      id: 12345,
-    };
-    const mockService = {
-      getMandatoryQuestionBySubmissionId: jest
-        .fn()
-        .mockResolvedValue(mockResponse),
-    };
-
-    const result = await getMandatoryQuestionId(submissionId, sectionId, jwt);
-
-    expect(result).toBe(mockResponse.id.toString());
-    expect(mockService.getMandatoryQuestionBySubmissionId).toHaveBeenCalledWith(
-      submissionId,
-      jwt
-    );
-  });
-
-  it('should return an empty string when sectionId is not "ORGANISATION_DETAILS" or "FUNDING_DETAILS"', async () => {
-    const submissionId = 'validSubmissionId';
-    const sectionId = 'OTHER_SECTION';
-    const jwt = 'validJwt';
-
-    const result = await getMandatoryQuestionId(submissionId, sectionId, jwt);
-
-    expect(result).toBe('');
   });
 });
 
