@@ -33,7 +33,6 @@ export const getQuestionUrl = (
   mandatoryQuestionId: string,
   submissionId: string
 ) => {
-  // TODO: Check mandatoryquestionId exists
   const queryParam = `?fromSubmissionPage=true&submissionId=${submissionId}&sectionId=${sectionId}`;
   if (sectionId === 'ORGANISATION_DETAILS') {
     switch (questionId) {
