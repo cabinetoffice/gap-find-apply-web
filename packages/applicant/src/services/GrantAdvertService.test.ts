@@ -2,13 +2,15 @@ import axios from 'axios';
 import {
   AdvertDto,
   checkIfGrantExistsInContentful,
+  getAdvertBySchemeId,
   getAdvertBySlug,
   GrantExistsInContentfulDto,
 } from './GrantAdvertService';
 
 jest.mock('axios');
 
-const BACKEND_HOST = process.env.BACKEND_HOST + '/grant-adverts';
+const GRANT_ADVERT_BACKEND_BASE_URL =
+  process.env.BACKEND_HOST + '/grant-adverts';
 const advertDTO: AdvertDto = {
   id: '123',
   version: 2,
@@ -24,7 +26,7 @@ describe('GrantAdvert Service', () => {
     jest.resetAllMocks();
   });
 
-  describe('getGrantBeneficiary', () => {
+  describe('getAdvertBySlug', () => {
     it('Should call axios', async () => {
       (axios.get as jest.Mock).mockResolvedValue({});
 
@@ -32,7 +34,7 @@ describe('GrantAdvert Service', () => {
 
       expect(axios.get as jest.Mock).toHaveBeenNthCalledWith(
         1,
-        `${BACKEND_HOST}?contentfulSlug=slug`,
+        `${GRANT_ADVERT_BACKEND_BASE_URL}?contentfulSlug=slug`,
         {
           headers: {
             Accept: 'application/json',
@@ -42,7 +44,7 @@ describe('GrantAdvert Service', () => {
       );
     });
 
-    it('Should return a GrantBeneficiary', async () => {
+    it('Should return an Advert DTO', async () => {
       (axios.get as jest.Mock).mockResolvedValue({
         data: advertDTO,
       });
@@ -61,7 +63,7 @@ describe('GrantAdvert Service', () => {
 
       expect(axios.get as jest.Mock).toHaveBeenNthCalledWith(
         1,
-        `${BACKEND_HOST}/slug/exists-in-contentful`,
+        `${GRANT_ADVERT_BACKEND_BASE_URL}/slug/exists-in-contentful`,
         {
           headers: {
             Accept: 'application/json',
@@ -82,6 +84,35 @@ describe('GrantAdvert Service', () => {
       const response = await checkIfGrantExistsInContentful('slug', 'testJwt');
 
       expect(response).toStrictEqual(expectedResponse);
+    });
+  });
+
+  describe('getAdvertBySchemeId', () => {
+    it('Should call axios', async () => {
+      (axios.get as jest.Mock).mockResolvedValue({});
+
+      await getAdvertBySchemeId('schemeId', 'testJwt');
+
+      expect(axios.get as jest.Mock).toHaveBeenNthCalledWith(
+        1,
+        `${GRANT_ADVERT_BACKEND_BASE_URL}/scheme/schemeId`,
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: 'Bearer testJwt',
+          },
+        }
+      );
+    });
+
+    it('Should return an Advert DTO', async () => {
+      (axios.get as jest.Mock).mockResolvedValue({
+        data: advertDTO,
+      });
+
+      const response = await getAdvertBySchemeId('schemeId', 'testJwt');
+
+      expect(response).toStrictEqual(advertDTO);
     });
   });
 });

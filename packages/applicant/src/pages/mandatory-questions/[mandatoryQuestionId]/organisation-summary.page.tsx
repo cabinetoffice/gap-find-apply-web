@@ -1,6 +1,4 @@
-import { Button } from 'gap-web-ui';
 import Link from 'next/link';
-import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
 import InferProps from '../../../types/InferProps';
@@ -89,6 +87,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
     mandatoryQuestion,
     mandatoryQuestionId
   );
+
   return (
     <>
       <Meta title="Organisation details - Apply for a grant" />
@@ -161,11 +160,21 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                 );
               })}
             </dl>
-
-            <Button
-              text="Confirm and submit"
-              type={ButtonTypePropertyEnum.Submit}
-            />
+            <Link
+              href={routes.api.mandatoryQuestions.createSubmission(
+                mandatoryQuestionId,
+                mandatoryQuestion.schemeId.toString()
+              )}
+            >
+              <a
+                className="govuk-button"
+                data-module="govuk-button"
+                aria-disabled="false"
+                role="button"
+              >
+                Confirm and submit
+              </a>
+            </Link>
           </div>
         </div>
       </Layout>

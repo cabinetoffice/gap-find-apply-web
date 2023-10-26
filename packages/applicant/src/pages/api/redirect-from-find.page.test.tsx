@@ -1,10 +1,12 @@
 import { merge } from 'lodash';
+import { NextApiRequest, NextApiResponse } from 'next';
 import {
   AdvertDto,
   GrantExistsInContentfulDto,
   checkIfGrantExistsInContentful,
   getAdvertBySlug,
 } from '../../services/GrantAdvertService';
+import { Overrides } from '../../testUtils/unitTestHelpers';
 import { getJwtFromCookies } from '../../utils/jwt';
 import handler from './redirect-from-find.page';
 
@@ -15,23 +17,27 @@ const mockedRedirect = jest.fn();
 const mockedSetHeader = jest.fn();
 const mockedSend = jest.fn();
 
-const req = (overrides: any = {}) =>
-  merge({
-    query: {
-      slug: 'slug',
-      grantWebpageUrl: 'grantWebpageUrl',
+const req = (overrides?: Overrides<jest.Mock>) =>
+  merge(
+    {
+      query: {
+        slug: 'slug',
+        grantWebpageUrl: 'grantWebpageUrl',
+      },
     },
-  });
+    overrides || {}
+  ) as unknown as NextApiRequest;
 
-const res = (overrides: any = {}) =>
+const res = (overrides?: Overrides<jest.Mock>) =>
   merge(
     {
       redirect: mockedRedirect,
       setHeader: mockedSetHeader,
       send: mockedSend,
     },
-    overrides
-  );
+    overrides || {}
+  ) as unknown as NextApiResponse;
+
 const backup_host = process.env.HOST;
 
 const advertIsInContenful: GrantExistsInContentfulDto = {

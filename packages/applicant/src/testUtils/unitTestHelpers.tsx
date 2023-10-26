@@ -1,6 +1,6 @@
+import { render } from '@testing-library/react';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext } from 'next';
-import { render } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import React from 'react';
 import { createMockRouter } from './createMockRouter';
@@ -110,12 +110,15 @@ type Optional<T> = {
   [P in keyof T]?: Optional<T[P]>;
 };
 
-export {
-  getPageProps,
-  getContext,
-  mockServiceMethod,
-  toHaveBeenCalledWith,
-  expectObjectEquals,
-  renderWithRouter,
+type Overrides<T> = {
+  [key: string]: Overrides<T> | T;
 };
-export type { InferServiceMethodResponse, Optional };
+export {
+  expectObjectEquals,
+  getContext,
+  getPageProps,
+  mockServiceMethod,
+  renderWithRouter,
+  toHaveBeenCalledWith,
+};
+export type { InferServiceMethodResponse, Optional, Overrides };
