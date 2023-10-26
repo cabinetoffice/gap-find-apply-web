@@ -32,7 +32,13 @@ ignore:
   SNYK-JS-AXIOS-6032459:
     - '*':
       reason: >-
-        Dev dependency - no upgrade currently available
+        dependency - no upgrade currently available
+      expires: 2023-11-15T14:10:46.319Z
+      created: 2023-10-25T14:10:46.321Z
+  SNYK-JS-NEXT-6032387:
+    - '*':
+      reason: >-
+        dependency - compatibility issues
       expires: 2023-11-15T14:10:46.319Z
       created: 2023-10-25T14:10:46.321Z
 patch: {}
