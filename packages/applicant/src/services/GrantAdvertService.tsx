@@ -16,6 +16,17 @@ export async function getAdvertBySlug(
   return data;
 }
 
+export async function getAdvertBySchemeId(
+  schemeId: string,
+  jwt: string
+): Promise<AdvertDto> {
+  const { data } = await axios.get<AdvertDto>(
+    `${BACKEND_HOST}/grant-adverts/scheme/${schemeId}`,
+    axiosConfig(jwt)
+  );
+  return data;
+}
+
 export async function checkIfGrantExistsInContentful(
   slug: string,
   jwt: string
