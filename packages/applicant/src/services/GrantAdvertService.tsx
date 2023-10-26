@@ -5,10 +5,7 @@ import { axiosConfig } from '../utils/jwt';
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
 
-export async function getAdvertBySlug(
-  jwt: string,
-  slug: string
-): Promise<AdvertDto> {
+export async function getAdvertBySlug(jwt: string, slug: string) {
   const { data } = await axios.get<AdvertDto>(
     `${BACKEND_HOST}/grant-adverts?contentfulSlug=${slug}`,
     axiosConfig(jwt)
@@ -16,10 +13,7 @@ export async function getAdvertBySlug(
   return data;
 }
 
-export async function getAdvertBySchemeId(
-  schemeId: string,
-  jwt: string
-): Promise<AdvertDto> {
+export async function getAdvertBySchemeId(schemeId: string, jwt: string) {
   const { data } = await axios.get<AdvertDto>(
     `${BACKEND_HOST}/grant-adverts/scheme/${schemeId}`,
     axiosConfig(jwt)
@@ -30,7 +24,7 @@ export async function getAdvertBySchemeId(
 export async function checkIfGrantExistsInContentful(
   slug: string,
   jwt: string
-): Promise<GrantExistsInContentfulDto> {
+) {
   const { data } = await axios.get<GrantExistsInContentfulDto>(
     `${BACKEND_HOST}/grant-adverts/${slug}/exists-in-contentful`,
     axiosConfig(jwt)

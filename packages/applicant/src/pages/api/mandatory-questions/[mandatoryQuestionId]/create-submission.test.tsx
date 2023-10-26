@@ -1,4 +1,5 @@
 import { merge } from 'lodash';
+import { NextApiRequest, NextApiResponse } from 'next';
 import {
   AdvertDto,
   getAdvertBySchemeId,
@@ -11,6 +12,7 @@ import {
   CreateSubmissionResponse,
   createSubmission,
 } from '../../../../services/SubmissionService';
+import { Overrides } from '../../../../testUtils/unitTestHelpers';
 import { getJwtFromCookies } from '../../../../utils/jwt';
 import { routes } from '../../../../utils/routes';
 import handler from './create-submission.page';
@@ -24,23 +26,27 @@ const mockedRedirect = jest.fn();
 const mockedSetHeader = jest.fn();
 const mockedSend = jest.fn();
 
-const req = (overrides: any = {}) =>
-  merge({
-    query: {
-      schemeId: 'schemeId',
-      mandatoryQuestionId: 'mandatoryQuestionId',
+const req = (overrides?: Overrides<jest.Mock>) =>
+  merge(
+    {
+      query: {
+        schemeId: 'schemeId',
+        mandatoryQuestionId: 'mandatoryQuestionId',
+      },
     },
-  });
+    overrides || {}
+  ) as unknown as NextApiRequest;
 
-const res = (overrides: any = {}) =>
+const res = (overrides?: Overrides<jest.Mock>) =>
   merge(
     {
       redirect: mockedRedirect,
       setHeader: mockedSetHeader,
       send: mockedSend,
     },
-    overrides
-  );
+    overrides || {}
+  ) as unknown as NextApiResponse;
+
 const backup_host = process.env.HOST;
 
 describe('API Handler Tests', () => {
