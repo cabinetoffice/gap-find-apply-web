@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
+import { GrantScheme } from '../models/GrantScheme';
+import { axiosConfig } from '../utils/jwt';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -39,4 +40,37 @@ export interface ApplicationSections {
   sectionId: string;
   sectionTitle: string;
   sectionStatus: string;
+}
+
+export class ApplicationService {
+  private static instance: ApplicationService;
+  private BACKEND_HOST: string;
+
+  private constructor() {
+    const { serverRuntimeConfig } = getConfig();
+    this.BACKEND_HOST = serverRuntimeConfig.backendHost;
+  }
+
+  public static getInstance(): ApplicationService {
+    if (!ApplicationService.instance) {
+      ApplicationService.instance = new ApplicationService();
+    }
+    return ApplicationService.instance;
+  }
+
+  public async doesSchemeHaveApplication(
+    grantScheme: GrantScheme,
+    jwt: string
+  ): Promise<boolean> {
+    const serializedScheme = JSON.stringify(grantScheme);
+    const { data } = await axios.get<boolean>(
+      `${
+        this.BACKEND_HOST
+      }/grant-application/does-scheme-have-application?grantScheme=${encodeURIComponent(
+        serializedScheme
+      )}}`,
+      axiosConfig(jwt)
+    );
+    return data;
+  }
 }

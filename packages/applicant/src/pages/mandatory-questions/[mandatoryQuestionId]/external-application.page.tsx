@@ -1,15 +1,34 @@
+import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
+import InferProps from '../../../types/InferProps';
 
-const ExternalApplicationSignpost = () => {
+export async function getServerSideProps({
+  query,
+  params,
+}: GetServerSidePropsContext) {
+  const { url } = query as Record<string, string>;
+  const { mandatoryQuestionId } = params as Record<string, string>;
+  return {
+    props: {
+      url,
+      mandatoryQuestionId,
+    },
+  };
+}
+
+export default function ExternalApplicationSignpost({
+  url,
+  mandatoryQuestionId,
+}: InferProps<typeof getServerSideProps>) {
   return (
     <>
       <Meta title="Now leaving GOV.UK - Apply for a grant" />
 
       <Layout
         isUserLoggedIn={false}
-        backBtnUrl={'/mandatory-questions/[mandatoryQuestionId]/summary'}
+        backBtnUrl={`/mandatory-questions/${mandatoryQuestionId}/organisation-summary`}
       >
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
@@ -31,7 +50,7 @@ const ExternalApplicationSignpost = () => {
               need to log in or sign up to this website to continue your
               application.
             </p>
-            <Link href={'externalApplicationUrl'}>
+            <Link href={url}>
               <a
                 role="button"
                 draggable="false"
@@ -47,6 +66,4 @@ const ExternalApplicationSignpost = () => {
       </Layout>
     </>
   );
-};
-
-export default ExternalApplicationSignpost;
+}

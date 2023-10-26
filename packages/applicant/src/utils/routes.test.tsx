@@ -52,9 +52,17 @@ describe('Api.submissions.question', () => {
   });
 });
 describe('Api.createMandatoryQuestion', () => {
-  const schemeId = 'schemeId';
-  const expectedURL = `/api/create-mandatory-question?schemeId=${schemeId}`;
-  expect(routes.api.createMandatoryQuestion(schemeId)).toBe(expectedURL);
+  test('should create the right section url', () => {
+    const schemeId = 'schemeId';
+    const expectedURL = `/api/create-mandatory-question?schemeId=${schemeId}`;
+    expect(routes.api.createMandatoryQuestion(schemeId)).toBe(expectedURL);
+  });
+});
+
+describe('Api.getApplicationForm', () => {
+  const mandatoryQuestionId = 'mandatoryQuestionId';
+  const expectedURL = `/api/get-application-form?mandatoryQuestionId=${mandatoryQuestionId}`;
+  expect(routes.api.getApplicationForm(mandatoryQuestionId)).toBe(expectedURL);
 });
 describe('Mandatory Questions Routes', () => {
   it('should generate the correct start page URL', () => {
@@ -125,5 +133,17 @@ describe('Mandatory Questions Routes', () => {
     expect(routes.mandatoryQuestions.summaryPage(mandatoryQuestionId)).toBe(
       expectedURL
     );
+  });
+
+  it('should generate the correct externalApplication page URL', () => {
+    const mandatoryQuestionId = 'exampleMandatoryQuestionId';
+    const externalLink = 'exampleExternalLink';
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/external-application?externalLink=${externalLink}`;
+    expect(
+      routes.mandatoryQuestions.externalApplication(
+        mandatoryQuestionId,
+        externalLink
+      )
+    ).toBe(expectedURL);
   });
 });
