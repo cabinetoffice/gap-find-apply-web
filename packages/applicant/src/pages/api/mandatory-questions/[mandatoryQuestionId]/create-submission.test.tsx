@@ -138,7 +138,7 @@ describe('API Handler Tests', () => {
       errorInformation: 'There was an error in the service',
       linkAttributes: {
         href: routes.mandatoryQuestions.summaryPage('mandatoryQuestionId'),
-        linkText: 'Go back to the summary page adn try again',
+        linkText: 'Go back to the summary page and try again',
         linkInformation: '',
       },
     };
