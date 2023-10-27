@@ -131,4 +131,9 @@ jobs:
           path: ${{ github.workspace }}/packages/gap-web-ui/dist
           key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
 
+      - name: Generate .env files
+        run: |
+          cp packages/admin/.env.example packages/admin/.env
+          sed -i -e '/TINYMCE_API_KEY=/s/$/${{ secrets.TINYMCE_API_KEY }}/g' packages/admin/.env
+
       - run: yarn workspace admin jest --shard=${{ matrix.shard }}/${{ strategy.job-total }}
