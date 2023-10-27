@@ -20,6 +20,9 @@ jobs:
     permissions:
       contents: read
 
+    outputs: 
+      gap-web-ui-hash: ${{ steps.gap-web-ui-hash.outputs.name }}
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -129,7 +132,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/packages/gap-web-ui/dist
-          key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
+          key: gap-web-ui-${{ needs.build.outputs.gap-web-ui-hash }}
 
       - name: Generate .env files
         run: |
