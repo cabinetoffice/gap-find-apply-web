@@ -67,7 +67,7 @@
     "cypress": "^9.5.0",
     "cypress-axe": "^0.14.0",
     "isomorphic-fetch": "^3.0.0",
-    "jest": "^28.1.2",
+    "jest": "29.7",
     "jest-environment-jsdom": "^28.1.2",
     "jest-fetch-mock": "^3.0.3",
     "sass": "1.62.1",
