@@ -95,6 +95,15 @@ jobs:
       - name: Lint files
         run: yarn workspace admin lint
 
+      - name: Save node modules
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            ${{ github.workspace }}/node_modules
+            ${{ github.workspace }}/packages/admin/node_modules
+
+          key: ${{ github.sha }}
+
   test:
     name: Test app
     needs: build
@@ -117,8 +126,13 @@ jobs:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
           cache: 'yarn'
 
-      - name: Install dependencies
-        run: yarn install --immutable
+      - name: Restore node modules
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            ${{ github.workspace }}/node_modules
+            ${{ github.workspace }}/packages/admin/node_modules
+          key: ${{ github.sha }}
 
       - name: Restore gap-web-ui cache
         uses: actions/cache/restore@v3
