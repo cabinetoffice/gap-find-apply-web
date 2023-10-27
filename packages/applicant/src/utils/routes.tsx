@@ -35,6 +35,8 @@ export const routes = {
       `/mandatory-questions/${mandatoryQuestionId}/organisation-funding-location`,
     summaryPage: (mandatoryQuestionId: string) =>
       `/mandatory-questions/${mandatoryQuestionId}/organisation-summary`,
+    externalApplicationPage: (mandatoryQuestionId: string) =>
+      `/mandatory-questions/${mandatoryQuestionId}/external-applications`,
   },
   applications: '/applications',
   submissions: {
@@ -74,5 +76,9 @@ export const routes = {
     },
     createMandatoryQuestion: (schemeId: string) =>
       `/api/create-mandatory-question?schemeId=${schemeId}`,
+    mandatoryQuestions: {
+      createSubmission: (mandatoryQuestionId: string, schemeId: string) =>
+        `/api/mandatory-questions/${mandatoryQuestionId}/create-submission?schemeId=${schemeId}`,
+    },
   },
 };
