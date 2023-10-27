@@ -124,4 +124,4 @@ jobs:
           path: ${{ github.workspace }}/node_modules
           key: ${{ github.sha }}
 
-      - run: yarn workspace admin test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+      - run: yarn workspace admin jest --shard=${{ matrix.shard }}/${{ strategy.job-total }}
