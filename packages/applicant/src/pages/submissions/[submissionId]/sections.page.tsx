@@ -108,6 +108,18 @@ export default function SubmissionSections({
   supportEmail,
   eligibilityCheckPassed,
 }) {
+  const getSectionUrl = (sectionId: string) => {
+    switch (sectionId) {
+      case 'ORGANISATION_DETAILS':
+      case 'FUNDING_DETAILS': {
+        return routes.submissions.section(grantSubmissionId, sectionId);
+      }
+      default: {
+        return routes.api.submissions.section(grantSubmissionId, sectionId);
+      }
+    }
+  };
+
   return (
     <>
       <Meta title="My application - Apply for a grant" />
@@ -153,12 +165,7 @@ export default function SubmissionSections({
                         <dt className="govuk-summary-list__key">
                           {section.sectionId === 'ELIGIBILITY' ||
                           eligibilityCheckPassed ? (
-                            <Link
-                              href={routes.api.submissions.section(
-                                grantSubmissionId,
-                                section.sectionId
-                              )}
-                            >
+                            <Link href={getSectionUrl(section.sectionId)}>
                               <a
                                 className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
                                 data-cy={`cy-section-title-link-${section.sectionTitle}`}
