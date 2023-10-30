@@ -1,60 +1,103 @@
 export {};
 import { routes } from './routes';
-describe('Submission.sections', () => {
-  test('should create the right sections url', () => {
-    const url = routes.submissions.sections('grantSubmissionId');
-    expect(url).toBe(`/submissions/grantSubmissionId/sections`);
+describe('submissions', () => {
+  describe('Submission.sections', () => {
+    test('should create the right sections url', () => {
+      const url = routes.submissions.sections('grantSubmissionId');
+      expect(url).toBe(`/submissions/grantSubmissionId/sections`);
+    });
+  });
+  describe('Submission.section', () => {
+    test('should create the right section url', () => {
+      const url = routes.submissions.section('grantSubmissionId', 'sectionId');
+      expect(url).toBe(`/submissions/grantSubmissionId/sections/sectionId`);
+    });
+  });
+  describe('Submissions.question', () => {
+    test('should create the right section url', () => {
+      const url = routes.submissions.question(
+        'grantSubmissionId',
+        'sectionId',
+        'questionId'
+      );
+      expect(url).toBe(
+        `/submissions/grantSubmissionId/sections/sectionId/questions/questionId`
+      );
+    });
+  });
+  describe('Submissions.submissionConfirmation', () => {
+    test('should create the right section url', () => {
+      const url =
+        routes.submissions.submissionConfirmation('grantSubmissionId');
+      expect(url).toBe(
+        `/submissions/grantSubmissionId/submission-confirmation`
+      );
+    });
   });
 });
-describe('Submission.section', () => {
-  test('should create the right section url', () => {
-    const url = routes.submissions.section('grantSubmissionId', 'sectionId');
-    expect(url).toBe(`/submissions/grantSubmissionId/sections/sectionId`);
+describe('api', () => {
+  describe('Api.Submissions', () => {
+    describe('Api.submissions.section', () => {
+      test('should create the right section url', () => {
+        const url = routes.api.submissions.section(
+          'grantSubmissionId',
+          'sectionId'
+        );
+        expect(url).toBe(
+          `/api/submissions/grantSubmissionId/sections/sectionId`
+        );
+      });
+    });
+    describe('Api.submissions.question', () => {
+      test('should create the right section url', () => {
+        const url = routes.api.submissions.question(
+          'grantSubmissionId',
+          'sectionId',
+          'questionId'
+        );
+        expect(url).toBe(
+          `/api/submissions/grantSubmissionId/sections/sectionId/questions/questionId`
+        );
+      });
+    });
   });
-});
-describe('Submissions.question', () => {
-  test('should create the right section url', () => {
-    const url = routes.submissions.question(
-      'grantSubmissionId',
-      'sectionId',
-      'questionId'
-    );
-    expect(url).toBe(
-      `/submissions/grantSubmissionId/sections/sectionId/questions/questionId`
-    );
+  describe('Api.createMandatoryQuestion', () => {
+    it('should generate the correct URL', () => {
+      const schemeId = 'schemeId';
+      const expectedURL = `/api/create-mandatory-question?schemeId=${schemeId}`;
+      expect(routes.api.createMandatoryQuestion(schemeId)).toBe(expectedURL);
+    });
   });
-});
-describe('Submissions.submissionConfirmation', () => {
-  test('should create the right section url', () => {
-    const url = routes.submissions.submissionConfirmation('grantSubmissionId');
-    expect(url).toBe(`/submissions/grantSubmissionId/submission-confirmation`);
+  describe('api.mandatoryQuestions', () => {
+    describe('Api.mandatoryQuestions.createSubmission', () => {
+      it('should generate the correct URL', () => {
+        const schemeId = 'schemeId';
+        const mandatoryQuestionId = 'exampleMandatoryQuestionId';
+        const expectedURL = `/api/mandatory-questions/${mandatoryQuestionId}/create-submission?schemeId=${schemeId}`;
+        expect(
+          routes.api.mandatoryQuestions.createSubmission(
+            mandatoryQuestionId,
+            schemeId
+          )
+        ).toBe(expectedURL);
+      });
+    });
   });
-});
-describe('Api.submissions.section', () => {
-  test('should create the right section url', () => {
-    const url = routes.api.submissions.section(
-      'grantSubmissionId',
-      'sectionId'
-    );
-    expect(url).toBe(`/api/submissions/grantSubmissionId/sections/sectionId`);
+  describe('isNewApplicant', () => {
+    describe('isNewApplicant.index', () => {
+      it('should generate the correct URL when migrationStatus is present', () => {
+        const migrationStatus = 'migrationStatus';
+        const expectedURL = `/api/isNewApplicant?migrationStatus=${migrationStatus}`;
+        expect(routes.api.isNewApplicant.index(migrationStatus)).toBe(
+          expectedURL
+        );
+      });
+      it('should generate the correct URL when migrationStatus is not present', () => {
+        const expectedURL = `/api/isNewApplicant`;
+        expect(routes.api.isNewApplicant.index()).toBe(expectedURL);
+      });
+    });
   });
-});
-describe('Api.submissions.question', () => {
-  test('should create the right section url', () => {
-    const url = routes.api.submissions.question(
-      'grantSubmissionId',
-      'sectionId',
-      'questionId'
-    );
-    expect(url).toBe(
-      `/api/submissions/grantSubmissionId/sections/sectionId/questions/questionId`
-    );
-  });
-});
-describe('Api.createMandatoryQuestion', () => {
-  const schemeId = 'schemeId';
-  const expectedURL = `/api/create-mandatory-question?schemeId=${schemeId}`;
-  expect(routes.api.createMandatoryQuestion(schemeId)).toBe(expectedURL);
 });
 describe('Mandatory Questions Routes', () => {
   it('should generate the correct start page URL', () => {
@@ -125,5 +168,13 @@ describe('Mandatory Questions Routes', () => {
     expect(routes.mandatoryQuestions.summaryPage(mandatoryQuestionId)).toBe(
       expectedURL
     );
+  });
+
+  it('Should generate the correct external applications URL', () => {
+    const mandatoryQuestionId = 'exampleMandatoryQuestionId';
+    const expectedURL = `/mandatory-questions/${mandatoryQuestionId}/external-applications`;
+    expect(
+      routes.mandatoryQuestions.externalApplicationPage(mandatoryQuestionId)
+    ).toBe(expectedURL);
   });
 });

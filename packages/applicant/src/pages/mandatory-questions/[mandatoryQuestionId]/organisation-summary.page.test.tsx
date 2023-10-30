@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react';
-import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 import {
   getPageProps,
   renderWithRouter,
@@ -91,6 +90,9 @@ describe('Organisation summary page', () => {
       name: 'Confirm and submit',
     });
     expect(button).toBeInTheDocument();
-    expect(button).toHaveAttribute('type', ButtonTypePropertyEnum.Submit);
+    expect(button).toHaveAttribute(
+      'href',
+      `/api/mandatory-questions/mandatoryQuestionId/create-submission?schemeId=1`
+    );
   });
 });
