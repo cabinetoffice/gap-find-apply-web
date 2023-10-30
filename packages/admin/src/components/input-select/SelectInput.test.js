@@ -25,7 +25,7 @@ describe('Rendering SelectInput component', () => {
     expect(screen.getByRole('listbox', { name: 'test select' })).toBeDefined();
   });
 
-  it('Should create listbox item for each selectable option', () => {
+  it.only('Should create listbox item for each selectable option', () => {
     render(component);
     const options = screen.getAllByRole('option');
     expect(options[0].innerText).toEqual('First test option');

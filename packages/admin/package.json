@@ -54,9 +54,7 @@
   },
   "devDependencies": {
     "@elastic/elasticsearch-mock": "^1.0.0",
-    "@testing-library/jest-dom": "^6.1.4",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@testing-library/user-event": "^14.5.1",
     "@types/cookie": "^0.5.1",
     "@types/cookie-parser": "^1.4.3",
     "@types/csurf": "^1.11.2",
@@ -67,9 +65,6 @@
     "cypress": "^9.5.0",
     "cypress-axe": "^0.14.0",
     "isomorphic-fetch": "^3.0.0",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "jest-fetch-mock": "^3.0.3",
     "sass": "1.62.1",
     "typescript": "^4.6.3",
     "urlpattern-polyfill": "^9.0.0"
