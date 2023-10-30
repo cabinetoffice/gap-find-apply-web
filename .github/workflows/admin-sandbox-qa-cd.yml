@@ -94,11 +94,11 @@ jobs:
           run: yarn workspace admin lint
 
         - name: Units tests
-          run: yarn workspace admin jest --ci
+          run: yarn jest --selectProjects admin --runInBand --ci
 
         - name: Gap-web-ui units tests
-          run: yarn workspace gap-web-ui jest --ci
-
+          run: yarn jest --selectProjects gap-web-ui --runInBand --ci
+          
   build:
     runs-on: ubuntu-latest
 

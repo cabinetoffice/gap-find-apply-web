@@ -12,13 +12,14 @@ on:
       - "yarn.lock"
 
 jobs:
-  build:
-    name: Build app
-
+  install:
+    name: Install dependencies
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
+
+    outputs: 
+      gap-web-ui-hash: ${{ steps.gap-web-ui-hash.outputs.name }}
 
     steps:
       - name: Checkout repo
@@ -29,6 +30,56 @@ jobs:
         run: |
           NAME=${{ hashFiles('**/packages/gap-web-ui/**/*.js', '**/packages/gap-web-ui/**/*.jsx', '**/packages/gap-web-ui/**/*.ts', '**/packages/gap-web-ui/**/*.tsx') }}
           echo "name=$NAME" >> $GITHUB_OUTPUT
+
+      - name: Read .nvmrc
+        id: nvm
+        run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Save node modules
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            ${{ github.workspace }}/node_modules
+            ${{ github.workspace }}/packages/applicant/node_modules
+          key: ${{ github.sha }}
+
+      - name: Restore gap-web-ui cache
+        id: gap-web-ui-cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ github.workspace }}/packages/gap-web-ui/dist
+          key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
+
+      - name: Build gap-web-ui
+        if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
+        run: yarn workspace gap-web-ui build
+
+      - name: Save gap-web-ui cache
+        if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/packages/gap-web-ui/dist
+          key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
+  
+  build:
+    name: Build app
+    needs: install
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       - name: Generate source files hash
         id: source-file-hash
@@ -48,33 +99,19 @@ jobs:
       - name: Read .nvmrc
         id: nvm
         run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
-
+  
       - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
           cache: 'yarn'
 
-      - name: Install dependencies
-        run: yarn install --immutable
-
       - name: Restore gap-web-ui cache
         id: gap-web-ui-cache
         uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/packages/gap-web-ui/dist
-          key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
-
-      - name: Build gap-web-ui
-        if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
-        run: yarn workspace gap-web-ui build
-
-      - name: Save gap-web-ui cache
-        if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
-        with:
-          path: ${{ github.workspace }}/packages/gap-web-ui/dist
-          key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
+          key: gap-web-ui-${{ needs.install.outputs.gap-web-ui-hash }}
 
       # Based on steps described here - https://nextjs.org/docs/pages/building-your-application/deploying/ci-build-caching#github-actions
       - name: Next applicant cache
@@ -90,18 +127,10 @@ jobs:
       - name: Lint files
         run: yarn workspace applicant lint
 
-      - name: Save node modules
-        uses: actions/cache/save@v3
-        with:
-          path: |
-            ${{ github.workspace }}/node_modules
-            ${{ github.workspace }}/packages/applicant/node_modules
-          key: ${{ github.sha }}
-
   test:
     name: Test app
     runs-on: ubuntu-latest
-    needs: build
+    needs: install
     strategy:
       matrix:
         shard: [1, 2, 3, 4]
@@ -139,4 +168,4 @@ jobs:
         run: cp packages/applicant/.env.example packages/applicant/.env
 
       - name: Run tests
-        run: yarn jest --selectProjects applicant --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+        run: yarn jest --selectProjects applicant --runInBand --ci --shard=${{ matrix.shard }}/${{ strategy.job-total }}

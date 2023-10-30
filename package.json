@@ -14,7 +14,8 @@
     "build:image:applicant": "docker build --build-arg APP_NAME=applicant -t applicant:latest .",
     "test": "jest --watch",
     "test:admin": "jest --selectProjects admin --watch",
-    "test:applicant": "jest --selectProjects applicant --watch"
+    "test:applicant": "jest --selectProjects applicant --watch",
+    "test:gap-web-ui": "jest --selectProjects gap-web-ui --watch"
   },
   "workspaces": {
     "packages": [

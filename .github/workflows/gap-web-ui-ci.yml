@@ -61,4 +61,4 @@ jobs:
           key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
 
       - name: Units Tests
-        run: yarn workspace gap-web-ui jest --ci
+        run: yarn jest --selectProjects gap-web-ui --runInBand --ci
