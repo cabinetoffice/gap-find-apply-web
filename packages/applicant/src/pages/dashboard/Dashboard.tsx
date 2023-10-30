@@ -11,12 +11,31 @@ import Link from 'next/link';
 export type ApplicantDashBoardProps = {
   descriptionList: DescriptionListProps;
   hasApplications: boolean;
-  bannerProps?: {
-    bannerHeading: string;
-    bannerContent?: string | JSX.Element;
-    isSuccess: boolean;
-  };
+  bannerProps?:
+    | string
+    | {
+        bannerHeading: string;
+        bannerContent?: string | JSX.Element;
+        isSuccess: boolean;
+      };
   oneLoginEnabled: boolean;
+};
+
+const errorBannerProps = {
+  bannerHeading: 'Something went wrong while transferring your data.',
+  bannerContent: (
+    <p className="govuk-body">
+      Please get in contact with our support team at{' '}
+      <a
+        className="govuk-notification-banner__link"
+        href="mailto:findagrant@cabinetoffice.gov.uk"
+      >
+        findagrant@cabinetoffice.gov.uk
+      </a>
+      {'.'}
+    </p>
+  ),
+  isSuccess: false,
 };
 
 export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
@@ -25,10 +44,18 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
   bannerProps,
   oneLoginEnabled,
 }) => {
+  const migrationBannerProps =
+    bannerProps === 'FAILED'
+      ? errorBannerProps
+      : (bannerProps as {
+          bannerHeading: string;
+          bannerContent?: string | JSX.Element;
+          isSuccess: boolean;
+        });
   return (
     <div className="govuk-grid-row">
       <div className="govuk-grid-column-two-thirds">
-        {bannerProps && <ImportantBanner {...bannerProps} />}
+        {bannerProps && <ImportantBanner {...migrationBannerProps} />}
 
         <section>
           <h1

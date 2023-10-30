@@ -112,22 +112,7 @@ export default function ApplicantDashboardPage({
 const getBannerProps = ({ findMigrationStatus, applyMigrationStatus }) => {
   if (process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED !== 'true') return null;
   if (findMigrationStatus === FAILED || applyMigrationStatus === FAILED) {
-    return {
-      bannerHeading: 'Something went wrong while transferring your data.',
-      bannerContent: (
-        <p className="govuk-body">
-          Please get in contact with our support team at{' '}
-          <a
-            className="govuk-notification-banner__link"
-            href="mailto:findagrant@cabinetoffice.gov.uk"
-          >
-            findagrant@cabinetoffice.gov.uk
-          </a>
-          {'.'}
-        </p>
-      ),
-      isSuccess: false,
-    };
+    return FAILED;
   }
 
   if (findMigrationStatus === SUCCEEDED && applyMigrationStatus === SUCCEEDED) {
