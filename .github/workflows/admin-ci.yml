@@ -95,41 +95,49 @@ jobs:
       - name: Lint files
         run: yarn workspace admin lint
 
-      - name: Save node modules
-        uses: actions/cache/save@v3
-        with:
-          path: |
-            ${{ github.workspace }}/node_modules
-            ${{ github.workspace }}/packages/admin/node_modules
-          key: ${{ github.sha }}
-
   test:
     name: Test app
-    needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        shard: [1, 2, 3, 4]
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Generate gap-web-ui hash
+        id: gap-web-ui-hash
+        run: |
+          NAME=${{ hashFiles('**/packages/gap-web-ui/**/*.js', '**/packages/gap-web-ui/**/*.jsx', '**/packages/gap-web-ui/**/*.ts', '**/packages/gap-web-ui/**/*.tsx') }}
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+
       - name: Setup node
         uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn install --immutable
 
       - name: Restore gap-web-ui cache
+        id: gap-web-ui-cache
         uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/packages/gap-web-ui/dist
-          key: gap-web-ui-${{ needs.build.outputs.gap-web-ui-hash }}
+          key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
 
+      - name: Build gap-web-ui
+        if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
+        run: yarn workspace gap-web-ui build
+
+      - name: Save gap-web-ui cache
+        if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/packages/gap-web-ui/dist
+          key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
+  
       - name: Generate .env files
         run: |
           cp packages/admin/.env.example packages/admin/.env
           sed -i -e '/TINYMCE_API_KEY=/s/$/${{ secrets.TINYMCE_API_KEY }}/g' packages/admin/.env
 
-      - run: yarn workspace admin jest --runInBand --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+      - run: yarn workspace admin jest --runInBand

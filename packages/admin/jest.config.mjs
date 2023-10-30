@@ -7,12 +7,17 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 const config = {
+  displayName: 'admin',
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testEnvironment: 'jest-environment-jsdom',
   setupFilesAfterEnv: ['./setupJestMock.js'],
   resetMocks: true,
   reporters: [['github-actions', { silent: false }], 'summary'],
-  modulePathIgnorePatterns: ['cypress', 'node_modules', 'public'],
+  modulePathIgnorePatterns: [
+    '<rootDir>/cypress',
+    '<rootDir>/node_modules',
+    '<rootDir>/public',
+  ],
 };
 
 export default createJestConfig(config);
