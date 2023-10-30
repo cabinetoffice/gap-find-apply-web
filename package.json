@@ -11,7 +11,10 @@
     "coverage": "yarn workspaces foreach -ptv run coverage",
     "build": "yarn workspaces foreach -ptv run build",
     "build:image:admin": "docker build --build-arg APP_NAME=admin -t admin:latest .",
-    "build:image:applicant": "docker build --build-arg APP_NAME=applicant -t applicant:latest ."
+    "build:image:applicant": "docker build --build-arg APP_NAME=applicant -t applicant:latest .",
+    "test": "jest --watch",
+    "test:admin": "jest --selectProjects admin --watch",
+    "test:applicant": "jest --selectProjects applicant --watch"
   },
   "workspaces": {
     "packages": [
