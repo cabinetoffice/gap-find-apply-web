@@ -67,12 +67,17 @@ export const routes = {
         `/api/submissions/${grantSubmissionId}/sections/${sectionId}/questions/${questionId}`,
     },
     isNewApplicant: {
-      index: (migrationStatus?) =>
-        migrationStatus
-          ? `/api/isNewApplicant?migrationStatus=${migrationStatus}`
+      index: ({ applyMigrationStatus, findMigrationStatus }: MigrationStatus) =>
+        applyMigrationStatus || findMigrationStatus
+          ? `/api/isNewApplicant?applyMigrationStatus=${applyMigrationStatus}&findMigrationStatus=${findMigrationStatus}`
           : `/api/isNewApplicant`,
     },
     createMandatoryQuestion: (schemeId: string) =>
       `/api/create-mandatory-question?schemeId=${schemeId}`,
   },
+};
+
+type MigrationStatus = {
+  applyMigrationStatus: string;
+  findMigrationStatus: string;
 };

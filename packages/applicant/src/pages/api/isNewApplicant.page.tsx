@@ -14,9 +14,9 @@ export default async function handler(
     await grantApplicantService.createAnApplicant(getJwtFromCookies(req));
   }
 
-  req.query.migrationStatus
+  req.query.applyMigrationStatus || req.query.findMigrationStatus
     ? res.redirect(
-        `${process.env.APPLICANT_FRONTEND_URL}?migrationStatus=${req.query.migrationStatus}`
+        `${process.env.APPLICANT_FRONTEND_URL}?findMigrationStatus=${req.query.findMigrationStatus}&applyMigrationStatus=${req.query.applyMigrationStatus}`
       )
     : res.redirect(process.env.APPLICANT_FRONTEND_URL);
 }

@@ -6,53 +6,29 @@ import {
 } from '../../components/description-list/DescriptionList';
 import { routes } from '../../utils/routes';
 import { ImportantBanner } from 'gap-web-ui';
-import getConfig from 'next/config';
 import Link from 'next/link';
 
 export type ApplicantDashBoardProps = {
   descriptionList: DescriptionListProps;
   hasApplications: boolean;
-  showMigrationErrorBanner: boolean;
-  showMigrationSuccessBanner: boolean;
+  bannerProps?: {
+    bannerHeading: string;
+    bannerContent?: string | JSX.Element;
+    isSuccess: boolean;
+  };
   oneLoginEnabled: boolean;
 };
 
 export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
   descriptionList,
   hasApplications,
-  showMigrationErrorBanner,
-  showMigrationSuccessBanner,
+  bannerProps,
   oneLoginEnabled,
 }) => {
-  const { publicRuntimeConfig } = getConfig();
-
   return (
     <div className="govuk-grid-row">
       <div className="govuk-grid-column-two-thirds">
-        {showMigrationSuccessBanner && (
-          <ImportantBanner
-            bannerHeading="Your data has been successfully added to your One Login account."
-            isSuccess
-          />
-        )}
-
-        {showMigrationErrorBanner && (
-          <ImportantBanner
-            bannerHeading="Something went wrong while transferring your data."
-            bannerContent={
-              <p className="govuk-body">
-                Please get in contact with our support team at{' '}
-                <a
-                  className="govuk-notification-banner__link"
-                  href="mailto:findagrant@cabinetoffice.gov.uk"
-                >
-                  findagrant@cabinetoffice.gov.uk
-                </a>
-                {'.'}
-              </p>
-            }
-          />
-        )}
+        {bannerProps && <ImportantBanner {...bannerProps} />}
 
         <section>
           <h1
