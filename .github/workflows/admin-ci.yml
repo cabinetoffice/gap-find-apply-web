@@ -144,4 +144,4 @@ jobs:
           cp packages/admin/.env.example packages/admin/.env
           sed -i -e '/TINYMCE_API_KEY=/s/$/${{ secrets.TINYMCE_API_KEY }}/g' packages/admin/.env
 
-      - run: yarn workspace admin jest --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+      - run: yarn workspace admin jest --ci --runInBand --shard=${{ matrix.shard }}/${{ strategy.job-total }}
