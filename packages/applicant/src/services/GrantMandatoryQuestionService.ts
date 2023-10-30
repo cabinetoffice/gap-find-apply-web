@@ -34,8 +34,8 @@ export class GrantMandatoryQuestionService {
   public async getMandatoryQuestionBySubmissionId(
     submissionId: string,
     jwt: string
-  ): Promise<GrantMandatoryQuestionBySubmissionIdDto> {
-    const { data } = await axios.get<GrantMandatoryQuestionBySubmissionIdDto>(
+  ): Promise<GrantMandatoryQuestionDto> {
+    const { data } = await axios.get<GrantMandatoryQuestionDto>(
       `${this.BACKEND_HOST}/grant-mandatory-questions/get-by-submission/${submissionId}`,
       axiosConfig(jwt)
     );
@@ -87,21 +87,4 @@ export interface GrantMandatoryQuestionDto {
   fundingLocation?: string[];
   schemeId?: number;
   submissionId?: string;
-}
-
-export interface GrantMandatoryQuestionBySubmissionIdDto {
-  id: string;
-  schemeId?: number;
-  submissionId?: string;
-  name?: string;
-  addressLine1?: string;
-  addressLine2?: string;
-  city?: string;
-  county?: string;
-  postcode?: string;
-  charityCommissionNumber?: string;
-  companiesHouseNumber?: string;
-  orgType?: string;
-  fundingAmount?: string;
-  fundingLocation?: string[];
 }

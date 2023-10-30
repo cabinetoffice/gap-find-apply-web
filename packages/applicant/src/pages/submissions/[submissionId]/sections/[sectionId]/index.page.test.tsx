@@ -4,27 +4,27 @@ import { GetServerSidePropsContext } from 'next';
 import { parseBody } from 'next/dist/server/api-utils/node';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import {
-  getSectionById,
-  postHasSectionBeenCompleted,
   QuestionType,
   SectionData,
   SectionReviewBody,
+  getSectionById,
+  postHasSectionBeenCompleted,
 } from '../../../../../services/SubmissionService';
 import { createMockRouter } from '../../../../../testUtils/createMockRouter';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
 
+import {
+  GrantMandatoryQuestionDto,
+  GrantMandatoryQuestionService,
+} from '../../../../../services/GrantMandatoryQuestionService';
+import { mockServiceMethod } from '../../../../../testUtils/unitTestHelpers';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import { routes } from '../../../../../utils/routes';
 import SectionRecap, {
+  SectionRecapPage,
   getQuestionUrl,
   getServerSideProps,
-  SectionRecapPage,
 } from './index.page';
-import {
-  GrantMandatoryQuestionService,
-  GrantMandatoryQuestionBySubmissionIdDto,
-} from '../../../../../services/GrantMandatoryQuestionService';
-import { mockServiceMethod } from '../../../../../testUtils/unitTestHelpers';
 
 jest.mock('../../../../../services/SubmissionService');
 jest.mock('../../../../../utils/jwt');
@@ -118,23 +118,26 @@ const spiedGetMandatoryQuestionBySubmissionId = jest.spyOn(
   'getMandatoryQuestionBySubmissionId'
 );
 
-const mockMandatoryQuestionDto =
-  (): GrantMandatoryQuestionBySubmissionIdDto => ({
-    id: '87654321',
-    schemeId: 1,
-    submissionId: '12345678',
-    name: null,
-    addressLine1: null,
-    addressLine2: null,
-    city: null,
-    county: null,
-    postcode: null,
-    charityCommissionNumber: null,
-    companiesHouseNumber: null,
-    orgType: null,
-    fundingAmount: null,
-    fundingLocation: null,
-  });
+const mockMandatoryQuestionDto = (): GrantMandatoryQuestionDto => ({
+  id: '87654321',
+  schemeId: 1,
+  submissionId: '12345678',
+  name: null,
+  addressLine1: null,
+  addressLine2: null,
+  city: null,
+  county: null,
+  postcode: null,
+  charityCommissionNumber: null,
+  companiesHouseNumber: null,
+  orgType: null,
+  fundingAmount: null,
+  fundingLocation: null,
+});
+
+const SECTION_ID = 'ORGANISATION_DETAILS';
+const MANDATORY_QUESTION_ID = '123';
+const SUBMISSION_ID = '456';
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -195,7 +198,7 @@ describe('getServerSideProps', () => {
     );
   });
 
-  it('ahould return non-undefined mandatoryQuestionId when section is ORGANISATION_DETAILS', async () => {
+  it('should return non-undefined mandatoryQuestionId when section is ORGANISATION_DETAILS', async () => {
     const SECTION_MOCK: SectionData = {
       sectionId: 'ORGANISATION_DETAILS',
       sectionStatus: 'NOT_STARTED',
@@ -238,7 +241,7 @@ describe('getServerSideProps', () => {
     );
   });
 
-  it('ahould return non-undefined mandatoryQuestionId when section is FUNDING_DETAILS', async () => {
+  it('should return non-undefined mandatoryQuestionId when section is FUNDING_DETAILS', async () => {
     const SECTION_MOCK: SectionData = {
       sectionId: 'FUNDING_DETAILS',
       sectionStatus: 'NOT_STARTED',
@@ -368,114 +371,133 @@ describe('getServerSideProps', () => {
 
 describe('getSectionUrl', () => {
   it('should return the correct URL for APPLICANT_ORG_NAME in ORGANISATION_DETAILS', () => {
-    const sectionId = 'ORGANISATION_DETAILS';
     const questionId = 'APPLICANT_ORG_NAME';
-    const mandatoryQuestionId = '123';
-    const submissionId = '456';
 
     const expectedUrl =
       '/mandatory-questions/123/organisation-name?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
 
     expect(
-      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+      getQuestionUrl(
+        SECTION_ID,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
     ).toBe(expectedUrl);
   });
 
   it('should return the correct URL for APPLICANT_ORG_ADDRESS in ORGANISATION_DETAILS', () => {
-    const sectionId = 'ORGANISATION_DETAILS';
     const questionId = 'APPLICANT_ORG_ADDRESS';
-    const mandatoryQuestionId = '123';
-    const submissionId = '456';
 
     const expectedUrl =
       '/mandatory-questions/123/organisation-address?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
 
     expect(
-      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+      getQuestionUrl(
+        SECTION_ID,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
     ).toBe(expectedUrl);
   });
 
   it('should return the correct URL for APPLICANT_TYPE in ORGANISATION_DETAILS', () => {
-    const sectionId = 'ORGANISATION_DETAILS';
     const questionId = 'APPLICANT_TYPE';
-    const mandatoryQuestionId = '123';
-    const submissionId = '456';
 
     const expectedUrl =
       '/mandatory-questions/123/organisation-type?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
 
     expect(
-      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+      getQuestionUrl(
+        SECTION_ID,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
     ).toBe(expectedUrl);
   });
 
   it('should return the correct URL for APPLICANT_ORG_COMPANIES_HOUSE in ORGANISATION_DETAILS', () => {
-    const sectionId = 'ORGANISATION_DETAILS';
     const questionId = 'APPLICANT_ORG_COMPANIES_HOUSE';
-    const mandatoryQuestionId = '123';
-    const submissionId = '456';
 
     const expectedUrl =
       '/mandatory-questions/123/organisation-companies-house-number?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
 
     expect(
-      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+      getQuestionUrl(
+        SECTION_ID,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
     ).toBe(expectedUrl);
   });
 
   it('should return the correct URL for APPLICANT_ORG_CHARITY_NUMBER in ORGANISATION_DETAILS', () => {
-    const sectionId = 'ORGANISATION_DETAILS';
     const questionId = 'APPLICANT_ORG_CHARITY_NUMBER';
-    const mandatoryQuestionId = '123';
-    const submissionId = '456';
 
     const expectedUrl =
       '/mandatory-questions/123/organisation-charity-commission-number?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
 
     expect(
-      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+      getQuestionUrl(
+        SECTION_ID,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
     ).toBe(expectedUrl);
   });
 
   it('should return the correct URL for APPLICANT_AMOUNT in FUNDING_DETAILS', () => {
     const sectionId = 'FUNDING_DETAILS';
     const questionId = 'APPLICANT_AMOUNT';
-    const mandatoryQuestionId = '123';
-    const submissionId = '456';
 
     const expectedUrl =
       '/mandatory-questions/123/organisation-funding-amount?fromSubmissionPage=true&submissionId=456&sectionId=FUNDING_DETAILS';
 
     expect(
-      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+      getQuestionUrl(
+        sectionId,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
     ).toBe(expectedUrl);
   });
 
   it('should return the correct URL for BENEFITIARY_LOCATION in FUNDING_DETAILS', () => {
     const sectionId = 'FUNDING_DETAILS';
     const questionId = 'BENEFITIARY_LOCATION';
-    const mandatoryQuestionId = '123';
-    const submissionId = '456';
 
     const expectedUrl =
       '/mandatory-questions/123/organisation-funding-location?fromSubmissionPage=true&submissionId=456&sectionId=FUNDING_DETAILS';
 
     expect(
-      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+      getQuestionUrl(
+        sectionId,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
     ).toBe(expectedUrl);
   });
 
   it('should return the correct URL for a given sectionId and questionId if sectionId is not ORGANISATION_DETAILS or FUNDING_DETAILS', () => {
     const sectionId = 'ELIGIBILITY';
     const questionId = 'SOME_QUESTION';
-    const mandatoryQuestionId = '123';
-    const submissionId = '456';
 
     const expectedUrl =
       '/submissions/456/sections/ELIGIBILITY/questions/SOME_QUESTION';
 
     expect(
-      getQuestionUrl(sectionId, questionId, mandatoryQuestionId, submissionId)
+      getQuestionUrl(
+        sectionId,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
     ).toBe(expectedUrl);
   });
 });
