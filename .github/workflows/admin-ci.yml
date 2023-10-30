@@ -117,16 +117,9 @@ jobs:
 
       - name: Setup node
         uses: actions/setup-node@v3
-        with:
-          cache: 'yarn'
 
-      - name: Restore node modules
-        uses: actions/cache/restore@v3
-        with:
-          path: |
-            ${{ github.workspace }}/node_modules
-            ${{ github.workspace }}/packages/admin/node_modules
-          key: ${{ github.sha }}
+      - name: Install dependencies
+        run: yarn install --immutable
 
       - name: Restore gap-web-ui cache
         uses: actions/cache/restore@v3
@@ -139,4 +132,4 @@ jobs:
           cp packages/admin/.env.example packages/admin/.env
           sed -i -e '/TINYMCE_API_KEY=/s/$/${{ secrets.TINYMCE_API_KEY }}/g' packages/admin/.env
 
-      - run: yarn workspace admin jest --ci --runInBand --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+      - run: yarn workspace admin jest --runInBand --shard=${{ matrix.shard }}/${{ strategy.job-total }}
