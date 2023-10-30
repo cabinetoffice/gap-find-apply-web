@@ -7058,6 +7058,7 @@ __metadata:
     "@contentful/rich-text-react-renderer": ^15.11.1
     "@elastic/elasticsearch": 7.10
     "@elastic/elasticsearch-mock": ^1.0.0
+    "@testing-library/jest-dom": ^6.1.4
     "@types/cookie": ^0.5.1
     "@types/cookie-parser": ^1.4.3
     "@vespaiach/axios-fetch-adapter": ^0.3.0

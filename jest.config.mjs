@@ -1,4 +1,3 @@
-// Add any custom config to be passed to Jest
 const config = {
   reporters: [['github-actions', { silent: false }], 'summary'],
   projects: [
@@ -20,11 +19,21 @@ const config = {
     },
     {
       displayName: 'applicant',
-      setupFilesAfterEnv: ['./packages/applicant/setupJestMock.js'],
-      testMatch: ['./packages/applicant/**/*.test.*'],
-      moduleDirectories: ['node_modules', '<rootDir>/packages/applicant'],
+      rootDir: './packages/applicant',
+      setupFilesAfterEnv: ['./setupJestMock.js'],
+      moduleDirectories: ['node_modules', '<rootDir>/'],
       testEnvironment: 'jest-environment-jsdom',
-      testPathIgnorePatterns: ['<rootDir>/cypress/', '.data.js'],
+      modulePathIgnorePatterns: [
+        '<rootDir>/cypress',
+        '<rootDir>/node_modules',
+        '<rootDir>/public',
+      ],
+      moduleNameMapper: {
+        '\\.(css|less|sass|scss)$': '<rootDir>/__mocks__/styleMock.js',
+      },
+    },
+    {
+      displayName: 'gap-web-ui',
     },
   ],
 };
