@@ -4,20 +4,26 @@ import { GetServerSidePropsContext } from 'next';
 import { parseBody } from 'next/dist/server/api-utils/node';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import {
-  getSectionById,
-  postHasSectionBeenCompleted,
   QuestionType,
   SectionData,
   SectionReviewBody,
+  getSectionById,
+  postHasSectionBeenCompleted,
 } from '../../../../../services/SubmissionService';
 import { createMockRouter } from '../../../../../testUtils/createMockRouter';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
 
+import {
+  GrantMandatoryQuestionDto,
+  GrantMandatoryQuestionService,
+} from '../../../../../services/GrantMandatoryQuestionService';
+import { mockServiceMethod } from '../../../../../testUtils/unitTestHelpers';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import { routes } from '../../../../../utils/routes';
 import SectionRecap, {
-  getServerSideProps,
   SectionRecapPage,
+  getQuestionUrl,
+  getServerSideProps,
 } from './index.page';
 
 jest.mock('../../../../../services/SubmissionService');
@@ -104,7 +110,34 @@ const pageProps: SectionRecapPage = {
   section: SECTION_MOCK,
   fieldErrors: [],
   csrfToken: 'csrfToken',
+  mandatoryQuestionId: '',
 };
+
+const spiedGetMandatoryQuestionBySubmissionId = jest.spyOn(
+  GrantMandatoryQuestionService.prototype,
+  'getMandatoryQuestionBySubmissionId'
+);
+
+const mockMandatoryQuestionDto = (): GrantMandatoryQuestionDto => ({
+  id: '87654321',
+  schemeId: 1,
+  submissionId: '12345678',
+  name: null,
+  addressLine1: null,
+  addressLine2: null,
+  city: null,
+  county: null,
+  postcode: null,
+  charityCommissionNumber: null,
+  companiesHouseNumber: null,
+  orgType: null,
+  fundingAmount: null,
+  fundingLocation: null,
+});
+
+const SECTION_ID = 'ORGANISATION_DETAILS';
+const MANDATORY_QUESTION_ID = '123';
+const SUBMISSION_ID = '456';
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -114,6 +147,10 @@ describe('getServerSideProps', () => {
   it('should return sections and expected props', async () => {
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    mockServiceMethod(
+      spiedGetMandatoryQuestionBySubmissionId,
+      mockMandatoryQuestionDto
+    );
 
     const response = await getServerSideProps(context);
 
@@ -123,6 +160,7 @@ describe('getServerSideProps', () => {
         section: SECTION_MOCK,
         fieldErrors: [],
         csrfToken: 'testCSRFToken',
+        mandatoryQuestionId: undefined,
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -136,6 +174,10 @@ describe('getServerSideProps', () => {
   it('should return sections and expected props with no csrf Token', async () => {
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    mockServiceMethod(
+      spiedGetMandatoryQuestionBySubmissionId,
+      mockMandatoryQuestionDto
+    );
 
     const response = await getServerSideProps(contextNoToken);
 
@@ -145,6 +187,93 @@ describe('getServerSideProps', () => {
         section: SECTION_MOCK,
         fieldErrors: [],
         csrfToken: '',
+        mandatoryQuestionId: undefined,
+      },
+    });
+    expect(getSectionById).toHaveBeenCalled();
+    expect(getSectionById).toHaveBeenCalledWith(
+      context.params.submissionId,
+      context.params.sectionId,
+      'testJwt'
+    );
+  });
+
+  it('should return non-undefined mandatoryQuestionId when section is ORGANISATION_DETAILS', async () => {
+    const SECTION_MOCK: SectionData = {
+      sectionId: 'ORGANISATION_DETAILS',
+      sectionStatus: 'NOT_STARTED',
+      sectionTitle: 'TEST_TITLE',
+      questions: [numeric, shortAnswerWithResponse, shortAnswer],
+    };
+
+    const context = {
+      params: {
+        submissionId: '12345678',
+        sectionId: 'ORGANISATION_DETAILS',
+      },
+      req: {},
+      res: {},
+    } as unknown as GetServerSidePropsContext;
+
+    (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    mockServiceMethod(
+      spiedGetMandatoryQuestionBySubmissionId,
+      mockMandatoryQuestionDto
+    );
+
+    const response = await getServerSideProps(context);
+
+    expect(response).toEqual({
+      props: {
+        submissionId: '12345678',
+        section: SECTION_MOCK,
+        fieldErrors: [],
+        csrfToken: '',
+        mandatoryQuestionId: '87654321',
+      },
+    });
+    expect(getSectionById).toHaveBeenCalled();
+    expect(getSectionById).toHaveBeenCalledWith(
+      context.params.submissionId,
+      context.params.sectionId,
+      'testJwt'
+    );
+  });
+
+  it('should return non-undefined mandatoryQuestionId when section is FUNDING_DETAILS', async () => {
+    const SECTION_MOCK: SectionData = {
+      sectionId: 'FUNDING_DETAILS',
+      sectionStatus: 'NOT_STARTED',
+      sectionTitle: 'TEST_TITLE',
+      questions: [numeric, shortAnswerWithResponse, shortAnswer],
+    };
+
+    const context = {
+      params: {
+        submissionId: '12345678',
+        sectionId: 'FUNDING_DETAILS',
+      },
+      req: {},
+      res: {},
+    } as unknown as GetServerSidePropsContext;
+
+    (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    mockServiceMethod(
+      spiedGetMandatoryQuestionBySubmissionId,
+      mockMandatoryQuestionDto
+    );
+
+    const response = await getServerSideProps(context);
+
+    expect(response).toEqual({
+      props: {
+        submissionId: '12345678',
+        section: SECTION_MOCK,
+        fieldErrors: [],
+        csrfToken: '',
+        mandatoryQuestionId: '87654321',
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -237,6 +366,139 @@ describe('getServerSideProps', () => {
       ctx as any
     )) as NextGetServerSidePropsResponse;
     expect(response).toEqual(expectedProps);
+  });
+});
+
+describe('getSectionUrl', () => {
+  it('should return the correct URL for APPLICANT_ORG_NAME in ORGANISATION_DETAILS', () => {
+    const questionId = 'APPLICANT_ORG_NAME';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-name?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
+
+    expect(
+      getQuestionUrl(
+        SECTION_ID,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for APPLICANT_ORG_ADDRESS in ORGANISATION_DETAILS', () => {
+    const questionId = 'APPLICANT_ORG_ADDRESS';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-address?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
+
+    expect(
+      getQuestionUrl(
+        SECTION_ID,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for APPLICANT_TYPE in ORGANISATION_DETAILS', () => {
+    const questionId = 'APPLICANT_TYPE';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-type?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
+
+    expect(
+      getQuestionUrl(
+        SECTION_ID,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for APPLICANT_ORG_COMPANIES_HOUSE in ORGANISATION_DETAILS', () => {
+    const questionId = 'APPLICANT_ORG_COMPANIES_HOUSE';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-companies-house-number?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
+
+    expect(
+      getQuestionUrl(
+        SECTION_ID,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for APPLICANT_ORG_CHARITY_NUMBER in ORGANISATION_DETAILS', () => {
+    const questionId = 'APPLICANT_ORG_CHARITY_NUMBER';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-charity-commission-number?fromSubmissionPage=true&submissionId=456&sectionId=ORGANISATION_DETAILS';
+
+    expect(
+      getQuestionUrl(
+        SECTION_ID,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for APPLICANT_AMOUNT in FUNDING_DETAILS', () => {
+    const sectionId = 'FUNDING_DETAILS';
+    const questionId = 'APPLICANT_AMOUNT';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-funding-amount?fromSubmissionPage=true&submissionId=456&sectionId=FUNDING_DETAILS';
+
+    expect(
+      getQuestionUrl(
+        sectionId,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for BENEFITIARY_LOCATION in FUNDING_DETAILS', () => {
+    const sectionId = 'FUNDING_DETAILS';
+    const questionId = 'BENEFITIARY_LOCATION';
+
+    const expectedUrl =
+      '/mandatory-questions/123/organisation-funding-location?fromSubmissionPage=true&submissionId=456&sectionId=FUNDING_DETAILS';
+
+    expect(
+      getQuestionUrl(
+        sectionId,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
+    ).toBe(expectedUrl);
+  });
+
+  it('should return the correct URL for a given sectionId and questionId if sectionId is not ORGANISATION_DETAILS or FUNDING_DETAILS', () => {
+    const sectionId = 'ELIGIBILITY';
+    const questionId = 'SOME_QUESTION';
+
+    const expectedUrl =
+      '/submissions/456/sections/ELIGIBILITY/questions/SOME_QUESTION';
+
+    expect(
+      getQuestionUrl(
+        sectionId,
+        questionId,
+        MANDATORY_QUESTION_ID,
+        SUBMISSION_ID
+      )
+    ).toBe(expectedUrl);
   });
 });
 

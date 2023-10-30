@@ -176,6 +176,30 @@ describe('getServerSideProps', () => {
       });
     });
 
+    it('Should redirect to the submission page after successfully updating if query parameter fromSubmissionPage is true', async () => {
+      const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
+        req: {
+          method: 'POST',
+        },
+        params: {
+          mandatoryQuestionId: 'mandatoryQuestionId',
+        },
+        query: {
+          fromSubmissionPage: 'true',
+          submissionId: 'submissionId',
+          sectionId: 'sectionId',
+        },
+      });
+      const response = await getServerSideProps(getContext(getDefaultContext));
+
+      expectObjectEquals(response, {
+        redirect: {
+          destination: routes.submissions.section('submissionId', 'sectionId'),
+          statusCode: 302,
+        },
+      });
+    });
+
     it('Should redirect to the error service page if there is an error when updating', async () => {
       spiedGrantMandatoryQuestionServiceUpdateMandatoryQuestion.mockRejectedValueOnce(
         'Error'
