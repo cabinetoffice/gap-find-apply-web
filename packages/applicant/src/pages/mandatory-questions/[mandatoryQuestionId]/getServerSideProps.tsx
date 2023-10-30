@@ -18,7 +18,12 @@ export default async function getServerSideProps({
   resolvedUrl, //the url that the user requested
 }: GetServerSidePropsContext) {
   const { mandatoryQuestionId } = params as Record<string, string>;
-  const { fromSummaryPage = false } = query as Record<string, string>;
+  const {
+    fromSummaryPage = false,
+    fromSubmissionPage = false,
+    submissionId,
+    sectionId,
+  } = query as Record<string, string>;
   const jwt = getJwtFromCookies(req);
   const { publicRuntimeConfig } = getConfig();
 
@@ -64,9 +69,13 @@ export default async function getServerSideProps({
       ),
     //the above method will return a string with the next page url
     (result) => {
-      return fromSummaryPage
-        ? routes.mandatoryQuestions.summaryPage(mandatoryQuestionId)
-        : result;
+      if (fromSummaryPage) {
+        return routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
+      } else if (fromSubmissionPage) {
+        return routes.submissions.section(submissionId, sectionId);
+      } else {
+        return result;
+      }
     },
     {
       errorInformation:

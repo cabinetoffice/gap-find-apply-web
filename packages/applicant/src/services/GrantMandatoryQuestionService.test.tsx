@@ -70,6 +70,46 @@ describe('Axios call to get mandatory question data', () => {
   });
 });
 
+describe('Axios call to get mandatory question data by submission id', () => {
+  const spy = jest.spyOn(axios, 'get');
+
+  it('should get mandatoryQuestion data by submission id', async () => {
+    const SUBMISSION_ID = '1';
+    const MockMandatoryQuestionData: GrantMandatoryQuestionDto = {
+      schemeId: 1,
+      submissionId: null,
+      name: null,
+      addressLine1: null,
+      addressLine2: null,
+      city: null,
+      county: null,
+      postcode: null,
+      charityCommissionNumber: null,
+      companiesHouseNumber: null,
+      orgType: null,
+      fundingAmount: null,
+      fundingLocation: null,
+    };
+    const { serverRuntimeConfig } = getConfig();
+    const BACKEND_HOST = serverRuntimeConfig.backendHost;
+    const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions/get-by-submission/${SUBMISSION_ID}`;
+    mock.onGet(expectedUrl).reply(200, MockMandatoryQuestionData);
+
+    const result = await subject.getMandatoryQuestionBySubmissionId(
+      SUBMISSION_ID,
+      'testJwt'
+    );
+    expect(result).toEqual(MockMandatoryQuestionData);
+    expect(spy).toBeCalled();
+    expect(spy).toBeCalledWith(expectedUrl, {
+      headers: {
+        Authorization: `Bearer testJwt`,
+        Accept: 'application/json',
+      },
+    });
+  });
+});
+
 describe('update mandatoryQuestion', () => {
   const spy = jest.spyOn(axios, 'patch');
 
