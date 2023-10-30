@@ -79,10 +79,8 @@ const Dashboard = ({
               : (bannerProps as { bannerHeading: string; isSuccess: boolean }))}
           />
         )}
-
         <AccountDetails userDetails={userDetails} />
         <ManageGrantSchemes schemes={schemes} />
-
         <CustomLink
           href="/new-scheme/name"
           isButton

@@ -69,9 +69,9 @@ export const routes = {
         `/api/submissions/${grantSubmissionId}/sections/${sectionId}/questions/${questionId}`,
     },
     isNewApplicant: {
-      index: ({ applyMigrationStatus, findMigrationStatus }: MigrationStatus) =>
-        applyMigrationStatus || findMigrationStatus
-          ? `/api/isNewApplicant?applyMigrationStatus=${applyMigrationStatus}&findMigrationStatus=${findMigrationStatus}`
+      index: (status?: MigrationStatus) =>
+        status?.applyMigrationStatus || status?.findMigrationStatus
+          ? `/api/isNewApplicant?applyMigrationStatus=${status.applyMigrationStatus}&findMigrationStatus=${status.findMigrationStatus}`
           : `/api/isNewApplicant`,
     },
     createMandatoryQuestion: (schemeId: string) =>
