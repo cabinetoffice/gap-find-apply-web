@@ -113,6 +113,14 @@ jobs:
           path: ${{ github.workspace }}/packages/gap-web-ui/dist
           key: gap-web-ui-${{ needs.install.outputs.gap-web-ui-hash }}
 
+      - name: Restore node modules
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            ${{ github.workspace }}/node_modules
+            ${{ github.workspace }}/packages/applicant/node_modules
+          key: ${{ github.sha }}
+
       # Based on steps described here - https://nextjs.org/docs/pages/building-your-application/deploying/ci-build-caching#github-actions
       - name: Next applicant cache
         uses: actions/cache@v3
