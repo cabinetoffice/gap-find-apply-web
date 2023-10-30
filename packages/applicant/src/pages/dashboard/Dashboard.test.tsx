@@ -102,6 +102,7 @@ describe('Dashboard', () => {
           {...getProps(getDefaultProps, {
             bannerProps: {
               bannerHeading: 'Success',
+              isSuccess: true,
             },
           })}
         />
