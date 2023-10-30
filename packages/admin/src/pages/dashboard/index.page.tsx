@@ -46,6 +46,23 @@ export const getServerSideProps = async ({
   };
 };
 
+const errorBannerProps = {
+  bannerHeading: 'Something went wrong while transferring your data.',
+  bannerContent: (
+    <p className="govuk-body">
+      Please get in contact with our support team at{' '}
+      <a
+        className="govuk-notification-banner__link"
+        href="mailto:findagrant@cabinetoffice.gov.uk"
+      >
+        findagrant@cabinetoffice.gov.uk
+      </a>
+      {'.'}
+    </p>
+  ),
+  isSuccess: false,
+};
+
 const Dashboard = ({
   schemes,
   userDetails,
@@ -55,7 +72,13 @@ const Dashboard = ({
     <div className="govuk-grid-row govuk-!-padding-top-7">
       <Meta title="Dashboard - Manage a grant" />
       <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-        {bannerProps && <ImportantBanner {...bannerProps} />}
+        {bannerProps && (
+          <ImportantBanner
+            {...(bannerProps === FAILED
+              ? errorBannerProps
+              : (bannerProps as { bannerHeading: string; isSuccess: boolean }))}
+          />
+        )}
 
         <AccountDetails userDetails={userDetails} />
         <ManageGrantSchemes schemes={schemes} />
@@ -77,31 +100,16 @@ const getBannerProps = ({
   applyMigrationStatus,
 }: Record<string, string>) => {
   if (process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED !== 'true') return null;
-  if (findMigrationStatus === FAILED || applyMigrationStatus === FAILED) {
-    return {
-      bannerHeading: 'Something went wrong while transferring your data.',
-      bannerContent: (
-        <p className="govuk-body">
-          Please get in contact with our support team at{' '}
-          <a
-            className="govuk-notification-banner__link"
-            href="mailto:findagrant@cabinetoffice.gov.uk"
-          >
-            findagrant@cabinetoffice.gov.uk
-          </a>
-          {'.'}
-        </p>
-      ),
-      isSuccess: false,
-    };
-  }
-  if (findMigrationStatus === SUCCEEDED || applyMigrationStatus === SUCCEEDED) {
+  if (findMigrationStatus === FAILED || applyMigrationStatus === FAILED)
+    return FAILED;
+
+  if (findMigrationStatus === SUCCEEDED || applyMigrationStatus === SUCCEEDED)
     return {
       bannerHeading:
         'Your data has been successfully added to your One Login account.',
       isSuccess: true,
     };
-  }
+
   return null;
 };
 
