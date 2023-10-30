@@ -45,4 +45,5 @@ process.env.V2_LOGIN_URL =
   'http://localhost:8082/v2/login?redirectUrl=http://localhost:3000/apply/applicant/isAdmin';
 process.env.V2_LOGOUT_URL = 'http://localhost:8082/v2/logout';
 process.env.JWT_COOKIE_NAME = 'user-service-token';
-process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED = 'false';
+process.env.ONE_LOGIN_SECURITY_URL =
+  'https://home.integration.account.gov.uk/security';
