@@ -10,7 +10,6 @@ const config = {
   testEnvironment: 'jest-environment-jsdom',
   setupFilesAfterEnv: ['./setupJestMock.js'],
   resetMocks: true,
-  isolatedModules: true,
   reporters: [['github-actions', { silent: false }], 'summary'],
   modulePathIgnorePatterns: ['cypress', 'node_modules', 'public'],
 };

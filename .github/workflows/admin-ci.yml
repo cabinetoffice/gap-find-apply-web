@@ -115,14 +115,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Read .nvmrc
-        id: nvm
-        run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
-
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
           cache: 'yarn'
 
       - name: Restore node modules
