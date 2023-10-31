@@ -15,7 +15,7 @@ COPY packages/${APP_NAME} ./packages/${APP_NAME}
 ENV CI true
 ENV SUB_PATH /apply/${APP_NAME}
 
-RUN yarn workspaces focus ${APP_NAME}
+RUN yarn install --immutable
 
 RUN yarn build
 
