@@ -5,7 +5,7 @@ on:
     branches:
       - release/**
       - develop
-      - ci-shard-unit-tests 
+      - ci-shard-unit-tests
     paths:
       - "packages/admin/**"
       - "packages/gap-web-ui/**"
