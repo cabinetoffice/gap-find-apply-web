@@ -5,6 +5,7 @@ on:
     branches:
       - release/**
       - develop
+      - ci-shard-unit-tests
     paths:
       - "packages/admin/**"
       - "packages/gap-web-ui/**"
@@ -136,7 +137,7 @@ jobs:
       - name: Generate Docker image name
         id: docker-image-name
         run: |
-          NAME=${{ (github.ref == 'refs/heads/develop' && 'admin-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'admin-qa-image') }}
+          NAME=${{ (github.ref == 'refs/heads/ci-shard-unit-tests' && 'admin-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'admin-qa-image') }}
           echo "name=$NAME" >> $GITHUB_OUTPUT
         
       - name: Save Docker image
@@ -197,7 +198,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          ENV_TAG=${{ (github.ref == 'refs/heads/develop' && 'develop') || (startsWith(github.ref, 'refs/heads/release') && 'qa') }}
+          ENV_TAG=${{ (github.ref == 'refs/heads/ci-shard-unit-tests' && 'develop') || (startsWith(github.ref, 'refs/heads/release') && 'qa') }}
           docker tag $ECR_REGISTRY/gap-apply-admin-web:${{ env.BUILD_VERSION }} $ECR_REGISTRY/gap-apply-admin-web:$ENV_TAG
           docker push $ECR_REGISTRY/gap-apply-admin-web:$ENV_TAG
   
