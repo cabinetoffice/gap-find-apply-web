@@ -68,17 +68,15 @@ const Dashboard = ({
   userDetails,
   bannerProps,
 }: InferProps<typeof getServerSideProps>) => {
+  const formattedBannerProps =
+    bannerProps === FAILED
+      ? errorBannerProps
+      : (bannerProps as { bannerHeading: string; isSuccess: boolean });
   return (
     <div className="govuk-grid-row govuk-!-padding-top-7">
       <Meta title="Dashboard - Manage a grant" />
       <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-        {bannerProps && (
-          <ImportantBanner
-            {...(bannerProps === FAILED
-              ? errorBannerProps
-              : (bannerProps as { bannerHeading: string; isSuccess: boolean }))}
-          />
-        )}
+        {bannerProps && <ImportantBanner {...formattedBannerProps} />}
         <AccountDetails userDetails={userDetails} />
         <ManageGrantSchemes schemes={schemes} />
         <CustomLink
