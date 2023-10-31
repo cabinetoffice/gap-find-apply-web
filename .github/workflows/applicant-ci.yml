@@ -142,6 +142,7 @@ jobs:
     strategy:
       matrix:
         shard: [1, 2, 3, 4]
+      fail-fast: false
 
     steps:
       - name: Checkout repo
