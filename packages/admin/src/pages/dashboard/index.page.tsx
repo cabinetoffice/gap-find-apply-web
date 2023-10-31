@@ -57,7 +57,7 @@ const errorBannerProps = {
       >
         findagrant@cabinetoffice.gov.uk
       </a>
-      {'.'}
+      .
     </p>
   ),
   isSuccess: false,
