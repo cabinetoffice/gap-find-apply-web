@@ -13,8 +13,10 @@ All commands mentioned below are relative to the root of the repository - no nee
 ## Getting Started
 
 - install packages - `yarn install`
+- run `yarn build` to rollup gap-web-ui components (required whenever gap-web-ui changes)
 - run a set of journeys
   - (make sure the appropriate backend is started)
+  - (make sure user-service is running)
   - admin - `yarn workspace admin dev`
   - applicant - `yarn workspace applicant dev`
 
@@ -23,6 +25,7 @@ All commands mentioned below are relative to the root of the repository - no nee
 - run a production build - `yarn build`
 - run a set of journeys
   - (make sure the appropriate backend is started)
+  - (make sure user-service is running)
   - admin - `yarn workspace admin start`
   - applicant - `yarn workspace applicant start`
 
@@ -41,43 +44,17 @@ Going forward all API requests will require authentication. That is taken care o
 
 For development locally a back-end set up is also preferred. Refer to admin back-end README file for instructions.
 
-## Cypress Tests
+## Testing
 
-Both admin and applicant packages have cypress test suites.
+Jest has been configured to contain run files per package. These can be ran in various ways:
 
-These are designed to run against a local environment. The following apps must be running:
+- Run all packages tests in watch mode: `yarn test`
+- Run specific packages tests in watch mode:
+  - `yarn test:admin`
+  - `yarn test:applicant`
+  - `yarn test:gap-web-ui`
+- Run tests without watch mode: `yarn jest --selectProjects admin`
+- Run with coverage report: `yarn jest --selectProjects applicant --coverage`
 
-`user-service`
-`wiremock (located in user-service/mockOneLogin)`
-`gap-find-apply-web (admin/applicant)`
-`gap-find-admin-backend`
-`gap-find-applicant-backend`
-
-### Cypress environment variables can be set to align with local environment (defaults provided)
-
-`CYPRESS_WIREMOCK_BASE_URL=http://localhost:8888/__admin`
-`CYPRESS_DATABASE_URL=postgres://postgres:postgres@localhost:5432`
-`CYPRESS_USER_SERVICE_DB_NAME=gapuserlocaldb`
-
-The package.json within admin/applicant includes shorthands to run:
-
-- `yarn workspace admin integration:gui` - run individual test cases against browser
-- `yarn integration` - runs all tests in headless mode
-
-### Data teardown/setup
-
-A database layer has been added to natively run sql against any database used by the app (`seed/database.js`).
-
-A function (`runSQL(filePath, dbName)`) can be called to do this.
-
-It is recommended that data teardown/setup happens as part of each test run ensuring every test is repeatable
-
-### Cypress tasks
-
-Various tasks have been added to perform tasks before and during test runs. These can be found in `cypress/plugins/index.js`
-
-`setup:user`
-
-- this will remove test users directly to the database via sql
-- this will add test users directly to the database via sql
-- this will edit the wiremock stub mapping to One login (/userInfo) to return either an applicant, admin or super-admin. This will act as the signed in user to perform the test actions
+To mock a dependency before every single test, add the code to `setupJestMock.js`
+To mock an env var before every single test, append it to `setupJestEnv.js`

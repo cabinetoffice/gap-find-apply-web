@@ -78,6 +78,7 @@ describe('Scheme summary page', () => {
         name: 'mockName',
         ggisReference: 'mockGGiSReference',
       });
+      process.env.SESSION_COOKIE_NAME = 'session_id';
     });
 
     it('Should redirect to the service error page when the sessionId does not exist', async () => {

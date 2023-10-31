@@ -30,6 +30,7 @@ describe('Middleware', () => {
   });
 
   it('redirects to refresh URL if JWT is close to expiration', async () => {
+    process.env.REFRESH_URL = 'http://localhost:8082/refresh-token';
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10); // Expiring in 10 minutes
 

@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import RelatedContent from '../../src/components/related-content';
-import '@testing-library/jest-dom/extend-expect';
 
 const component = (
   <RelatedContent
