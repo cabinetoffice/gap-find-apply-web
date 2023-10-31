@@ -183,6 +183,7 @@ describe('Question type', () => {
           { sectionId: 'sectionId', sectionTitle: 'Custom section name' },
         ],
       });
+      process.env.SESSION_COOKIE_NAME = 'test-session-id';
     });
 
     describe('when handling a GET request', () => {

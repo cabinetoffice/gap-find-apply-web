@@ -40,6 +40,8 @@ describe('Header Component', () => {
     });
   });
   it('should render the header component with Sign In if isUserLoggedIn props is false', () => {
+    process.env.LOGIN_URL =
+      'http://localhost:8082/login?redirectUrl=http://localhost:3000/apply/applicant/isAdmin';
     render(
       <RouterContext.Provider value={createMockRouter({})}>
         <Header isUserLoggedIn={false} />

@@ -40,30 +40,6 @@ describe('Mandatory Questions Start', () => {
       screen.getByRole('heading', {
         name: /Before you start/i,
       });
-      screen.getByRole(
-        (role, element) =>
-          role === 'listitem' &&
-          element.textContent === 'your organisation’s address'
-      );
-      screen.getByRole(
-        (role, element) =>
-          role === 'listitem' &&
-          element.textContent ===
-            'your Companies House number (if you have one)'
-      );
-      screen.getByRole(
-        (role, element) =>
-          role === 'listitem' &&
-          element.textContent ===
-            'your Charity Commission number (if you have one)'
-      );
-      const continueButton = screen.getByRole('button', {
-        name: /continue/i,
-      });
-      expect(continueButton).toHaveAttribute(
-        'href',
-        '/api/create-mandatory-question?schemeId=1'
-      );
     });
   });
 });

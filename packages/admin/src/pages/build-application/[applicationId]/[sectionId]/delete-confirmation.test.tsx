@@ -106,6 +106,10 @@ describe('Delete section page', () => {
   });
 
   describe('when handling a GET request', () => {
+    beforeEach(() => {
+      process.env.SESSION_COOKIE_NAME = 'gap-test';
+    });
+
     it('Should NOT attempt to delete a section', async () => {
       await getServerSideProps(getContext());
       expect(deleteSection).not.toHaveBeenCalled();

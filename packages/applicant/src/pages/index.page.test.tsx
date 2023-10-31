@@ -18,6 +18,9 @@ describe('getServerSideProps', () => {
   });
 });
 
+process.env.LOGIN_URL =
+  'http://localhost:8082/login?redirectUrl=http://localhost:3000/apply/applicant/isAdmin';
+
 const loginUrl = getLoginUrl();
 const oneLoginEnabled = 'true';
 const registerUrl = 'a-register-url';

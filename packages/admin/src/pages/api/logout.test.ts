@@ -59,6 +59,9 @@ describe('Logout page', () => {
   });
 
   it('Should redirect to login page', async () => {
+    process.env.V2_LOGOUT_URL = 'http://localhost:8082/logout';
+    process.env.LOGOUT_URL = 'http://localhost:8082/logout';
+
     await logout(req(), res());
 
     expect(mockedRedirect).toHaveBeenNthCalledWith(
