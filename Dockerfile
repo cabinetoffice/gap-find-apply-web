@@ -14,7 +14,9 @@ ENV SUB_PATH /apply/${APP_NAME}
 
 RUN yarn install --immutable
 
-RUN yarn build
+RUN yarn workspace gap-web-ui build
+
+RUN yarn workspace ${APP_NAME} build
 
 FROM --platform=linux/amd64 node:${NODE_VERSION}-alpine
 
