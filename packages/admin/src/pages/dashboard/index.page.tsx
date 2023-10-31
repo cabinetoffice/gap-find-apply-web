@@ -98,10 +98,10 @@ const getBannerProps = ({
   applyMigrationStatus,
 }: Record<string, string>) => {
   if (process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED !== 'true') return null;
-  if (findMigrationStatus === FAILED || applyMigrationStatus === FAILED)
+  if ([findMigrationStatus, applyMigrationStatus].includes(FAILED))
     return FAILED;
 
-  if (findMigrationStatus === SUCCEEDED || applyMigrationStatus === SUCCEEDED)
+  if ([findMigrationStatus, applyMigrationStatus].includes(SUCCEEDED))
     return {
       bannerHeading:
         'Your data has been successfully added to your One Login account.',
