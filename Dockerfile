@@ -6,15 +6,13 @@ ARG APP_NAME
 WORKDIR /usr/src/app
 
 COPY package.json .
-COPY .yarnrc.yml .
-COPY .yarn ./.yarn
 COPY packages/gap-web-ui ./packages/gap-web-ui
 COPY packages/${APP_NAME} ./packages/${APP_NAME}
 
 ENV CI true
 ENV SUB_PATH /apply/${APP_NAME}
 
-RUN yarn install
+RUN yarn install --immutable
 
 RUN yarn build
 
