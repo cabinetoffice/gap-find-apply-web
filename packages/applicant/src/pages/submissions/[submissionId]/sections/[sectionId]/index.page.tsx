@@ -4,18 +4,18 @@ import getConfig from 'next/config';
 import Link from 'next/link';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
+import { GrantMandatoryQuestionService } from '../../../../../services/GrantMandatoryQuestionService';
 import {
-  getSectionById,
-  postHasSectionBeenCompleted,
   QuestionType,
   SectionData,
   SectionReviewBody,
+  getSectionById,
+  postHasSectionBeenCompleted,
 } from '../../../../../services/SubmissionService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import { routes } from '../../../../../utils/routes';
 import { ProcessMultiResponse } from './processMultiResponse';
-import { GrantMandatoryQuestionService } from '../../../../../services/GrantMandatoryQuestionService';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -98,7 +98,7 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
 
   const isOrganisationDetailsOrFunding =
     sectionId === 'ORGANISATION_DETAILS' || sectionId === 'FUNDING_DETAILS';
-  let mandatoryQuestionId;
+  let mandatoryQuestionId = null;
   if (isOrganisationDetailsOrFunding) {
     const mandatoryQuestionService =
       GrantMandatoryQuestionService.getInstance();
