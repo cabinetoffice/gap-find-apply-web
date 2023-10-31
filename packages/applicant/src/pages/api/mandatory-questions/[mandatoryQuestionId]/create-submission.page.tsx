@@ -4,6 +4,12 @@ import { GrantMandatoryQuestionService } from '../../../../services/GrantMandato
 import { createSubmission } from '../../../../services/SubmissionService';
 import { getJwtFromCookies } from '../../../../utils/jwt';
 import { routes } from '../../../../utils/routes';
+import { GrantApplicant } from '../../../../models/GrantApplicant';
+import { GrantApplicantService } from '../../../../services/GrantApplicantService';
+import {
+  GrantApplicantOrganisationProfileService,
+  UpdateOrganisationDetailsDto,
+} from '../../../../services/GrantApplicantOrganisationProfileService';
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -24,13 +30,47 @@ export default async function handler(
       );
     }
 
+    const grantMandatoryQuestionService =
+      GrantMandatoryQuestionService.getInstance();
+    const grantApplicantService = GrantApplicantService.getInstance();
+    const grantApplicantOrganisationProfileService =
+      GrantApplicantOrganisationProfileService.getInstance();
+
+    const grantApplicant: GrantApplicant =
+      await grantApplicantService.getGrantApplicant(getJwtFromCookies(req));
+    const organisationData = grantApplicant.organisation;
+
     const { submissionId } = await createSubmission(
       advertDto.grantApplicationId.toString(),
       getJwtFromCookies(req)
     );
 
-    const grantMandatoryQuestionService =
-      GrantMandatoryQuestionService.getInstance();
+    const mandatoryQuestionData =
+      await grantMandatoryQuestionService.getMandatoryQuestionById(
+        mandatoryQuestionId,
+        getJwtFromCookies(req)
+      );
+
+    const updateOrganisationDetailsDto: UpdateOrganisationDetailsDto = {};
+    updateOrganisationDetailsDto.id = organisationData.id;
+    updateOrganisationDetailsDto.legalName = mandatoryQuestionData.name;
+    updateOrganisationDetailsDto.type = mandatoryQuestionData.orgType;
+    updateOrganisationDetailsDto.addressLine1 =
+      mandatoryQuestionData.addressLine1;
+    updateOrganisationDetailsDto.addressLine2 =
+      mandatoryQuestionData.addressLine2;
+    updateOrganisationDetailsDto.town = mandatoryQuestionData.city;
+    updateOrganisationDetailsDto.county = mandatoryQuestionData.county;
+    updateOrganisationDetailsDto.postcode = mandatoryQuestionData.postcode;
+    updateOrganisationDetailsDto.charityCommissionNumber =
+      mandatoryQuestionData.charityCommissionNumber;
+    updateOrganisationDetailsDto.companiesHouseNumber =
+      mandatoryQuestionData.companiesHouseNumber;
+
+    await grantApplicantOrganisationProfileService.updateOrganisation(
+      updateOrganisationDetailsDto,
+      getJwtFromCookies(req)
+    );
 
     await grantMandatoryQuestionService.updateMandatoryQuestion(
       getJwtFromCookies(req),
