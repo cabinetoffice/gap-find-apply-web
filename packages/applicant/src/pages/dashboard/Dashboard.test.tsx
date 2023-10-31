@@ -101,7 +101,8 @@ describe('Dashboard', () => {
         <ApplicantDashboard
           {...getProps(getDefaultProps, {
             bannerProps: {
-              bannerHeading: 'Success',
+              bannerHeading:
+                'Your data has been successfully added to your One Login account.',
               isSuccess: true,
             },
           })}
@@ -109,6 +110,9 @@ describe('Dashboard', () => {
       );
 
       screen.getByRole('heading', { level: 2, name: 'Success' });
+      screen.getByText(
+        'Your data has been successfully added to your One Login account.'
+      );
     });
 
     test('Should not render the success banner', () => {
