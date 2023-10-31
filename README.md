@@ -55,3 +55,6 @@ Jest has been configured to contain run files per package. These can be ran in v
   - `yarn test:gap-web-ui`
 - Run tests without watch mode: `yarn jest --selectProjects admin`
 - Run with coverage report: `yarn jest --selectProjects applicant --coverage`
+
+To mock a dependency before every single test, add the code to `setupJestMock.js`
+To mock an env var before every single test, append it to `setupJestEnv.js`
