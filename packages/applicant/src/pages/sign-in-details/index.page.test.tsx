@@ -4,6 +4,9 @@ import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { createMockRouter } from '../../testUtils/createMockRouter';
 import SignInDetails, { getServerSideProps } from './index.page';
 
+process.env.ONE_LOGIN_SECURITY_URL =
+  'https://home.integration.account.gov.uk/security';
+
 describe('getServerSideProps', () => {
   it('should return page props', async () => {
     const response = await getServerSideProps(null);

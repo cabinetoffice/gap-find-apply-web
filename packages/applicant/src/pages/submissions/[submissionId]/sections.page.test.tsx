@@ -25,18 +25,6 @@ jest.mock('../../../services/ApplicationService', () => ({
   getApplicationStatusBySchemeId: jest.fn(),
 }));
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-      subPath: '',
-    },
-    publicRuntimeConfig: {
-      subPath: '',
-    },
-  };
-});
-
 const context = {
   params: {
     submissionId: '12345678',
@@ -365,6 +353,8 @@ describe('getServerSideProps', () => {
     (getQuestionById as jest.Mock).mockReturnValue(
       questionDataStandardEligibilityResponseNull
     );
+    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+    (isSubmissionReady as jest.Mock).mockReturnValue(true);
     const getGrantScheme = jest
       .spyOn(GrantSchemeService.prototype, 'getGrantSchemeById')
       .mockResolvedValue(MOCK_GRANT_SCHEME);
@@ -560,7 +550,7 @@ describe('Submission section page', () => {
       screen.getByRole('link', { name: 'test@test.com' });
       const separator = screen.getAllByRole('separator')[0];
       expect(separator).toHaveClass(
-        'govuk-section-break govuk-section-break--m govuk-section-break--visible breakLine'
+        'govuk-section-break govuk-section-break--m govuk-section-break--visible'
       );
     });
   });

@@ -4,17 +4,6 @@ import '@testing-library/jest-dom';
 
 import { useRouter } from 'next/router';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
 jest.mock('next/router', () => {
   return {
     useRouter: jest.fn(),
@@ -131,7 +120,7 @@ describe('Testing Pagination component behaviour', () => {
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
-        Array [
+        [
           "Previous",
           "1",
           "...",
@@ -164,7 +153,7 @@ describe('Testing Pagination component behaviour', () => {
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
-        Array [
+        [
           "1",
           "2",
           "3",
@@ -195,7 +184,7 @@ describe('Testing Pagination component behaviour', () => {
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
-        Array [
+        [
           "Previous",
           "1",
           "...",
@@ -238,7 +227,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
-        Array [
+        [
           "1",
           "2",
           "3",
@@ -263,7 +252,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
-        Array [
+        [
           "Previous",
           "1",
           "2",
@@ -291,7 +280,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
-        Array [
+        [
           "Previous",
           "1",
           "...",
