@@ -9,6 +9,7 @@ import {
 
 jest.mock('axios');
 
+process.env.BACKEND_HOST = 'http://localhost:8080';
 const GRANT_ADVERT_BACKEND_BASE_URL =
   process.env.BACKEND_HOST + '/grant-adverts';
 const advertDTO: AdvertDto = {

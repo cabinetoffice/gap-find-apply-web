@@ -4,6 +4,7 @@ const config = {
     {
       displayName: 'admin',
       rootDir: './packages/admin',
+      setupFiles: ['./setupJestEnv.js'],
       setupFilesAfterEnv: ['./setupJestMock.js'],
       moduleDirectories: ['node_modules', '<rootDir>/'],
       resetMocks: true,
@@ -20,6 +21,7 @@ const config = {
     {
       displayName: 'applicant',
       rootDir: './packages/applicant',
+      setupFiles: ['./setupJestEnv.js'],
       setupFilesAfterEnv: ['./setupJestMock.js'],
       moduleDirectories: ['node_modules', '<rootDir>/'],
       testEnvironment: 'jest-environment-jsdom',
