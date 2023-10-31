@@ -176,4 +176,5 @@ jobs:
         run: cp packages/applicant/.env.example packages/applicant/.env
 
       - name: Run tests
+        if: always()
         run: yarn jest --selectProjects applicant --runInBand --ci --shard=${{ matrix.shard }}/${{ strategy.job-total }}
