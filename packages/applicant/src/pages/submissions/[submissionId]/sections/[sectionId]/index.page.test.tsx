@@ -160,7 +160,7 @@ describe('getServerSideProps', () => {
         section: SECTION_MOCK,
         fieldErrors: [],
         csrfToken: 'testCSRFToken',
-        mandatoryQuestionId: undefined,
+        mandatoryQuestionId: null,
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -187,7 +187,7 @@ describe('getServerSideProps', () => {
         section: SECTION_MOCK,
         fieldErrors: [],
         csrfToken: '',
-        mandatoryQuestionId: undefined,
+        mandatoryQuestionId: null,
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -353,6 +353,7 @@ describe('getServerSideProps', () => {
     };
     const expectedProps = {
       props: {
+        mandatoryQuestionId: null,
         submissionId: '12345678',
         section: SECTION_MOCK,
         csrfToken: 'testCSRFToken',
