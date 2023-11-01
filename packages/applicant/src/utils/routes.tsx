@@ -69,9 +69,9 @@ export const routes = {
         `/api/submissions/${grantSubmissionId}/sections/${sectionId}/questions/${questionId}`,
     },
     isNewApplicant: {
-      index: (migrationStatus?) =>
-        migrationStatus
-          ? `/api/isNewApplicant?migrationStatus=${migrationStatus}`
+      index: (status?: MigrationStatus) =>
+        status?.applyMigrationStatus || status?.findMigrationStatus
+          ? `/api/isNewApplicant?applyMigrationStatus=${status.applyMigrationStatus}&findMigrationStatus=${status.findMigrationStatus}`
           : `/api/isNewApplicant`,
     },
     createMandatoryQuestion: (schemeId: string) =>
@@ -81,4 +81,9 @@ export const routes = {
         `/api/mandatory-questions/${mandatoryQuestionId}/create-submission?schemeId=${schemeId}`,
     },
   },
+};
+
+type MigrationStatus = {
+  applyMigrationStatus: string;
+  findMigrationStatus: string;
 };

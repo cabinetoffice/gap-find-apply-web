@@ -117,8 +117,7 @@ describe('getServerSideProps', () => {
       props: {
         descriptionList,
         hasApplications: true,
-        showMigrationErrorBanner: false,
-        showMigrationSuccessBanner: false,
+        bannerProps: null,
         oneLoginEnabled: false,
       },
     });
@@ -152,8 +151,7 @@ describe('getServerSideProps', () => {
           needBorder: false,
         },
         hasApplications: true,
-        showMigrationErrorBanner: false,
-        showMigrationSuccessBanner: false,
+        bannerProps: null,
         oneLoginEnabled: false,
       },
     });

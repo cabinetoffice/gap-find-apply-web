@@ -9,6 +9,9 @@ import { getJwtFromCookies } from '../../utils/jwt';
 import { ApplicantDashboard } from './Dashboard';
 import InferProps from '../../types/InferProps';
 
+const SUCCEEDED = 'SUCCEEDED';
+const FAILED = 'FAILED';
+
 export const getServerSideProps = async ({
   req,
   res,
@@ -68,22 +71,19 @@ export const getServerSideProps = async ({
     needBorder: false,
   };
 
-  const oneLoginMatchingAccountBannerEnabled =
-    process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
-  const migrationStatus = query?.migrationStatus ?? null;
-  const showMigrationSuccessBanner =
-    oneLoginMatchingAccountBannerEnabled && migrationStatus === 'success';
-  const showMigrationErrorBanner =
-    oneLoginMatchingAccountBannerEnabled && migrationStatus === 'error';
-  const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
+  const { applyMigrationStatus, findMigrationStatus } = query || {};
+
+  const bannerProps = getBannerProps({
+    applyMigrationStatus,
+    findMigrationStatus,
+  });
 
   return {
     props: {
       descriptionList,
       hasApplications,
-      showMigrationErrorBanner,
-      showMigrationSuccessBanner,
-      oneLoginEnabled,
+      bannerProps,
+      oneLoginEnabled: process.env.ONE_LOGIN_ENABLED === 'true',
     },
   };
 };
@@ -91,8 +91,7 @@ export const getServerSideProps = async ({
 export default function ApplicantDashboardPage({
   descriptionList,
   hasApplications,
-  showMigrationErrorBanner,
-  showMigrationSuccessBanner,
+  bannerProps,
   oneLoginEnabled,
 }: InferProps<typeof getServerSideProps>) {
   return (
@@ -102,11 +101,41 @@ export default function ApplicantDashboardPage({
         <ApplicantDashboard
           descriptionList={descriptionList}
           hasApplications={hasApplications}
-          showMigrationErrorBanner={showMigrationErrorBanner}
-          showMigrationSuccessBanner={showMigrationSuccessBanner}
+          bannerProps={bannerProps}
           oneLoginEnabled={oneLoginEnabled}
         />
       </Layout>
     </>
   );
 }
+
+const getBannerProps = ({ findMigrationStatus, applyMigrationStatus }) => {
+  if (process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED !== 'true') return null;
+  if (findMigrationStatus === FAILED || applyMigrationStatus === FAILED) {
+    return FAILED;
+  }
+
+  if (findMigrationStatus === SUCCEEDED && applyMigrationStatus === SUCCEEDED) {
+    return {
+      bannerHeading:
+        'You can now access your notifications and grant applications when you sign in with GOV.UK One Login.',
+      isSuccess: true,
+    };
+  }
+
+  if (findMigrationStatus === SUCCEEDED && applyMigrationStatus !== SUCCEEDED) {
+    return {
+      bannerHeading:
+        'You can now access your notifications when you sign in with GOV.UK One Login.',
+      isSuccess: true,
+    };
+  }
+  if (findMigrationStatus !== SUCCEEDED && applyMigrationStatus === SUCCEEDED) {
+    return {
+      bannerHeading:
+        'You can use your One Login to sign into this service and see your application forms.',
+      isSuccess: true,
+    };
+  }
+  return null;
+};
