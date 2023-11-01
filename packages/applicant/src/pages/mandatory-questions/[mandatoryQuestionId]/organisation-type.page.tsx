@@ -32,15 +32,18 @@ export default function MandatoryQuestionOrganisationTypePage({
           formAction={formAction}
         >
           <Radio
-            questionTitle="Choose your organisation type"
-            questionHintText="Choose the option that best describes your organisation"
+            questionTitle="Choose your application type"
+            questionHintText="Choose the option that best describes you or your organisation"
             fieldName="orgType"
             fieldErrors={fieldErrors}
             radioOptions={[
               { label: 'Limited company', value: 'Limited company' },
               { label: 'Non-limited company', value: 'Non-limited company' },
-              { label: 'Registered charity', value: 'Registered charity' },
-              { label: 'Unregistered charity', value: 'Unregistered charity' },
+              { label: 'Charity', value: 'Charity' },
+              {
+                label: 'I am applying as an Individual',
+                value: 'I am applying as an Individual',
+              },
               { label: 'Other', value: 'Other' },
             ]}
             defaultChecked={defaultFields.orgType}
