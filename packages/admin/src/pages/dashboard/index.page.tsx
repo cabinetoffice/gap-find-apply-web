@@ -11,6 +11,9 @@ import CustomLink from '../../components/custom-link/CustomLink';
 import InferProps from '../../types/InferProps';
 import { ImportantBanner } from 'gap-web-ui';
 
+const FAILED = 'FAILED';
+const SUCCEEDED = 'SUCCEEDED';
+
 export const getServerSideProps = async ({
   req,
   query,
@@ -25,62 +28,57 @@ export const getServerSideProps = async ({
   const schemes = await getUserSchemes(paginationParams, sessionCookie);
   const userDetails: UserDetails = await getLoggedInUsersDetails(sessionCookie);
 
-  const migrationStatus = query?.migrationStatus ?? null;
-  const oneLoginTransferErrorEnabled =
-    process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED === 'true';
-  const showMigrationSuccessBanner =
-    oneLoginTransferErrorEnabled && migrationStatus === 'success';
-  const showMigrationErrorBanner =
-    oneLoginTransferErrorEnabled && migrationStatus === 'error';
+  const { applyMigrationStatus, findMigrationStatus } = (query || {}) as Record<
+    string,
+    string
+  >;
+  const bannerProps = getBannerProps({
+    applyMigrationStatus,
+    findMigrationStatus,
+  });
 
   return {
     props: {
       schemes: schemes,
       userDetails,
-      showMigrationSuccessBanner,
-      showMigrationErrorBanner,
+      bannerProps,
     },
   };
+};
+
+const errorBannerProps = {
+  bannerHeading: 'Something went wrong while transferring your data.',
+  bannerContent: (
+    <p className="govuk-body">
+      Please get in contact with our support team at{' '}
+      <a
+        className="govuk-notification-banner__link"
+        href="mailto:findagrant@cabinetoffice.gov.uk"
+      >
+        findagrant@cabinetoffice.gov.uk
+      </a>
+      .
+    </p>
+  ),
+  isSuccess: false,
 };
 
 const Dashboard = ({
   schemes,
   userDetails,
-  showMigrationSuccessBanner,
-  showMigrationErrorBanner,
+  bannerProps,
 }: InferProps<typeof getServerSideProps>) => {
+  const formattedBannerProps =
+    bannerProps === FAILED
+      ? errorBannerProps
+      : (bannerProps as { bannerHeading: string; isSuccess: boolean });
   return (
     <div className="govuk-grid-row govuk-!-padding-top-7">
       <Meta title="Dashboard - Manage a grant" />
       <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-        {showMigrationSuccessBanner && (
-          <ImportantBanner
-            bannerHeading="Your data has been successfully added to your One Login account."
-            isSuccess
-          />
-        )}
-
-        {showMigrationErrorBanner && (
-          <ImportantBanner
-            bannerHeading="Something went wrong while transferring your data. "
-            bannerContent={
-              <p className="govuk-body">
-                Please get in contact with our support team at{' '}
-                <a
-                  className="govuk-notification-banner__link"
-                  href="mailto:findagrant@cabinetoffice.gov.uk"
-                >
-                  findagrant@cabinetoffice.gov.uk
-                </a>
-                {'.'}
-              </p>
-            }
-          />
-        )}
-
+        {bannerProps && <ImportantBanner {...formattedBannerProps} />}
         <AccountDetails userDetails={userDetails} />
         <ManageGrantSchemes schemes={schemes} />
-
         <CustomLink
           href="/new-scheme/name"
           isButton
@@ -91,6 +89,24 @@ const Dashboard = ({
       </div>
     </div>
   );
+};
+
+const getBannerProps = ({
+  findMigrationStatus,
+  applyMigrationStatus,
+}: Record<string, string>) => {
+  if (process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED !== 'true') return null;
+  if ([findMigrationStatus, applyMigrationStatus].includes(FAILED))
+    return FAILED;
+
+  if ([findMigrationStatus, applyMigrationStatus].includes(SUCCEEDED))
+    return {
+      bannerHeading:
+        'Your data has been successfully added to your One Login account.',
+      isSuccess: true,
+    };
+
+  return null;
 };
 
 export default Dashboard;

@@ -35,6 +35,7 @@ const mockUserDetails: UserDetails = {
   emailAddress: 'test@email.com',
   roles: [{ id: '1', name: 'APPLY', description: 'desc' }],
   organisationName: 'Testing Org',
+  created: '2003-01-13T00:00:00',
 };
 
 describe('Dashboard', () => {
@@ -60,8 +61,7 @@ describe('Dashboard', () => {
         props: {
           schemes: mockSchemeList,
           userDetails: mockUserDetails,
-          showMigrationErrorBanner: false,
-          showMigrationSuccessBanner: false,
+          bannerProps: null,
         },
       });
     });
@@ -71,8 +71,7 @@ describe('Dashboard', () => {
     function getDefaultProps(): InferProps<typeof getServerSideProps> {
       return {
         schemes: mockSchemeList,
-        showMigrationSuccessBanner: false,
-        showMigrationErrorBanner: false,
+        bannerProps: null,
         userDetails: mockUserDetails,
       };
     }
@@ -87,7 +86,7 @@ describe('Dashboard', () => {
       render(
         <Dashboard
           {...getProps(getDefaultProps, {
-            showMigrationErrorBanner: true,
+            bannerProps: 'FAILED',
           })}
         />
       );
@@ -113,7 +112,11 @@ describe('Dashboard', () => {
       render(
         <Dashboard
           {...getProps(getDefaultProps, {
-            showMigrationSuccessBanner: true,
+            bannerProps: {
+              bannerHeading:
+                'Your data has been successfully added to your One Login account.',
+              isSuccess: true,
+            },
           })}
         />
       );

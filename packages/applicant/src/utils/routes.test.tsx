@@ -86,8 +86,11 @@ describe('api', () => {
   describe('isNewApplicant', () => {
     describe('isNewApplicant.index', () => {
       it('should generate the correct URL when migrationStatus is present', () => {
-        const migrationStatus = 'migrationStatus';
-        const expectedURL = `/api/isNewApplicant?migrationStatus=${migrationStatus}`;
+        const migrationStatus = {
+          applyMigrationStatus: 'SUCCEEDED',
+          findMigrationStatus: 'SUCCEEDED',
+        };
+        const expectedURL = `/api/isNewApplicant?applyMigrationStatus=SUCCEEDED&findMigrationStatus=SUCCEEDED`;
         expect(routes.api.isNewApplicant.index(migrationStatus)).toBe(
           expectedURL
         );
