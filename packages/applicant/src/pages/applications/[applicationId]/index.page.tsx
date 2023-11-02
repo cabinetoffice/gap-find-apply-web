@@ -33,14 +33,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     };
   } catch (error) {
     console.error(error);
-    if (error?.response?.data?.code === 'SUBMISSION_ALREADY_CREATED') {
-      return {
-        redirect: {
-          destination: routes.applications,
-          permanent: false,
-        },
-      };
-    } else if (error?.response?.data?.code === 'GRANT_NOT_PUBLISHED') {
+    if (error?.response?.data?.code === 'GRANT_NOT_PUBLISHED') {
       return {
         redirect: {
           destination: `/grant-is-closed`,
