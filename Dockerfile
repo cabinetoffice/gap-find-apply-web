@@ -24,6 +24,8 @@ ARG APP_NAME
 
 COPY yarn.lock ./
 
+WORKDIR /app
+
 COPY --from=build /app/packages/${APP_NAME}/package.json ./
 COPY --from=build /app/packages/${APP_NAME}/.env.example ./.env
 COPY --from=build /app/packages/${APP_NAME}/next.config.js ./

@@ -13,14 +13,14 @@ module.exports = {
   reactStrictMode: true,
   // experimental: { optimizeCss: true },
   output: 'standalone',
-  experimental: {
-    // this includes files from the monorepo base two directories up
-    outputFileTracingRoot: path.join(__dirname, '../../'),
-    outputFileTracingExcludes: {
-      '/applicant': ['./packages/applicant/**/*'],
-      '/gap-web-ui': ['./packages/gap-web-ui/**/*'],
-    },
-  },
+  // experimental: {
+  //   // this includes files from the monorepo base two directories up
+  //   outputFileTracingRoot: path.join(__dirname, '../../'),
+  //   outputFileTracingExcludes: {
+  //     '/applicant': ['./packages/applicant/**/*'],
+  //     '/gap-web-ui': ['./packages/gap-web-ui/**/*'],
+  //   },
+  // },
 
   /* Add Your Scss File Folder Path Here */
   sassOptions: {
