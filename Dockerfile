@@ -22,9 +22,9 @@ FROM --platform=linux/amd64 node:${NODE_VERSION}-alpine
 
 ARG APP_NAME
 
-COPY yarn.lock ./
-
 WORKDIR /app
+
+COPY yarn.lock ./
 
 COPY --from=build /app/packages/${APP_NAME}/package.json ./
 COPY --from=build /app/packages/${APP_NAME}/.env.example ./.env
