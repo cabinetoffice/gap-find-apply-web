@@ -13,8 +13,10 @@ module.exports = {
   reactStrictMode: true,
   // experimental: { optimizeCss: true },
   output: 'standalone',
-  // this includes files from the monorepo base two directories up
-  outputFileTracingRoot: path.join(__dirname, '../../'),
+  experimental: {
+    // this includes files from the monorepo base two directories up
+    outputFileTracingRoot: path.join(__dirname, '../../'),
+  },
   /* Add Your Scss File Folder Path Here */
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
