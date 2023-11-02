@@ -13,6 +13,10 @@ export const getServerSideProps: GetServerSideProps = async ({
   await validateCSRF(req, res);
 
   const applicationId = params.applicationId.toString();
+
+  // TODO handle MQ: hit an endpoint with applicationId to get the version & MQ status
+  //  (or just whether we need to show MQ and let the BE handle logic)
+
   try {
     const result = await createSubmission(
       applicationId,

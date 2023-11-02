@@ -16,6 +16,7 @@ import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { SUBMISSION_STATUS_TAGS } from '../../../utils/sectionStatusTags';
 import styles from './sections.module.scss';
+import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -36,6 +37,20 @@ export const getServerSideProps: GetServerSideProps<
 
   const { sections, grantSubmissionId, applicationName, grantSchemeId } =
     await getSubmissionById(submissionId, getJwtFromCookies(req));
+
+  const grantApplicationStatus = await getApplicationStatusBySchemeId(
+    grantSchemeId,
+    getJwtFromCookies(req)
+  );
+
+  if (grantApplicationStatus === 'REMOVED') {
+    return {
+      redirect: {
+        destination: `/grant-is-closed`,
+        permanent: false,
+      },
+    };
+  }
 
   const submissionReady = await isSubmissionReady(
     submissionId,
@@ -93,6 +108,18 @@ export default function SubmissionSections({
   supportEmail,
   eligibilityCheckPassed,
 }) {
+  const getSectionUrl = (sectionId: string) => {
+    switch (sectionId) {
+      case 'ORGANISATION_DETAILS':
+      case 'FUNDING_DETAILS': {
+        return routes.submissions.section(grantSubmissionId, sectionId);
+      }
+      default: {
+        return routes.api.submissions.section(grantSubmissionId, sectionId);
+      }
+    }
+  };
+
   return (
     <>
       <Meta title="My application - Apply for a grant" />
@@ -138,12 +165,7 @@ export default function SubmissionSections({
                         <dt className="govuk-summary-list__key">
                           {section.sectionId === 'ELIGIBILITY' ||
                           eligibilityCheckPassed ? (
-                            <Link
-                              href={routes.api.submissions.section(
-                                grantSubmissionId,
-                                section.sectionId
-                              )}
-                            >
+                            <Link href={getSectionUrl(section.sectionId)}>
                               <a
                                 className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
                                 data-cy={`cy-section-title-link-${section.sectionTitle}`}

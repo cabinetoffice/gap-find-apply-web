@@ -1,0 +1,211 @@
+name: Applicant CD
+
+on:
+  push:
+    branches:
+      - release/**
+      - develop
+    paths:
+      - "packages/applicant/**"
+      - "packages/gap-web-ui/**"
+      - ".github/workflows/applicant-sandbox-qa-cd.yml"
+      - "package.json"
+      - "yarn.lock"
+
+jobs:
+  test:
+      name: Test app
+
+      runs-on: ubuntu-latest
+
+      permissions:
+        contents: read
+
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@v4
+
+        - name: Generate gap-web-ui hash
+          id: gap-web-ui-hash
+          run: |
+            NAME=${{ hashFiles('**/packages/gap-web-ui/**/*.js', '**/packages/gap-web-ui/**/*.jsx', '**/packages/gap-web-ui/**/*.ts', '**/packages/gap-web-ui/**/*.tsx') }}
+            echo "name=$NAME" >> $GITHUB_OUTPUT
+  
+        - name: Generate source files hash
+          id: source-file-hash
+          run: |
+            NAME=${{ hashFiles('**/packages/applicant/src/**/*.js', '**/packages/applicant/src/**/*.jsx', '**/packages/applicant/src/**/*.ts', '**/packages/applicant/src/**/*.tsx') }}
+            echo "name=$NAME" >> $GITHUB_OUTPUT
+  
+        - name: Generate yarn lock hash
+          id: yarn-lock-hash
+          run: |
+            NAME=${{ hashFiles('**/yarn.lock') }}
+            echo "name=$NAME" >> $GITHUB_OUTPUT
+
+        - name: Generate .env files
+          run: |
+            cp packages/applicant/.env.example packages/applicant/.env
+
+        - name: Read .nvmrc
+          run: echo "name=NVMRC::$(cat .nvmrc)" >> $GITHUB_OUTPUT
+          id: nvm
+
+        - name: Setup node
+          uses: actions/setup-node@v3
+          with:
+            node-version: "${{ steps.nvm.outputs.NVMRC }}"
+            cache: 'yarn'
+
+        - name: Install dependencies
+          run: |
+            yarn install --immutable
+
+        - name: Restore gap-web-ui cache
+          id: gap-web-ui-cache
+          uses: actions/cache/restore@v3
+          with:
+            path: ${{ github.workspace }}/packages/gap-web-ui/dist
+            key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
+
+        - name: Build gap-web-ui
+          if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
+          run: yarn workspace gap-web-ui build
+
+        - name: Save gap-web-ui cache
+          if: steps.gap-web-ui-cache.outputs.cache-hit != 'true'
+          uses: actions/cache/save@v3
+          with:
+            path: ${{ github.workspace }}/packages/gap-web-ui/dist
+            key: gap-web-ui-${{ steps.gap-web-ui-hash.outputs.name }}
+
+        # Based on steps described here - https://nextjs.org/docs/pages/building-your-application/deploying/ci-build-caching#github-actions
+        - name: Next applicant cache
+          uses: actions/cache@v3
+          with:
+            path: ${{ github.workspace }}/packages/applicant/.next/cache
+            key: applicant-next-cache-${{ steps.yarn-lock-hash.outputs.name }}-${{ steps.source-file-hash.outputs.name }}
+            restore-keys: applicant-next-cache-${{ steps.yarn-lock-hash.outputs.name }}-
+
+        - name: Build application
+          run: yarn workspace applicant build
+
+        - name: Lint files
+          run: yarn workspace applicant lint
+
+        - name: Units tests
+          run: yarn jest --selectProjects admin --runInBand --ci
+
+        - name: Gap-web-ui units tests
+          run: yarn jest --selectProjects gap-web-ui --runInBand --ci
+
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      docker-image-name: ${{ steps.docker-image-name.outputs.name }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch all commits since we use the total commit count to determine the build version
+          fetch-depth: 0
+
+      - name: Setup AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Determine & set BUILD_VERSION
+        run: |
+          GIT_COUNT=$(git rev-list $GITHUB_SHA --count)
+          echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
+          echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
+
+      - name: Build Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: docker build --build-arg APP_NAME=applicant -t $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }} .
+
+      - name: Generate Docker image name
+        id: docker-image-name
+        run: |
+          NAME=${{ (github.ref == 'refs/heads/develop' && 'applicant-sandbox-image') || (startsWith(github.ref, 'refs/heads/release') && 'applicant-qa-image') }}
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+        
+      - name: Save Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: docker save --output ${{ steps.docker-image-name.outputs.name }}.tar $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }}
+
+      - name: Upload Docker image
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.docker-image-name.outputs.name }}
+          path: ${{ steps.docker-image-name.outputs.name }}.tar
+          retention-days: 1
+
+  deploy:
+    needs: [build, test]
+
+    environment: AWS
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch all commits since we use the total commit count to determine the build version
+          fetch-depth: 0
+
+      - name: Setup AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Determine & set BUILD_VERSION
+        run: |
+          GIT_COUNT=$(git rev-list $GITHUB_SHA --count)
+          echo "BUILD_VERSION=b_$GIT_COUNT" >> $GITHUB_ENV
+          echo BUILD_VERSION is ${{ env.BUILD_VERSION }}
+
+      - name: Download Docker image
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.build.outputs.docker-image-name }}
+
+      - name: Load Docker image
+        run: docker load --input ${{ needs.build.outputs.docker-image-name }}.tar
+
+      - name: Push Docker image to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: docker push $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }}
+
+      - name: Create env tag
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          ENV_TAG=${{ (github.ref == 'refs/heads/develop' && 'develop') || (startsWith(github.ref, 'refs/heads/release') && 'qa') }}
+          docker tag $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }} $ECR_REGISTRY/gap-apply-applicant-web:$ENV_TAG
+          docker push $ECR_REGISTRY/gap-apply-applicant-web:$ENV_TAG
+
+      - name: Create release tag - if we are committing to a release branch
+        if: ${{ startsWith(github.ref, 'refs/heads/release/') }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          RELEASE_VERSION=V_${GITHUB_REF##*/}
+          docker tag $ECR_REGISTRY/gap-apply-applicant-web:${{ env.BUILD_VERSION }} $ECR_REGISTRY/gap-apply-applicant-web:$RELEASE_VERSION
+          docker push $ECR_REGISTRY/gap-apply-applicant-web:$RELEASE_VERSION

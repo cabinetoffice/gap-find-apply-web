@@ -14,23 +14,16 @@ import {
 import { createMockRouter } from '../../../testUtils/createMockRouter';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import SubmissionSections, { getServerSideProps } from './sections.page';
+import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
 
 jest.mock('../../../services/SubmissionService');
 jest.mock('../../../utils/constants');
 jest.mock('../../../utils/jwt');
 jest.mock('../../../utils/csrf');
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-      subPath: '',
-    },
-    publicRuntimeConfig: {
-      subPath: '',
-    },
-  };
-});
+jest.mock('../../../services/ApplicationService', () => ({
+  getApplicationStatusBySchemeId: jest.fn(),
+}));
 
 const context = {
   params: {
@@ -100,6 +93,18 @@ const propsWithAllValues: ApplicationDetailsInterface = {
       sectionTitle: 'Eligibility',
       sectionStatus: 'COMPLETED',
       questions: [eligibility],
+    },
+    {
+      sectionId: 'ORGANISATION_DETAILS',
+      sectionTitle: 'Your Organisation',
+      sectionStatus: 'IN_PROGRESS',
+      questions: [shortAnswer],
+    },
+    {
+      sectionId: 'FUNDING_DETAILS',
+      sectionTitle: 'Funding',
+      sectionStatus: 'IN_PROGRESS',
+      questions: [numeric],
     },
     {
       sectionId: 'ESSENTIAL',
@@ -234,7 +239,28 @@ const questionDataStandardEligibilityResponseNull = {
 };
 
 describe('getServerSideProps', () => {
+  it('should return a redirect to grant-is-closed when submission is REMOVED ', async () => {
+    (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue('REMOVED');
+    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+    (isSubmissionReady as jest.Mock).mockReturnValue(true);
+    (getQuestionById as jest.Mock).mockReturnValue(
+      questionDataStandardEligibilityResponseNo
+    );
+    const response = await getServerSideProps(context);
+    expect(response).toEqual({
+      redirect: {
+        destination: '/grant-is-closed',
+        permanent: false,
+      },
+    });
+  });
+
   it('should return sections, submissionId, applicationName', async () => {
+    (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue(
+      'PUBLISHED'
+    );
     (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
@@ -327,6 +353,8 @@ describe('getServerSideProps', () => {
     (getQuestionById as jest.Mock).mockReturnValue(
       questionDataStandardEligibilityResponseNull
     );
+    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+    (isSubmissionReady as jest.Mock).mockReturnValue(true);
     const getGrantScheme = jest
       .spyOn(GrantSchemeService.prototype, 'getGrantSchemeById')
       .mockResolvedValue(MOCK_GRANT_SCHEME);
@@ -469,6 +497,21 @@ describe('Submission section page', () => {
       );
     });
 
+    it('should render the mandatory question sections with the correct href', () => {
+      expect(screen.getByText('Your Organisation')).toBeDefined();
+      expect(screen.getByText('Funding')).toBeDefined();
+      expect(
+        screen.getByRole('link', { name: 'Your Organisation' })
+      ).toHaveAttribute(
+        'href',
+        '/submissions/string/sections/ORGANISATION_DETAILS'
+      );
+      expect(screen.getByRole('link', { name: 'Funding' })).toHaveAttribute(
+        'href',
+        '/submissions/string/sections/FUNDING_DETAILS'
+      );
+    });
+
     it('should render a submit and cancel button', () => {
       expect(
         screen.getByRole('button', { name: 'Submit application' })
@@ -507,7 +550,7 @@ describe('Submission section page', () => {
       screen.getByRole('link', { name: 'test@test.com' });
       const separator = screen.getAllByRole('separator')[0];
       expect(separator).toHaveClass(
-        'govuk-section-break govuk-section-break--m govuk-section-break--visible breakLine'
+        'govuk-section-break govuk-section-break--m govuk-section-break--visible'
       );
     });
   });
