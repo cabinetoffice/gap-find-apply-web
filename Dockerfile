@@ -1,11 +1,11 @@
 ARG NODE_VERSION=16.14.0
-FROM --platform=linux/amd64 node:${NODE_VERSION}-alpine as build
+FROM --platform=linux/amd64 node:${NODE_VERSION}-alpine AS build
 
 ARG APP_NAME
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package.json .
+COPY package.json yarn.lock ./
 COPY packages/gap-web-ui ./packages/gap-web-ui
 COPY packages/${APP_NAME} ./packages/${APP_NAME}
 
@@ -22,28 +22,19 @@ FROM --platform=linux/amd64 node:${NODE_VERSION}-alpine
 
 ARG APP_NAME
 
-WORKDIR /usr/src/app
+COPY yarn.lock ./
 
-COPY package.json .
-COPY yarn.lock .
-COPY .yarnrc.yml .
-COPY .yarn ./.yarn
-
-COPY --from=build /usr/src/app/packages/gap-web-ui/package.json /usr/src/app/packages/gap-web-ui/package.json
-COPY --from=build /usr/src/app/packages/gap-web-ui/dist /usr/src/app/packages/gap-web-ui/dist
-
-COPY --from=build /usr/src/app/packages/${APP_NAME}/package.json /usr/src/app/packages/${APP_NAME}/package.json
-COPY --from=build /usr/src/app/packages/${APP_NAME}/.env.example /usr/src/app/packages/${APP_NAME}/.env
-COPY --from=build /usr/src/app/packages/${APP_NAME}/next.config.js /usr/src/app/packages/${APP_NAME}/next.config.js
-COPY --from=build /usr/src/app/packages/${APP_NAME}/next-logger.config.js /usr/src/app/packages/${APP_NAME}/next-logger.config.js
-COPY --from=build /usr/src/app/packages/${APP_NAME}/.next /usr/src/app/packages/${APP_NAME}/.next
-COPY --from=build /usr/src/app/packages/${APP_NAME}/public /usr/src/app/packages/${APP_NAME}/public
+COPY --from=build /app/packages/${APP_NAME}/package.json ./
+COPY --from=build /app/packages/${APP_NAME}/.env.example ./.env
+COPY --from=build /app/packages/${APP_NAME}/next.config.js ./
+COPY --from=build /app/packages/${APP_NAME}/next-logger.config.js ./
+COPY --from=build /app/packages/${APP_NAME}/.next/standalone ./
+COPY --from=build /app/packages/${APP_NAME}/.next/static ./.next/static
+COPY --from=build /app/packages/${APP_NAME}/public ./public
 
 ENV NODE_ENV production
 ENV CI true
 
-RUN yarn workspaces focus ${APP_NAME} --production
+EXPOSE 3000
 
-WORKDIR /usr/src/app/packages/${APP_NAME}
-
-CMD ["yarn", "start"]
+ENTRYPOINT ["node", "server.js"]
