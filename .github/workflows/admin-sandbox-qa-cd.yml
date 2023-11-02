@@ -155,7 +155,6 @@ jobs:
   deploy:
     needs: [build, test]
 
-    environment: AWS
     runs-on: ubuntu-latest
 
     steps:
