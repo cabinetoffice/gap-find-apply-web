@@ -19,12 +19,17 @@ export const getServerSideProps = async ({
 }: GetServerSidePropsContext) => {
   const applyRedirectCookie = process.env.APPLYING_FOR_REDIRECT_COOKIE;
 
+  console.log('applyRedirectCookie: ', applyRedirectCookie);
+  console.log('applyRedirectCookie Value: ', req.cookies[applyRedirectCookie]);
+
   if (req.cookies[applyRedirectCookie]) {
     const applicationId = req.cookies[applyRedirectCookie];
     res.setHeader(
       'Set-Cookie',
       `${applyRedirectCookie}=deleted; Path=/; Max-Age=0`
     );
+
+    console.log('Redirecting to: ', `/applications/${applicationId}`);
     return {
       redirect: {
         destination: `/applications/${applicationId}`,
