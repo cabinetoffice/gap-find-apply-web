@@ -73,12 +73,15 @@ const unknownError = {
     },
   },
 };
-const submissionExists = {
-  response: {
-    data: {
-      code: 'SUBMISSION_ALREADY_CREATED',
-    },
+const propsSubmissionExistsRedirect = {
+  redirect: {
+    destination: routes.submissions.sections('1'),
+    permanent: false,
   },
+};
+const submissionExists = {
+  submissionId: '1',
+  submissionCreated: false,
 };
 const grantClosed = {
   response: {
@@ -100,14 +103,13 @@ describe('getServerSideProps', () => {
   });
 
   it('should redirect to applications dashboard if submission already exists', async () => {
-    (createSubmission as jest.Mock).mockImplementation(() => {
-      throw submissionExists;
-    });
+    (createSubmission as jest.Mock).mockReturnValue(submissionExists);
+
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
 
     const response = await getServerSideProps(context);
 
-    expect(response).toEqual(propsSubmissionExistsError);
+    expect(response).toEqual(propsSubmissionExistsRedirect);
     expect(createSubmission).toHaveBeenCalled();
     expect(createSubmission).toHaveBeenCalledWith('1', 'testJwt');
   });
