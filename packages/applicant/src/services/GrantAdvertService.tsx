@@ -1,6 +1,7 @@
 import axios from 'axios';
 import getConfig from 'next/config';
 import { axiosConfig } from '../utils/jwt';
+import { GrantMandatoryQuestionDto } from './GrantMandatoryQuestionService';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -43,4 +44,5 @@ export interface AdvertDto {
   isInternal?: boolean;
   grantSchemeId?: number;
   isAdvertInDatabase: boolean;
+  mandatoryQuestionDto?: GrantMandatoryQuestionDto;
 }
