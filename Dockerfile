@@ -25,18 +25,21 @@ ARG APP_NAME
 WORKDIR /app
 
 COPY yarn.lock ./
+COPY package.json ./
 
-COPY --from=build /app/packages/${APP_NAME}/package.json ./
-COPY --from=build /app/packages/${APP_NAME}/.env.example ./.env
-COPY --from=build /app/packages/${APP_NAME}/next.config.js ./
-COPY --from=build /app/packages/${APP_NAME}/next-logger.config.js ./
-COPY --from=build /app/packages/${APP_NAME}/.next/standalone ./
-COPY --from=build /app/packages/${APP_NAME}/.next/static ./.next/static
-COPY --from=build /app/packages/${APP_NAME}/public ./public
+COPY --from=build /app/packages/${APP_NAME}/package.json ./packages/${APP_NAME}/
+COPY --from=build /app/packages/${APP_NAME}/.env.example ./packages/${APP_NAME}/.env
+COPY --from=build /app/packages/${APP_NAME}/next.config.js ./packages/${APP_NAME}/
+COPY --from=build /app/packages/${APP_NAME}/next-logger.config.js ./packages/${APP_NAME}/
+COPY --from=build /app/packages/${APP_NAME}/.next/standalone ./packages/${APP_NAME}/
+COPY --from=build /app/packages/${APP_NAME}/.next/static ./packages/${APP_NAME}/.next/static
+COPY --from=build /app/packages/${APP_NAME}/public ./packages/${APP_NAME}/public
 
 ENV NODE_ENV production
 ENV CI true
 
 EXPOSE 3000
+
+WORKDIR /app/packages/${APP_NAME}
 
 ENTRYPOINT ["node", "server.js"]
