@@ -19,9 +19,6 @@ export const getServerSideProps = async ({
 }: GetServerSidePropsContext) => {
   const applyRedirectCookie = process.env.APPLYING_FOR_REDIRECT_COOKIE;
 
-  console.log('applyRedirectCookie: ', applyRedirectCookie);
-  console.log('applyRedirectCookie Value: ', req.cookies[applyRedirectCookie]);
-
   if (req.cookies[applyRedirectCookie]) {
     const applicationId = req.cookies[applyRedirectCookie];
     res.setHeader(
@@ -29,7 +26,6 @@ export const getServerSideProps = async ({
       `${applyRedirectCookie}=deleted; Path=/; Max-Age=0`
     );
 
-    console.log('Redirecting to: ', `/applications/${applicationId}`);
     return {
       redirect: {
         destination: `/applications/${applicationId}`,
@@ -49,7 +45,7 @@ export const getServerSideProps = async ({
       );
       return {
         redirect: {
-          destination: `/api/redirect-after-find${queryParams}`,
+          destination: `/api/redirect-from-find${queryParams}`,
           statusCode: 307,
         },
       };
