@@ -10,6 +10,6 @@ describe('confirmation message component', () => {
 
   it('should display the success message when no message is passed in', () => {
     render(<ConfirmationMessage />);
-    expect(screen.getByText('Success')).toBeDefined();
+    expect(screen.getByText('Successs')).toBeDefined();
   });
 });
