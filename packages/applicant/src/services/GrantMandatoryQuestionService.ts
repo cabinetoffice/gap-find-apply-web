@@ -42,6 +42,17 @@ export class GrantMandatoryQuestionService {
     return data;
   }
 
+  public async getMandatoryQuestionBySchemeId(
+    jwt: string,
+    schemeId: string
+  ): Promise<GrantMandatoryQuestionDto> {
+    const { data } = await axios.get<GrantMandatoryQuestionDto>(
+      `${this.BACKEND_HOST}/grant-mandatory-questions/?schemeId=${schemeId}`,
+      axiosConfig(jwt)
+    );
+    return data;
+  }
+
   public async updateMandatoryQuestion(
     jwt: string,
     mandatoryQuestionId: string,
