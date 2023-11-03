@@ -25,6 +25,7 @@ export const getServerSideProps = async ({
       'Set-Cookie',
       `${applyRedirectCookie}=deleted; Path=/; Max-Age=0`
     );
+
     return {
       redirect: {
         destination: `/applications/${applicationId}`,
@@ -44,7 +45,7 @@ export const getServerSideProps = async ({
       );
       return {
         redirect: {
-          destination: `/api/redirect-after-find${queryParams}`,
+          destination: `/api/redirect-from-find${queryParams}`,
           statusCode: 307,
         },
       };
