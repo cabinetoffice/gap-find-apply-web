@@ -63,7 +63,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: null,
       externalSubmissionUrl: null,
       isAdvertInDatabase: false,
-      mandatoryQuestionDto: null,
+      mandatoryQuestionsDto: null,
     };
 
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
@@ -85,7 +85,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
-      mandatoryQuestionDto: null,
+      mandatoryQuestionsDto: null,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -108,7 +108,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
-      mandatoryQuestionDto: null,
+      mandatoryQuestionsDto: null,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -130,7 +130,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
-      mandatoryQuestionDto: null,
+      mandatoryQuestionsDto: null,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -154,7 +154,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
-      mandatoryQuestionDto: null,
+      mandatoryQuestionsDto: null,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -168,8 +168,8 @@ describe('API Handler Tests', () => {
       'http://localhost/mandatory-questions/start?schemeId=456'
     );
   });
-  it('should redirect to the new Mandatory Question journey start page when advert is version 2 and mandatoryQuestionDto has not submissionId', async () => {
-    const mandatoryQuestionDto: GrantMandatoryQuestionDto = {
+  it('should redirect to the new Mandatory Question journey start page when advert is version 2 and mandatoryQuestionsDto has not submissionId', async () => {
+    const mandatoryQuestionsDto: GrantMandatoryQuestionDto = {
       submissionId: null,
     };
 
@@ -181,7 +181,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
-      mandatoryQuestionDto: mandatoryQuestionDto,
+      mandatoryQuestionsDto: mandatoryQuestionsDto,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -196,8 +196,8 @@ describe('API Handler Tests', () => {
     );
   });
 
-  it('should redirect to the submission page when advert is version 2 and mandatoryQuestionDto has already been answered', async () => {
-    const mandatoryQuestionDto: GrantMandatoryQuestionDto = {
+  it('should redirect to the submission page when advert is version 2 and mandatoryQuestionsDto has already been answered', async () => {
+    const mandatoryQuestionsDto: GrantMandatoryQuestionDto = {
       submissionId: '125',
     };
 
@@ -209,7 +209,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
-      mandatoryQuestionDto: mandatoryQuestionDto,
+      mandatoryQuestionsDto: mandatoryQuestionsDto,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(

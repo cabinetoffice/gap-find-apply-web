@@ -44,5 +44,5 @@ export interface AdvertDto {
   isInternal?: boolean;
   grantSchemeId?: number;
   isAdvertInDatabase: boolean;
-  mandatoryQuestionDto?: GrantMandatoryQuestionDto;
+  mandatoryQuestionsDto?: GrantMandatoryQuestionDto;
 }

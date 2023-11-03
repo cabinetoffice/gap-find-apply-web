@@ -29,7 +29,7 @@ export default async function handler(
       isInternal,
       grantSchemeId,
       isAdvertInDatabase,
-      mandatoryQuestionDto,
+      mandatoryQuestionsDto,
     } = await getAdvertBySlug(getJwtFromCookies(req), slug);
 
     if (!isAdvertInDatabase && isAdvertInContentful) {
@@ -46,12 +46,12 @@ export default async function handler(
     if (version === 2) {
       //in case the user already answered the mandatory questions, and reapply through find a grant,  redirect to the submission page
       if (
-        mandatoryQuestionDto !== null &&
-        mandatoryQuestionDto.submissionId !== null
+        mandatoryQuestionsDto !== null &&
+        mandatoryQuestionsDto.submissionId !== null
       ) {
         res.redirect(
           `${process.env.HOST}${routes.submissions.sections(
-            mandatoryQuestionDto.submissionId
+            mandatoryQuestionsDto.submissionId
           )}`
         );
       } else {
