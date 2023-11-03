@@ -59,7 +59,7 @@ export const generateMandatoryQuestionDetails = (
     },
     {
       id: 'fundingAmount',
-      label: 'How much funding are you appliying for?',
+      label: 'How much funding are you applying for?',
       value: mandatoryQuestion?.fundingAmount,
       url: routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId),
       status: 'Change',
