@@ -31,7 +31,7 @@ describe('Organisation type page', () => {
 
     screen.getByText('Why do we need this information?');
     screen.getByText(
-      'It helps us to identify your organisation. We use this information for due diligence checks and to prevent fraud.'
+      'It helps us to identify you or your organisation. We use this information for due diligence checks and to prevent fraud.'
     );
     screen.getByText('Choose one:');
   });
@@ -44,9 +44,9 @@ describe('Organisation type page', () => {
       name: 'Non-limited company',
       checked: false,
     });
-    screen.getByRole('radio', { name: 'Registered charity', checked: false });
+    screen.getByRole('radio', { name: 'Charity', checked: false });
     screen.getByRole('radio', {
-      name: 'Unregistered charity',
+      name: 'I am applying as an Individual',
       checked: false,
     });
     screen.getByRole('radio', { name: 'Other', checked: false });
@@ -57,7 +57,7 @@ describe('Organisation type page', () => {
       <OrganisationType
         {...getPageProps(getDefaultProps, {
           defaultFields: {
-            type: 'Registered charity',
+            type: 'Charity',
           },
         })}
       />
@@ -68,9 +68,9 @@ describe('Organisation type page', () => {
       name: 'Non-limited company',
       checked: false,
     });
-    screen.getByRole('radio', { name: 'Registered charity', checked: true });
+    screen.getByRole('radio', { name: 'Charity', checked: true });
     screen.getByRole('radio', {
-      name: 'Unregistered charity',
+      name: 'I am applying as an Individual',
       checked: false,
     });
     screen.getByRole('radio', { name: 'Other', checked: false });

@@ -7,6 +7,7 @@ interface Scheme {
   description?: string;
   contactEmail?: string;
   applicationFormId?: string;
+  version?: string;
 }
 
 export default Scheme;

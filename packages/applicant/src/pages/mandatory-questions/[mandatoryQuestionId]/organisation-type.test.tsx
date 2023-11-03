@@ -30,7 +30,7 @@ describe('Organisation Type page', () => {
     );
 
     screen.getByRole('heading', {
-      name: 'Choose your organisation type',
+      name: 'Choose your application type',
       level: 1,
     });
   });
@@ -42,7 +42,9 @@ describe('Organisation Type page', () => {
       />
     );
 
-    screen.getByText('Choose the option that best describes your organisation');
+    screen.getByText(
+      'Choose the option that best describes you or your organisation'
+    );
   });
 
   it('should display text input with no default', () => {
@@ -57,9 +59,9 @@ describe('Organisation Type page', () => {
       name: 'Non-limited company',
       checked: false,
     });
-    screen.getByRole('radio', { name: 'Registered charity', checked: false });
+    screen.getByRole('radio', { name: 'Charity', checked: false });
     screen.getByRole('radio', {
-      name: 'Unregistered charity',
+      name: 'I am applying as an Individual',
       checked: false,
     });
     screen.getByRole('radio', { name: 'Other', checked: false });
@@ -70,7 +72,7 @@ describe('Organisation Type page', () => {
       <MandatoryQuestionOrganisationTypePage
         {...getPageProps(getDefaultProps, {
           defaultFields: {
-            orgType: 'Registered charity',
+            orgType: 'Charity',
           },
         })}
       />
@@ -81,9 +83,9 @@ describe('Organisation Type page', () => {
       name: 'Non-limited company',
       checked: false,
     });
-    screen.getByRole('radio', { name: 'Registered charity', checked: true });
+    screen.getByRole('radio', { name: 'Charity', checked: true });
     screen.getByRole('radio', {
-      name: 'Unregistered charity',
+      name: 'I am applying as an Individual',
       checked: false,
     });
     screen.getByRole('radio', { name: 'Other', checked: false });
