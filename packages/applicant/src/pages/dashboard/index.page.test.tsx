@@ -209,7 +209,7 @@ describe('getServerSideProps', () => {
     );
     expectObjectEquals(result, {
       redirect: {
-        destination: '/api/redirect-after-find?slug=slug-123',
+        destination: '/api/redirect-from-find?slug=slug-123',
         statusCode: 307,
       },
     });
