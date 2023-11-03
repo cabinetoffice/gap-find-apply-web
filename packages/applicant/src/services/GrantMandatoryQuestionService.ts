@@ -87,4 +87,5 @@ export interface GrantMandatoryQuestionDto {
   fundingLocation?: string[];
   schemeId?: number;
   submissionId?: string;
+  mandatoryQuestionsComplete?: boolean;
 }
