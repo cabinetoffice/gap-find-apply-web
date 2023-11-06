@@ -44,16 +44,12 @@ export default async function handler(
     }
 
     if (version === 2) {
-      //in case the user already answered the mandatory questions, and reapply through find a grant,  redirect to the submission page
+      //in case the user already answered the mandatory questions, and reapply through find a grant,  redirect to the applications list page
       if (
         mandatoryQuestionsDto !== null &&
         mandatoryQuestionsDto.submissionId !== null
       ) {
-        res.redirect(
-          `${process.env.HOST}${routes.submissions.sections(
-            mandatoryQuestionsDto.submissionId
-          )}`
-        );
+        res.redirect(`${process.env.HOST}${routes.applications}`);
       } else {
         res.redirect(
           `${process.env.HOST}${routes.mandatoryQuestions.startPage(
