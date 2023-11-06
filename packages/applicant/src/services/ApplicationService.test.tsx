@@ -1,7 +1,11 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import getConfig from 'next/config';
-import { getApplicationsListById } from './ApplicationService';
+import {
+  Application,
+  getApplicationById,
+  getApplicationsListById,
+} from './ApplicationService';
 jest.mock('next/config', () => () => {
   return {
     serverRuntimeConfig: {
@@ -15,8 +19,8 @@ jest.mock('next/config', () => () => {
 });
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
-const applicantId = '12345678';
 const getApplicantByIdUrl = `${BACKEND_HOST}/submissions`;
+const getApplicationByIdUrl = `${BACKEND_HOST}/grant-application/applicationId`;
 
 const MockApplicationsData = [
   {
@@ -43,6 +47,44 @@ describe('Axios call to get application list data', () => {
     expect(result).toEqual(MockApplicationsData);
     expect(spy).toBeCalled();
     expect(spy).toBeCalledWith(getApplicantByIdUrl, {
+      headers: {
+        Authorization: `Bearer testJwt`,
+        Accept: 'application/json',
+      },
+    });
+  });
+});
+
+describe('getApplicationById', () => {
+  it('should get application data', async () => {
+    const application: Application = {
+      id: 1,
+      grantScheme: {
+        id: 1,
+        funderId: 1,
+        lastUpdated: 'string',
+        lastUpdatedBy: 1,
+        ggisIdentifier: 'string',
+        name: 'string',
+        email: 'string',
+        version: 1,
+        createdDate: 'string',
+      },
+      version: 1,
+      created: 'string',
+      lastUpdated: 'string',
+      lastUpdatedBy: 1,
+      applicationName: 'string',
+      applicationStatus: 'string',
+      definition: 'string',
+    };
+    const spy = jest.spyOn(axios, 'get');
+    const mock = new MockAdapter(axios);
+    mock.onGet(getApplicationByIdUrl).reply(200, application);
+    const result = await getApplicationById('applicationId', 'testJwt');
+    expect(result).toEqual(application);
+    expect(spy).toBeCalled();
+    expect(spy).toBeCalledWith(getApplicationByIdUrl, {
       headers: {
         Authorization: `Bearer testJwt`,
         Accept: 'application/json',
