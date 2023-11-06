@@ -34,7 +34,6 @@ export const getServerSideProps: GetServerSideProps = async ({
       application.grantScheme.id.toString(),
       jwt
     );
-
     if (scheme.version === 1) {
       const result = await createSubmission(applicationId, jwt);
       const grantSubmissionId = result.submissionId;

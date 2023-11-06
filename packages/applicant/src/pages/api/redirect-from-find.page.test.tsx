@@ -218,7 +218,7 @@ describe('API Handler Tests', () => {
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     await handler(req(), res());
-    console.log('mockedRedirect', mockedRedirect);
+
     expect(mockedRedirect).toHaveBeenCalledWith(
       'http://localhost/applications'
     );
