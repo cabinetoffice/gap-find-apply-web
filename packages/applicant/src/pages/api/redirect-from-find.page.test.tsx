@@ -220,7 +220,7 @@ describe('API Handler Tests', () => {
     await handler(req(), res());
     console.log('mockedRedirect', mockedRedirect);
     expect(mockedRedirect).toHaveBeenCalledWith(
-      'http://localhost/submissions/125/sections'
+      'http://localhost/applications'
     );
   });
 
