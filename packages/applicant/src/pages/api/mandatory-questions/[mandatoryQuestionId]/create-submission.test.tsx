@@ -1,9 +1,15 @@
 import { merge } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { GrantApplicant } from '../../../../models/GrantApplicant';
 import {
   AdvertDto,
   getAdvertBySchemeId,
 } from '../../../../services/GrantAdvertService';
+import {
+  GrantApplicantOrganisationProfileService,
+  UpdateOrganisationDetailsDto,
+} from '../../../../services/GrantApplicantOrganisationProfileService';
+import { GrantApplicantService } from '../../../../services/GrantApplicantService';
 import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
@@ -16,12 +22,6 @@ import { Overrides } from '../../../../testUtils/unitTestHelpers';
 import { getJwtFromCookies } from '../../../../utils/jwt';
 import { routes } from '../../../../utils/routes';
 import handler from './create-submission.page';
-import {
-  GrantApplicantOrganisationProfileService,
-  UpdateOrganisationDetailsDto,
-} from '../../../../services/GrantApplicantOrganisationProfileService';
-import { GrantApplicant } from '../../../../models/GrantApplicant';
-import { GrantApplicantService } from '../../../../services/GrantApplicantService';
 
 jest.mock('../../../../services/GrantAdvertService');
 jest.mock('../../../../services/SubmissionService');

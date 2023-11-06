@@ -4,9 +4,10 @@ import CustomLink from '../../../../components/custom-link/CustomLink';
 const UnpublishSummary = ({
   applicationId,
   grantSchemeId,
+  applyToApplicationUrl,
 }: UnpublishSummaryProps) => {
   const { publicRuntimeConfig } = getConfig();
-  const linkToApplicantApplicationForm = `${publicRuntimeConfig.APPLICANT_DOMAIN}/applications/${applicationId}`;
+  const linkToApplicantApplicationForm = `${publicRuntimeConfig.APPLICANT_DOMAIN}${applyToApplicationUrl}`;
   const findAGrantLink = (
     <a href={publicRuntimeConfig.FIND_A_GRANT_URL} className="govuk-link">
       Find a grant
@@ -65,6 +66,7 @@ const UnpublishSummary = ({
 type UnpublishSummaryProps = {
   applicationId: string;
   grantSchemeId: string;
+  applyToApplicationUrl: string;
 };
 
 export default UnpublishSummary;

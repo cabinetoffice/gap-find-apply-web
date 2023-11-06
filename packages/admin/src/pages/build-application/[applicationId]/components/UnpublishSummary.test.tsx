@@ -8,6 +8,7 @@ describe('UnpublishSummary component', () => {
       <UnpublishSummary
         applicationId="testApplicationId"
         grantSchemeId="testGrantSchemeId"
+        applyToApplicationUrl="/applications/testApplicationId"
       />
     );
   });

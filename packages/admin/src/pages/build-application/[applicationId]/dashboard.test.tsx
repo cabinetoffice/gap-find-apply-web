@@ -1,10 +1,13 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import { merge } from 'lodash';
 import {
   GetServerSidePropsContext,
   GetServerSidePropsResult,
   Redirect,
 } from 'next';
+import { getApplicationFormSummary } from '../../../services/ApplicationService';
+import { getGrantScheme } from '../../../services/SchemeService';
 import {
   ApplicationFormSection,
   ApplicationFormSummary,
@@ -12,8 +15,6 @@ import {
 import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
 import ServiceError from '../../../types/ServiceError';
 import Dashboard, { getServerSideProps } from './dashboard.page';
-import { getApplicationFormSummary } from '../../../services/ApplicationService';
-import { merge } from 'lodash';
 
 jest.mock('next/config', () => () => {
   return {
@@ -27,8 +28,12 @@ jest.mock('next/config', () => () => {
   };
 });
 jest.mock('../../../services/ApplicationService');
+jest.mock('../../../services/SchemeService');
 const mockedGetApplicationFormSummary =
   getApplicationFormSummary as jest.MockedFn<typeof getApplicationFormSummary>;
+const mockedGetGrantScheme = getGrantScheme as jest.MockedFn<
+  typeof getGrantScheme
+>;
 
 describe('Dashboard', () => {
   describe('Dashboard page', () => {
@@ -210,6 +215,15 @@ describe('Dashboard', () => {
     ] as ApplicationFormSection[];
 
     beforeEach(() => {
+      mockedGetGrantScheme.mockResolvedValue({
+        schemeId: 'testSchemeId',
+        version: '1',
+        name: 'testSchemeName',
+        ggisReference: 'testGgisReference',
+        funderId: 'GRANT',
+        createdDate: 'testCreatedDate',
+      });
+
       mockedGetApplicationFormSummary.mockResolvedValue({
         grantApplicationId: '54321',
         grantSchemeId: '12345',
@@ -217,9 +231,10 @@ describe('Dashboard', () => {
         applicationStatus: 'DRAFT',
         audit: {
           version: 1,
-          createdDate: 'createdDate',
+          created: 'createdDate',
           lastUpdatedDate: 'lastUpdatedDate',
           lastUpdatedBy: 'lastUpdatedBy',
+          lastPublished: 'lastPublishedDate',
         },
         sections: sections,
       });
@@ -293,6 +308,32 @@ describe('Dashboard', () => {
       )) as NextGetServerSidePropsResponse;
 
       expect(response.props.recentlyUnpublished).toStrictEqual(true);
+    });
+    it('Return correct applyToApplicationUrl when schemeversion is 1', async () => {
+      const response = (await getServerSideProps(
+        getContext()
+      )) as NextGetServerSidePropsResponse;
+
+      expect(response.props.applyToApplicationUrl).toStrictEqual(
+        '/applications/applicationId'
+      );
+    });
+    it('Return correct applyToApplicationUrl when schemeversion is 2', async () => {
+      mockedGetGrantScheme.mockResolvedValue({
+        schemeId: 'testSchemeId',
+        version: '2',
+        name: 'testSchemeName',
+        ggisReference: 'testGgisReference',
+        funderId: 'GRANT',
+        createdDate: 'testCreatedDate',
+      });
+      const response = (await getServerSideProps(
+        getContext()
+      )) as NextGetServerSidePropsResponse;
+
+      expect(response.props.applyToApplicationUrl).toStrictEqual(
+        '/mandatory-questions/start?schemeId=testSchemeId'
+      );
     });
   });
 });
