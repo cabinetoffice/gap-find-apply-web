@@ -2,11 +2,51 @@ import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
+import { GrantMandatoryQuestionService } from '../../services/GrantMandatoryQuestionService';
 import InferProps from '../../types/InferProps';
+import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 
-export async function getServerSideProps({ query }: GetServerSidePropsContext) {
+export async function getServerSideProps({
+  req,
+  query,
+}: GetServerSidePropsContext) {
   const { schemeId } = query as Record<string, string>;
+  const jwt = getJwtFromCookies(req);
+  const mandatoryQuestionService = GrantMandatoryQuestionService.getInstance();
+  try {
+    const mandatoryQuestionExists =
+      await mandatoryQuestionService.existBySchemeIdAndApplicantId(
+        schemeId,
+        jwt
+      );
+    if (mandatoryQuestionExists) {
+      const mandatoryQuestion =
+        await mandatoryQuestionService.getMandatoryQuestionBySchemeId(
+          jwt,
+          schemeId
+        );
+      if (
+        mandatoryQuestion.submissionId !== null &&
+        mandatoryQuestion.submissionId !== undefined
+      ) {
+        return {
+          redirect: {
+            destination: routes.applications,
+            permanent: false,
+          },
+        };
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    return {
+      redirect: {
+        destination: `/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to retrieve your mandatory questions","linkAttributes":{"href":"/mandatory-questions/start?schemeId=${schemeId}","linkText":"Please return","linkInformation":" and try again."}}`,
+        permanent: false,
+      },
+    };
+  }
   return {
     props: {
       schemeId,
