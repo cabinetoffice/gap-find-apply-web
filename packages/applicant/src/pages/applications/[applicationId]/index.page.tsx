@@ -130,9 +130,9 @@ const checkIfMandatoryQuestionIsCompleted = async (
       jwt,
       scheme.id.toString()
     );
-  console.log('mandatoryQuestions', mandatoryQuestions);
+
   if (
-    mandatoryQuestions.submissionId !== null ||
+    mandatoryQuestions.submissionId !== null &&
     mandatoryQuestions.submissionId !== undefined
   ) {
     return {
