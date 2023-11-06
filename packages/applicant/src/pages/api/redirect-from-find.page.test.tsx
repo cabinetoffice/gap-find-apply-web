@@ -6,6 +6,7 @@ import {
   checkIfGrantExistsInContentful,
   getAdvertBySlug,
 } from '../../services/GrantAdvertService';
+import { GrantMandatoryQuestionDto } from '../../services/GrantMandatoryQuestionService';
 import { Overrides } from '../../testUtils/unitTestHelpers';
 import { getJwtFromCookies } from '../../utils/jwt';
 import handler from './redirect-from-find.page';
@@ -62,6 +63,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: null,
       externalSubmissionUrl: null,
       isAdvertInDatabase: false,
+      mandatoryQuestionsDto: null,
     };
 
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
@@ -83,6 +85,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
+      mandatoryQuestionsDto: null,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -105,6 +108,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
+      mandatoryQuestionsDto: null,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -126,6 +130,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
+      mandatoryQuestionsDto: null,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -149,6 +154,7 @@ describe('API Handler Tests', () => {
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
+      mandatoryQuestionsDto: null,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -162,6 +168,62 @@ describe('API Handler Tests', () => {
       'http://localhost/mandatory-questions/start?schemeId=456'
     );
   });
+  it('should redirect to the new Mandatory Question journey start page when advert is version 2 and mandatoryQuestionsDto has not submissionId', async () => {
+    const mandatoryQuestionsDto: GrantMandatoryQuestionDto = {
+      submissionId: null,
+    };
+
+    const advertDTO: AdvertDto = {
+      id: '123',
+      version: 2,
+      grantApplicationId: 123,
+      isInternal: false,
+      grantSchemeId: 456,
+      externalSubmissionUrl: 'http://example.com',
+      isAdvertInDatabase: true,
+      mandatoryQuestionsDto: mandatoryQuestionsDto,
+    };
+
+    (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
+      advertIsInContenful
+    );
+    (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    await handler(req(), res());
+
+    expect(mockedRedirect).toHaveBeenCalledWith(
+      'http://localhost/mandatory-questions/start?schemeId=456'
+    );
+  });
+
+  it('should redirect to the submission page when advert is version 2 and mandatoryQuestionsDto has already been answered', async () => {
+    const mandatoryQuestionsDto: GrantMandatoryQuestionDto = {
+      submissionId: '125',
+    };
+
+    const advertDTO: AdvertDto = {
+      id: '123',
+      version: 2,
+      grantApplicationId: 123,
+      isInternal: false,
+      grantSchemeId: 456,
+      externalSubmissionUrl: 'http://example.com',
+      isAdvertInDatabase: true,
+      mandatoryQuestionsDto: mandatoryQuestionsDto,
+    };
+
+    (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
+      advertIsInContenful
+    );
+    (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    await handler(req(), res());
+
+    expect(mockedRedirect).toHaveBeenCalledWith(
+      'http://localhost/applications'
+    );
+  });
+
   it('should redirect to the service Error when there is an error in the call to the backend', async () => {
     (getAdvertBySlug as jest.Mock).mockRejectedValue(new Error('error'));
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');

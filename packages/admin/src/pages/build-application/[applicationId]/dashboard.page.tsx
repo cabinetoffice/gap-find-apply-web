@@ -1,18 +1,18 @@
 import { GetServerSideProps } from 'next';
-import React from 'react';
+import getConfig from 'next/config';
+import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import { getApplicationFormSummary } from '../../../services/ApplicationService';
+import { getGrantScheme } from '../../../services/SchemeService';
 import {
   ApplicationFormSection,
   ApplicationFormSummary,
 } from '../../../types/ApplicationForm';
 import ServiceError from '../../../types/ServiceError';
-import Sections from './components/Sections';
-import PublishButton from './components/PublishButton';
-import UnpublishSummary from './components/UnpublishSummary';
-import CustomLink from '../../../components/custom-link/CustomLink';
 import { getSessionIdFromCookies } from '../../../utils/session';
-import getConfig from 'next/config';
+import PublishButton from './components/PublishButton';
+import Sections from './components/Sections';
+import UnpublishSummary from './components/UnpublishSummary';
 
 export const getServerSideProps: GetServerSideProps = async ({
   params,
@@ -22,10 +22,15 @@ export const getServerSideProps: GetServerSideProps = async ({
   const { applicationId } = params as Record<string, string>;
   const { recentlyUnpublished } = query;
 
+  let grantScheme;
   let applicationFormSummary;
   try {
     applicationFormSummary = await getApplicationFormSummary(
       applicationId,
+      getSessionIdFromCookies(req)
+    );
+    grantScheme = await getGrantScheme(
+      applicationFormSummary.grantSchemeId,
       getSessionIdFromCookies(req)
     );
   } catch (err) {
@@ -49,6 +54,11 @@ export const getServerSideProps: GetServerSideProps = async ({
     };
   }
 
+  const applyToApplicationUrl =
+    grantScheme.version === '1'
+      ? `/applications/${applicationId}`
+      : `/mandatory-questions/start?schemeId=${grantScheme.schemeId}`;
+
   return {
     props: {
       sections: applicationFormSummary.sections,
@@ -57,6 +67,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       grantSchemeId: applicationFormSummary.grantSchemeId,
       applicationStatus: applicationFormSummary.applicationStatus,
       recentlyUnpublished: !!recentlyUnpublished,
+      applyToApplicationUrl,
     },
   };
 };
@@ -68,6 +79,7 @@ const Dashboard = ({
   grantSchemeId,
   applicationStatus,
   recentlyUnpublished,
+  applyToApplicationUrl,
 }: DashboardProps) => {
   const { publicRuntimeConfig } = getConfig();
   const findAGrantLink = (
@@ -146,6 +158,7 @@ const Dashboard = ({
           <UnpublishSummary
             applicationId={applicationId}
             grantSchemeId={grantSchemeId}
+            applyToApplicationUrl={applyToApplicationUrl}
           />
         ) : (
           <PublishButton
@@ -166,6 +179,7 @@ interface DashboardProps {
   grantSchemeId: string;
   applicationStatus: ApplicationFormSummary['applicationStatus'];
   recentlyUnpublished: boolean;
+  applyToApplicationUrl: string;
 }
 
 export default Dashboard;

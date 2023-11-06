@@ -36,7 +36,7 @@ export default function OrganisationType({
               <>
                 <Details
                   title="Why do we need this information?"
-                  text="It helps us to identify your organisation. We use this information for due diligence checks and to prevent fraud."
+                  text="It helps us to identify you or your organisation. We use this information for due diligence checks and to prevent fraud."
                 />
                 <p className="govuk-body">Choose one:</p>
               </>
@@ -46,8 +46,11 @@ export default function OrganisationType({
             radioOptions={[
               { label: 'Limited company', value: 'Limited company' },
               { label: 'Non-limited company', value: 'Non-limited company' },
-              { label: 'Registered charity', value: 'Registered charity' },
-              { label: 'Unregistered charity', value: 'Unregistered charity' },
+              { label: 'Charity', value: 'Charity' },
+              {
+                label: 'I am applying as an Individual',
+                value: 'I am applying as an Individual',
+              },
               { label: 'Other', value: 'Other' },
             ]}
             defaultChecked={defaultFields.type}

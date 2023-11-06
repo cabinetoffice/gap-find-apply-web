@@ -110,6 +110,45 @@ describe('Axios call to get mandatory question data by submission id', () => {
   });
 });
 
+describe('Axios call to get mandatory question data by scheme id', () => {
+  const spy = jest.spyOn(axios, 'get');
+
+  it('should get mandatoryQuestion data by scheme id', async () => {
+    const SCHEME_ID = '1';
+    const MockMandatoryQuestionData: GrantMandatoryQuestionDto = {
+      schemeId: 1,
+      submissionId: null,
+      name: null,
+      addressLine1: null,
+      addressLine2: null,
+      city: null,
+      county: null,
+      postcode: null,
+      charityCommissionNumber: null,
+      companiesHouseNumber: null,
+      orgType: null,
+      fundingAmount: null,
+      fundingLocation: null,
+    };
+    const { serverRuntimeConfig } = getConfig();
+    const BACKEND_HOST = serverRuntimeConfig.backendHost;
+    const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions/scheme/${SCHEME_ID}`;
+    mock.onGet(expectedUrl).reply(200, MockMandatoryQuestionData);
+
+    const result = await subject.getMandatoryQuestionBySchemeId(
+      'testJwt',
+      SCHEME_ID
+    );
+    expect(result).toEqual(MockMandatoryQuestionData);
+    expect(spy).toBeCalled();
+    expect(spy).toBeCalledWith(expectedUrl, {
+      headers: {
+        Authorization: `Bearer testJwt`,
+        Accept: 'application/json',
+      },
+    });
+  });
+});
 describe('update mandatoryQuestion', () => {
   const spy = jest.spyOn(axios, 'patch');
 
@@ -160,5 +199,30 @@ describe('create mandatoryQuestion', () => {
         },
       }
     );
+  });
+});
+
+describe('Axios call to existBySchemeIdAndApplicantId', () => {
+  const spy = jest.spyOn(axios, 'get');
+
+  it('should get true when mq exist for that scheme', async () => {
+    const SCHEME_ID = '1';
+    const { serverRuntimeConfig } = getConfig();
+    const BACKEND_HOST = serverRuntimeConfig.backendHost;
+    const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions/scheme/${SCHEME_ID}/exists`;
+    mock.onGet(expectedUrl).reply(200, true);
+
+    const result = await subject.existBySchemeIdAndApplicantId(
+      SCHEME_ID,
+      'testJwt'
+    );
+    expect(result).toEqual(true);
+    expect(spy).toBeCalled();
+    expect(spy).toBeCalledWith(expectedUrl, {
+      headers: {
+        Authorization: `Bearer testJwt`,
+        Accept: 'application/json',
+      },
+    });
   });
 });

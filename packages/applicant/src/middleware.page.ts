@@ -21,6 +21,7 @@ export const config = {
     '/grant-is-closed',
     '/sign-in-details',
     '/api/redirect-from-find',
+    '/mandatory-questions/:path*',
   ],
 };
 
