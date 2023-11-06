@@ -6,9 +6,9 @@ import {
 
 jest.mock('axios');
 
-describe('SubmissionsService', () => {
+describe('MandatoryQuestionsService', () => {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
-  const BASE_SUBMISSIONS_URL =
+  const BASE_MANDATORY_QUESTIONS_URL =
     process.env.BACKEND_HOST + '/mandatory-questions';
 
   describe('spotlightExport function', () => {
@@ -18,7 +18,7 @@ describe('SubmissionsService', () => {
       await spotlightExport('testSessionCookie', 'testSchemeId');
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SUBMISSIONS_URL}/spotlight-export/testSchemeId`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/spotlight-export/testSchemeId`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           responseType: 'arraybuffer',
@@ -38,7 +38,7 @@ describe('SubmissionsService', () => {
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SUBMISSIONS_URL}/does-scheme-have-completed-mandatory-questions/testSchemeId`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/does-scheme-have-completed-mandatory-questions/testSchemeId`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           withCredentials: true,
@@ -56,7 +56,7 @@ describe('SubmissionsService', () => {
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SUBMISSIONS_URL}/does-scheme-have-completed-mandatory-questions/testSchemeId`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/does-scheme-have-completed-mandatory-questions/testSchemeId`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           withCredentials: true,

@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { axiosSessionConfig } from '../utils/session';
 
-const BASE_SUBMISSIONS_URL = process.env.BACKEND_HOST + '/mandatory-questions';
+const BASE_MANDATORY_QUESTIONS_URL =
+  process.env.BACKEND_HOST + '/mandatory-questions';
 
 const spotlightExport = async (sessionCookie: string, schemeId: string) => {
   const response = await axios.get(
-    `${BASE_SUBMISSIONS_URL}/spotlight-export/${schemeId}`,
+    `${BASE_MANDATORY_QUESTIONS_URL}/spotlight-export/${schemeId}`,
     {
       withCredentials: true,
       responseType: 'arraybuffer',
@@ -22,7 +23,7 @@ const completedMandatoryQuestions = async (
   sessionCookie: string
 ) => {
   const response = await axios.get(
-    `${BASE_SUBMISSIONS_URL}/does-scheme-have-completed-mandatory-questions/${schemeId}`,
+    `${BASE_MANDATORY_QUESTIONS_URL}/does-scheme-have-completed-mandatory-questions/${schemeId}`,
     axiosSessionConfig(sessionCookie)
   );
   return response.data;
