@@ -35,6 +35,7 @@ function isWithinNumberOfMinsOfExpiry(expiresAt: Date, numberOfMins: number) {
 
 export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
   const res = NextResponse.redirect(redirectUri);
+
   if (newApplicationPattern.test({ pathname: req.nextUrl.pathname })) {
     res.cookies.set(
       process.env.APPLYING_FOR_REDIRECT_COOKIE,
@@ -52,6 +53,16 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
     redirectFromFindPattern.test({ pathname: req.nextUrl.pathname })
   ) {
     res.cookies.set(process.env.FIND_REDIRECT_COOKIE, req.nextUrl.search, {
+      path: '/',
+      secure: true,
+      httpOnly: true,
+      maxAge: 900,
+    });
+  } else if (
+    process.env.MANDATORY_QUESTIONS_ENABLED === 'true' &&
+    mandatoryQuestionPattern.test({ pathname: req.nextUrl.pathname })
+  ) {
+    res.cookies.set(process.env.MQ_REDIRECT_COOKIE, `${req.nextUrl.search}`, {
       path: '/',
       secure: true,
       httpOnly: true,
@@ -102,6 +113,7 @@ export async function middleware(req: NextRequest) {
   } catch (err) {
     console.error(err);
     const res = buildMiddlewareResponse(req, HOST);
+
     return res;
   }
 
@@ -128,6 +140,10 @@ export async function middleware(req: NextRequest) {
 
 const newApplicationPattern = new URLPattern({
   pathname: '/applications/:applicationId([0-9]+)',
+});
+
+const mandatoryQuestionPattern = new URLPattern({
+  pathname: '/mandatory-questions/start',
 });
 
 const redirectFromFindPattern = new URLPattern({

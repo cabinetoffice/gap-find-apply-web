@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { Optional, expectObjectEquals, getContext } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 import { DescriptionListProps } from '../../components/description-list/DescriptionList';
 import { GrantApplicant } from '../../models/GrantApplicant';
@@ -6,7 +7,6 @@ import { getApplicationsListById } from '../../services/ApplicationService';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { getServerSideProps } from './index.page';
-import { Optional, expectObjectEquals, getContext } from 'gap-web-ui';
 
 jest.mock('../../services/ApplicationService');
 jest.mock('../../utils/jwt');
@@ -77,6 +77,13 @@ const MockApplicationsList = [
 
 describe('getServerSideProps', () => {
   const env = process.env;
+  const APPLYING_FOR_REDIRECT_COOKIE_BACKUP =
+    process.env.APPLYING_FOR_REDIRECT_COOKIE;
+  const FIND_REDIRECT_COOKIE_BACKUP = process.env.FIND_REDIRECT_COOKIE;
+  const MQ_REDIRECT_COOKIE_BACKUP = process.env.MQ_REDIRECT_COOKIE;
+  const MANDATORY_QUESTIONS_ENABLED_BACKUP =
+    process.env.MANDATORY_QUESTIONS_ENABLED;
+  const ONE_LOGIN_ENABLED_BACKUP = process.env.ONE_LOGIN_ENABLED;
 
   function getDefaultContext(): Optional<GetServerSidePropsContext> {
     return {
@@ -90,15 +97,24 @@ describe('getServerSideProps', () => {
     jest.resetModules();
     process.env = { ...env };
     process.env.APPLYING_FOR_REDIRECT_COOKIE = 'testRedirectCookie';
+    process.env.FIND_REDIRECT_COOKIE = 'testFindRedirectCookie';
+    process.env.MQ_REDIRECT_COOKIE = 'testMqRedirectCookie';
+    process.env.MANDATORY_QUESTIONS_ENABLED = 'false';
+    process.env.ONE_LOGIN_ENABLED = 'false';
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    process.env.APPLYING_FOR_REDIRECT_COOKIE =
+      APPLYING_FOR_REDIRECT_COOKIE_BACKUP;
+    process.env.FIND_REDIRECT_COOKIE = FIND_REDIRECT_COOKIE_BACKUP;
+    process.env.MQ_REDIRECT_COOKIE = MQ_REDIRECT_COOKIE_BACKUP;
+    process.env.MANDATORY_QUESTIONS_ENABLED =
+      MANDATORY_QUESTIONS_ENABLED_BACKUP;
+    process.env.ONE_LOGIN_ENABLED = ONE_LOGIN_ENABLED_BACKUP;
   });
 
   it('should return a DescriptionListProps object', async () => {
-    const oneLoginEnabledBackup = process.env.ONE_LOGIN_ENABLED;
-    process.env.ONE_LOGIN_ENABLED = 'false';
     const getGrantApplicantSpy = jest
       .spyOn(GrantApplicantService.prototype, 'getGrantApplicant')
       .mockResolvedValue(MOCK_GRANT_APPLICANT);
@@ -121,12 +137,9 @@ describe('getServerSideProps', () => {
         oneLoginEnabled: false,
       },
     });
-    process.env.ONE_LOGIN_ENABLED = oneLoginEnabledBackup;
   });
 
   it('should return a DescriptionListProps object with detail null', async () => {
-    const oneLoginEnabledBackup = process.env.ONE_LOGIN_ENABLED;
-    process.env.ONE_LOGIN_ENABLED = 'false';
     const getGrantApplicantSpy = jest
       .spyOn(GrantApplicantService.prototype, 'getGrantApplicant')
       .mockResolvedValue(MOCK_GRANT_APPLICANT_NO_LEGAL_NAME);
@@ -155,7 +168,6 @@ describe('getServerSideProps', () => {
         oneLoginEnabled: false,
       },
     });
-    process.env.ONE_LOGIN_ENABLED = oneLoginEnabledBackup;
   });
 
   const mockSetHeader = jest.fn();
@@ -187,8 +199,6 @@ describe('getServerSideProps', () => {
   });
 
   it('should redirect to find redirect page', async () => {
-    const mandatoryQuestionsEnabledBackup =
-      process.env.MANDATORY_QUESTIONS_ENABLED;
     process.env.MANDATORY_QUESTIONS_ENABLED = 'true';
     const result = await getServerSideProps(
       getContext(getDefaultContext, {
@@ -213,13 +223,9 @@ describe('getServerSideProps', () => {
         statusCode: 307,
       },
     });
-    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
   });
 
   it('should not redirect to find redirect page', async () => {
-    const mandatoryQuestionsEnabledBackup =
-      process.env.MANDATORY_QUESTIONS_ENABLED;
-    process.env.MANDATORY_QUESTIONS_ENABLED = 'false';
     const result = await getServerSideProps(
       getContext(getDefaultContext, {
         req: {
@@ -232,11 +238,54 @@ describe('getServerSideProps', () => {
         },
       })
     );
-
+    expectObjectEquals(result, {
+      props: {
+        descriptionList: {
+          data: [
+            { term: 'Email', detail: MOCK_GRANT_APPLICANT_NO_LEGAL_NAME.email },
+            {
+              term: 'Organisation',
+              detail: null,
+            },
+          ],
+          needAddOrChangeButtons: false,
+          needBorder: false,
+        },
+        hasApplications: true,
+        bannerProps: null,
+        oneLoginEnabled: false,
+      },
+    });
     expect(mockSetHeader).not.toBeCalledWith(
       'Set-Cookie',
       `${process.env.FIND_REDIRECT_COOKIE}=deleted; Path=/; Max-Age=0`
     );
-    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
+  });
+
+  it('should redirect to mandatory question start page', async () => {
+    process.env.MANDATORY_QUESTIONS_ENABLED = 'true';
+    const result = await getServerSideProps(
+      getContext(getDefaultContext, {
+        req: {
+          cookies: {
+            [process.env.MQ_REDIRECT_COOKIE]: '?schemeId=15',
+          },
+        },
+        res: {
+          setHeader: mockSetHeader,
+        },
+      })
+    );
+
+    expect(mockSetHeader).toBeCalledWith(
+      'Set-Cookie',
+      `${process.env.MQ_REDIRECT_COOKIE}=deleted; Path=/; Max-Age=0`
+    );
+    expectObjectEquals(result, {
+      redirect: {
+        destination: '/mandatory-questions/start?schemeId=15',
+        statusCode: 307,
+      },
+    });
   });
 });

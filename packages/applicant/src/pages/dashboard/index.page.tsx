@@ -5,9 +5,9 @@ import Meta from '../../components/partials/Meta';
 import { GrantApplicant } from '../../models/GrantApplicant';
 import { getApplicationsListById } from '../../services/ApplicationService';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
+import InferProps from '../../types/InferProps';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { ApplicantDashboard } from './Dashboard';
-import InferProps from '../../types/InferProps';
 
 const SUCCEEDED = 'SUCCEEDED';
 const FAILED = 'FAILED';
@@ -36,6 +36,7 @@ export const getServerSideProps = async ({
 
   if (process.env.MANDATORY_QUESTIONS_ENABLED === 'true') {
     const findRedirectCookie = process.env.FIND_REDIRECT_COOKIE;
+    const mandatoryQuestionRedirectCookie = process.env.MQ_REDIRECT_COOKIE;
 
     if (req.cookies[findRedirectCookie]) {
       const queryParams = req.cookies[findRedirectCookie];
@@ -46,6 +47,20 @@ export const getServerSideProps = async ({
       return {
         redirect: {
           destination: `/api/redirect-from-find${queryParams}`,
+          statusCode: 307,
+        },
+      };
+    }
+
+    if (req.cookies[mandatoryQuestionRedirectCookie]) {
+      const queryParams = req.cookies[mandatoryQuestionRedirectCookie];
+      res.setHeader(
+        'Set-Cookie',
+        `${mandatoryQuestionRedirectCookie}=deleted; Path=/; Max-Age=0`
+      );
+      return {
+        redirect: {
+          destination: `/mandatory-questions/start${queryParams}`,
           statusCode: 307,
         },
       };

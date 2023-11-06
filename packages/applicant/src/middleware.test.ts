@@ -1,4 +1,4 @@
-import { middleware, buildMiddlewareResponse } from './middleware.page';
+import { buildMiddlewareResponse, middleware } from './middleware.page';
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest } from 'next/server';
 import { verifyToken } from './services/JwtService';
@@ -96,6 +96,41 @@ describe('Middleware', () => {
     expect(res.cookies.get(process.env.FIND_REDIRECT_COOKIE)).toEqual(
       undefined
     );
+    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
+  });
+
+  it('sets mandatory_questions_redirect cookie if URL matches mandatory_questions_redirect pattern and FF enabled', async () => {
+    const mandatoryQuestionsEnabledBackup =
+      process.env.MANDATORY_QUESTIONS_ENABLED;
+    process.env.MANDATORY_QUESTIONS_ENABLED = 'true';
+    const schemeId = '12';
+    const pathname = 'mandatory-questions/start?schemeId=' + schemeId;
+
+    const req = new NextRequest(
+      new Request(`https://some.website.com/${pathname}`)
+    );
+
+    const res = buildMiddlewareResponse(req, process.env.HOST);
+
+    expect(res.cookies.get(process.env.MQ_REDIRECT_COOKIE)).toEqual(
+      `?schemeId=${schemeId}`
+    );
+    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
+  });
+
+  it('does not set mandatory_questions_redirect cookie if URL matches mandatory_questions_redirect pattern but FF disabled', async () => {
+    const mandatoryQuestionsEnabledBackup =
+      process.env.MANDATORY_QUESTIONS_ENABLED;
+    process.env.MANDATORY_QUESTIONS_ENABLED = 'false';
+    const schemeId = '12';
+    const pathname = 'mandatory-questions/start?schemeId=' + schemeId;
+
+    const req = new NextRequest(
+      new Request(`https://some.website.com/${pathname}`)
+    );
+    const res = buildMiddlewareResponse(req, process.env.HOST);
+
+    expect(res.cookies.get(process.env.MQ_REDIRECT_COOKIE)).toEqual(undefined);
     process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
   });
 });
