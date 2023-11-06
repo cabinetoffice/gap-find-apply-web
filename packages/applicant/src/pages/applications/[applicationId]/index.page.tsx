@@ -20,17 +20,18 @@ export const getServerSideProps: GetServerSideProps = async ({
   await validateCSRF(req, res);
 
   const applicationId = params.applicationId.toString();
-  let application: Application;
-  let scheme: GrantScheme;
 
   try {
     const jwt = getJwtFromCookies(req);
 
-    application = await getApplicationById(applicationId, jwt);
+    const application: Application = await getApplicationById(
+      applicationId,
+      jwt
+    );
 
     const schemeService = GrantSchemeService.getInstance();
 
-    scheme = await schemeService.getGrantSchemeById(
+    const scheme: GrantScheme = await schemeService.getGrantSchemeById(
       application.grantScheme.id.toString(),
       jwt
     );
@@ -56,7 +57,7 @@ export const getServerSideProps: GetServerSideProps = async ({
         jwt
       );
     if (mandatoryQuestionNotExistRedirect) {
-      //if it not exist, redirect to start page
+      //if it does not exist, redirect to start page
       return mandatoryQuestionNotExistRedirect;
     }
 
@@ -68,11 +69,11 @@ export const getServerSideProps: GetServerSideProps = async ({
       );
 
     if (mandatoryQuestionCompleteRedirect) {
-      //if is completed, redirect to submission page
+      //if it is completed, redirect to submission page
       return mandatoryQuestionCompleteRedirect;
     }
 
-    //if it exist and not completed, redirect to start page
+    //if it exists and not completed, redirect to start page
     return {
       redirect: {
         destination: routes.mandatoryQuestions.startPage(scheme.id.toString()),
@@ -80,6 +81,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       },
     };
   } catch (error) {
+    console.error(error);
     if (error?.response?.data?.code === 'GRANT_NOT_PUBLISHED') {
       return {
         redirect: {
