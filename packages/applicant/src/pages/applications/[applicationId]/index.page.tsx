@@ -93,7 +93,8 @@ export const getServerSideProps: GetServerSideProps = async ({
         },
       };
     } else if (
-      error?.response?.data?.message.contains('mandatory question with id')
+      error?.response?.data?.message &&
+      /mandatory question/i.test(error.response.data.message)
     ) {
       return {
         redirect: {
