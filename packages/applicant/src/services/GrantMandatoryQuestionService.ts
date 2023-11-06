@@ -42,6 +42,17 @@ export class GrantMandatoryQuestionService {
     return data;
   }
 
+  public async getMandatoryQuestionBySchemeId(
+    jwt: string,
+    schemeId: string
+  ): Promise<GrantMandatoryQuestionDto> {
+    const { data } = await axios.get<GrantMandatoryQuestionDto>(
+      `${this.BACKEND_HOST}/grant-mandatory-questions/scheme/${schemeId}`,
+      axiosConfig(jwt)
+    );
+    return data;
+  }
+
   public async updateMandatoryQuestion(
     jwt: string,
     mandatoryQuestionId: string,
@@ -69,6 +80,14 @@ export class GrantMandatoryQuestionService {
       axiosConfig(jwt)
     );
 
+    return data;
+  }
+
+  public async existBySchemeIdAndApplicantId(schemeId: string, jwt: string) {
+    const { data } = await axios.get<boolean>(
+      `${this.BACKEND_HOST}/grant-mandatory-questions/scheme/${schemeId}/exists`,
+      axiosConfig(jwt)
+    );
     return data;
   }
 }

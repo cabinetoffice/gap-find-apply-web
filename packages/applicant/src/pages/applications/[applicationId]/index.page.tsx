@@ -1,4 +1,11 @@
 import { GetServerSideProps } from 'next';
+import { GrantScheme } from '../../../models/GrantScheme';
+import {
+  Application,
+  getApplicationById,
+} from '../../../services/ApplicationService';
+import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
+import { GrantSchemeService } from '../../../services/GrantSchemeService';
 import { createSubmission } from '../../../services/SubmissionService';
 import { validateCSRF } from '../../../utils/csrf';
 import { getJwtFromCookies } from '../../../utils/jwt';
@@ -14,20 +21,62 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   const applicationId = params.applicationId.toString();
 
-  // TODO handle MQ: hit an endpoint with applicationId to get the version & MQ status
-  //  (or just whether we need to show MQ and let the BE handle logic)
-
   try {
-    const result = await createSubmission(
+    const jwt = getJwtFromCookies(req);
+
+    const application: Application = await getApplicationById(
       applicationId,
-      getJwtFromCookies(req)
+      jwt
     );
 
-    const grantSubmissionId = result.submissionId;
+    const schemeService = GrantSchemeService.getInstance();
 
+    const scheme: GrantScheme = await schemeService.getGrantSchemeById(
+      application.grantScheme.id.toString(),
+      jwt
+    );
+    if (scheme.version === 1) {
+      const result = await createSubmission(applicationId, jwt);
+      const grantSubmissionId = result.submissionId;
+
+      return {
+        redirect: {
+          destination: routes.submissions.sections(grantSubmissionId),
+          permanent: false,
+        },
+      };
+    }
+
+    const mandatoryQuestionService =
+      GrantMandatoryQuestionService.getInstance();
+
+    const mandatoryQuestionNotExistRedirect =
+      await checkIfMandatoryQuestionExist(
+        mandatoryQuestionService,
+        scheme,
+        jwt
+      );
+    if (mandatoryQuestionNotExistRedirect) {
+      //if it does not exist, redirect to start page
+      return mandatoryQuestionNotExistRedirect;
+    }
+
+    const mandatoryQuestionCompleteRedirect =
+      await checkIfMandatoryQuestionIsCompleted(
+        mandatoryQuestionService,
+        scheme,
+        jwt
+      );
+
+    if (mandatoryQuestionCompleteRedirect) {
+      //if it is completed, redirect to submission page
+      return mandatoryQuestionCompleteRedirect;
+    }
+
+    //if it exists and not completed, redirect to start page
     return {
       redirect: {
-        destination: routes.submissions.sections(grantSubmissionId),
+        destination: routes.mandatoryQuestions.startPage(scheme.id.toString()),
         permanent: false,
       },
     };
@@ -48,6 +97,53 @@ export const getServerSideProps: GetServerSideProps = async ({
         },
       };
     }
+  }
+};
+
+const checkIfMandatoryQuestionExist = async (
+  mandatoryQuestionService: GrantMandatoryQuestionService,
+  scheme,
+  jwt
+) => {
+  const mandatoryQuestionExists =
+    await mandatoryQuestionService.existBySchemeIdAndApplicantId(
+      scheme.id.toString(),
+      jwt
+    );
+
+  if (!mandatoryQuestionExists) {
+    return {
+      redirect: {
+        destination: routes.mandatoryQuestions.startPage(scheme.id.toString()),
+        permanent: false,
+      },
+    };
+  }
+};
+
+const checkIfMandatoryQuestionIsCompleted = async (
+  mandatoryQuestionService,
+  scheme,
+  jwt
+) => {
+  const mandatoryQuestions =
+    await mandatoryQuestionService.getMandatoryQuestionBySchemeId(
+      jwt,
+      scheme.id.toString()
+    );
+
+  if (
+    mandatoryQuestions.submissionId !== null &&
+    mandatoryQuestions.submissionId !== undefined
+  ) {
+    return {
+      redirect: {
+        destination: routes.submissions.sections(
+          mandatoryQuestions.submissionId
+        ),
+        permanent: false,
+      },
+    };
   }
 };
 
