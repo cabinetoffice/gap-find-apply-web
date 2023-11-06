@@ -1,23 +1,23 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { AxiosError } from 'axios';
-import { GetServerSidePropsResult, Redirect } from 'next';
-import {
-  getGrantScheme,
-  findApplicationFormFromScheme,
-} from '../../../services/SchemeService';
-import { getApplicationFormSummary } from '../../../services/ApplicationService';
-import { ApplicationFormSummary } from '../../../types/ApplicationForm';
-import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
-import Scheme from '../../../types/Scheme';
-import ViewScheme, { getServerSideProps } from './index.page';
 import { merge } from 'lodash';
-import { getAdvertPublishInformationBySchemeIdResponse } from '../../../services/AdvertPageService.d';
+import { GetServerSidePropsResult, Redirect } from 'next';
+import AdvertStatusEnum from '../../../enums/AdvertStatus';
 import {
   getAdvertStatusBySchemeId,
   getGrantAdvertPublishInformationBySchemeId,
 } from '../../../services/AdvertPageService';
-import AdvertStatusEnum from '../../../enums/AdvertStatus';
+import { getAdvertPublishInformationBySchemeIdResponse } from '../../../services/AdvertPageService.d';
+import { getApplicationFormSummary } from '../../../services/ApplicationService';
+import {
+  findApplicationFormFromScheme,
+  getGrantScheme,
+} from '../../../services/SchemeService';
+import { ApplicationFormSummary } from '../../../types/ApplicationForm';
+import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
+import Scheme from '../../../types/Scheme';
+import ViewScheme, { getServerSideProps } from './index.page';
 
 const applicationForm = {
   applicationName: 'Test application name',
@@ -273,6 +273,9 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          applicationId={
+            schemeApplicationsData.applicationForm.grantApplicationId
+          }
         />
       );
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
@@ -288,6 +291,9 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          applicationId={
+            schemeApplicationsData.applicationForm.grantApplicationId
+          }
         />
       );
       screen.getByRole('heading', { name: 'Grant summary' });
@@ -300,6 +306,9 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          applicationId={
+            schemeApplicationsData.applicationForm.grantApplicationId
+          }
         />
       );
       screen.getByText('GGIS Scheme Reference Number');
@@ -314,6 +323,9 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          applicationId={
+            schemeApplicationsData.applicationForm.grantApplicationId
+          }
         />
       );
       screen.getByText('Support email address');
@@ -328,6 +340,9 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          applicationId={
+            schemeApplicationsData.applicationForm.grantApplicationId
+          }
         />
       );
       screen.getByTestId('scheme-application-component');
@@ -343,6 +358,7 @@ describe('scheme/[schemeId]', () => {
           }}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          applicationId=""
         />
       );
       expect(screen.queryByTestId('scheme-application-component')).toBeFalsy();
@@ -358,6 +374,7 @@ describe('scheme/[schemeId]', () => {
           }}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          applicationId=""
         />
       );
       screen.getByTestId('build-application-form-component');
@@ -370,6 +387,9 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          applicationId={
+            schemeApplicationsData.applicationForm.grantApplicationId
+          }
         />
       );
       expect(
@@ -384,6 +404,9 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'enabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          applicationId={
+            schemeApplicationsData.applicationForm.grantApplicationId
+          }
         />
       );
 
@@ -397,10 +420,69 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          applicationId={
+            schemeApplicationsData.applicationForm.grantApplicationId
+          }
         />
       );
 
       expect(screen.queryByTestId('build-advert-component')).toBeFalsy();
+    });
+
+    it('Should render a "Due diligence checks" section for internal applications', () => {
+      render(
+        <ViewScheme
+          scheme={mockScheme}
+          schemeApplicationsData={schemeApplicationsData}
+          enabledAdBuilder={'disabled'}
+          grantAdvertPublishData={mockGrantadvertData}
+          applicationId={
+            schemeApplicationsData.applicationForm.grantApplicationId
+          }
+        />
+      );
+      screen.getByRole('heading', { name: 'Due diligence checks' });
+      screen.getByText(
+        /you can download details about your applicants to run due diligence checks\. we gather this information as part of the application form for your grant\./i
+      );
+
+      expect(
+        screen.getByRole('button', { name: 'Manage due diligence checks' })
+      ).toHaveAttribute(
+        'href',
+        `/apply/scheme/${
+          mockScheme.schemeId
+        }/manage-due-diligence-checks?applicationId=${
+          schemeApplicationsData.applicationForm.grantApplicationId
+        }&hasCompletedSubmissions=${
+          schemeApplicationsData?.applicationFormStats?.submissionCount === 0
+        }`
+      );
+    });
+
+    it('Should render a "Due diligence checks" section for external applications', () => {
+      render(
+        <ViewScheme
+          scheme={mockScheme}
+          schemeApplicationsData={null}
+          enabledAdBuilder={'disabled'}
+          grantAdvertPublishData={mockGrantadvertData}
+          applicationId=""
+        />
+      );
+      screen.getByRole('heading', { name: 'Due diligence checks' });
+      screen.getByText(
+        /you can download details about your applicants to run due diligence checks\. we gather this information before applicants start an application form\./i
+      );
+
+      expect(
+        screen.getByRole('button', { name: 'Manage due diligence checks' })
+      ).toHaveAttribute(
+        'href',
+        `/apply/scheme/${
+          mockScheme.schemeId
+        }/manage-due-diligence-checks?applicationId=${''}&hasCompletedSubmissions=${false}`
+      );
     });
   });
 });
