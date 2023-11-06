@@ -8,8 +8,11 @@ import CookieBanner from '../components/partials/cookie-banner';
 import '../lib/ie11_nodelist_polyfill';
 import '../styles/globals.scss';
 import '../../../../node_modules/gap-web-ui/dist/cjs/index.css';
+import { verifyToken } from '../services/JwtService';
 
-const MyApp = ({ Component, pageProps, cookies }) => {
+const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
+
+const MyApp = ({ Component, pageProps, cookies, isUserLoggedIn }) => {
   const { publicRuntimeConfig } = getConfig();
   const showCookieBanner = !cookies?.design_system_cookies_policy;
 
@@ -41,16 +44,24 @@ const MyApp = ({ Component, pageProps, cookies }) => {
         strategy="beforeInteractive"
       />
       {showCookieBanner && <CookieBanner />}
-      <Component {...pageProps} />
+      <Component isUserLoggedIn={isUserLoggedIn} {...pageProps} />
     </>
   );
 };
 
 MyApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext);
+  const { req } = appContext.ctx;
+  const userServiceToken = req.cookies[USER_TOKEN_NAME];
   const cookies =
     typeof window === 'undefined' ? {} : appContext.ctx.req.cookies;
-  return { ...appProps, cookies };
+
+  try {
+    await verifyToken(userServiceToken);
+    return { ...appProps, isUserLoggedIn: true, cookies };
+  } catch (e) {
+    return { ...appProps, isUserLoggedIn: false, cookies };
+  }
 };
 
 export default MyApp;

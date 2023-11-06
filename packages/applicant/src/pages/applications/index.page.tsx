@@ -11,7 +11,6 @@ import { routes } from '../../utils/routes';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
-  res,
 }) => {
   const applicationData = await getApplicationsListById(getJwtFromCookies(req));
   return {
@@ -21,15 +20,19 @@ export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   };
 };
 
-const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
+const ExistingApplications = ({
+  applicationData,
+  isUserLoggedIn,
+}: ApplicationsPage & {
+  isUserLoggedIn: boolean;
+}) => {
   const { publicRuntimeConfig } = getConfig();
   const hasApplicationData = applicationData.length > 0;
 
   return (
     <>
       <Meta title="View my applications - Apply for a grant" />
-
-      <Layout backBtnUrl={routes.dashboard}>
+      <Layout isUserLoggedIn={isUserLoggedIn} backBtnUrl={routes.dashboard}>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1

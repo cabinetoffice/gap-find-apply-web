@@ -6,10 +6,13 @@ import { useEffect } from 'react';
 import TagManager from 'react-gtm-module';
 import '../../../../node_modules/gap-web-ui/dist/cjs/index.css';
 import Layout from '../components/layout/Layout';
+import { isAdminSessionValid } from '../services/UserService';
 import '../lib/ie11_nodelist_polyfill';
 import '../styles/globals.scss';
 
-const MyApp = ({ Component, pageProps, cookies }) => {
+const SESSION_COOKIE_NAME = process.env.SESSION_COOKIE_NAME;
+
+const MyApp = ({ Component, pageProps, cookies, isUserLoggedIn }) => {
   const { publicRuntimeConfig } = getConfig();
   const showCookieBanner = !cookies.design_system_cookies_policy;
 
@@ -39,7 +42,10 @@ const MyApp = ({ Component, pageProps, cookies }) => {
         src={`${publicRuntimeConfig.SUB_PATH}/javascript/govuk.js`}
         strategy="beforeInteractive"
       />
-      <Layout showCookieBanner={showCookieBanner}>
+      <Layout
+        isUserLoggedIn={isUserLoggedIn}
+        showCookieBanner={showCookieBanner}
+      >
         <Component {...pageProps} />
       </Layout>
     </>
@@ -48,9 +54,12 @@ const MyApp = ({ Component, pageProps, cookies }) => {
 
 MyApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext);
+  const { req } = appContext.ctx;
+  const sessionToken = req.cookies[SESSION_COOKIE_NAME];
+  const isValidAdminSession = await isAdminSessionValid(sessionToken);
   const cookies =
     typeof window === 'undefined' ? {} : appContext.ctx.req.cookies;
-  return { ...appProps, cookies };
+  return { ...appProps, cookies, isUserLoggedIn: isValidAdminSession };
 };
 
 export default MyApp;

@@ -6,6 +6,7 @@ import { isIE } from 'react-device-detect';
 import styles from './Header.module.scss';
 import { getLoginUrl } from '../../utils/general';
 import getConfig from 'next/config';
+import { MobileNavigationBar } from './navigation';
 
 interface NavItemType {
   pageId: string;
@@ -17,64 +18,7 @@ interface HeaderProps {
   isUserLoggedIn?: boolean;
 }
 
-const Header: FC<HeaderProps> = ({ isUserLoggedIn = true }) => {
-  const { publicRuntimeConfig } = getConfig();
-  const router: NextRouter = useRouter();
-
-  const navItems: NavItemType[] = [
-    {
-      pageId: 'browseGrants',
-      link: publicRuntimeConfig.FIND_A_GRANT_URL + '/grants',
-      as: publicRuntimeConfig.FIND_A_GRANT_URL + '/grants',
-      title: 'Find a grant',
-    },
-    {
-      pageId: 'yourAccount',
-      link: '/account',
-      as: '/account',
-      title: 'Your account',
-    },
-    {
-      pageId: 'viewApplications',
-      link: '/applications',
-      as: '/applications',
-      title: 'View your applications',
-    },
-    {
-      pageId: 'manageDetails',
-      link: '/info/about-us',
-      as: '/info/about-us',
-      title: 'Manage your details',
-    },
-  ];
-
-  const links = navItems.map((btn: NavItemType, index: number) => {
-    return (
-      <li
-        data-value="parent"
-        key={index}
-        className={`govuk-header__navigation-item ${
-          router.pathname === btn.link
-            ? 'govuk-header__navigation-item--active'
-            : ''
-        }`}
-        id={`${btn.pageId}DesktopLink`}
-        data-cy={`cy${btn.pageId}PageLink`}
-        aria-label={btn.title}
-      >
-        <Link href={btn.as} as={btn.link}>
-          <a
-            className="govuk-header__link"
-            data-topnav={btn.title}
-            target={`${btn.title === 'Find a grant' ? '_blank' : ''}`}
-          >
-            {btn.title}
-          </a>
-        </Link>
-      </li>
-    );
-  });
-
+const Header: FC<HeaderProps> = ({ isUserLoggedIn = false }) => {
   const feedbackContent = `https://docs.google.com/forms/d/e/1FAIpQLSeZnNVCqmtnzfZQJSBW_k9CklS2Y_ym2GRt-z0-1wf9pDEgPw/viewform`;
 
   return (
@@ -151,6 +95,7 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn = true }) => {
           </div>
         </div>
       </header>
+      {isUserLoggedIn && <MobileNavigationBar />}
       {/* SIGN IN/OUT */}
       <div className="govuk-width-container govuk-!-text-align-right">
         <p

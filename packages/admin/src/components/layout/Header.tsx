@@ -2,10 +2,15 @@ import Image from 'next/image';
 import { isIE } from 'react-device-detect';
 import getConfig from 'next/config';
 import CustomLink from '../custom-link/CustomLink';
+import { MobileNavigationBar } from './navigation';
+import { useRouter } from 'next/router';
 
-const Header = () => {
+const Header = ({ isUserLoggedIn }: { isUserLoggedIn: boolean }) => {
   const feedbackContent = `https://docs.google.com/forms/d/e/1FAIpQLSd2V0IqOMpb2_yQnz_Ges0WCYFnDOTxZpF299gePV1j8kMdLA/viewform`;
   const { publicRuntimeConfig } = getConfig();
+  const { pathname } = useRouter();
+  const isSuperAdminDashboardPage = /super-admin-dashboard/.test(pathname);
+
   return (
     <>
       <header className="govuk-header" role="banner" data-module="govuk-header">
@@ -70,7 +75,7 @@ const Header = () => {
           </div>
         </div>
       </header>
-
+      {isUserLoggedIn && !isSuperAdminDashboardPage && <MobileNavigationBar />}
       <nav>
         <div className="govuk-width-container">
           <div className="govuk-phase-banner">
