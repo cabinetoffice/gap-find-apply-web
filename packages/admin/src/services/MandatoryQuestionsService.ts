@@ -23,7 +23,7 @@ const completedMandatoryQuestions = async (
   sessionCookie: string
 ) => {
   const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/does-scheme-have-completed-mandatory-questions/${schemeId}`,
+    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/complete`,
     axiosSessionConfig(sessionCookie)
   );
   return response.data;

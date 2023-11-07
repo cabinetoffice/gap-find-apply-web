@@ -38,7 +38,7 @@ describe('MandatoryQuestionsService', () => {
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/does-scheme-have-completed-mandatory-questions/testSchemeId`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/complete`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           withCredentials: true,
@@ -56,7 +56,7 @@ describe('MandatoryQuestionsService', () => {
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/does-scheme-have-completed-mandatory-questions/testSchemeId`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/complete`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           withCredentials: true,

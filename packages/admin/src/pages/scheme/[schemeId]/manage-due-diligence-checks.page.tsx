@@ -18,30 +18,30 @@ export const getServerSideProps = async ({
   const sessionCookie = getSessionIdFromCookies(req);
   const scheme = await getGrantScheme(schemeId, sessionCookie);
 
-  let noInfoToDownload: boolean;
+  let hasInfoToDownload: boolean;
 
   if (
     scheme.version &&
     parseInt(scheme.version) < 2 &&
     hasCompletedSubmissions == 'false'
   ) {
-    noInfoToDownload = true;
+    hasInfoToDownload = true;
   } else if (scheme.version && parseInt(scheme.version) > 1) {
     const hasCompletedMandatoryQuestions = await completedMandatoryQuestions(
       scheme.schemeId,
       sessionCookie
     );
 
-    noInfoToDownload = !hasCompletedMandatoryQuestions;
+    hasInfoToDownload = !hasCompletedMandatoryQuestions;
   } else {
-    noInfoToDownload = false;
+    hasInfoToDownload = false;
   }
 
   return {
     props: {
       scheme,
       applicationId,
-      noInfoToDownload,
+      hasInfoToDownload,
     },
   };
 };
@@ -49,7 +49,7 @@ export const getServerSideProps = async ({
 const ManageDueDiligenceChecks = ({
   scheme,
   applicationId = '',
-  noInfoToDownload,
+  hasInfoToDownload,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
@@ -61,7 +61,7 @@ const ManageDueDiligenceChecks = ({
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
           <h1 className="govuk-heading-l">Manage due diligence checks</h1>
 
-          {noInfoToDownload ? (
+          {hasInfoToDownload ? (
             <p className="govuk-body">
               No due diligence information available to download.
             </p>

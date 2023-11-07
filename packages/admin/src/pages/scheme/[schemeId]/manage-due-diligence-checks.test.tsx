@@ -78,17 +78,17 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       expect(response.props.applicationId).toStrictEqual(APPLICATION_ID);
     });
 
-    it('Should get noInfoToDownload from the query param', async () => {
+    it('Should get hasInfoToDownload from the query param', async () => {
       mockedGetScheme.mockResolvedValue(schemeV1);
 
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
 
-      expect(response.props.noInfoToDownload).toStrictEqual(false);
+      expect(response.props.hasInfoToDownload).toStrictEqual(false);
     });
 
-    it('Should get noInfoToDownload false from completedMandatoryQuestions', async () => {
+    it('Should get hasInfoToDownload false from completedMandatoryQuestions', async () => {
       mockedGetScheme.mockResolvedValue(scheme);
       (completedMandatoryQuestions as jest.Mock).mockReturnValue(true);
 
@@ -96,7 +96,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         getContext()
       )) as NextGetServerSidePropsResponse;
 
-      expect(response.props.noInfoToDownload).toBeFalsy();
+      expect(response.props.hasInfoToDownload).toBeFalsy();
     });
   });
 
@@ -106,7 +106,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           applicationId={APPLICATION_ID}
-          noInfoToDownload={false}
+          hasInfoToDownload={false}
         />
       );
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
@@ -120,7 +120,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           applicationId={APPLICATION_ID}
-          noInfoToDownload={false}
+          hasInfoToDownload={false}
         />
       );
       screen.getByRole('heading', { name: 'Manage due diligence checks' });
@@ -131,7 +131,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           applicationId={APPLICATION_ID}
-          noInfoToDownload={false}
+          hasInfoToDownload={false}
         />
       );
       screen.getByText(
@@ -147,7 +147,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           applicationId={APPLICATION_ID}
-          noInfoToDownload={false}
+          hasInfoToDownload={false}
         />
       );
 
@@ -164,7 +164,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={schemeV1}
           applicationId={APPLICATION_ID}
-          noInfoToDownload={false}
+          hasInfoToDownload={false}
         />
       );
 
@@ -181,7 +181,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           applicationId={APPLICATION_ID}
-          noInfoToDownload={false}
+          hasInfoToDownload={false}
         />
       );
 
