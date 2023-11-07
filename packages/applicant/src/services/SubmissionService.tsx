@@ -180,7 +180,7 @@ export interface SectionReviewBody {
 }
 
 export interface CreateSubmissionResponse {
-  submissionCreated: string;
+  submissionCreated: boolean;
   submissionId: string;
   message?: string;
 }
