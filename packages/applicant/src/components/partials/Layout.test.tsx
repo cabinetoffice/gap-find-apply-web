@@ -15,16 +15,28 @@ jest.mock('next/config', () => () => {
   };
 });
 
-describe('Layout Component', () => {
-  test('should display', () => {
-    render(
-      <RouterContext.Provider value={createMockRouter({})}>
-        <Layout>
-          <>TEST</>
-        </Layout>
-      </RouterContext.Provider>
-    );
+jest.mock('./navigation', () => ({
+  NavigationBar: () => <p>NavigationBar</p>,
+}));
 
+jest.mock('./Header');
+
+const LayoutWithRouter = ({ isUserLoggedIn }: { isUserLoggedIn?: boolean }) => (
+  <RouterContext.Provider value={createMockRouter({})}>
+    <Layout backBtnUrl="/test" isUserLoggedIn={isUserLoggedIn}>
+      <>TEST</>
+    </Layout>
+  </RouterContext.Provider>
+);
+
+describe('Layout Component', () => {
+  test('should render the navigation bar', () => {
+    render(<LayoutWithRouter isUserLoggedIn={true} />);
+    expect(screen.getByText('NavigationBar')).toBeDefined();
+  });
+
+  test('should display', () => {
+    render(<LayoutWithRouter />);
     const footer = screen.getByRole('contentinfo');
     const main = screen.getByRole('main');
     expect(screen.getByText('TEST')).toBeDefined();
@@ -33,13 +45,7 @@ describe('Layout Component', () => {
   });
 
   test('should display back button if passed', () => {
-    render(
-      <RouterContext.Provider value={createMockRouter({})}>
-        <Layout backBtnUrl="/test">
-          <>TEST</>
-        </Layout>
-      </RouterContext.Provider>
-    );
+    render(<LayoutWithRouter />);
     const backButton = screen.getByRole('link', { name: 'Back' });
     expect(backButton.getAttribute('href')).toBe('/test');
   });

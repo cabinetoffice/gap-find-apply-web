@@ -24,7 +24,7 @@ const getAxiosSessionConfig = (sessionId: string) => ({
   },
 });
 
-const logoutAdmin = async (sessionCookie: string) =>
+export const logoutAdmin = async (sessionCookie: string) =>
   axios.delete(
     `${process.env.ADMIN_BACKEND_HOST}/logout`,
     getAxiosSessionConfig(sessionCookie)

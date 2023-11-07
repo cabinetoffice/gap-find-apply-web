@@ -21,25 +21,23 @@ const GovLinkMobile = ({ btn, index }: { btn: LinkContent; index: number }) => {
   );
 };
 
-const MobileNavigationBar = () => {
-  return (
-    <details className="menu-toggler-mobile govuk-body">
-      <summary
-        data-cy="cyMobileMenuBtn"
-        role="button"
-        aria-label="Show or hide menu"
-      >
-        Menu
-      </summary>
-      <nav aria-label="menu">
-        <ul>
-          {links.map((btn, index) => (
-            <GovLinkMobile key={index} btn={btn} index={index} />
-          ))}
-        </ul>
-      </nav>
-    </details>
-  );
-};
+const MobileNavigationBar = () => (
+  <details className="menu-toggler-mobile govuk-body">
+    <summary
+      data-cy="cyMobileMenuBtn"
+      role="button"
+      aria-label="Show or hide menu"
+    >
+      Menu
+    </summary>
+    <nav aria-label="menu">
+      <ul>
+        {links.map((btn, index) => (
+          <GovLinkMobile key={index} btn={btn} index={index} />
+        ))}
+      </ul>
+    </nav>
+  </details>
+);
 
 export { MobileNavigationBar };
