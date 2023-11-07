@@ -22,8 +22,8 @@ export const getServerSideProps = async ({
 
   if (
     scheme.version &&
-    parseInt(scheme.version) <= 1 &&
-    !hasCompletedSubmissions
+    parseInt(scheme.version) < 2 &&
+    hasCompletedSubmissions == 'false'
   ) {
     noInfoToDownload = true;
   } else if (scheme.version && parseInt(scheme.version) > 1) {

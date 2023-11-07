@@ -192,10 +192,10 @@ const ViewScheme = ({
           <CustomLink
             href={`/scheme/${
               scheme.schemeId
-            }/manage-due-diligence-checks?applicationId=${applicationId}&hasCompletedSubmissions=${
+            }/manage-due-diligence-checks?applicationId=${applicationId}&hasCompletedSubmissions=${!(
               schemeApplicationsData?.applicationFormStats?.submissionCount ===
               0
-            }`}
+            )}`}
             isSecondaryButton
           >
             Manage due diligence checks
