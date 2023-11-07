@@ -454,9 +454,9 @@ describe('scheme/[schemeId]', () => {
           mockScheme.schemeId
         }/manage-due-diligence-checks?applicationId=${
           schemeApplicationsData.applicationForm.grantApplicationId
-        }&hasCompletedSubmissions=${
+        }&hasCompletedSubmissions=${!(
           schemeApplicationsData?.applicationFormStats?.submissionCount === 0
-        }`
+        )}`
       );
     });
 
@@ -481,7 +481,7 @@ describe('scheme/[schemeId]', () => {
         'href',
         `/apply/scheme/${
           mockScheme.schemeId
-        }/manage-due-diligence-checks?applicationId=${''}&hasCompletedSubmissions=${false}`
+        }/manage-due-diligence-checks?applicationId=${''}&hasCompletedSubmissions=${true}`
       );
     });
   });
