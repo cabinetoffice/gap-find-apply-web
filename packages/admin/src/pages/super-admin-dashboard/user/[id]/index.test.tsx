@@ -113,14 +113,14 @@ describe('Super admin - Edit user page', () => {
       ).toHaveAttribute('href', '/super-admin-dashboard/user/1/change-owner');
 
       expect(
-        screen.queryByText('This user does not own any grants')
+        screen.queryByText('This user does not own any grants.')
       ).toBeNull();
     });
 
     it('Should render no schemes when there are none', () => {
       render(<UserPage {...getPageProps(getDefaultProps)} />);
 
-      screen.getByText('This user does not own any grants');
+      screen.getByText('This user does not own any grants.');
       expect(screen.queryByRole('link', { name: 'Change owner' })).toBeNull();
     });
 

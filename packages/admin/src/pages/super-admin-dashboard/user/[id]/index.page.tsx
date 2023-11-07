@@ -121,7 +121,7 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                 <h2 className="govuk-heading-m">Grants this user owns</h2>
                 {pageData.schemes.length === 0 ? (
                   <p className="govuk-body">
-                    This user does not own any grants
+                    This user does not own any grants.
                   </p>
                 ) : (
                   <SummaryList
