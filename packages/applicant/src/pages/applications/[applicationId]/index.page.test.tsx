@@ -10,7 +10,10 @@ import {
   GrantMandatoryQuestionService,
 } from '../../../services/GrantMandatoryQuestionService';
 import { GrantSchemeService } from '../../../services/GrantSchemeService';
-import { createSubmission } from '../../../services/SubmissionService';
+import {
+  CreateSubmissionResponse,
+  createSubmission,
+} from '../../../services/SubmissionService';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { getServerSideProps } from './index.page';
@@ -65,13 +68,24 @@ const propsUnknownError = {
   },
 };
 
-const propsSubmissionExistsRedirect = {
+const propsSubmissionDoesNotExistsRedirect = {
   redirect: {
     destination: routes.submissions.sections('1'),
     permanent: false,
   },
 };
-const submissionExists = {
+const propsSubmissionExistsRedirect = {
+  redirect: {
+    destination: routes.applications,
+    permanent: false,
+  },
+};
+const submissionDoesNotExists: CreateSubmissionResponse = {
+  submissionId: '1',
+  submissionCreated: true,
+};
+
+const submissionExists: CreateSubmissionResponse = {
   submissionId: '1',
   submissionCreated: false,
 };
@@ -147,6 +161,21 @@ describe('getServerSideProps', () => {
       const response = await getServerSideProps(context);
 
       expect(response).toEqual(props);
+      expect(createSubmission).toHaveBeenCalled();
+      expect(createSubmission).toHaveBeenCalledWith('1', 'testJwt');
+      expect(getGrantScheme).toHaveBeenCalled();
+      expect(getGrantScheme).toHaveBeenCalledWith('1', 'testJwt');
+    });
+
+    it('should redirect to submission page if submission does not  exists when application has scheme 1 version and ', async () => {
+      (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+      (getApplicationById as jest.Mock).mockReturnValue(application);
+      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue(scheme);
+      (createSubmission as jest.Mock).mockReturnValue(submissionDoesNotExists);
+
+      const response = await getServerSideProps(context);
+
+      expect(response).toEqual(propsSubmissionDoesNotExistsRedirect);
       expect(createSubmission).toHaveBeenCalled();
       expect(createSubmission).toHaveBeenCalledWith('1', 'testJwt');
       expect(getGrantScheme).toHaveBeenCalled();
