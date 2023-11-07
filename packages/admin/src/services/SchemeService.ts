@@ -10,7 +10,10 @@ const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
 const BASE_SCHEME_URL = BACKEND_HOST + '/schemes';
 
-const getUserSchemes = async (pagination: Pagination, sessionId: string) => {
+export const getUserSchemes = async (
+  pagination: Pagination,
+  sessionId: string
+) => {
   const response = await axios.get<Scheme[]>(`${BASE_SCHEME_URL}`, {
     params: pagination,
     ...axiosSessionConfig(sessionId),
@@ -19,7 +22,19 @@ const getUserSchemes = async (pagination: Pagination, sessionId: string) => {
   return response.data;
 };
 
-const createNewScheme = async (
+export const getAdminsSchemes = async (
+  grandAdminId: string,
+  sessionId: string
+) => {
+  const response = await axios.get<Scheme[]>(
+    `${BASE_SCHEME_URL}/admin/${grandAdminId}`,
+    axiosSessionConfig(sessionId)
+  );
+
+  return response.data;
+};
+
+export const createNewScheme = async (
   sessionId: string,
   schemeName: string,
   ggisReference: string,
@@ -38,7 +53,7 @@ const createNewScheme = async (
   );
 };
 
-const getGrantScheme = async (schemeId: string, sessionId: string) => {
+export const getGrantScheme = async (schemeId: string, sessionId: string) => {
   const response = await axios.get(
     `${BASE_SCHEME_URL}/${schemeId}`,
     axiosSessionConfig(sessionId)
@@ -47,7 +62,10 @@ const getGrantScheme = async (schemeId: string, sessionId: string) => {
   return response.data as Scheme;
 };
 
-const findApplicationFormFromScheme = (schemeId: string, sessionId: string) => {
+export const findApplicationFormFromScheme = (
+  schemeId: string,
+  sessionId: string
+) => {
   const applicationQueryObject: ApplicationQueryObject = {
     grantSchemeId: schemeId,
   };
@@ -55,7 +73,7 @@ const findApplicationFormFromScheme = (schemeId: string, sessionId: string) => {
   return findMatchingApplicationForms(applicationQueryObject, sessionId);
 };
 
-const patchScheme = async (
+export const patchScheme = async (
   schemeId: string,
   params: PatchSchemeParams,
   sessionId: string
@@ -73,11 +91,3 @@ interface PatchSchemeParams {
   ggisReference?: string;
   contactEmail?: string;
 }
-
-export {
-  getUserSchemes,
-  createNewScheme,
-  getGrantScheme,
-  findApplicationFormFromScheme,
-  patchScheme,
-};
