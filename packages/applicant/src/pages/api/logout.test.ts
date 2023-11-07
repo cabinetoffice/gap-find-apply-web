@@ -1,16 +1,18 @@
 import '@testing-library/jest-dom';
 import { merge } from 'lodash';
 import { getSessionIdFromCookies } from '../../utils/session';
-import logout, { logoutAdmin } from './logout.page';
+import logout from './logout.page';
+import { NextApiRequest, NextApiResponse } from 'next';
+import axios from 'axios';
 
-jest.mock('../../services/AuthService');
 jest.mock('../../utils/session');
+jest.mock('axios');
 
 const mockedRedirect = jest.fn();
 const mockedSetHeader = jest.fn();
 const mockedSend = jest.fn();
 
-const req = (overrides: any = {}) =>
+const req = (overrides = {}) =>
   merge(
     {
       headers: {
@@ -19,9 +21,9 @@ const req = (overrides: any = {}) =>
       cookies: { sessionCookieName: 'testSessionId' },
     },
     overrides
-  );
+  ) as unknown as NextApiRequest;
 
-const res = (overrides: any = {}) =>
+const res = (overrides = {}) =>
   merge(
     {
       redirect: mockedRedirect,
@@ -29,10 +31,11 @@ const res = (overrides: any = {}) =>
       send: mockedSend,
     },
     overrides
-  );
+  ) as unknown as NextApiResponse;
 
 describe('Logout page', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     process.env.ONE_LOGIN_ENABLED = 'false';
     process.env.LOGOUT = 'http://localhost:8082/logout';
   });
@@ -41,14 +44,14 @@ describe('Logout page', () => {
     (getSessionIdFromCookies as jest.Mock).mockReturnValue('testSessionId');
     await logout(req(), res());
 
-    expect(logoutAdmin).toHaveBeenCalledTimes(1);
+    expect(axios.delete).toHaveBeenCalledTimes(1);
   });
 
   it('Should NOT try to clear back-end authentication session if session_id cookie not available', async () => {
     (getSessionIdFromCookies as jest.Mock).mockReturnValue('');
     await logout(req(), res());
 
-    expect(logoutAdmin).toHaveBeenCalledTimes(0);
+    expect(axios.delete).toHaveBeenCalledTimes(0);
   });
 
   it('Should clear session_id cookie', async () => {
