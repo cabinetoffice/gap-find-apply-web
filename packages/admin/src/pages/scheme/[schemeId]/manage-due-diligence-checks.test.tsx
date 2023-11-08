@@ -90,7 +90,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
 
     it('Should get hasInfoToDownload false from completedMandatoryQuestions', async () => {
       mockedGetScheme.mockResolvedValue(scheme);
-      (completedMandatoryQuestions as jest.Mock).mockReturnValue(true);
+      (completedMandatoryQuestions as jest.Mock).mockReturnValue(false);
 
       const response = (await getServerSideProps(
         getContext()
@@ -131,7 +131,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           applicationId={APPLICATION_ID}
-          hasInfoToDownload={false}
+          hasInfoToDownload={true}
         />
       );
       screen.getByText(
@@ -147,7 +147,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           applicationId={APPLICATION_ID}
-          hasInfoToDownload={false}
+          hasInfoToDownload={true}
         />
       );
 
@@ -164,7 +164,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={schemeV1}
           applicationId={APPLICATION_ID}
-          hasInfoToDownload={false}
+          hasInfoToDownload={true}
         />
       );
 

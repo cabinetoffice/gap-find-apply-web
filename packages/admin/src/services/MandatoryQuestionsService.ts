@@ -21,7 +21,7 @@ const spotlightExport = async (sessionCookie: string, schemeId: string) => {
 const completedMandatoryQuestions = async (
   schemeId: string,
   sessionCookie: string
-) => {
+): Promise<boolean> => {
   const response = await axios.get(
     `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/complete`,
     axiosSessionConfig(sessionCookie)

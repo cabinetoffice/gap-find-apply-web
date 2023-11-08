@@ -13,28 +13,25 @@ export const getServerSideProps = async ({
 }: GetServerSidePropsContext) => {
   const { schemeId } = params as Record<string, string>;
   const { applicationId } = query as Record<string, string>;
-  const { hasCompletedSubmissions } = query;
+  const { hasCompletedSubmissions } = query as Record<string, string>;
 
   const sessionCookie = getSessionIdFromCookies(req);
   const scheme = await getGrantScheme(schemeId, sessionCookie);
 
-  let hasInfoToDownload: boolean;
+  let hasInfoToDownload = false as boolean;
 
   if (
     scheme.version &&
     parseInt(scheme.version) < 2 &&
-    hasCompletedSubmissions == 'false'
+    hasCompletedSubmissions == 'true'
   ) {
     hasInfoToDownload = true;
-  } else if (scheme.version && parseInt(scheme.version) > 1) {
-    const hasCompletedMandatoryQuestions = await completedMandatoryQuestions(
+  }
+  if (scheme.version && parseInt(scheme.version) > 1) {
+    hasInfoToDownload = await completedMandatoryQuestions(
       scheme.schemeId,
       sessionCookie
     );
-
-    hasInfoToDownload = !hasCompletedMandatoryQuestions;
-  } else {
-    hasInfoToDownload = false;
   }
 
   return {
@@ -61,7 +58,7 @@ const ManageDueDiligenceChecks = ({
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
           <h1 className="govuk-heading-l">Manage due diligence checks</h1>
 
-          {hasInfoToDownload ? (
+          {!hasInfoToDownload ? (
             <p className="govuk-body">
               No due diligence information available to download.
             </p>
