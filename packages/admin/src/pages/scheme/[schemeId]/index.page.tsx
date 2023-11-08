@@ -1,22 +1,22 @@
-import { GetServerSidePropsContext } from 'next';
-import {
-  getGrantScheme,
-  findApplicationFormFromScheme,
-} from '../../../services/SchemeService';
-import Meta from '../../../components/layout/Meta';
-import Scheme from '../../../types/Scheme';
+import { AxiosError } from 'axios';
 import { SummaryList } from 'gap-web-ui';
+import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
+import Meta from '../../../components/layout/Meta';
+import { getGrantAdvertPublishInformationBySchemeId } from '../../../services/AdvertPageService';
 import { getApplicationFormSummary } from '../../../services/ApplicationService';
+import {
+  findApplicationFormFromScheme,
+  getGrantScheme,
+} from '../../../services/SchemeService';
+import FindApplicationFormStatsResponse from '../../../types/FindApplicationFormStatsResponse';
+import InferProps from '../../../types/InferProps';
+import Scheme from '../../../types/Scheme';
+import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
+import { getSessionIdFromCookies } from '../../../utils/session';
+import BuildAdvert from '../components/BuildAdvert';
 import BuildApplicationForm from '../components/BuildApplicationForm';
 import SchemeApplications from '../components/SchemeApplications';
-import { getSessionIdFromCookies } from '../../../utils/session';
-import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
-import FindApplicationFormStatsResponse from '../../../types/FindApplicationFormStatsResponse';
-import BuildAdvert from '../components/BuildAdvert';
-import InferProps from '../../../types/InferProps';
-import { getGrantAdvertPublishInformationBySchemeId } from '../../../services/AdvertPageService';
-import { AxiosError } from 'axios';
 
 export const getServerSideProps = async ({
   params,
@@ -71,12 +71,18 @@ export const getServerSideProps = async ({
     grantAdvertPublishData = { status: 404 };
   }
 
+  const applicationId = schemeApplicationsData?.applicationForm
+    ?.grantApplicationId
+    ? schemeApplicationsData.applicationForm.grantApplicationId
+    : '';
+
   return {
     props: {
       scheme,
       schemeApplicationsData,
       enabledAdBuilder: process.env.FEATURE_ADVERT_BUILDER!,
       grantAdvertPublishData,
+      applicationId,
     },
   };
 };
@@ -86,6 +92,7 @@ const ViewScheme = ({
   schemeApplicationsData,
   enabledAdBuilder,
   grantAdvertPublishData,
+  applicationId,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
@@ -155,6 +162,44 @@ const ViewScheme = ({
           ) : (
             <BuildApplicationForm schemeId={scheme.schemeId} />
           )}
+
+          <h2
+            className="govuk-heading-m govuk-!-padding-top-4"
+            data-cy="cy_Scheme-details-page-h2-Required checks"
+          >
+            Due diligence checks
+          </h2>
+
+          <p
+            className="govuk-body"
+            data-cy="cy_Scheme-details-page-Required-checks-text-1"
+          >
+            You can download details about your applicants to run due diligence
+            checks.{' '}
+            {schemeApplicationsData?.applicationForm ? (
+              <>
+                We gather this information as part of the application form for
+                your grant.
+              </>
+            ) : (
+              <>
+                We gather this information before applicants start an
+                application form.
+              </>
+            )}
+          </p>
+
+          <CustomLink
+            href={`/scheme/${
+              scheme.schemeId
+            }/manage-due-diligence-checks?applicationId=${applicationId}&hasCompletedSubmissions=${!(
+              schemeApplicationsData?.applicationFormStats?.submissionCount ===
+              0
+            )}`}
+            isSecondaryButton
+          >
+            Manage due diligence checks
+          </CustomLink>
         </div>
       </div>
     </>

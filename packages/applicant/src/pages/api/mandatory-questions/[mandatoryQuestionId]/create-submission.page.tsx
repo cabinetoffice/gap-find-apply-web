@@ -51,6 +51,14 @@ export default async function handler(
       getJwtFromCookies(req)
     );
     if (!advertDto.isInternal) {
+      await grantMandatoryQuestionService.updateMandatoryQuestion(
+        getJwtFromCookies(req),
+        mandatoryQuestionId,
+        'external',
+        {
+          mandatoryQuestionsComplete: true,
+        }
+      );
       return res.redirect(
         `${process.env.HOST}${routes.mandatoryQuestions.externalApplicationPage(
           mandatoryQuestionId

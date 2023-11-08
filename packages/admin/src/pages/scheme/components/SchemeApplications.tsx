@@ -127,50 +127,6 @@ const SchemeApplications = ({
             View submitted applications
           </CustomLink>
         </div>
-
-        <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
-
-        <div>
-          <h2
-            className="govuk-heading-m govuk-!-padding-top-4"
-            data-cy="cy_Scheme-details-page-h2-Required checks"
-          >
-            Required checks
-          </h2>
-
-          <p
-            className="govuk-body"
-            data-cy="cy_Scheme-details-page-Required-checks-text-1"
-          >
-            Download the information from the {"'"}Required checks{"'"} section
-            of the application form only.
-          </p>
-
-          <p
-            className="govuk-body"
-            data-cy="cy_Scheme-details-page-Required-checks-text-2"
-          >
-            You can use this information to carry out due-diligence checks.{' '}
-            <CustomLink
-              href={
-                publicRuntimeConfig.SPOTLIGHT_URL
-                  ? publicRuntimeConfig.SPOTLIGHT_URL
-                  : '#'
-              }
-              excludeSubPath={!!publicRuntimeConfig.SPOTLIGHT_URL}
-            >
-              You can use the Cabinet Office service Spotlight for these checks.
-            </CustomLink>
-          </p>
-          <CustomLink
-            href={`/api/downloadRequiredChecks?applicationId=${applicationForm.grantApplicationId}`}
-            isSecondaryButton
-            disabled={applicationFormStats.submissionCount === 0}
-            dataCy="cy_Scheme-details-page-button-Download required checks"
-          >
-            Download required checks
-          </CustomLink>
-        </div>
       </div>
     </>
   );

@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import SchemeApplications from './SchemeApplications';
 import { merge } from 'lodash';
+import SchemeApplications from './SchemeApplications';
 
 const getSchemeApplicationsProps = (overrides: any = {}) =>
   merge(
@@ -193,71 +193,5 @@ describe('BuildApplicationForm', () => {
     expect(
       screen.getByRole('button', { name: 'View submitted applications' })
     ).toHaveAttribute('aria-disabled', 'true');
-  });
-
-  it('Should render a "Required checks" heading', () => {
-    render(
-      <SchemeApplications
-        applicationForm={getSchemeApplicationsProps()}
-        applicationFormStats={getApplicationFormStats()}
-      />
-    );
-
-    screen.getByRole('heading', { name: 'Required checks' });
-  });
-
-  it('Should render a summary of the view submitted applications action', () => {
-    render(
-      <SchemeApplications
-        applicationForm={getSchemeApplicationsProps()}
-        applicationFormStats={getApplicationFormStats()}
-      />
-    );
-
-    screen.getByText(
-      "Download the information from the 'Required checks' section of the application form only."
-    );
-    screen.getByText(
-      'You can use this information to carry out due-diligence checks.'
-    );
-  });
-
-  it('Should render a link to direct admins to spotlight', () => {
-    render(
-      <SchemeApplications
-        applicationForm={getSchemeApplicationsProps()}
-        applicationFormStats={getApplicationFormStats()}
-      />
-    );
-
-    screen.getByRole('link', {
-      name: 'You can use the Cabinet Office service Spotlight for these checks.',
-    });
-  });
-
-  it('Should render a "View submitted applications" button', () => {
-    render(
-      <SchemeApplications
-        applicationForm={getSchemeApplicationsProps()}
-        applicationFormStats={getApplicationFormStats({ submissionCount: 1 })}
-      />
-    );
-
-    expect(
-      screen.getByRole('button', { name: 'Download required checks' })
-    ).not.toHaveAttribute('disabled');
-  });
-
-  it('Should render a disabled "Download required checks" button', () => {
-    render(
-      <SchemeApplications
-        applicationForm={getSchemeApplicationsProps()}
-        applicationFormStats={getApplicationFormStats()}
-      />
-    );
-
-    expect(
-      screen.getByRole('button', { name: 'Download required checks' })
-    ).toHaveAttribute('disabled');
   });
 });
