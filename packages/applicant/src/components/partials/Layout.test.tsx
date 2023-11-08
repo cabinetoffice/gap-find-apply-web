@@ -21,6 +21,12 @@ jest.mock('./navigation', () => ({
 
 jest.mock('./Header');
 
+jest.mock('../../pages/_app.page', () => ({
+  useAuth: () => ({
+    isUserLoggedIn: true,
+  }),
+}));
+
 const LayoutWithRouter = ({ isUserLoggedIn }: { isUserLoggedIn?: boolean }) => (
   <RouterContext.Provider value={createMockRouter({})}>
     <Layout backBtnUrl="/test" isUserLoggedIn={isUserLoggedIn}>
@@ -31,7 +37,7 @@ const LayoutWithRouter = ({ isUserLoggedIn }: { isUserLoggedIn?: boolean }) => (
 
 describe('Layout Component', () => {
   test('should render the navigation bar', () => {
-    render(<LayoutWithRouter isUserLoggedIn={true} />);
+    render(<LayoutWithRouter />);
     expect(screen.getByText('NavigationBar')).toBeDefined();
   });
 
