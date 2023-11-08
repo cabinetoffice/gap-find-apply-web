@@ -20,19 +20,14 @@ export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   };
 };
 
-const ExistingApplications = ({
-  applicationData,
-  isUserLoggedIn,
-}: ApplicationsPage & {
-  isUserLoggedIn: boolean;
-}) => {
+const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
   const { publicRuntimeConfig } = getConfig();
   const hasApplicationData = applicationData.length > 0;
 
   return (
     <>
       <Meta title="View my applications - Apply for a grant" />
-      <Layout isUserLoggedIn={isUserLoggedIn} backBtnUrl={routes.dashboard}>
+      <Layout backBtnUrl={routes.dashboard}>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1

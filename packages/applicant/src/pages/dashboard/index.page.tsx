@@ -94,12 +94,11 @@ export default function ApplicantDashboardPage({
   hasApplications,
   bannerProps,
   oneLoginEnabled,
-  isUserLoggedIn,
-}: InferProps<typeof getServerSideProps> & { isUserLoggedIn: boolean }) {
+}: InferProps<typeof getServerSideProps>) {
   return (
     <>
       <Meta title="My account - Apply for a grant" />
-      <Layout isUserLoggedIn={isUserLoggedIn}>
+      <Layout>
         <ApplicantDashboard
           descriptionList={descriptionList}
           hasApplications={hasApplications}
