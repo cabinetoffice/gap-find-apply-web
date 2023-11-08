@@ -7,10 +7,19 @@ import getConfig from 'next/config';
 import { AuthContext } from './_app.page';
 import { useContext } from 'react';
 
-export const getServerSideProps: GetServerSideProps = () => {
+export const getServerSideProps: GetServerSideProps = (req) => {
+  let loginUrl = getLoginUrl();
+
+  // overwrite default redirectUrl if one is provided
+  if (req?.query?.redirectUrl) {
+    loginUrl = loginUrl.replace(
+      /(\?|&)redirectUrl=([^&]*)/,
+      '$1redirectUrl=' + req.query.redirectUrl
+    );
+  }
   return Promise.resolve({
     props: {
-      loginUrl: getLoginUrl(),
+      loginUrl: loginUrl,
       registerUrl: `${process.env.USER_SERVICE_URL}/register`,
       oneLoginEnabled: process.env.ONE_LOGIN_ENABLED,
     },
