@@ -180,6 +180,7 @@ describe('Super admin - Edit user page', () => {
       req: {
         cookies: {
           'user-service-token': 'jwt',
+          sessionId: 'testSessionId',
         },
       },
     });
@@ -246,7 +247,11 @@ describe('Super admin - Edit user page', () => {
 
       if ('redirect' in result) throw new Error('Should not redirect');
 
-      expect(mockedGetAdminsSchemes).toHaveBeenNthCalledWith(1, '1', 'jwt');
+      expect(mockedGetAdminsSchemes).toHaveBeenNthCalledWith(
+        1,
+        '1',
+        'testSessionId'
+      );
       expect(result.props).toEqual(
         expect.objectContaining({ schemes: [{ name: 'Test' }] })
       );

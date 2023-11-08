@@ -1,9 +1,4 @@
-import {
-  Button,
-  FlexibleQuestionPageLayout,
-  QuestionPageGetServerSideProps,
-  TextInput,
-} from 'gap-web-ui';
+import { Button, FlexibleQuestionPageLayout, TextInput } from 'gap-web-ui';
 import CustomLink from '../../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../../components/layout/Meta';
 import InferProps from '../../../../../../types/InferProps';
@@ -14,13 +9,14 @@ import {
 } from '../../../../../../utils/session';
 import { checkNewAdminEmailIsValid } from '../../../../../../services/UserService';
 import { getGrantScheme } from '../../../../../../services/SchemeService';
+import QuestionPageGetServerSideProps from '../../../../../../utils/QuestionPageGetServerSideProps';
 
 type PageBodyResponse = {
   emailAddress: string;
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { userId, schemeId } = context.params as Record<string, string>;
+  const { id: userId, schemeId } = context.params as Record<string, string>;
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
     return checkNewAdminEmailIsValid(
@@ -64,7 +60,7 @@ const ChangeOwnerPage = ({
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Manage User - Change Department`}
+        }Manage User - Change Scheme Owner`}
       />
 
       <CustomLink
