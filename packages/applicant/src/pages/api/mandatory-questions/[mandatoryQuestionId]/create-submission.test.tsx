@@ -153,6 +153,9 @@ describe('API Handler Tests', () => {
       getMandatoryQuestionById: jest.fn().mockResolvedValue({
         ...grantMandatoryQuestion,
       }),
+      updateMandatoryQuestion: jest.fn().mockResolvedValue({
+        ...grantMandatoryQuestion,
+      }),
     });
     GrantApplicantOrganisationProfileService.getInstance.mockReturnValue({
       updateOrganisation: jest.fn().mockResolvedValue(MOCK_ORGANISATION_DATA),
