@@ -18,7 +18,7 @@ export const getServerSideProps = async ({
   const sessionCookie = getSessionIdFromCookies(req);
   const scheme = await getGrantScheme(schemeId, sessionCookie);
 
-  let hasInfoToDownload = false as boolean;
+  let hasInfoToDownload = false;
 
   if (
     scheme.version &&
