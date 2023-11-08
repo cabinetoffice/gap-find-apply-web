@@ -27,6 +27,7 @@ export const getServerSideProps = async ({
   ) {
     hasInfoToDownload = true;
   }
+
   if (scheme.version && parseInt(scheme.version) > 1) {
     hasInfoToDownload = await completedMandatoryQuestions(
       scheme.schemeId,
