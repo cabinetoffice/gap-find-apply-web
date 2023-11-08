@@ -104,13 +104,18 @@ describe('Super admin - Edit user page', () => {
     it('Should render a users schemes', () => {
       render(
         <UserPage
-          {...getPageProps(getDefaultProps, { schemes: [{ name: 'Test' }] })}
+          {...getPageProps(getDefaultProps, {
+            schemes: [{ name: 'Test', schemeId: 'schemeId' }],
+          })}
         />
       );
 
       expect(
         screen.getByRole('link', { name: 'Change owner' })
-      ).toHaveAttribute('href', '/super-admin-dashboard/user/1/change-owner');
+      ).toHaveAttribute(
+        'href',
+        '/super-admin-dashboard/user/1/schemes/schemeId/change-owner'
+      );
 
       expect(
         screen.queryByText('This user does not own any grants.')
