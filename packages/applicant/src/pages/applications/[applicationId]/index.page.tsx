@@ -36,12 +36,24 @@ export const getServerSideProps: GetServerSideProps = async ({
       jwt
     );
     if (scheme.version === 1) {
-      const result = await createSubmission(applicationId, jwt);
-      const grantSubmissionId = result.submissionId;
+      const { submissionCreated, submissionId } = await createSubmission(
+        applicationId,
+        jwt
+      );
+
+      //submission already exists so redirect to list of applications
+      if (!submissionCreated) {
+        return {
+          redirect: {
+            destination: routes.applications,
+            permanent: false,
+          },
+        };
+      }
 
       return {
         redirect: {
-          destination: routes.submissions.sections(grantSubmissionId),
+          destination: routes.submissions.sections(submissionId),
           permanent: false,
         },
       };
