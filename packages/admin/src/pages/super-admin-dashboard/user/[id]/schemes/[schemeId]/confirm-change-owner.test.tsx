@@ -1,12 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import { Optional, getContext, mockServiceMethod } from 'gap-web-ui';
+import { Optional, getContext } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 import InferProps from '../../../../../../types/InferProps';
 import { getPageProps } from '../../../../../../testUtils/unitTestHelpers';
-import {
-  changeSchemeOwnership,
-  getGrantScheme,
-} from '../../../../../../services/SchemeService';
+import { changeSchemeOwnership } from '../../../../../../services/SchemeService';
 import { parseBody } from 'next/dist/server/api-utils/node';
 import ConfirmChangeOwnerPage, {
   getServerSideProps,
@@ -19,13 +16,8 @@ describe('Super admin - Confirm change owner page', () => {
   describe('UI', () => {
     const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
       pageData: {
-        scheme: {
-          name: 'Test Scheme',
-          createdDate: new Date().toISOString(),
-          funderId: 'testFunderId',
-          ggisReference: 'testGGISReference',
-          schemeId: 'testSchemeId',
-        },
+        schemeName: 'Test Scheme',
+        schemeId: 'testSchemeId',
         userId: 'testUserId',
         newEmailAddress: 'newEmail@test.com',
         oldEmailAddress: 'oldEmail@test.com',
@@ -47,7 +39,7 @@ describe('Super admin - Confirm change owner page', () => {
 
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/super-admin-dashboard/user/testUserId/schemes/testSchemeId/change-owner?oldEmailAddress=oldEmail%40test.com'
+        '/apply/super-admin-dashboard/user/testUserId/schemes/testSchemeId/change-owner?oldEmailAddress=oldEmail%40test.com&schemeName=Test%20Scheme'
       );
     });
 
@@ -78,7 +70,7 @@ describe('Super admin - Confirm change owner page', () => {
 
       expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute(
         'href',
-        '/apply/super-admin-dashboard/user/testUserId/schemes/testSchemeId/change-owner?oldEmailAddress=oldEmail%40test.com'
+        '/apply/super-admin-dashboard/user/testUserId/schemes/testSchemeId/change-owner?oldEmailAddress=oldEmail%40test.com&schemeName=Test%20Scheme'
       );
     });
   });
@@ -92,6 +84,7 @@ describe('Super admin - Confirm change owner page', () => {
       query: {
         oldEmailAddress: 'oldEmail%40test.com',
         newEmailAddress: 'newEmail%40test.com',
+        schemeName: 'Test Scheme',
       },
       req: {
         cookies: {
@@ -101,15 +94,10 @@ describe('Super admin - Confirm change owner page', () => {
       },
     });
 
-    const mockedGetGrantScheme = jest.mocked(getGrantScheme);
     const mockedChangeOwnership = jest.mocked(changeSchemeOwnership);
     const mockedParseBody = jest.mocked(parseBody);
 
     beforeEach(() => {
-      mockServiceMethod(mockedGetGrantScheme, () => ({
-        schemeId: 'testSchemeId',
-        name: 'Test Scheme',
-      }));
       mockedParseBody.mockResolvedValue({ emailAddress: 'test@gmail.com' });
     });
 
@@ -118,13 +106,9 @@ describe('Super admin - Confirm change owner page', () => {
 
       if ('redirect' in result) throw new Error('Should not redirect');
 
-      expect(mockedGetGrantScheme).toHaveBeenCalledWith(
-        'testSchemeId',
-        'testSessionId'
-      );
-      expect(result.props.pageData.scheme).toEqual(
+      expect(result.props.pageData).toEqual(
         expect.objectContaining({
-          name: 'Test Scheme',
+          schemeName: 'Test Scheme',
           schemeId: 'testSchemeId',
         })
       );

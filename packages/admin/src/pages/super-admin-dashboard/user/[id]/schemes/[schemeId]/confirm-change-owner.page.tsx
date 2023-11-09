@@ -7,10 +7,7 @@ import {
   getSessionIdFromCookies,
   getUserTokenFromCookies,
 } from '../../../../../../utils/session';
-import {
-  changeSchemeOwnership,
-  getGrantScheme,
-} from '../../../../../../services/SchemeService';
+import { changeSchemeOwnership } from '../../../../../../services/SchemeService';
 import QuestionPageGetServerSideProps from '../../../../../../utils/QuestionPageGetServerSideProps';
 
 type PageBodyResponse = {
@@ -25,6 +22,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const newEmailAddress = decodeURIComponent(
     context.query.newEmailAddress as string
   );
+  const schemeName = decodeURIComponent(context.query.schemeName as string);
 
   async function handleRequest(body: PageBodyResponse, sessionId: string) {
     return changeSchemeOwnership(
@@ -35,13 +33,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     );
   }
 
-  async function fetchPageData(jwt: string) {
-    const scheme = await getGrantScheme(schemeId, jwt);
+  async function fetchPageData() {
     return {
       oldEmailAddress,
       newEmailAddress,
       userId: userId ?? null,
-      scheme,
+      schemeId: schemeId ?? null,
+      schemeName,
     };
   }
 
@@ -68,10 +66,10 @@ const ConfirmChangeOwnerPage = ({
   const backButtonHref = `/super-admin-dashboard/user/${
     pageData.userId
   }/schemes/${
-    pageData.scheme.schemeId
+    pageData.schemeId
   }/change-owner?oldEmailAddress=${encodeURIComponent(
     pageData.oldEmailAddress
-  )}`;
+  )}&schemeName=${encodeURIComponent(pageData.schemeName)}`;
 
   return (
     <>
@@ -85,11 +83,11 @@ const ConfirmChangeOwnerPage = ({
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
         >
-          <span className="govuk-caption-xl">{pageData.scheme.name}</span>
+          <span className="govuk-caption-xl">{pageData.schemeName}</span>
           <h1 className="govuk-heading-l">Confirm change of ownership</h1>
 
           <p className="govuk-body">
-            The grant {pageData.scheme.name} will be transferred from{' '}
+            The grant {pageData.schemeName} will be transferred from{' '}
             <span className="govuk-!-font-weight-bold">
               {pageData.oldEmailAddress}
             </span>{' '}

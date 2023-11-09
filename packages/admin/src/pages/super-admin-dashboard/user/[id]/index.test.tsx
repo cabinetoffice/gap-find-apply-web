@@ -105,7 +105,7 @@ describe('Super admin - Edit user page', () => {
       render(
         <UserPage
           {...getPageProps(getDefaultProps, {
-            schemes: [{ name: 'Test', schemeId: 'schemeId' }],
+            schemes: [{ name: 'Test Scheme', schemeId: 'schemeId' }],
           })}
         />
       );
@@ -114,7 +114,7 @@ describe('Super admin - Edit user page', () => {
         screen.getByRole('link', { name: 'Change owner' })
       ).toHaveAttribute(
         'href',
-        '/super-admin-dashboard/user/1/schemes/schemeId/change-owner?oldEmailAddress=test%40gmail.com'
+        '/super-admin-dashboard/user/1/schemes/schemeId/change-owner?oldEmailAddress=test%40gmail.com&schemeName=Test%20Scheme'
       );
 
       expect(

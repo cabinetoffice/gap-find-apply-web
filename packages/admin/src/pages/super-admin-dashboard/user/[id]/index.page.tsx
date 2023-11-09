@@ -135,7 +135,8 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                             scheme.schemeId
                           }/change-owner?oldEmailAddress=${encodeURIComponent(
                             pageData.emailAddress
-                          )}`}
+                          )}&schemeName=${encodeURIComponent(scheme.name)}
+                            `}
                         >
                           <a className="govuk-link">Change owner</a>
                         </Link>

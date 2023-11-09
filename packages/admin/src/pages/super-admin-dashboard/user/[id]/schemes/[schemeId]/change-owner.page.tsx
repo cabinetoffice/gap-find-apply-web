@@ -8,7 +8,6 @@ import {
   getUserTokenFromCookies,
 } from '../../../../../../utils/session';
 import { checkNewAdminEmailIsValid } from '../../../../../../services/UserService';
-import { getGrantScheme } from '../../../../../../services/SchemeService';
 import QuestionPageGetServerSideProps from '../../../../../../utils/QuestionPageGetServerSideProps';
 
 type PageBodyResponse = {
@@ -20,6 +19,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const oldEmailAddress = decodeURIComponent(
     context.query.oldEmailAddress as string
   );
+  const schemeName = decodeURIComponent(context.query.schemeName as string);
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
     await checkNewAdminEmailIsValid(
@@ -30,11 +30,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     return body.emailAddress;
   }
 
-  async function fetchPageData(jwt: string) {
-    const scheme = await getGrantScheme(schemeId, jwt);
+  async function fetchPageData() {
     return {
       userId: userId ?? null,
-      scheme,
+      schemeName,
     };
   }
 
@@ -51,7 +50,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     onSuccessRedirectHref: (emailAddress) =>
       `/super-admin-dashboard/user/${userId}/schemes/${schemeId}/confirm-change-owner?newEmailAddress=${encodeURIComponent(
         emailAddress
-      )}&oldEmailAddress=${encodeURIComponent(oldEmailAddress)}`,
+      )}&oldEmailAddress=${encodeURIComponent(
+        oldEmailAddress
+      )}&schemeName=${encodeURIComponent(schemeName)}`,
   });
 }
 
@@ -81,7 +82,7 @@ const ChangeOwnerPage = ({
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
         >
-          <span className="govuk-caption-xl">{pageData.scheme.name}</span>
+          <span className="govuk-caption-xl">{pageData.schemeName}</span>
           <h1 className="govuk-heading-l">Select a new owner</h1>
 
           <p className="govuk-body">
