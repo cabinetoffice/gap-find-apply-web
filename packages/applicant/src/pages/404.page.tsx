@@ -7,7 +7,7 @@ const Custom404 = () => {
     <>
       <Meta title="Page not found - Apply for a grant" />
 
-      <Layout isUserLoggedIn={false}>
+      <Layout>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-full">
             <h1

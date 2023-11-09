@@ -27,7 +27,6 @@ export default function ExternalApplicationSignpost({
       <Meta title="Now leaving GOV.UK - Apply for a grant" />
 
       <Layout
-        isUserLoggedIn={true}
         backBtnUrl={`/mandatory-questions/${mandatoryQuestionId}/organisation-summary`}
       >
         <div className="govuk-grid-row">

@@ -4,6 +4,8 @@ import Layout from '../components/partials/Layout';
 import Meta from '../components/partials/Meta';
 import { getLoginUrl } from '../utils/general';
 import getConfig from 'next/config';
+import { AuthContext } from './_app.page';
+import { useContext } from 'react';
 
 export const getServerSideProps: GetServerSideProps = (req) => {
   let loginUrl = getLoginUrl();
@@ -35,7 +37,7 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
   return (
     <>
       <Meta title="Register to apply - Apply for a grant" />
-      <Layout isUserLoggedIn={false}>
+      <Layout>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-l" data-cy="cy-apply-header">

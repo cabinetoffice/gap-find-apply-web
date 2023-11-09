@@ -2,3 +2,7 @@ $govuk-new-link-styles: true;
 $govuk-assets-path: $sub_path + '/assets/';
 
 @import '~govuk-frontend/govuk/all';
+
+@include govuk-exports('govuk/core/links') {
+}
+@import 'navigation';
