@@ -114,7 +114,7 @@ describe('Super admin - Edit user page', () => {
         screen.getByRole('link', { name: 'Change owner' })
       ).toHaveAttribute(
         'href',
-        '/super-admin-dashboard/user/1/schemes/schemeId/change-owner'
+        '/super-admin-dashboard/user/1/schemes/schemeId/change-owner?oldEmailAddress=test%40gmail.com'
       );
 
       expect(

@@ -2,17 +2,20 @@ import { render, screen } from '@testing-library/react';
 import { Optional, getContext, mockServiceMethod } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 import InferProps from '../../../../../../types/InferProps';
-import ChangeOwnerPage, { getServerSideProps } from './change-owner.page';
 import { getPageProps } from '../../../../../../testUtils/unitTestHelpers';
-import { checkNewAdminEmailIsValid } from '../../../../../../services/UserService';
-import { getGrantScheme } from '../../../../../../services/SchemeService';
+import {
+  changeSchemeOwnership,
+  getGrantScheme,
+} from '../../../../../../services/SchemeService';
 import { parseBody } from 'next/dist/server/api-utils/node';
+import ConfirmChangeOwnerPage, {
+  getServerSideProps,
+} from './confirm-change-owner.page';
 
-jest.mock('../../../../../../services/UserService');
 jest.mock('../../../../../../services/SchemeService');
 jest.mock('next/dist/server/api-utils/node');
 
-describe('Super admin - Change owner page', () => {
+describe('Super admin - Confirm change owner page', () => {
   describe('UI', () => {
     const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
       pageData: {
@@ -24,6 +27,8 @@ describe('Super admin - Change owner page', () => {
           schemeId: 'testSchemeId',
         },
         userId: 'testUserId',
+        newEmailAddress: 'newEmail@test.com',
+        oldEmailAddress: 'oldEmail@test.com',
       },
       previousValues: { emailAddress: '' },
       csrfToken: 'csrfToken',
@@ -32,83 +37,49 @@ describe('Super admin - Change owner page', () => {
     });
 
     it('Should render a title tag', () => {
-      render(<ChangeOwnerPage {...getPageProps(getDefaultProps)} />);
+      render(<ConfirmChangeOwnerPage {...getPageProps(getDefaultProps)} />);
 
-      expect(document.title).toBe('Manage User - Change Scheme Owner');
-    });
-
-    it('Should render a title tag with Error when there are validation errors', () => {
-      render(
-        <ChangeOwnerPage
-          {...getPageProps(getDefaultProps, {
-            fieldErrors: [
-              {
-                fieldName: 'emailAddress',
-                errorMessage: 'Please enter an email',
-              },
-            ],
-          })}
-        />
-      );
-
-      expect(document.title).toBe('Error: Manage User - Change Scheme Owner');
+      expect(document.title).toBe('Manage User - Confirm Change Scheme Owner');
     });
 
     it('Should render a back button', () => {
-      render(<ChangeOwnerPage {...getPageProps(getDefaultProps)} />);
+      render(<ConfirmChangeOwnerPage {...getPageProps(getDefaultProps)} />);
 
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/super-admin-dashboard/user/testUserId'
+        '/apply/super-admin-dashboard/user/testUserId/schemes/testSchemeId/change-owner?oldEmailAddress=oldEmail%40test.com'
       );
     });
 
     it('Should render the scheme name', () => {
-      render(<ChangeOwnerPage {...getPageProps(getDefaultProps)} />);
+      render(<ConfirmChangeOwnerPage {...getPageProps(getDefaultProps)} />);
 
       screen.getByText('Test Scheme');
     });
 
-    it('Should render a text input', () => {
-      render(<ChangeOwnerPage {...getPageProps(getDefaultProps)} />);
+    it('Should render the old and new email address', () => {
+      render(<ConfirmChangeOwnerPage {...getPageProps(getDefaultProps)} />);
 
-      expect(
-        screen.getByRole('textbox', { name: "New owner's email address" })
-      ).toHaveValue('');
+      screen.getByText((content, node) => {
+        if (!node) return true;
+        const hasText = (node: Element) =>
+          node.textContent ===
+          'The grant Test Scheme will be transferred from oldEmail@test.com to newEmail@test.com.';
+        const nodeHasText = hasText(node);
+        const childrenDontHaveText = Array.from(node.children).every(
+          (child) => !hasText(child)
+        );
+        return nodeHasText && childrenDontHaveText;
+      });
     });
 
-    it('The text input should default to previousValue if it exists', () => {
-      render(
-        <ChangeOwnerPage
-          {...getPageProps(getDefaultProps, {
-            previousValues: { emailAddress: 'test@gmail.com' },
-          })}
-        />
+    it('Should render a cancel button', () => {
+      render(<ConfirmChangeOwnerPage {...getPageProps(getDefaultProps)} />);
+
+      expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute(
+        'href',
+        '/apply/super-admin-dashboard/user/testUserId/schemes/testSchemeId/change-owner?oldEmailAddress=oldEmail%40test.com'
       );
-
-      expect(
-        screen.getByRole('textbox', { name: "New owner's email address" })
-      ).toHaveValue('test@gmail.com');
-    });
-
-    it('Should render a field error when there is one', () => {
-      render(
-        <ChangeOwnerPage
-          {...getPageProps(getDefaultProps, {
-            fieldErrors: [
-              {
-                fieldName: 'emailAddress',
-                errorMessage: 'Please enter an email',
-              },
-            ],
-          })}
-        />
-      );
-
-      expect(
-        screen.getByRole('link', { name: 'Please enter an email' })
-      ).toHaveAttribute('href', '#emailAddress');
-      expect(screen.getAllByText('Please enter an email')).toHaveLength(2);
     });
   });
 
@@ -119,7 +90,8 @@ describe('Super admin - Change owner page', () => {
         schemeId: 'testSchemeId',
       },
       query: {
-        oldEmailAddress: 'test%40gmail.com',
+        oldEmailAddress: 'oldEmail%40test.com',
+        newEmailAddress: 'newEmail%40test.com',
       },
       req: {
         cookies: {
@@ -129,14 +101,11 @@ describe('Super admin - Change owner page', () => {
       },
     });
 
-    const mockedCheckNewAdminEmailIsValid = jest.mocked(
-      checkNewAdminEmailIsValid
-    );
     const mockedGetGrantScheme = jest.mocked(getGrantScheme);
+    const mockedChangeOwnership = jest.mocked(changeSchemeOwnership);
     const mockedParseBody = jest.mocked(parseBody);
 
     beforeEach(() => {
-      mockServiceMethod(mockedCheckNewAdminEmailIsValid, () => true);
       mockServiceMethod(mockedGetGrantScheme, () => ({
         schemeId: 'testSchemeId',
         name: 'Test Scheme',
@@ -161,7 +130,7 @@ describe('Super admin - Change owner page', () => {
       );
     });
 
-    it('Should return the userId', async () => {
+    it('Should return the userId & email addresses', async () => {
       const result = await getServerSideProps(getContext(getDefaultContext));
 
       if ('redirect' in result) throw new Error('Should not redirect');
@@ -169,26 +138,28 @@ describe('Super admin - Change owner page', () => {
       expect(result.props.pageData).toEqual(
         expect.objectContaining({
           userId: 'testUserId',
+          oldEmailAddress: 'oldEmail@test.com',
+          newEmailAddress: 'newEmail@test.com',
         })
       );
     });
 
-    it('Should validate the new owner email address', async () => {
+    it('Should update ownership', async () => {
       const result = await getServerSideProps(
         getContext(getDefaultContext, { req: { method: 'POST' } })
       );
 
       if ('props' in result) throw new Error('Should not return props');
 
-      expect(mockedCheckNewAdminEmailIsValid).toHaveBeenCalledWith(
+      expect(mockedChangeOwnership).toHaveBeenCalledWith(
+        'testSchemeId',
         'testSessionId',
         'jwt',
-        'test@gmail.com'
+        'newEmail@test.com'
       );
       expect(result.redirect).toEqual(
         expect.objectContaining({
-          destination:
-            '/super-admin-dashboard/user/testUserId/schemes/testSchemeId/confirm-change-owner?newEmailAddress=test%40gmail.com&oldEmailAddress=test%40gmail.com',
+          destination: '/super-admin-dashboard/user/testUserId',
         })
       );
     });

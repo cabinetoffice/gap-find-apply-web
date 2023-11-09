@@ -1,4 +1,4 @@
-import { Button, FlexibleQuestionPageLayout, TextInput } from 'gap-web-ui';
+import { Button, FlexibleQuestionPageLayout } from 'gap-web-ui';
 import CustomLink from '../../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../../components/layout/Meta';
 import InferProps from '../../../../../../types/InferProps';
@@ -7,8 +7,10 @@ import {
   getSessionIdFromCookies,
   getUserTokenFromCookies,
 } from '../../../../../../utils/session';
-import { checkNewAdminEmailIsValid } from '../../../../../../services/UserService';
-import { getGrantScheme } from '../../../../../../services/SchemeService';
+import {
+  changeSchemeOwnership,
+  getGrantScheme,
+} from '../../../../../../services/SchemeService';
 import QuestionPageGetServerSideProps from '../../../../../../utils/QuestionPageGetServerSideProps';
 
 type PageBodyResponse = {
@@ -20,19 +22,24 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const oldEmailAddress = decodeURIComponent(
     context.query.oldEmailAddress as string
   );
+  const newEmailAddress = decodeURIComponent(
+    context.query.newEmailAddress as string
+  );
 
-  async function handleRequest(body: PageBodyResponse, jwt: string) {
-    await checkNewAdminEmailIsValid(
-      jwt,
+  async function handleRequest(body: PageBodyResponse, sessionId: string) {
+    return changeSchemeOwnership(
+      schemeId,
+      sessionId,
       getUserTokenFromCookies(context.req),
-      body.emailAddress
+      newEmailAddress
     );
-    return body.emailAddress;
   }
 
   async function fetchPageData(jwt: string) {
     const scheme = await getGrantScheme(schemeId, jwt);
     return {
+      oldEmailAddress,
+      newEmailAddress,
       userId: userId ?? null,
       scheme,
     };
@@ -48,32 +55,29 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     handleRequest,
     jwt: getSessionIdFromCookies(context.req),
     onErrorMessage: 'Failed to change scheme owner.',
-    onSuccessRedirectHref: (emailAddress) =>
-      `/super-admin-dashboard/user/${userId}/schemes/${schemeId}/confirm-change-owner?newEmailAddress=${encodeURIComponent(
-        emailAddress
-      )}&oldEmailAddress=${encodeURIComponent(oldEmailAddress)}`,
+    onSuccessRedirectHref: `/super-admin-dashboard/user/${userId}`,
   });
 }
 
-const ChangeOwnerPage = ({
+const ConfirmChangeOwnerPage = ({
   fieldErrors,
   formAction,
   csrfToken,
   pageData,
-  previousValues,
 }: InferProps<typeof getServerSideProps>) => {
+  const backButtonHref = `/super-admin-dashboard/user/${
+    pageData.userId
+  }/schemes/${
+    pageData.scheme.schemeId
+  }/change-owner?oldEmailAddress=${encodeURIComponent(
+    pageData.oldEmailAddress
+  )}`;
+
   return (
     <>
-      <Meta
-        title={`${
-          fieldErrors.length > 0 ? 'Error: ' : ''
-        }Manage User - Change Scheme Owner`}
-      />
+      <Meta title={`Manage User - Confirm Change Scheme Owner`} />
 
-      <CustomLink
-        isBackButton
-        href={`/super-admin-dashboard/user/${pageData.userId}`}
-      />
+      <CustomLink isBackButton href={backButtonHref} />
 
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
@@ -82,30 +86,28 @@ const ChangeOwnerPage = ({
           csrfToken={csrfToken}
         >
           <span className="govuk-caption-xl">{pageData.scheme.name}</span>
-          <h1 className="govuk-heading-l">Select a new owner</h1>
+          <h1 className="govuk-heading-l">Confirm change of ownership</h1>
 
           <p className="govuk-body">
-            You can select any admin account on the Find a grant service as a
-            new owner for this grant.
-          </p>
-          <p className="govuk-body">
-            The new owner will be able to view, edit, and delete this grant. The
-            previous owner will no longer be able to access this grant.
+            The grant {pageData.scheme.name} will be transferred from{' '}
+            <span className="govuk-!-font-weight-bold">
+              {pageData.oldEmailAddress}
+            </span>{' '}
+            to{' '}
+            <span className="govuk-!-font-weight-bold">
+              {pageData.newEmailAddress}
+            </span>
+            {'.'}
           </p>
 
-          <TextInput
-            questionTitle="New owner's email address"
-            fieldName="emailAddress"
-            fieldErrors={fieldErrors}
-            defaultValue={previousValues?.emailAddress}
-            textInputSubtype="email"
-          />
-
-          <Button text="Confirm" />
+          <div className="govuk-button-group">
+            <Button text="Confirm transfer" />
+            <CustomLink href={backButtonHref}>Cancel</CustomLink>
+          </div>
         </FlexibleQuestionPageLayout>
       </div>
     </>
   );
 };
 
-export default ChangeOwnerPage;
+export default ConfirmChangeOwnerPage;

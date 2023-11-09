@@ -129,7 +129,13 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                       key: scheme.name,
                       value: (
                         <Link
-                          href={`/super-admin-dashboard/user/${pageData.gapUserId}/schemes/${scheme.schemeId}/change-owner`}
+                          href={`/super-admin-dashboard/user/${
+                            pageData.gapUserId
+                          }/schemes/${
+                            scheme.schemeId
+                          }/change-owner?oldEmailAddress=${encodeURIComponent(
+                            pageData.emailAddress
+                          )}`}
                         >
                           <a className="govuk-link">Change owner</a>
                         </Link>
