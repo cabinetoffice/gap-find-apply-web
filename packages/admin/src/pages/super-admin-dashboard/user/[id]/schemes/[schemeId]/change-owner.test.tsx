@@ -16,6 +16,7 @@ describe('Super admin - Change owner page', () => {
     const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
       pageData: {
         schemeName: 'Test Scheme',
+        prevEmailAddress: null,
         userId: 'testUserId',
       },
       previousValues: { emailAddress: '' },
@@ -75,6 +76,21 @@ describe('Super admin - Change owner page', () => {
         <ChangeOwnerPage
           {...getPageProps(getDefaultProps, {
             previousValues: { emailAddress: 'test@gmail.com' },
+          })}
+        />
+      );
+
+      expect(
+        screen.getByRole('textbox', { name: "New owner's email address" })
+      ).toHaveValue('test@gmail.com');
+    });
+
+    it('The text input should default to prevEmailAddress if it exists', () => {
+      render(
+        <ChangeOwnerPage
+          {...getPageProps(getDefaultProps, {
+            previousValues: { emailAddress: null as unknown as undefined },
+            pageData: { prevEmailAddress: 'test@gmail.com' },
           })}
         />
       );

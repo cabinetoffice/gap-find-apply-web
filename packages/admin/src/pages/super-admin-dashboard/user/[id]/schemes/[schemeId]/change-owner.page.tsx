@@ -19,6 +19,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const oldEmailAddress = decodeURIComponent(
     context.query.oldEmailAddress as string
   );
+  const newEmailAddress = context.query.newEmailAddress
+    ? decodeURIComponent(context.query.newEmailAddress as string)
+    : null;
   const schemeName = decodeURIComponent(context.query.schemeName as string);
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
@@ -34,6 +37,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     return {
       userId: userId ?? null,
       schemeName,
+      prevEmailAddress: newEmailAddress,
     };
   }
 
@@ -98,7 +102,11 @@ const ChangeOwnerPage = ({
             questionTitle="New owner's email address"
             fieldName="emailAddress"
             fieldErrors={fieldErrors}
-            defaultValue={previousValues?.emailAddress}
+            defaultValue={
+              previousValues?.emailAddress ??
+              pageData.prevEmailAddress ??
+              undefined
+            }
             textInputSubtype="email"
           />
 

@@ -39,7 +39,7 @@ describe('Super admin - Confirm change owner page', () => {
 
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/super-admin-dashboard/user/testUserId/schemes/testSchemeId/change-owner?oldEmailAddress=oldEmail%40test.com&schemeName=Test%20Scheme'
+        '/apply/super-admin-dashboard/user/testUserId/schemes/testSchemeId/change-owner?oldEmailAddress=oldEmail%40test.com&newEmailAddress=newEmail%40test.com&schemeName=Test%20Scheme'
       );
     });
 
@@ -70,7 +70,7 @@ describe('Super admin - Confirm change owner page', () => {
 
       expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute(
         'href',
-        '/apply/super-admin-dashboard/user/testUserId/schemes/testSchemeId/change-owner?oldEmailAddress=oldEmail%40test.com&schemeName=Test%20Scheme'
+        '/apply/super-admin-dashboard/user/testUserId/schemes/testSchemeId/change-owner?oldEmailAddress=oldEmail%40test.com&newEmailAddress=newEmail%40test.com&schemeName=Test%20Scheme'
       );
     });
   });

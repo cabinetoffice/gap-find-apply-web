@@ -69,6 +69,8 @@ const ConfirmChangeOwnerPage = ({
     pageData.schemeId
   }/change-owner?oldEmailAddress=${encodeURIComponent(
     pageData.oldEmailAddress
+  )}&newEmailAddress=${encodeURIComponent(
+    pageData.newEmailAddress
   )}&schemeName=${encodeURIComponent(pageData.schemeName)}`;
 
   return (
