@@ -19,11 +19,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { id: userId, schemeId } = context.params as Record<string, string>;
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
-    return checkNewAdminEmailIsValid(
+    await checkNewAdminEmailIsValid(
       jwt,
       getUserTokenFromCookies(context.req),
       body.emailAddress
     );
+    return body.emailAddress;
   }
 
   async function fetchPageData(jwt: string) {
@@ -44,7 +45,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     handleRequest,
     jwt: getSessionIdFromCookies(context.req),
     onErrorMessage: 'Failed to change scheme owner.',
-    onSuccessRedirectHref: `/super-admin-dashboard/user/${userId}/schemes/${schemeId}/confirm-change-owner`,
+    onSuccessRedirectHref: (emailAddress) =>
+      `/super-admin-dashboard/user/${userId}/schemes/${schemeId}/confirm-change-owner?emailAddress=${encodeURIComponent(
+        emailAddress
+      )}`,
   });
 }
 

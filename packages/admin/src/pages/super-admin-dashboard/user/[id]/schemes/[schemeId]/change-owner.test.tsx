@@ -185,7 +185,7 @@ describe('Super admin - Edit user page', () => {
       expect(result.redirect).toEqual(
         expect.objectContaining({
           destination:
-            '/super-admin-dashboard/user/testUserId/schemes/testSchemeId/confirm-change-owner',
+            '/super-admin-dashboard/user/testUserId/schemes/testSchemeId/confirm-change-owner?emailAddress=test%40gmail.com',
         })
       );
     });
