@@ -12,7 +12,10 @@ const getRoleCheckService = (publicRuntimeConfig) =>
 const getDestination = (
   user: UserRolesResponse,
   publicRuntimeConfig,
-  migrationStatus?: string
+  migrationStatus?: {
+    applyMigrationStatus: string;
+    findMigrationStatus: string;
+  }
 ) => {
   if (user.isSuperAdmin)
     return `${process.env.ADMIN_FRONTEND_URL}/?redirectUrl=/super-admin-dashboard`;
@@ -49,11 +52,10 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
   await initiateCSRFCookie(req, res);
 
-  const destination = getDestination(
-    result,
-    publicRuntimeConfig,
-    query?.migrationStatus as string
-  );
+  const destination = getDestination(result, publicRuntimeConfig, {
+    applyMigrationStatus: query?.applyMigrationStatus as string,
+    findMigrationStatus: query?.findMigrationStatus as string,
+  });
   return {
     redirect: {
       destination,

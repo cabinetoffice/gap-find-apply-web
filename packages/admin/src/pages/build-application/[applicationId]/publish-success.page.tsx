@@ -26,21 +26,25 @@ export const getServerSideProps: GetServerSideProps = async ({
   } catch (err) {
     return errorPageRedirect(applicationId, true);
   }
+  const applyToApplicationUrl =
+    grantScheme.version === '1'
+      ? `/applications/${applicationId}`
+      : `/mandatory-questions/start?schemeId=${grantScheme.schemeId}`;
 
   return {
     props: {
       grantSchemeId: grantScheme.schemeId,
-      applicationId: applicationId,
+      applyToApplicationUrl,
     },
   };
 };
 
 const PublishSuccessPage = ({
   grantSchemeId,
-  applicationId,
+  applyToApplicationUrl,
 }: PublishSuccessPageProps) => {
   const { publicRuntimeConfig } = getConfig();
-  const linkToApplicantApplicationForm = `${publicRuntimeConfig.APPLICANT_DOMAIN}/applications/${applicationId}`;
+  const linkToApplicantApplicationForm = `${publicRuntimeConfig.APPLICANT_DOMAIN}${applyToApplicationUrl}`;
   return (
     <>
       <Meta title="Publish your application form - Manage a grant" />
@@ -91,7 +95,7 @@ const PublishSuccessPage = ({
 
 type PublishSuccessPageProps = {
   grantSchemeId: string;
-  applicationId: string;
+  applyToApplicationUrl: string;
 };
 
 export default PublishSuccessPage;

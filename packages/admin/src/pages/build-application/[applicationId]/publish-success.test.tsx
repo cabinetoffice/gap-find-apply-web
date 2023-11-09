@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { GetServerSidePropsContext } from 'next';
 import { merge } from 'lodash';
-import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
+import { GetServerSidePropsContext } from 'next';
 import { getApplicationFormSummary } from '../../../services/ApplicationService';
 import { getGrantScheme } from '../../../services/SchemeService';
+import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
 import PublishSuccessPage, { getServerSideProps } from './publish-success.page';
 
 jest.mock('next/config', () => () => {
@@ -25,9 +25,8 @@ describe('Publish success page', () => {
   const getProps = (overrides: any = {}) =>
     merge(
       {
-        grantName: 'Test grant name',
         grantSchemeId: 'testGrantSchemeId',
-        applicationId: 'testApplicationId',
+        applyToApplicationUrl: '/applications/testApplicationId',
       },
       overrides
     );
@@ -85,17 +84,35 @@ describe('getServerSideProps', () => {
   beforeEach(() => {
     (getApplicationFormSummary as jest.Mock).mockResolvedValue({});
     (getGrantScheme as jest.Mock).mockResolvedValue({
-      name: 'Test grant name',
       schemeId: 'testSchemeId',
+      version: '1',
     });
   });
 
-  it('Should return a grant scheme id', async () => {
+  it('Should return a grant scheme id and correct applyToApplicationUrl when scheme version is 1', async () => {
     const response = (await getServerSideProps(
       getContext()
     )) as NextGetServerSidePropsResponse;
 
     expect(response.props.grantSchemeId).toStrictEqual('testSchemeId');
+    expect(response.props.applyToApplicationUrl).toStrictEqual(
+      '/applications/testApplicationId'
+    );
+  });
+
+  it('Should return a grant scheme id and correct applyToApplicationUrl when scheme version is 2', async () => {
+    (getGrantScheme as jest.Mock).mockResolvedValue({
+      schemeId: 'testSchemeId',
+      version: '2',
+    });
+    const response = (await getServerSideProps(
+      getContext()
+    )) as NextGetServerSidePropsResponse;
+
+    expect(response.props.grantSchemeId).toStrictEqual('testSchemeId');
+    expect(response.props.applyToApplicationUrl).toStrictEqual(
+      '/mandatory-questions/start?schemeId=testSchemeId'
+    );
   });
 
   it('Should redirect to the service error page when we fail to fetch the application form summary', async () => {

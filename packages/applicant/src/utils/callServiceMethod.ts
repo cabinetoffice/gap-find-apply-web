@@ -1,7 +1,7 @@
-import { ValidationError } from 'gap-web-ui';
-import { parseBody } from 'next/dist/server/api-utils/node';
 import csurf from 'csurf';
+import { ValidationError } from 'gap-web-ui';
 import { GetServerSidePropsContext, Redirect } from 'next';
+import { parseBody } from 'next/dist/server/api-utils/node';
 import { ServiceError } from '../pages/service-error/index.page';
 
 type Body<T> = T & {
@@ -45,7 +45,6 @@ export default async function callServiceMethod<
     await initialiseCSRFCookie(req, res);
     return { nonPost: true };
   }
-
   // Otherwise, validate the CSRF cookie & call the service method
   let body: Body<B>;
   try {
@@ -53,6 +52,8 @@ export default async function callServiceMethod<
     body = removeAllCarriageReturns(body);
 
     await validateCSRFCookie(req, res, body);
+
+    handleMandatoryQuestionFundingLocationAndOrgTypeSpecialCases<B>(req, body);
 
     const result = await serviceFunc(body);
     return {
@@ -63,6 +64,7 @@ export default async function callServiceMethod<
       },
     };
   } catch (err: any) {
+    console.log('err', err);
     // If there is a validation error
     if (err.response?.data?.errors) {
       return {
@@ -79,6 +81,49 @@ export default async function callServiceMethod<
         statusCode: 302,
       },
     };
+  }
+}
+
+// Special case for the Mandatory Questions..
+
+export function handleMandatoryQuestionFundingLocationAndOrgTypeSpecialCases<
+  B extends Record<string, any>
+>(
+  req: GetServerSidePropsContext['req'],
+  body: (Body<B> & FundingLocationBody) | (Body<B> & OrgTypeBody)
+) {
+  if (req.url === undefined) {
+    return;
+  }
+  // funding location case (if only one checkbox has been selected, the backend needs the result to be a list of strings,
+  // if nothing has been selected, the backend needs an empty list, so validation can kick in)
+  if (
+    req.url.startsWith('/mandatory-questions') &&
+    req.url
+      .split('/')
+      .pop()
+      .split('?')[0]
+      .endsWith('organisation-funding-location')
+  ) {
+    if ('fundingLocation' in body) {
+      const fundingLocation = body.fundingLocation;
+      if (typeof fundingLocation === 'string') {
+        body.fundingLocation = [fundingLocation];
+      }
+    } else {
+      body.fundingLocation = [];
+    }
+  }
+
+  // org type case (no radio button have been selected, meaning that in the body there won't be any orgType property,
+  //so we need to add it with an empty string value, so the validation can kick in)
+  if (
+    req.url.startsWith('/mandatory-questions') &&
+    req.url.split('/').pop().split('?')[0].endsWith('organisation-type')
+  ) {
+    if (body.orgType === undefined) {
+      body.orgType = '';
+    }
   }
 }
 
@@ -134,3 +179,11 @@ function removeAllCarriageReturns<T extends Record<string, string>>(obj: T) {
     {} as any
   ) as T;
 }
+
+type FundingLocationBody = {
+  fundingLocation?: string | string[];
+};
+
+type OrgTypeBody = {
+  orgType?: string;
+};

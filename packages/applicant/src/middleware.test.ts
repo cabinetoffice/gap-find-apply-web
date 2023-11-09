@@ -30,6 +30,7 @@ describe('Middleware', () => {
   });
 
   it('redirects to refresh URL if JWT is close to expiration', async () => {
+    process.env.REFRESH_URL = 'http://localhost:8082/refresh-token';
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10); // Expiring in 10 minutes
 
@@ -48,7 +49,7 @@ describe('Middleware', () => {
     );
   });
 
-  it('sets redirect cookie if URL matches new application pattern', async () => {
+  it('sets application redirect cookie if URL matches new application pattern', async () => {
     const pathname = 'applications/123';
     const applicationId = '123';
 
@@ -60,5 +61,41 @@ describe('Middleware', () => {
     expect(res.cookies.get(process.env.APPLYING_FOR_REDIRECT_COOKIE)).toEqual(
       applicationId
     );
+  });
+
+  it('sets find redirect cookie if URL matches find redirect pattern and FF enabled', async () => {
+    const mandatoryQuestionsEnabledBackup =
+      process.env.MANDATORY_QUESTIONS_ENABLED;
+    process.env.MANDATORY_QUESTIONS_ENABLED = 'true';
+    const slug = 'slug-123';
+    const pathname = 'api/redirect-from-find?slug=' + slug;
+
+    const req = new NextRequest(
+      new Request(`https://some.website.com/${pathname}`)
+    );
+    const res = buildMiddlewareResponse(req, process.env.HOST);
+
+    expect(res.cookies.get(process.env.FIND_REDIRECT_COOKIE)).toEqual(
+      `?slug=${slug}`
+    );
+    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
+  });
+
+  it('does not set find redirect cookie if URL matches find redirect pattern but FF disabled', async () => {
+    const mandatoryQuestionsEnabledBackup =
+      process.env.MANDATORY_QUESTIONS_ENABLED;
+    process.env.MANDATORY_QUESTIONS_ENABLED = 'false';
+    const slug = 'slug-123';
+    const pathname = 'api/redirect-from-find?slug=' + slug;
+
+    const req = new NextRequest(
+      new Request(`https://some.website.com/${pathname}`)
+    );
+    const res = buildMiddlewareResponse(req, process.env.HOST);
+
+    expect(res.cookies.get(process.env.FIND_REDIRECT_COOKIE)).toEqual(
+      undefined
+    );
+    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
   });
 });

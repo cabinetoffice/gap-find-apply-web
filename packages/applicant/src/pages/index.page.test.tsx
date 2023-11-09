@@ -4,6 +4,7 @@ import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { createMockRouter } from '../testUtils/createMockRouter';
 import Home, { getServerSideProps } from './index.page';
 import { getLoginUrl } from '../utils/general';
+import { merge } from 'lodash';
 
 describe('getServerSideProps', () => {
   it('should return page props', async () => {
@@ -16,7 +17,52 @@ describe('getServerSideProps', () => {
       },
     });
   });
+  it('should overwrite loginUrl when redirecturl is provided', async () => {
+    const redirectUrl = 'http://localhost:3001/mandtory-questions/start';
+    process.env.LOGIN_URL = 'http://baseLoginUrl?redirectUrl=' + redirectUrl;
+    process.env.V2_LOGIN_URL = 'http://baseLoginUrl?redirectUrl=' + redirectUrl;
+
+    const props = {
+      req: {
+        query: {
+          redirectUrl: redirectUrl,
+        },
+      },
+    };
+    const response = await getServerSideProps(merge(props));
+    expect(response).toEqual({
+      props: {
+        loginUrl: `http://baseLoginUrl?redirectUrl=${redirectUrl}`,
+        oneLoginEnabled: process.env.ONE_LOGIN_ENABLED,
+        registerUrl: `${process.env.USER_SERVICE_URL}/register`,
+      },
+    });
+  });
+  it('should not override loginUrl when redirecturl is undefined', async () => {
+    process.env.LOGIN_URL = 'http://baseLoginUrl';
+    process.env.V2_LOGIN_URL = 'http://baseLoginUrl';
+
+    const props = {
+      req: {
+        query: {
+          redirectUrl: undefined,
+        },
+      },
+    };
+
+    const response = await getServerSideProps(merge(props));
+    expect(response).toEqual({
+      props: {
+        loginUrl: `http://baseLoginUrl`,
+        oneLoginEnabled: process.env.ONE_LOGIN_ENABLED,
+        registerUrl: `${process.env.USER_SERVICE_URL}/register`,
+      },
+    });
+  });
 });
+
+process.env.LOGIN_URL =
+  'http://localhost:8082/login?redirectUrl=http://localhost:3000/apply/applicant/isAdmin';
 
 const loginUrl = getLoginUrl();
 const oneLoginEnabled = 'true';

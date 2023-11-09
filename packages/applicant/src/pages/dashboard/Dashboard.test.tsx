@@ -18,8 +18,7 @@ function getDefaultProps(): ApplicantDashBoardProps {
   return {
     descriptionList: descriptionList,
     hasApplications: true,
-    showMigrationErrorBanner: false,
-    showMigrationSuccessBanner: false,
+    bannerProps: null,
     oneLoginEnabled: true,
   };
 }
@@ -75,7 +74,7 @@ describe('Dashboard', () => {
       render(
         <ApplicantDashboard
           {...getProps(getDefaultProps, {
-            showMigrationErrorBanner: true,
+            bannerProps: 'FAILED',
           })}
         />
       );
@@ -101,7 +100,11 @@ describe('Dashboard', () => {
       render(
         <ApplicantDashboard
           {...getProps(getDefaultProps, {
-            showMigrationSuccessBanner: true,
+            bannerProps: {
+              bannerHeading:
+                'Your data has been successfully added to your One Login account.',
+              isSuccess: true,
+            },
           })}
         />
       );

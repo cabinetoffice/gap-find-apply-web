@@ -25,18 +25,6 @@ jest.mock('../../../services/ApplicationService', () => ({
   getApplicationStatusBySchemeId: jest.fn(),
 }));
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-      subPath: '',
-    },
-    publicRuntimeConfig: {
-      subPath: '',
-    },
-  };
-});
-
 const context = {
   params: {
     submissionId: '12345678',
@@ -105,6 +93,18 @@ const propsWithAllValues: ApplicationDetailsInterface = {
       sectionTitle: 'Eligibility',
       sectionStatus: 'COMPLETED',
       questions: [eligibility],
+    },
+    {
+      sectionId: 'ORGANISATION_DETAILS',
+      sectionTitle: 'Your Organisation',
+      sectionStatus: 'IN_PROGRESS',
+      questions: [shortAnswer],
+    },
+    {
+      sectionId: 'FUNDING_DETAILS',
+      sectionTitle: 'Funding',
+      sectionStatus: 'IN_PROGRESS',
+      questions: [numeric],
     },
     {
       sectionId: 'ESSENTIAL',
@@ -353,6 +353,8 @@ describe('getServerSideProps', () => {
     (getQuestionById as jest.Mock).mockReturnValue(
       questionDataStandardEligibilityResponseNull
     );
+    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+    (isSubmissionReady as jest.Mock).mockReturnValue(true);
     const getGrantScheme = jest
       .spyOn(GrantSchemeService.prototype, 'getGrantSchemeById')
       .mockResolvedValue(MOCK_GRANT_SCHEME);
@@ -495,6 +497,21 @@ describe('Submission section page', () => {
       );
     });
 
+    it('should render the mandatory question sections with the correct href', () => {
+      expect(screen.getByText('Your Organisation')).toBeDefined();
+      expect(screen.getByText('Funding')).toBeDefined();
+      expect(
+        screen.getByRole('link', { name: 'Your Organisation' })
+      ).toHaveAttribute(
+        'href',
+        '/submissions/string/sections/ORGANISATION_DETAILS'
+      );
+      expect(screen.getByRole('link', { name: 'Funding' })).toHaveAttribute(
+        'href',
+        '/submissions/string/sections/FUNDING_DETAILS'
+      );
+    });
+
     it('should render a submit and cancel button', () => {
       expect(
         screen.getByRole('button', { name: 'Submit application' })
@@ -533,7 +550,7 @@ describe('Submission section page', () => {
       screen.getByRole('link', { name: 'test@test.com' });
       const separator = screen.getAllByRole('separator')[0];
       expect(separator).toHaveClass(
-        'govuk-section-break govuk-section-break--m govuk-section-break--visible breakLine'
+        'govuk-section-break govuk-section-break--m govuk-section-break--visible'
       );
     });
   });

@@ -97,6 +97,8 @@ describe('getServerSideProps', () => {
   });
 
   it('should return a DescriptionListProps object', async () => {
+    const oneLoginEnabledBackup = process.env.ONE_LOGIN_ENABLED;
+    process.env.ONE_LOGIN_ENABLED = 'false';
     const getGrantApplicantSpy = jest
       .spyOn(GrantApplicantService.prototype, 'getGrantApplicant')
       .mockResolvedValue(MOCK_GRANT_APPLICANT);
@@ -115,14 +117,16 @@ describe('getServerSideProps', () => {
       props: {
         descriptionList,
         hasApplications: true,
-        showMigrationErrorBanner: false,
-        showMigrationSuccessBanner: false,
+        bannerProps: null,
         oneLoginEnabled: false,
       },
     });
+    process.env.ONE_LOGIN_ENABLED = oneLoginEnabledBackup;
   });
 
   it('should return a DescriptionListProps object with detail null', async () => {
+    const oneLoginEnabledBackup = process.env.ONE_LOGIN_ENABLED;
+    process.env.ONE_LOGIN_ENABLED = 'false';
     const getGrantApplicantSpy = jest
       .spyOn(GrantApplicantService.prototype, 'getGrantApplicant')
       .mockResolvedValue(MOCK_GRANT_APPLICANT_NO_LEGAL_NAME);
@@ -147,11 +151,11 @@ describe('getServerSideProps', () => {
           needBorder: false,
         },
         hasApplications: true,
-        showMigrationErrorBanner: false,
-        showMigrationSuccessBanner: false,
+        bannerProps: null,
         oneLoginEnabled: false,
       },
     });
+    process.env.ONE_LOGIN_ENABLED = oneLoginEnabledBackup;
   });
 
   const mockSetHeader = jest.fn();
@@ -180,5 +184,59 @@ describe('getServerSideProps', () => {
         statusCode: 307,
       },
     });
+  });
+
+  it('should redirect to find redirect page', async () => {
+    const mandatoryQuestionsEnabledBackup =
+      process.env.MANDATORY_QUESTIONS_ENABLED;
+    process.env.MANDATORY_QUESTIONS_ENABLED = 'true';
+    const result = await getServerSideProps(
+      getContext(getDefaultContext, {
+        req: {
+          cookies: {
+            [process.env.FIND_REDIRECT_COOKIE]: '?slug=slug-123',
+          },
+        },
+        res: {
+          setHeader: mockSetHeader,
+        },
+      })
+    );
+
+    expect(mockSetHeader).toBeCalledWith(
+      'Set-Cookie',
+      `${process.env.FIND_REDIRECT_COOKIE}=deleted; Path=/; Max-Age=0`
+    );
+    expectObjectEquals(result, {
+      redirect: {
+        destination: '/api/redirect-from-find?slug=slug-123',
+        statusCode: 307,
+      },
+    });
+    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
+  });
+
+  it('should not redirect to find redirect page', async () => {
+    const mandatoryQuestionsEnabledBackup =
+      process.env.MANDATORY_QUESTIONS_ENABLED;
+    process.env.MANDATORY_QUESTIONS_ENABLED = 'false';
+    const result = await getServerSideProps(
+      getContext(getDefaultContext, {
+        req: {
+          cookies: {
+            [process.env.FIND_REDIRECT_COOKIE]: '?slug=slug-123',
+          },
+        },
+        res: {
+          setHeader: mockSetHeader,
+        },
+      })
+    );
+
+    expect(mockSetHeader).not.toBeCalledWith(
+      'Set-Cookie',
+      `${process.env.FIND_REDIRECT_COOKIE}=deleted; Path=/; Max-Age=0`
+    );
+    process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
   });
 });
