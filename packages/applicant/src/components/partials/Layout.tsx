@@ -21,7 +21,7 @@ interface LayoutPropsType {
 }
 
 const Layout: FC<LayoutPropsType> = ({ children, backBtnUrl = null }) => {
-  const { isUserLoggedIn } = useAuth();
+  const { isUserLoggedIn, oneLoginEnabledInFind } = useAuth();
   useEffect(() => {
     const GOVUKFrontend = window.GOVUKFrontend;
     if (typeof GOVUKFrontend !== 'undefined') {
@@ -31,8 +31,11 @@ const Layout: FC<LayoutPropsType> = ({ children, backBtnUrl = null }) => {
 
   return (
     <>
-      <Header isUserLoggedIn={isUserLoggedIn} />
-      {isUserLoggedIn && <NavigationBar />}
+      <Header
+        oneLoginEnabledInFind={oneLoginEnabledInFind}
+        isUserLoggedIn={isUserLoggedIn}
+      />
+      {isUserLoggedIn && oneLoginEnabledInFind === 'true' && <NavigationBar />}
       <div className="govuk-width-container">
         {backBtnUrl && (
           <a

@@ -1,11 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
-import { NextRouter, useRouter } from 'next/router';
 import { FC } from 'react';
 import { isIE } from 'react-device-detect';
 import styles from './Header.module.scss';
 import { getLoginUrl } from '../../utils/general';
-import getConfig from 'next/config';
 import { MobileNavigationBar } from './navigation';
 
 interface NavItemType {
@@ -16,9 +14,10 @@ interface NavItemType {
 }
 interface HeaderProps {
   isUserLoggedIn?: boolean;
+  oneLoginEnabledInFind?: string;
 }
 
-const Header: FC<HeaderProps> = ({ isUserLoggedIn }) => {
+const Header: FC<HeaderProps> = ({ isUserLoggedIn, oneLoginEnabledInFind }) => {
   const feedbackContent = `https://docs.google.com/forms/d/e/1FAIpQLSeZnNVCqmtnzfZQJSBW_k9CklS2Y_ym2GRt-z0-1wf9pDEgPw/viewform`;
 
   return (
@@ -95,7 +94,9 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn }) => {
           </div>
         </div>
       </header>
-      {isUserLoggedIn && <MobileNavigationBar />}
+      {isUserLoggedIn && oneLoginEnabledInFind === 'true' && (
+        <MobileNavigationBar />
+      )}
       {/* SIGN IN/OUT */}
       <div className="govuk-width-container govuk-!-text-align-right">
         <p
