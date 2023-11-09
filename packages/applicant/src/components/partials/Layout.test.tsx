@@ -24,6 +24,7 @@ jest.mock('./Header');
 jest.mock('../../pages/_app.page', () => ({
   useAuth: () => ({
     isUserLoggedIn: true,
+    oneLoginEnabledInFind: 'true',
   }),
 }));
 

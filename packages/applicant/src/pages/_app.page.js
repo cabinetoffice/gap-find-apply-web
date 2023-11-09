@@ -12,12 +12,22 @@ import { verifyToken } from '../services/JwtService';
 
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
 
-export const AuthContext = createContext({ isUserLoggedIn: false });
+export const AuthContext = createContext({
+  oneLoginEnabledInFind: null,
+  isUserLoggedIn: false,
+});
 
 export const useAuth = () => useContext(AuthContext);
 
-const MyApp = ({ Component, pageProps, cookies, isUserLoggedIn }) => {
+const MyApp = ({
+  Component,
+  pageProps,
+  cookies,
+  isUserLoggedIn,
+  oneLoginEnabledInFind,
+}) => {
   const { publicRuntimeConfig } = getConfig();
+
   const showCookieBanner = !cookies?.design_system_cookies_policy;
 
   useEffect(() => {
@@ -48,7 +58,7 @@ const MyApp = ({ Component, pageProps, cookies, isUserLoggedIn }) => {
         strategy="beforeInteractive"
       />
       {showCookieBanner && <CookieBanner />}
-      <AuthContext.Provider value={{ isUserLoggedIn }}>
+      <AuthContext.Provider value={{ isUserLoggedIn, oneLoginEnabledInFind }}>
         <Component {...pageProps} />
       </AuthContext.Provider>
     </>
@@ -57,14 +67,24 @@ const MyApp = ({ Component, pageProps, cookies, isUserLoggedIn }) => {
 
 MyApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext);
+  const oneLoginEnabledInFind = process?.env
+    ? process.env.ONE_LOGIN_ENABLED_IN_FIND
+    : null;
   const { req } = appContext.ctx;
   const userServiceToken = req.cookies[USER_TOKEN_NAME];
   const cookies =
-    typeof window === 'undefined' ? {} : appContext.ctx.req.cookies;
+    typeof window === 'undefined'
+      ? appContext.ctx.req.cookies
+      : nookies.get({});
 
   try {
     const { valid } = await verifyToken(userServiceToken);
-    return { ...appProps, isUserLoggedIn: valid || false, cookies };
+    return {
+      ...appProps,
+      isUserLoggedIn: valid || false,
+      cookies,
+      oneLoginEnabledInFind,
+    };
   } catch (e) {
     return { ...appProps, isUserLoggedIn: false, cookies };
   }
