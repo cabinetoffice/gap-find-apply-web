@@ -18,6 +18,7 @@ export const useAuth = () => useContext(AuthContext);
 
 const MyApp = ({ Component, pageProps, cookies, isUserLoggedIn }) => {
   const { publicRuntimeConfig } = getConfig();
+
   const showCookieBanner = !cookies?.design_system_cookies_policy;
 
   useEffect(() => {
@@ -60,7 +61,9 @@ MyApp.getInitialProps = async (appContext) => {
   const { req } = appContext.ctx;
   const userServiceToken = req.cookies[USER_TOKEN_NAME];
   const cookies =
-    typeof window === 'undefined' ? {} : appContext.ctx.req.cookies;
+    typeof window === 'undefined'
+      ? appContext.ctx.req.cookies
+      : nookies.get({});
 
   try {
     const { valid } = await verifyToken(userServiceToken);
