@@ -11,6 +11,7 @@ import '../../../../node_modules/gap-web-ui/dist/cjs/index.css';
 
 const MyApp = ({ Component, pageProps, cookies }) => {
   const { publicRuntimeConfig } = getConfig();
+
   const showCookieBanner = !cookies?.design_system_cookies_policy;
 
   useEffect(() => {
@@ -49,7 +50,9 @@ const MyApp = ({ Component, pageProps, cookies }) => {
 MyApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext);
   const cookies =
-    typeof window === 'undefined' ? {} : appContext.ctx.req.cookies;
+    typeof window === 'undefined'
+      ? appContext.ctx.req.cookies
+      : nookies.get({});
   return { ...appProps, cookies };
 };
 
