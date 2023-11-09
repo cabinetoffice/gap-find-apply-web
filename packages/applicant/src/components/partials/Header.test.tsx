@@ -11,7 +11,7 @@ describe('Header Component', () => {
         <RouterContext.Provider
           value={createMockRouter({ pathname: '/header' })}
         >
-          <Header />
+          <Header isUserLoggedIn={true} />
         </RouterContext.Provider>
       );
     });
