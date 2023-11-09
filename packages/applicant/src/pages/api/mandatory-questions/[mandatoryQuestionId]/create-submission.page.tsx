@@ -1,5 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { GrantApplicant } from '../../../../models/GrantApplicant';
+import { GrantApplicantOrganisationProfile } from '../../../../models/GrantApplicantOrganisationProfile';
 import { getAdvertBySchemeId } from '../../../../services/GrantAdvertService';
+import {
+  GrantApplicantOrganisationProfileService,
+  UpdateOrganisationDetailsDto,
+} from '../../../../services/GrantApplicantOrganisationProfileService';
+import { GrantApplicantService } from '../../../../services/GrantApplicantService';
 import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
@@ -7,13 +14,6 @@ import {
 import { createSubmission } from '../../../../services/SubmissionService';
 import { getJwtFromCookies } from '../../../../utils/jwt';
 import { routes } from '../../../../utils/routes';
-import { GrantApplicant } from '../../../../models/GrantApplicant';
-import { GrantApplicantService } from '../../../../services/GrantApplicantService';
-import {
-  GrantApplicantOrganisationProfileService,
-  UpdateOrganisationDetailsDto,
-} from '../../../../services/GrantApplicantOrganisationProfileService';
-import { GrantApplicantOrganisationProfile } from '../../../../models/GrantApplicantOrganisationProfile';
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -51,6 +51,14 @@ export default async function handler(
       getJwtFromCookies(req)
     );
     if (!advertDto.isInternal) {
+      await grantMandatoryQuestionService.updateMandatoryQuestion(
+        getJwtFromCookies(req),
+        mandatoryQuestionId,
+        'external',
+        {
+          mandatoryQuestionsComplete: true,
+        }
+      );
       return res.redirect(
         `${process.env.HOST}${routes.mandatoryQuestions.externalApplicationPage(
           mandatoryQuestionId
@@ -67,7 +75,10 @@ export default async function handler(
       getJwtFromCookies(req),
       mandatoryQuestionId,
       'creatingSubmissionFromMandatoryQuestion',
-      { submissionId }
+      {
+        submissionId,
+        mandatoryQuestionsComplete: true,
+      }
     );
 
     console.info(

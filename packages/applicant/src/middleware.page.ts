@@ -3,12 +3,10 @@ import cookieParser from 'cookie-parser';
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { verifyToken } from './services/JwtService';
-import { getLoginUrl } from './utils/general';
 
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
 const HOST = process.env.HOST;
 const ONE_LOGIN_ENABLED = process.env.ONE_LOGIN_ENABLED === 'true';
-const LOGIN_URL = getLoginUrl();
 
 // //it will apply the middleware to all those paths
 export const config = {
@@ -21,6 +19,7 @@ export const config = {
     '/grant-is-closed',
     '/sign-in-details',
     '/api/redirect-from-find',
+    '/mandatory-questions/:path*',
   ],
 };
 
@@ -34,6 +33,15 @@ function isWithinNumberOfMinsOfExpiry(expiresAt: Date, numberOfMins: number) {
 
 export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
   const res = NextResponse.redirect(redirectUri);
+  if (mandatoryQuestionsStartPattern.test({ pathname: req.nextUrl.pathname })) {
+    const url =
+      redirectUri +
+      '?redirectUrl=' +
+      process.env.HOST +
+      req.nextUrl.pathname +
+      req.nextUrl.search;
+    return NextResponse.redirect(url);
+  }
   if (newApplicationPattern.test({ pathname: req.nextUrl.pathname })) {
     res.cookies.set(
       process.env.APPLYING_FOR_REDIRECT_COOKIE,
@@ -135,4 +143,8 @@ const redirectFromFindPattern = new URLPattern({
 
 const signInDetailsPage = new URLPattern({
   pathname: '/sign-in-details',
+});
+
+const mandatoryQuestionsStartPattern = new URLPattern({
+  pathname: '/mandatory-questions/start',
 });

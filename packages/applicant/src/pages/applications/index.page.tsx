@@ -1,4 +1,5 @@
 import { GetServerSideProps } from 'next';
+import getConfig from 'next/config';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
 import {
@@ -7,11 +8,9 @@ import {
 } from '../../services/ApplicationService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
-import getConfig from 'next/config';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
-  res,
 }) => {
   const applicationData = await getApplicationsListById(getJwtFromCookies(req));
   return {
@@ -28,7 +27,6 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
   return (
     <>
       <Meta title="View my applications - Apply for a grant" />
-
       <Layout backBtnUrl={routes.dashboard}>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">

@@ -2,14 +2,21 @@ import App from 'next/app';
 import getConfig from 'next/config';
 import Script from 'next/script';
 import nookies from 'nookies';
-import { useEffect } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import TagManager from 'react-gtm-module';
 import CookieBanner from '../components/partials/cookie-banner';
 import '../lib/ie11_nodelist_polyfill';
 import '../styles/globals.scss';
 import '../../../../node_modules/gap-web-ui/dist/cjs/index.css';
+import { verifyToken } from '../services/JwtService';
 
-const MyApp = ({ Component, pageProps, cookies }) => {
+const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
+
+export const AuthContext = createContext({ isUserLoggedIn: false });
+
+export const useAuth = () => useContext(AuthContext);
+
+const MyApp = ({ Component, pageProps, cookies, isUserLoggedIn }) => {
   const { publicRuntimeConfig } = getConfig();
 
   const showCookieBanner = !cookies?.design_system_cookies_policy;
@@ -42,18 +49,28 @@ const MyApp = ({ Component, pageProps, cookies }) => {
         strategy="beforeInteractive"
       />
       {showCookieBanner && <CookieBanner />}
-      <Component {...pageProps} />
+      <AuthContext.Provider value={{ isUserLoggedIn }}>
+        <Component {...pageProps} />
+      </AuthContext.Provider>
     </>
   );
 };
 
 MyApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext);
+  const { req } = appContext.ctx;
+  const userServiceToken = req.cookies[USER_TOKEN_NAME];
   const cookies =
     typeof window === 'undefined'
       ? appContext.ctx.req.cookies
       : nookies.get({});
-  return { ...appProps, cookies };
+
+  try {
+    const { valid } = await verifyToken(userServiceToken);
+    return { ...appProps, isUserLoggedIn: valid || false, cookies };
+  } catch (e) {
+    return { ...appProps, isUserLoggedIn: false, cookies };
+  }
 };
 
 export default MyApp;

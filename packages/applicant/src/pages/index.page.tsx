@@ -4,11 +4,22 @@ import Layout from '../components/partials/Layout';
 import Meta from '../components/partials/Meta';
 import { getLoginUrl } from '../utils/general';
 import getConfig from 'next/config';
+import { AuthContext } from './_app.page';
+import { useContext } from 'react';
 
-export const getServerSideProps: GetServerSideProps = () => {
+export const getServerSideProps: GetServerSideProps = (req) => {
+  let loginUrl = getLoginUrl();
+
+  // overwrite default redirectUrl if one is provided
+  if (req?.query?.redirectUrl) {
+    loginUrl = loginUrl.replace(
+      /(\?|&)redirectUrl=([^&]*)/,
+      '$1redirectUrl=' + req.query.redirectUrl
+    );
+  }
   return Promise.resolve({
     props: {
-      loginUrl: getLoginUrl(),
+      loginUrl: loginUrl,
       registerUrl: `${process.env.USER_SERVICE_URL}/register`,
       oneLoginEnabled: process.env.ONE_LOGIN_ENABLED,
     },
@@ -26,7 +37,7 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
   return (
     <>
       <Meta title="Register to apply - Apply for a grant" />
-      <Layout isUserLoggedIn={false}>
+      <Layout>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-l" data-cy="cy-apply-header">
