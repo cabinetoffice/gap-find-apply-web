@@ -15,8 +15,6 @@ jobs:
   install:
     name: Install dependencies
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     outputs: 
       gap-web-ui-hash: ${{ steps.gap-web-ui-hash.outputs.name }}
@@ -74,8 +72,6 @@ jobs:
     name: Build app
     needs: install
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout repo
