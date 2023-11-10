@@ -91,3 +91,21 @@ interface PatchSchemeParams {
   ggisReference?: string;
   contactEmail?: string;
 }
+
+export const changeSchemeOwnership = async (
+  schemeId: string,
+  sessionId: string,
+  userToken: string,
+  emailAddress: string
+) => {
+  await axios.patch(
+    `${BASE_SCHEME_URL}/${schemeId}/scheme-ownership`,
+    { emailAddress },
+    {
+      withCredentials: true,
+      headers: {
+        Cookie: `SESSION=${sessionId};${process.env.JWT_COOKIE_NAME}=${userToken}`,
+      },
+    }
+  );
+};

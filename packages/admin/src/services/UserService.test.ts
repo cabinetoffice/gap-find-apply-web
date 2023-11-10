@@ -1,6 +1,9 @@
 import axios from 'axios';
 import UserDetails from '../types/UserDetails';
-import { getLoggedInUsersDetails } from './UserService';
+import {
+  checkNewAdminEmailIsValid,
+  getLoggedInUsersDetails,
+} from './UserService';
 
 const BASE_USERS_URL = process.env.BACKEND_HOST + '/users';
 
@@ -30,5 +33,29 @@ describe('userService', () => {
       }
     );
     expect(result).toStrictEqual(mockedUserDetails);
+  });
+
+  describe('checkNewAdminEmailIsValid function', () => {
+    it('Should call relevant endpoint with correct params', async () => {
+      mockedAxios.post.mockResolvedValue({ data: true });
+
+      const result = await checkNewAdminEmailIsValid(
+        'testSessionId',
+        'testJwt',
+        'testEmail'
+      );
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        BASE_USERS_URL + '/validate-admin-email',
+        { emailAddress: 'testEmail' },
+        {
+          withCredentials: true,
+          headers: {
+            Cookie: 'SESSION=testSessionId;user-service-token=testJwt',
+          },
+        }
+      );
+      expect(result).toStrictEqual(true);
+    });
   });
 });

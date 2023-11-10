@@ -4,23 +4,39 @@ import UserDetails from '../types/UserDetails';
 
 const BASE_USERS_URL = process.env.BACKEND_HOST + '/users';
 
-const getLoggedInUsersDetails = async (
+export async function getLoggedInUsersDetails(
   sessionCookie: string
-): Promise<UserDetails> => {
+): Promise<UserDetails> {
   const response = await axios.get(
     `${BASE_USERS_URL}/loggedInUser`,
     axiosSessionConfig(sessionCookie)
   );
   return response.data;
-};
+}
 
-const isAdminSessionValid = async (sessionCookie: string) => {
+export async function isAdminSessionValid(sessionCookie: string) {
   const response = await fetch(`${BASE_USERS_URL}/validateAdminSession`, {
     headers: {
       Cookie: `SESSION=${sessionCookie};`,
     },
   });
   return (await response.text()) === 'true';
-};
+}
 
-export { getLoggedInUsersDetails, isAdminSessionValid };
+export async function checkNewAdminEmailIsValid(
+  sessionCookie: string,
+  jwt: string,
+  email: string
+) {
+  const response = await axios.post(
+    `${BASE_USERS_URL}/validate-admin-email`,
+    { emailAddress: email },
+    {
+      withCredentials: true,
+      headers: {
+        Cookie: `SESSION=${sessionCookie};${process.env.JWT_COOKIE_NAME}=${jwt}`,
+      },
+    }
+  );
+  return response.data;
+}

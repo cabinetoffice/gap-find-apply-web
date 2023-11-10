@@ -104,13 +104,18 @@ describe('Super admin - Edit user page', () => {
     it('Should render a users schemes', () => {
       render(
         <UserPage
-          {...getPageProps(getDefaultProps, { schemes: [{ name: 'Test' }] })}
+          {...getPageProps(getDefaultProps, {
+            schemes: [{ name: 'Test Scheme', schemeId: 'schemeId' }],
+          })}
         />
       );
 
       expect(
         screen.getByRole('link', { name: 'Change owner' })
-      ).toHaveAttribute('href', '/super-admin-dashboard/user/1/change-owner');
+      ).toHaveAttribute(
+        'href',
+        '/super-admin-dashboard/user/1/schemes/schemeId/change-owner?oldEmailAddress=test%40gmail.com&schemeName=Test+Scheme'
+      );
 
       expect(
         screen.queryByText('This user does not own any grants.')
@@ -175,6 +180,7 @@ describe('Super admin - Edit user page', () => {
       req: {
         cookies: {
           'user-service-token': 'jwt',
+          sessionId: 'testSessionId',
         },
       },
     });
@@ -241,7 +247,11 @@ describe('Super admin - Edit user page', () => {
 
       if ('redirect' in result) throw new Error('Should not redirect');
 
-      expect(mockedGetAdminsSchemes).toHaveBeenNthCalledWith(1, '1', 'jwt');
+      expect(mockedGetAdminsSchemes).toHaveBeenNthCalledWith(
+        1,
+        '1',
+        'testSessionId'
+      );
       expect(result.props).toEqual(
         expect.objectContaining({ schemes: [{ name: 'Test' }] })
       );
