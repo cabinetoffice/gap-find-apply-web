@@ -1,10 +1,11 @@
 name: Admin CD
 
 on:
-  pull_request:
+  create:
+  push:
     branches:
       - release/**
-      - main
+      - develop
     paths:
       - "packages/admin/**"
       - "packages/gap-web-ui/**"
@@ -14,6 +15,9 @@ on:
 
 jobs:
   test:
+      # Need to check here as create event can't be filtered by branch name: https://github.com/orgs/community/discussions/54860
+      if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release')
+
       name: Test app
 
       runs-on: ubuntu-latest
@@ -97,6 +101,9 @@ jobs:
           run: yarn jest --selectProjects gap-web-ui --runInBand --ci
           
   build:
+    # Need to check here as create event can't be filtered by branch name: https://github.com/orgs/community/discussions/54860
+    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release')
+      
     runs-on: ubuntu-latest
 
     outputs:
@@ -149,6 +156,9 @@ jobs:
           retention-days: 1
   
   deploy:
+    # Need to check here as create event can't be filtered by branch name: https://github.com/orgs/community/discussions/54860
+    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release')
+  
     needs: [build, test]
 
     environment: AWS
