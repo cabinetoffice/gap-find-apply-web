@@ -7,7 +7,7 @@ on:
       - main
     paths:
       - "packages/applicant/**"
-      - "packages/gap-web-ui/**"  
+      - "packages/gap-web-ui/**"
       - ".github/workflows/applicant-sandbox-qa-cd.yml"
       - "package.json"
       - "yarn.lock"
