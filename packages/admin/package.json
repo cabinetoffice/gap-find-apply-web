@@ -19,7 +19,7 @@
     "@contentful/rich-text-from-markdown": "15.16.6",
     "@contentful/rich-text-react-renderer": "^15.12.1",
     "@elastic/elasticsearch": "7.10",
-    "axios": "^0.27.2",
+    "axios": "^1.6.0",
     "body-parser": "^1.19.2",
     "contentful": "^9.1.5",
     "cookie-parser": "^1.4.6",
