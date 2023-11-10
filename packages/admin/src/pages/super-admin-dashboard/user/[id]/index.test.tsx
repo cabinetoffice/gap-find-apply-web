@@ -249,7 +249,7 @@ describe('Super admin - Edit user page', () => {
 
       expect(mockedGetAdminsSchemes).toHaveBeenNthCalledWith(
         1,
-        '1',
+        'sub',
         'testSessionId'
       );
       expect(result.props).toEqual(
