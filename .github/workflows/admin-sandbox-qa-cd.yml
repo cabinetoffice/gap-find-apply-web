@@ -1,10 +1,10 @@
 name: Admin CD
 
 on:
-  push:
+  pull_request:
     branches:
       - release/**
-      - develop
+      - main
     paths:
       - "packages/admin/**"
       - "packages/gap-web-ui/**"
