@@ -51,12 +51,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     handleRequest,
     jwt: getSessionIdFromCookies(context.req),
     onErrorMessage: 'Failed to change scheme owner.',
-    onSuccessRedirectHref: (emailAddress) =>
-      `/super-admin-dashboard/user/${userId}/schemes/${schemeId}/confirm-change-owner?newEmailAddress=${encodeURIComponent(
-        emailAddress
-      )}&oldEmailAddress=${encodeURIComponent(
-        oldEmailAddress
-      )}&schemeName=${encodeURIComponent(schemeName)}`,
+    onSuccessRedirectHref: (newEmailAddress) => {
+      const queryParams = new URLSearchParams({
+        newEmailAddress,
+        oldEmailAddress,
+        schemeName,
+      }).toString();
+      return `/super-admin-dashboard/user/${userId}/schemes/${schemeId}/confirm-change-owner?${queryParams}`;
+    },
   });
 }
 

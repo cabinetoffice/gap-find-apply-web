@@ -189,7 +189,7 @@ describe('Super admin - Change owner page', () => {
       expect(result.redirect).toEqual(
         expect.objectContaining({
           destination:
-            '/super-admin-dashboard/user/testUserId/schemes/testSchemeId/confirm-change-owner?newEmailAddress=test%40gmail.com&oldEmailAddress=test%40gmail.com&schemeName=Test%20Scheme',
+            '/super-admin-dashboard/user/testUserId/schemes/testSchemeId/confirm-change-owner?newEmailAddress=test%40gmail.com&oldEmailAddress=test%40gmail.com&schemeName=Test+Scheme',
         })
       );
     });

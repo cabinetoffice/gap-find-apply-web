@@ -63,15 +63,12 @@ const ConfirmChangeOwnerPage = ({
   csrfToken,
   pageData,
 }: InferProps<typeof getServerSideProps>) => {
-  const backButtonHref = `/super-admin-dashboard/user/${
-    pageData.userId
-  }/schemes/${
-    pageData.schemeId
-  }/change-owner?oldEmailAddress=${encodeURIComponent(
-    pageData.oldEmailAddress
-  )}&newEmailAddress=${encodeURIComponent(
-    pageData.newEmailAddress
-  )}&schemeName=${encodeURIComponent(pageData.schemeName)}`;
+  const queryParams = new URLSearchParams({
+    oldEmailAddress: pageData.oldEmailAddress,
+    newEmailAddress: pageData.newEmailAddress,
+    schemeName: pageData.schemeName,
+  }).toString();
+  const backButtonHref = `/super-admin-dashboard/user/${pageData.userId}/schemes/${pageData.schemeId}/change-owner?${queryParams}`;
 
   return (
     <>

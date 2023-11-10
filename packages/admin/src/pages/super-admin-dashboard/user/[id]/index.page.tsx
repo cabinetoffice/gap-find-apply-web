@@ -125,23 +125,22 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                   </p>
                 ) : (
                   <SummaryList
-                    rows={pageData.schemes.map((scheme) => ({
-                      key: scheme.name,
-                      value: (
-                        <Link
-                          href={`/super-admin-dashboard/user/${
-                            pageData.gapUserId
-                          }/schemes/${
-                            scheme.schemeId
-                          }/change-owner?oldEmailAddress=${encodeURIComponent(
-                            pageData.emailAddress
-                          )}&schemeName=${encodeURIComponent(scheme.name)}
-                            `}
-                        >
-                          <a className="govuk-link">Change owner</a>
-                        </Link>
-                      ),
-                    }))}
+                    rows={pageData.schemes.map((scheme) => {
+                      const queryParams = new URLSearchParams({
+                        oldEmailAddress: pageData.emailAddress,
+                        schemeName: scheme.name,
+                      }).toString();
+                      const href = `/super-admin-dashboard/user/${pageData.gapUserId}/schemes/${scheme.schemeId}/change-owner?${queryParams}`;
+
+                      return {
+                        key: scheme.name,
+                        value: (
+                          <Link href={href}>
+                            <a className="govuk-link">Change owner</a>
+                          </Link>
+                        ),
+                      };
+                    })}
                   />
                 )}
               </>
