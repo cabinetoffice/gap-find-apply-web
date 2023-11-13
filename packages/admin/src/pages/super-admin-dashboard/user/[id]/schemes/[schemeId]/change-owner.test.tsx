@@ -184,6 +184,7 @@ describe('Super admin - Change owner page', () => {
       expect(mockedCheckNewAdminEmailIsValid).toHaveBeenCalledWith(
         'testSessionId',
         'jwt',
+        'test@gmail.com',
         'test@gmail.com'
       );
       expect(result.redirect).toEqual(
