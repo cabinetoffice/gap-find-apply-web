@@ -26,11 +26,12 @@ export async function isAdminSessionValid(sessionCookie: string) {
 export async function checkNewAdminEmailIsValid(
   sessionCookie: string,
   jwt: string,
-  email: string
+  newEmail: string,
+  oldEmail: string
 ) {
   const response = await axios.post(
     `${BASE_USERS_URL}/validate-admin-email`,
-    { emailAddress: email },
+    { emailAddress: newEmail, oldEmailAddress: oldEmail },
     {
       withCredentials: true,
       headers: {

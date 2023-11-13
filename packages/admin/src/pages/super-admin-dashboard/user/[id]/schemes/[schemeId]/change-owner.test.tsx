@@ -128,7 +128,7 @@ describe('Super admin - Change owner page', () => {
         schemeId: 'testSchemeId',
       },
       query: {
-        oldEmailAddress: 'test%40gmail.com',
+        oldEmailAddress: 'oldemail%40gov.uk',
         schemeName: 'Test Scheme',
       },
       req: {
@@ -184,12 +184,13 @@ describe('Super admin - Change owner page', () => {
       expect(mockedCheckNewAdminEmailIsValid).toHaveBeenCalledWith(
         'testSessionId',
         'jwt',
-        'test@gmail.com'
+        'test@gmail.com',
+        'oldemail@gov.uk'
       );
       expect(result.redirect).toEqual(
         expect.objectContaining({
           destination:
-            '/super-admin-dashboard/user/testUserId/schemes/testSchemeId/confirm-change-owner?newEmailAddress=test%40gmail.com&oldEmailAddress=test%40gmail.com&schemeName=Test+Scheme',
+            '/super-admin-dashboard/user/testUserId/schemes/testSchemeId/confirm-change-owner?newEmailAddress=test%40gmail.com&oldEmailAddress=oldemail%40gov.uk&schemeName=Test+Scheme',
         })
       );
     });
