@@ -128,7 +128,7 @@ describe('Super admin - Change owner page', () => {
         schemeId: 'testSchemeId',
       },
       query: {
-        oldEmailAddress: 'oldemail@gov.uk',
+        oldEmailAddress: 'oldemail%40gov.uk',
         schemeName: 'Test Scheme',
       },
       req: {
