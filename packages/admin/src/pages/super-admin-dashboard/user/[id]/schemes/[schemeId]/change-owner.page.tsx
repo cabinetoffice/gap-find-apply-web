@@ -28,7 +28,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     await checkNewAdminEmailIsValid(
       jwt,
       getUserTokenFromCookies(context.req),
-      body.emailAddress
+      body.emailAddress,
+      oldEmailAddress
     );
     return body.emailAddress;
   }
