@@ -1,8 +1,13 @@
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
+import InsetText from '../../../components/inset-text/InsetText';
 import Meta from '../../../components/layout/Meta';
 import { completedMandatoryQuestions } from '../../../services/MandatoryQuestionsService';
 import { getGrantScheme } from '../../../services/SchemeService';
+import {
+  getSpotlightLastUpdateDate,
+  getSpotlightSubmissionCount,
+} from '../../../services/SpotlightSubmissionService';
 import InferProps from '../../../types/InferProps';
 import { getSessionIdFromCookies } from '../../../utils/session';
 
@@ -14,9 +19,23 @@ export const getServerSideProps = async ({
   const { schemeId } = params as Record<string, string>;
   const { applicationId } = query as Record<string, string>;
   const { hasCompletedSubmissions } = query as Record<string, string>;
+  const { isInternal } = query as Record<string, string>;
 
   const sessionCookie = getSessionIdFromCookies(req);
   const scheme = await getGrantScheme(schemeId, sessionCookie);
+
+  let spotlightSubmissionCount = 0;
+  let spotlightLastUpdated = null;
+  if (isInternal == 'true') {
+    spotlightSubmissionCount = await getSpotlightSubmissionCount(
+      schemeId,
+      sessionCookie
+    );
+    spotlightLastUpdated = await getSpotlightLastUpdateDate(
+      schemeId,
+      sessionCookie
+    );
+  }
 
   let hasInfoToDownload = false;
 
@@ -40,6 +59,9 @@ export const getServerSideProps = async ({
       scheme,
       applicationId,
       hasInfoToDownload,
+      spotlightSubmissionCount,
+      spotlightLastUpdated,
+      isInternal,
     },
   };
 };
@@ -48,6 +70,9 @@ const ManageDueDiligenceChecks = ({
   scheme,
   applicationId = '',
   hasInfoToDownload,
+  spotlightSubmissionCount,
+  spotlightLastUpdated,
+  isInternal,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
@@ -65,6 +90,36 @@ const ManageDueDiligenceChecks = ({
             </p>
           ) : (
             <>
+              {isInternal && (
+                <InsetText>
+                  <p
+                    className="govuk-!-margin-bottom-0"
+                    data-testid="spotlight-count"
+                  >
+                    You have{' '}
+                    <span className="govuk-!-font-weight-bold">
+                      {spotlightSubmissionCount} applications
+                    </span>{' '}
+                    in Spotlight.
+                  </p>
+                  <p
+                    className="govuk-!-margin-top-0"
+                    data-testid="spotlight-last-updated"
+                  >
+                    {spotlightLastUpdated ? (
+                      <>
+                        Spotlight was last updated on{' '}
+                        <span className="govuk-!-font-weight-bold">
+                          {spotlightLastUpdated}
+                        </span>
+                        .{' '}
+                      </>
+                    ) : (
+                      <>No records have been sent to Spotlight. </>
+                    )}
+                  </p>
+                </InsetText>
+              )}
               <p className="govuk-body">
                 We gather the information you need to run due diligence checks.
               </p>

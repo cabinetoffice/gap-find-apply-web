@@ -195,7 +195,9 @@ const ViewScheme = ({
             }/manage-due-diligence-checks?applicationId=${applicationId}&hasCompletedSubmissions=${!(
               schemeApplicationsData?.applicationFormStats?.submissionCount ===
               0
-            )}`}
+            )}&isInternal=${
+              schemeApplicationsData?.applicationForm ? true : false
+            }`}
             isSecondaryButton
           >
             Manage due diligence checks
