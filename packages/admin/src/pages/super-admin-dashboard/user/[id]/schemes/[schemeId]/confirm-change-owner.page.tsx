@@ -43,11 +43,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     };
   }
 
-  return QuestionPageGetServerSideProps<
-    PageBodyResponse,
-    Awaited<ReturnType<typeof fetchPageData>>,
-    Awaited<ReturnType<typeof handleRequest>>
-  >({
+  return QuestionPageGetServerSideProps({
     context,
     fetchPageData,
     handleRequest,
