@@ -11,39 +11,22 @@ import { getSessionIdFromCookies } from '../../../utils/session';
 
 export const getServerSideProps = async ({
   params,
-  query,
   req,
 }: GetServerSidePropsContext) => {
   const { schemeId } = params as Record<string, string>;
-  const { applicationId } = query as Record<string, string>;
-  const { hasCompletedSubmissions } = query as Record<string, string>;
 
   const sessionCookie = getSessionIdFromCookies(req);
   const scheme = await getGrantScheme(schemeId, sessionCookie);
   const isInternal = await schemeApplicationIsInternal(schemeId, sessionCookie);
   const spotlightUrl = process.env.SPOTLIGHT_LOGIN_URL;
-
-  let hasInfoToDownload = false;
-
-  if (
-    scheme.version &&
-    parseInt(scheme.version) < 2 &&
-    hasCompletedSubmissions == 'true'
-  ) {
-    hasInfoToDownload = true;
-  }
-
-  if (scheme.version && parseInt(scheme.version) > 1) {
-    hasInfoToDownload = await completedMandatoryQuestions(
-      scheme.schemeId,
-      sessionCookie
-    );
-  }
+  const hasInfoToDownload = await completedMandatoryQuestions(
+    scheme.schemeId,
+    sessionCookie
+  );
 
   return {
     props: {
       scheme,
-      applicationId,
       hasInfoToDownload,
       spotlightUrl,
       isInternal,
@@ -53,7 +36,6 @@ export const getServerSideProps = async ({
 
 const ManageDueDiligenceChecks = ({
   scheme,
-  applicationId = '',
   hasInfoToDownload,
   spotlightUrl,
   isInternal,
@@ -114,11 +96,7 @@ const ManageDueDiligenceChecks = ({
 
               <p className="govuk-body">
                 <CustomLink
-                  href={
-                    scheme.version && parseInt(scheme.version) > 1
-                      ? `/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`
-                      : `/api/downloadRequiredChecks?applicationId=${applicationId}`
-                  }
+                  href={`/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`}
                 >
                   Download due diligence information
                 </CustomLink>

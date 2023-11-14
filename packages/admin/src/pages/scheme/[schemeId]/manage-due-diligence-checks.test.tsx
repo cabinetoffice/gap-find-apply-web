@@ -24,15 +24,6 @@ const scheme = {
   version: '2',
 } as Scheme;
 
-const schemeV1 = {
-  name: 'schemeName',
-  schemeId: SCHEME_ID,
-  ggisReference: '',
-  funderId: '',
-  createdDate: '',
-  version: '1',
-} as Scheme;
-
 const getContext = (overrides: any = {}) =>
   merge(
     {
@@ -67,32 +58,12 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       >;
 
     it('Should get the scheme id from the path param', async () => {
-      mockedGetScheme.mockResolvedValue(schemeV1);
+      mockedGetScheme.mockResolvedValue(scheme);
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
 
-      expect(response.props.scheme).toStrictEqual(schemeV1);
-    });
-
-    it('Should get the application id from the query param', async () => {
-      mockedGetScheme.mockResolvedValue(schemeV1);
-
-      const response = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
-
-      expect(response.props.applicationId).toStrictEqual(APPLICATION_ID);
-    });
-
-    it('Should get hasInfoToDownload from the query param', async () => {
-      mockedGetScheme.mockResolvedValue(schemeV1);
-
-      const response = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
-
-      expect(response.props.hasInfoToDownload).toStrictEqual(false);
+      expect(response.props.scheme).toStrictEqual(scheme);
     });
 
     it('Should get hasInfoToDownload false from completedMandatoryQuestions', async () => {
@@ -112,7 +83,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={false}
           spotlightUrl="url"
           isInternal={true}
@@ -128,7 +98,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={false}
           spotlightUrl="url"
           isInternal={true}
@@ -141,7 +110,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={false}
@@ -159,7 +127,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={true}
@@ -176,11 +143,30 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
-    it('Should render the download link for v2 schemes', () => {
+    it('Should render the paragraphs when the scheme has an internal application', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
+          hasInfoToDownload={true}
+          spotlightUrl="url"
+          isInternal={true}
+        />
+      );
+      screen.getByText(
+        /Your application form has been designed to capture all of the information you need to run due diligence checks in Spotlight, a government owned due diligence tool\./i
+      );
+      screen.getByText(
+        /We automatically send the information to Spotlight. You need to log in to Spotlight to run your checks\./i
+      );
+      screen.getByText(
+        /Spotlight does not run checks on individuals or local authorities\./i
+      );
+    });
+
+    it('Should render the download link', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={true}
@@ -195,30 +181,10 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
-    it('Should render the download link for v1 schemes', () => {
-      render(
-        <ManageDueDiligenceChecks
-          scheme={schemeV1}
-          applicationId={APPLICATION_ID}
-          hasInfoToDownload={true}
-          spotlightUrl="url"
-          isInternal={true}
-        />
-      );
-
-      expect(
-        screen.getByRole('link', { name: 'Download due diligence information' })
-      ).toHaveAttribute(
-        'href',
-        `/apply/api/downloadRequiredChecks?applicationId=${APPLICATION_ID}`
-      );
-    });
-
     it('Should render the Spotlight button for schemes with external applications', () => {
       render(
         <ManageDueDiligenceChecks
-          scheme={schemeV1}
-          applicationId={APPLICATION_ID}
+          scheme={scheme}
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={false}
@@ -233,8 +199,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     it('Should render the Spotlight button for schemes with internal applications', () => {
       render(
         <ManageDueDiligenceChecks
-          scheme={schemeV1}
-          applicationId={APPLICATION_ID}
+          scheme={scheme}
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={true}
@@ -250,7 +215,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={false}
           spotlightUrl="url"
           isInternal={true}
