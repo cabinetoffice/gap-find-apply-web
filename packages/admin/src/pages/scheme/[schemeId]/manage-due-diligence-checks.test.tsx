@@ -21,15 +21,6 @@ const scheme = {
   version: '2',
 } as Scheme;
 
-const schemeV1 = {
-  name: 'schemeName',
-  schemeId: SCHEME_ID,
-  ggisReference: '',
-  funderId: '',
-  createdDate: '',
-  version: '1',
-} as Scheme;
-
 const getContext = (overrides: any = {}) =>
   merge(
     {
@@ -60,32 +51,12 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     >;
 
     it('Should get the scheme id from the path param', async () => {
-      mockedGetScheme.mockResolvedValue(schemeV1);
+      mockedGetScheme.mockResolvedValue(scheme);
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
 
-      expect(response.props.scheme).toStrictEqual(schemeV1);
-    });
-
-    it('Should get the application id from the query param', async () => {
-      mockedGetScheme.mockResolvedValue(schemeV1);
-
-      const response = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
-
-      expect(response.props.applicationId).toStrictEqual(APPLICATION_ID);
-    });
-
-    it('Should get hasInfoToDownload from the query param', async () => {
-      mockedGetScheme.mockResolvedValue(schemeV1);
-
-      const response = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
-
-      expect(response.props.hasInfoToDownload).toStrictEqual(false);
+      expect(response.props.scheme).toStrictEqual(scheme);
     });
 
     it('Should get hasInfoToDownload false from completedMandatoryQuestions', async () => {
@@ -103,11 +74,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
   describe('Manage due diligence checks page', () => {
     it('Should render back button', () => {
       render(
-        <ManageDueDiligenceChecks
-          scheme={scheme}
-          applicationId={APPLICATION_ID}
-          hasInfoToDownload={false}
-        />
+        <ManageDueDiligenceChecks scheme={scheme} hasInfoToDownload={false} />
       );
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
@@ -117,22 +84,14 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
 
     it('Should render the heading', () => {
       render(
-        <ManageDueDiligenceChecks
-          scheme={scheme}
-          applicationId={APPLICATION_ID}
-          hasInfoToDownload={false}
-        />
+        <ManageDueDiligenceChecks scheme={scheme} hasInfoToDownload={false} />
       );
       screen.getByRole('heading', { name: 'Manage due diligence checks' });
     });
 
     it('Should render the paragraphs', () => {
       render(
-        <ManageDueDiligenceChecks
-          scheme={scheme}
-          applicationId={APPLICATION_ID}
-          hasInfoToDownload={true}
-        />
+        <ManageDueDiligenceChecks scheme={scheme} hasInfoToDownload={true} />
       );
       screen.getByText(
         /we gather the information you need to run due diligence checks\./i
@@ -142,13 +101,9 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
-    it('Should render the download link for v2 schemes', () => {
+    it('Should render the download link', () => {
       render(
-        <ManageDueDiligenceChecks
-          scheme={scheme}
-          applicationId={APPLICATION_ID}
-          hasInfoToDownload={true}
-        />
+        <ManageDueDiligenceChecks scheme={scheme} hasInfoToDownload={true} />
       );
 
       expect(
@@ -158,31 +113,9 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         `/apply/api/downloadDueDiligenceChecks?schemeId=${SCHEME_ID}`
       );
     });
-
-    it('Should render the download link for v1 schemes', () => {
-      render(
-        <ManageDueDiligenceChecks
-          scheme={schemeV1}
-          applicationId={APPLICATION_ID}
-          hasInfoToDownload={true}
-        />
-      );
-
-      expect(
-        screen.getByRole('link', { name: 'Download due diligence information' })
-      ).toHaveAttribute(
-        'href',
-        `/apply/api/downloadRequiredChecks?applicationId=${APPLICATION_ID}`
-      );
-    });
-
     it('Should render the download "back to grant summary" button', () => {
       render(
-        <ManageDueDiligenceChecks
-          scheme={scheme}
-          applicationId={APPLICATION_ID}
-          hasInfoToDownload={false}
-        />
+        <ManageDueDiligenceChecks scheme={scheme} hasInfoToDownload={false} />
       );
 
       expect(
