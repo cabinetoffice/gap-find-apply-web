@@ -2,7 +2,10 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
 import { completedMandatoryQuestions } from '../../../services/MandatoryQuestionsService';
-import { getGrantScheme } from '../../../services/SchemeService';
+import {
+  getGrantScheme,
+  schemeApplicationIsInternal,
+} from '../../../services/SchemeService';
 import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
 import Scheme from '../../../types/Scheme';
 import ManageDueDiligenceChecks, {
@@ -58,6 +61,10 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     const mockedGetScheme = getGrantScheme as jest.MockedFn<
       typeof getGrantScheme
     >;
+    const mockedSchemeApplicationIsInternal =
+      schemeApplicationIsInternal as jest.MockedFn<
+        typeof schemeApplicationIsInternal
+      >;
 
     it('Should get the scheme id from the path param', async () => {
       mockedGetScheme.mockResolvedValue(schemeV1);
@@ -107,6 +114,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           scheme={scheme}
           applicationId={APPLICATION_ID}
           hasInfoToDownload={false}
+          spotlightUrl="url"
+          isInternal={true}
         />
       );
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
@@ -121,17 +130,21 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           scheme={scheme}
           applicationId={APPLICATION_ID}
           hasInfoToDownload={false}
+          spotlightUrl="url"
+          isInternal={true}
         />
       );
       screen.getByRole('heading', { name: 'Manage due diligence checks' });
     });
 
-    it('Should render the paragraphs', () => {
+    it('Should render the paragraphs when the scheme has no internal applications', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
           applicationId={APPLICATION_ID}
           hasInfoToDownload={true}
+          spotlightUrl="url"
+          isInternal={false}
         />
       );
       screen.getByText(
@@ -142,12 +155,35 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
+    it('Should render the paragraphs when the scheme has an internal application', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          applicationId={APPLICATION_ID}
+          hasInfoToDownload={true}
+          spotlightUrl="url"
+          isInternal={true}
+        />
+      );
+      screen.getByText(
+        /Your application form has been designed to capture all of the information you need to run due diligence checks in Spotlight, a government owned due diligence tool\./i
+      );
+      screen.getByText(
+        /We automatically send the information to Spotlight. You need to log in to Spotlight to run your checks\./i
+      );
+      screen.getByText(
+        /Spotlight does not run checks on individuals or local authorities\./i
+      );
+    });
+
     it('Should render the download link for v2 schemes', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
           applicationId={APPLICATION_ID}
           hasInfoToDownload={true}
+          spotlightUrl="url"
+          isInternal={true}
         />
       );
 
@@ -165,6 +201,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           scheme={schemeV1}
           applicationId={APPLICATION_ID}
           hasInfoToDownload={true}
+          spotlightUrl="url"
+          isInternal={true}
         />
       );
 
@@ -176,12 +214,46 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
+    it('Should render the Spotlight button for schemes with external applications', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={schemeV1}
+          applicationId={APPLICATION_ID}
+          hasInfoToDownload={true}
+          spotlightUrl="url"
+          isInternal={false}
+        />
+      );
+
+      expect(
+        screen.getByRole('link', { name: 'Log in to Spotlight' })
+      ).toHaveAttribute('href', `url`);
+    });
+
+    it('Should render the Spotlight button for schemes with internal applications', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={schemeV1}
+          applicationId={APPLICATION_ID}
+          hasInfoToDownload={true}
+          spotlightUrl="url"
+          isInternal={true}
+        />
+      );
+
+      expect(
+        screen.getByRole('link', { name: 'Log in to Spotlight' })
+      ).toHaveAttribute('href', `url`);
+    });
+
     it('Should render the download "back to grant summary" button', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
           applicationId={APPLICATION_ID}
           hasInfoToDownload={false}
+          spotlightUrl="url"
+          isInternal={true}
         />
       );
 
