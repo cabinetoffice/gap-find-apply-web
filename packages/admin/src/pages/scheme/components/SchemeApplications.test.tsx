@@ -25,12 +25,15 @@ const getApplicationFormStats = (overrides: any = {}) =>
     overrides
   );
 
+const SCHEME_VERSION = '1';
+
 describe('BuildApplicationForm', () => {
   it('Should render a application form name table col', () => {
     render(
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -42,6 +45,7 @@ describe('BuildApplicationForm', () => {
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -53,6 +57,7 @@ describe('BuildApplicationForm', () => {
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -66,6 +71,7 @@ describe('BuildApplicationForm', () => {
           audit: { lastPublished: '' },
         })}
         applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -79,6 +85,7 @@ describe('BuildApplicationForm', () => {
           applicationStatus: 'REMOVED',
         })}
         applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -90,6 +97,7 @@ describe('BuildApplicationForm', () => {
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -103,6 +111,7 @@ describe('BuildApplicationForm', () => {
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -114,6 +123,7 @@ describe('BuildApplicationForm', () => {
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats({ submissionCount: 1 })}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -127,6 +137,7 @@ describe('BuildApplicationForm', () => {
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -138,6 +149,7 @@ describe('BuildApplicationForm', () => {
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats({ inProgressCount: 123 })}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -150,6 +162,7 @@ describe('BuildApplicationForm', () => {
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats({ submissionCount: 456 })}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -162,6 +175,7 @@ describe('BuildApplicationForm', () => {
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -174,6 +188,7 @@ describe('BuildApplicationForm', () => {
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats({ submissionCount: 1 })}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
@@ -187,11 +202,95 @@ describe('BuildApplicationForm', () => {
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
       />
     );
 
     expect(
       screen.getByRole('button', { name: 'View submitted applications' })
     ).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('Should render a "Required checks" heading', () => {
+    render(
+      <SchemeApplications
+        applicationForm={getSchemeApplicationsProps()}
+        applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
+      />
+    );
+
+    screen.getByRole('heading', { name: 'Required checks' });
+  });
+
+  it('Should render a summary of the view submitted applications action', () => {
+    render(
+      <SchemeApplications
+        applicationForm={getSchemeApplicationsProps()}
+        applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
+      />
+    );
+
+    screen.getByText(
+      "Download the information from the 'Required checks' section of the application form only."
+    );
+    screen.getByText(
+      'You can use this information to carry out due-diligence checks.'
+    );
+  });
+
+  it('Should render a link to direct admins to spotlight', () => {
+    render(
+      <SchemeApplications
+        applicationForm={getSchemeApplicationsProps()}
+        applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
+      />
+    );
+
+    screen.getByRole('link', {
+      name: 'You can use the Cabinet Office service Spotlight for these checks.',
+    });
+  });
+
+  it('Should render a "View submitted applications" button', () => {
+    render(
+      <SchemeApplications
+        applicationForm={getSchemeApplicationsProps()}
+        applicationFormStats={getApplicationFormStats({ submissionCount: 1 })}
+        schemeVersion={SCHEME_VERSION}
+      />
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'Download required checks' })
+    ).not.toHaveAttribute('disabled');
+  });
+
+  it('Should render a disabled "Download required checks" button', () => {
+    render(
+      <SchemeApplications
+        applicationForm={getSchemeApplicationsProps()}
+        applicationFormStats={getApplicationFormStats()}
+        schemeVersion={SCHEME_VERSION}
+      />
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'Download required checks' })
+    ).toHaveAttribute('disabled');
+  });
+
+  it('Should not render "Download required checks" section for V2 schemes', () => {
+    render(
+      <SchemeApplications
+        applicationForm={getSchemeApplicationsProps()}
+        applicationFormStats={getApplicationFormStats()}
+        schemeVersion={'2'}
+      />
+    );
+
+    expect(screen.queryByText(/required checks/)).not.toBeInTheDocument();
   });
 });
