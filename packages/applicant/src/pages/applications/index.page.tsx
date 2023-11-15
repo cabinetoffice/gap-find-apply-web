@@ -11,7 +11,6 @@ import { routes } from '../../utils/routes';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
-  res,
 }) => {
   const applicationData = await getApplicationsListById(getJwtFromCookies(req));
   return {
@@ -28,7 +27,6 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
   return (
     <>
       <Meta title="View my applications - Apply for a grant" />
-
       <Layout backBtnUrl={routes.dashboard}>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">

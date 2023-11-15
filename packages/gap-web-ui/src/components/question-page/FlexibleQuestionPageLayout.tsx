@@ -28,7 +28,7 @@ const FlexibleQuestionPageLayout = ({
           className={
             fullPageWidth
               ? 'govuk-grid-column-full'
-              : 'govuk-grid-column-two-third'
+              : 'govuk-grid-column-two-thirds'
           }
         >
           <form

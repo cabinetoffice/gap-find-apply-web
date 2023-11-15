@@ -48,20 +48,19 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
               }
               fieldName="fundingLocation"
               options={[
-                'North East England',
-                'North West England',
+                'North East (England)',
+                'North West (England)',
                 'Yorkshire and the Humber',
                 'East Midlands (England)',
-                'West Midlands',
+                'West Midlands (England)',
                 'East England',
                 'London',
-                'South East England',
-                'South West England',
-                'Midlands',
+                'South East (England)',
+                'South West (England)',
                 'Scotland',
                 'Wales',
                 'Northern Ireland',
-                'Outside UK',
+                'Outside of the UK',
               ]}
               defaultCheckboxes={defaultFields.fundingLocation}
               fieldErrors={fieldErrors}

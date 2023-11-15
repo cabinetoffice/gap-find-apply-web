@@ -8,7 +8,6 @@ import {
   SuperAdminDashboardFilterData,
   User,
 } from '../pages/super-admin-dashboard/types';
-import UserDetails from '../types/UserDetails';
 import PaginationType from '../types/Pagination';
 
 const { serverRuntimeConfig } = getConfig();
