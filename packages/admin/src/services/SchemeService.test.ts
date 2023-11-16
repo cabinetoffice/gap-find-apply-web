@@ -33,6 +33,8 @@ describe('SchemeService', () => {
   const { serverRuntimeConfig } = getConfig();
   const BACKEND_HOST = serverRuntimeConfig.backendHost;
   const BASE_SCHEME_URL = BACKEND_HOST + '/schemes';
+  const schemeId = 'schemeId';
+  const sessionId = 'sessionId';
 
   const mockSchemes = [
     {
@@ -182,8 +184,6 @@ describe('SchemeService', () => {
 
   describe('schemeApplicationIsInternal', () => {
     it('should return false when the scheme does not have an internal application form', async () => {
-      const schemeId = 'schemeId';
-      const sessionId = 'sessionId';
       const expected = false;
       const axiosGetMock = jest
         .spyOn(axios, 'get')
@@ -201,8 +201,6 @@ describe('SchemeService', () => {
     });
 
     it('should return true when the scheme does have an internal application form', async () => {
-      const schemeId = 'schemeId';
-      const sessionId = 'sessionId';
       const expected = true;
       const axiosGetMock = jest
         .spyOn(axios, 'get')
