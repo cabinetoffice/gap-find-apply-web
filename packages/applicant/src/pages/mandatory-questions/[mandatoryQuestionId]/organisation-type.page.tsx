@@ -13,10 +13,10 @@ export default function MandatoryQuestionOrganisationTypePage({
   formAction,
   defaultFields,
   mandatoryQuestion,
-  mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl =
-    routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
+  const backButtonUrl = routes.mandatoryQuestions.startPage(
+    mandatoryQuestion.schemeId.toString()
+  );
   return (
     <>
       <Meta

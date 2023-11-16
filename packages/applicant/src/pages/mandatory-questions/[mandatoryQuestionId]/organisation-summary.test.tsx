@@ -12,13 +12,13 @@ import MandatoryQuestionOrganisationSummaryPage, {
 describe('Organisation summary page', () => {
   const mandatoryQuestion = {
     schemeId: 1,
+    orgType: 'Test Organisation Type',
     name: 'Test Organisation',
     addressLine1: 'Test Address 1',
     addressLine2: 'Test Address 2',
     city: 'Test City',
     county: 'Test County',
     postcode: 'Test Postcode',
-    orgType: 'Test Organisation Type',
     companiesHouseNumber: 'Test Companies House Number',
     charityCommissionNumber: 'Test Charity Commission Number',
     fundingAmount: '1000',

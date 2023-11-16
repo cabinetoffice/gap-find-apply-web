@@ -16,7 +16,8 @@ export default function MandatoryQuestionOrganisationCompaniesHouseNumberPage({
   mandatoryQuestion,
   mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl = routes.mandatoryQuestions.typePage(mandatoryQuestionId);
+  const backButtonUrl =
+    routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
   return (
     <>
       <Meta

@@ -11,7 +11,19 @@ export const generateMandatoryQuestionDetails = (
   mandatoryQuestion,
   mandatoryQuestionId
 ): MandatoryQuestionDetails[] => {
+  const shouldDisplayExtraFields = [
+    'Limited company',
+    'Charity',
+    'Other',
+  ].includes(mandatoryQuestion.orgType);
   return [
+    {
+      id: 'organisationType',
+      label: 'Type of organisation',
+      value: mandatoryQuestion?.orgType,
+      url: routes.mandatoryQuestions.typePage(mandatoryQuestionId),
+      status: 'Change',
+    },
     {
       id: 'organisationName',
       label: 'Name',
@@ -33,13 +45,6 @@ export const generateMandatoryQuestionDetails = (
       status: 'Change',
     },
     {
-      id: 'organisationType',
-      label: 'Type of organisation',
-      value: mandatoryQuestion?.orgType,
-      url: routes.mandatoryQuestions.typePage(mandatoryQuestionId),
-      status: 'Change',
-    },
-    {
       id: 'organisationCompaniesHouseNumber',
       label: 'Companies House number',
       value: mandatoryQuestion?.companiesHouseNumber,
@@ -47,6 +52,8 @@ export const generateMandatoryQuestionDetails = (
         mandatoryQuestionId
       ),
       status: 'Change',
+      hidden:
+        !shouldDisplayExtraFields && !mandatoryQuestion?.companiesHouseNumber,
     },
     {
       id: 'organisationCharity',
@@ -56,6 +63,9 @@ export const generateMandatoryQuestionDetails = (
         mandatoryQuestionId
       ),
       status: 'Change',
+      hidden:
+        !shouldDisplayExtraFields &&
+        !mandatoryQuestion?.charityCommissionNumber,
     },
     {
       id: 'fundingAmount',
@@ -109,8 +119,9 @@ export default function MandatoryQuestionOrganisationSummaryPage({
               they can run checks to prevent fraud.
             </p>
             <dl className="govuk-summary-list">
-              {mandatoryQuestionDetails?.map((mandatoryQuestionDetail) => {
-                return (
+              {mandatoryQuestionDetails
+                ?.filter((item) => !item.hidden)
+                ?.map((mandatoryQuestionDetail) => (
                   <div
                     className="govuk-summary-list__row"
                     key={'row-' + mandatoryQuestionDetail.id}
@@ -157,8 +168,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                       </Link>
                     </dd>
                   </div>
-                );
-              })}
+                ))}
             </dl>
             <Link
               href={routes.api.mandatoryQuestions.createSubmission(
@@ -189,6 +199,7 @@ interface MandatoryQuestionDetails {
   url?: string;
   status?: 'Change';
   showCurrency?: boolean;
+  hidden?: boolean;
 }
 interface DisplayArrayDataProps {
   data: string[];
