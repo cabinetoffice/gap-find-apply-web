@@ -18,11 +18,13 @@ export const getServerSideProps = async ({
     scheme.schemeId,
     sessionCookie
   );
+  const GgisSchemeRefUrl = `/scheme/edit/ggis-reference?schemeId=${scheme.schemeId}&defaultValue=${scheme.ggisReference}`;
 
   return {
     props: {
       scheme,
       hasInfoToDownload,
+      GgisSchemeRefUrl,
     },
   };
 };
@@ -30,6 +32,7 @@ export const getServerSideProps = async ({
 const ManageDueDiligenceChecks = ({
   scheme,
   hasInfoToDownload,
+  GgisSchemeRefUrl,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
@@ -39,6 +42,47 @@ const ManageDueDiligenceChecks = ({
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+          <div
+            className="govuk-notification-banner"
+            role="region"
+            aria-labelledby="govuk-notification-banner-title"
+            data-module="govuk-notification-banner"
+          >
+            <div className="govuk-notification-banner__header">
+              <h2
+                className="govuk-notification-banner__title"
+                id="govuk-notification-banner-title"
+              >
+                Important
+              </h2>
+            </div>
+            <div className="govuk-notification-banner__content">
+              <p className="govuk-notification-banner__heading">
+                Spotlight did not recognise your GGIS number
+              </p>
+              <p className="govuk-body">
+                Spotlight did not recognise the GGIS reference number for your
+                grant.{' '}
+                <CustomLink href={GgisSchemeRefUrl}>
+                  Check that your grant reference number is correct.
+                </CustomLink>{' '}
+                Your data is still secure, and we&apos;ll try to send your data
+                to Spotlight again tonight.
+              </p>
+              <p className="govuk-body">
+                If your GGIS number is correct and this error persists after we
+                retry sending your data, get in contact with our support team at{' '}
+                {''}
+                <a
+                  className="govuk-notification-banner__link"
+                  href="mailto:findagrant@cabinetoffice.gov.uk"
+                >
+                  findagrant@cabinetoffice.gov.uk
+                </a>
+              </p>
+            </div>
+          </div>
+
           <h1 className="govuk-heading-l">Manage due diligence checks</h1>
 
           {!hasInfoToDownload ? (
