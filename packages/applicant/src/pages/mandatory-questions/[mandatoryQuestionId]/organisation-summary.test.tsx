@@ -10,7 +10,7 @@ import MandatoryQuestionOrganisationSummaryPage, {
 } from './organisation-summary.page';
 
 describe('Organisation summary page', () => {
-  const mandatoryQuestion = {
+  const defaultMandatoryQuestion = {
     schemeId: 1,
     orgType: 'Test Organisation Type',
     name: 'Test Organisation',
@@ -25,7 +25,9 @@ describe('Organisation summary page', () => {
     fundingLocation: ['Test Funding Location'],
   };
 
-  const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
+  const getDefaultProps = (
+    mandatoryQuestion = defaultMandatoryQuestion
+  ): InferProps<typeof getServerSideProps> => ({
     fieldErrors: [],
     csrfToken: 'testCSRFToken',
     formAction: 'testFormAction',
@@ -33,6 +35,23 @@ describe('Organisation summary page', () => {
     mandatoryQuestion,
     mandatoryQuestionId: 'mandatoryQuestionId',
   });
+
+  const checkDetailItem = (detail) => {
+    const labelElement = screen.getByText(detail.label);
+    expect(labelElement).toBeInTheDocument();
+
+    if (Array.isArray(detail.value)) {
+      detail.value.forEach((v) => {
+        const valueElement = screen.getByText(new RegExp(`${v}`));
+        expect(valueElement).toBeInTheDocument();
+      });
+    } else {
+      const valueElement = screen.getByText(
+        detail.showCurrency ? `£ ${detail.value}` : detail.value
+      );
+      expect(valueElement).toBeInTheDocument();
+    }
+  };
 
   it('should display a heading', () => {
     renderWithRouter(
@@ -53,30 +72,46 @@ describe('Organisation summary page', () => {
       />
     );
     const mandatoryQuestionDetails = generateMandatoryQuestionDetails(
-      mandatoryQuestion,
+      defaultMandatoryQuestion,
+      'mandatoryQuestionId'
+    );
+
+    mandatoryQuestionDetails.forEach(checkDetailItem);
+    const changeLinks = screen.getAllByText('Change', {
+      selector: 'a',
+    });
+    expect(changeLinks).toHaveLength(7);
+  });
+
+  it('should not display all the mandatory question details for certain org types', () => {
+    const mandatoryQuestionForIndividual = {
+      ...defaultMandatoryQuestion,
+      orgType: 'Individual',
+      companiesHouseNumber: '',
+      charityCommissionNumber: '',
+    };
+    renderWithRouter(
+      <MandatoryQuestionOrganisationSummaryPage
+        {...getPageProps(() => getDefaultProps(mandatoryQuestionForIndividual))}
+      />
+    );
+    const mandatoryQuestionDetails = generateMandatoryQuestionDetails(
+      mandatoryQuestionForIndividual,
       'mandatoryQuestionId'
     );
 
     mandatoryQuestionDetails.forEach((detail) => {
-      const labelElement = screen.getByText(detail.label);
-      expect(labelElement).toBeInTheDocument();
-
-      if (Array.isArray(detail.value)) {
-        detail.value.forEach((v) => {
-          const valueElement = screen.getByText(new RegExp(`${v}`));
-          expect(valueElement).toBeInTheDocument();
-        });
+      if (!detail.hidden) {
+        checkDetailItem(detail);
       } else {
-        const valueElement = screen.getByText(
-          detail.showCurrency ? `£ ${detail.value}` : detail.value
-        );
-        expect(valueElement).toBeInTheDocument();
+        const labelElement = screen.queryByText(detail.label);
+        expect(labelElement).not.toBeInTheDocument();
       }
     });
     const changeLinks = screen.getAllByText('Change', {
       selector: 'a',
     });
-    expect(changeLinks).toHaveLength(7);
+    expect(changeLinks).toHaveLength(5);
   });
 
   it('should display a confirm and submit button', () => {
