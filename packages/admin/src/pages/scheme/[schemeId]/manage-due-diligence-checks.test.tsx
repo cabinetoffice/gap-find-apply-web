@@ -26,15 +26,6 @@ const scheme = {
   version: '2',
 } as Scheme;
 
-const schemeV1 = {
-  name: 'schemeName',
-  schemeId: SCHEME_ID,
-  ggisReference: '',
-  funderId: '',
-  createdDate: '',
-  version: '1',
-} as Scheme;
-
 const getContext = (overrides: any = {}) =>
   merge(
     {
@@ -67,42 +58,22 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     >;
 
     it('Should get the scheme id from the path param', async () => {
-      mockedGetScheme.mockResolvedValue(schemeV1);
+      mockedGetScheme.mockResolvedValue(scheme);
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
 
-      expect(response.props.scheme).toStrictEqual(schemeV1);
-    });
-
-    it('Should get the application id from the query param', async () => {
-      mockedGetScheme.mockResolvedValue(schemeV1);
-
-      const response = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
-
-      expect(response.props.applicationId).toStrictEqual(APPLICATION_ID);
+      expect(response.props.scheme).toStrictEqual(scheme);
     });
 
     it('Should get isInternal from the query param', async () => {
-      mockedGetScheme.mockResolvedValue(schemeV1);
+      mockedGetScheme.mockResolvedValue(scheme);
 
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
 
       expect(response.props.isInternal).toBeTruthy();
-    });
-
-    it('Should get hasInfoToDownload from the query param', async () => {
-      mockedGetScheme.mockResolvedValue(schemeV1);
-
-      const response = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
-
-      expect(response.props.hasInfoToDownload).toStrictEqual(false);
     });
 
     it('Should get hasInfoToDownload false from completedMandatoryQuestions', async () => {
@@ -146,7 +117,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={false}
           spotlightSubmissionCount={2}
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
@@ -163,7 +133,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={false}
           spotlightSubmissionCount={2}
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
@@ -177,7 +146,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={true}
           spotlightSubmissionCount={2}
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
@@ -196,7 +164,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={true}
           spotlightSubmissionCount={2}
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
@@ -216,7 +183,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={true}
           spotlightSubmissionCount={0}
           spotlightLastUpdated={null}
@@ -231,11 +197,10 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
-    it('Should render the download link for v2 schemes', () => {
+    it('Should render the download link', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={true}
           spotlightSubmissionCount={2}
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
@@ -250,32 +215,10 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         `/apply/api/downloadDueDiligenceChecks?schemeId=${SCHEME_ID}`
       );
     });
-
-    it('Should render the download link for v1 schemes', () => {
-      render(
-        <ManageDueDiligenceChecks
-          scheme={schemeV1}
-          applicationId={APPLICATION_ID}
-          hasInfoToDownload={true}
-          spotlightSubmissionCount={2}
-          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
-          isInternal={'true'}
-        />
-      );
-
-      expect(
-        screen.getByRole('link', { name: 'Download due diligence information' })
-      ).toHaveAttribute(
-        'href',
-        `/apply/api/downloadRequiredChecks?applicationId=${APPLICATION_ID}`
-      );
-    });
-
     it('Should render the download "back to grant summary" button', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
-          applicationId={APPLICATION_ID}
           hasInfoToDownload={false}
           spotlightSubmissionCount={2}
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}

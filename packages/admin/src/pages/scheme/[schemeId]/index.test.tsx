@@ -68,6 +68,7 @@ const mockScheme: Scheme = {
   createdDate: '2022-7-12T17:00:00',
   applicationFormId: 'mock-app-id',
   contactEmail: 'test@gmail.com',
+  version: '2',
 };
 
 const mockGrantadvertData: getAdvertPublishInformationBySchemeIdResponse = {
@@ -273,9 +274,6 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId={
-            schemeApplicationsData.applicationForm.grantApplicationId
-          }
         />
       );
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
@@ -291,9 +289,6 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId={
-            schemeApplicationsData.applicationForm.grantApplicationId
-          }
         />
       );
       screen.getByRole('heading', { name: 'Grant summary' });
@@ -306,9 +301,6 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId={
-            schemeApplicationsData.applicationForm.grantApplicationId
-          }
         />
       );
       screen.getByText('GGIS Scheme Reference Number');
@@ -323,9 +315,6 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId={
-            schemeApplicationsData.applicationForm.grantApplicationId
-          }
         />
       );
       screen.getByText('Support email address');
@@ -340,9 +329,6 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId={
-            schemeApplicationsData.applicationForm.grantApplicationId
-          }
         />
       );
       screen.getByTestId('scheme-application-component');
@@ -358,7 +344,6 @@ describe('scheme/[schemeId]', () => {
           }}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId=""
         />
       );
       expect(screen.queryByTestId('scheme-application-component')).toBeFalsy();
@@ -374,7 +359,6 @@ describe('scheme/[schemeId]', () => {
           }}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId=""
         />
       );
       screen.getByTestId('build-application-form-component');
@@ -387,9 +371,6 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId={
-            schemeApplicationsData.applicationForm.grantApplicationId
-          }
         />
       );
       expect(
@@ -404,9 +385,6 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'enabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId={
-            schemeApplicationsData.applicationForm.grantApplicationId
-          }
         />
       );
 
@@ -420,9 +398,6 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId={
-            schemeApplicationsData.applicationForm.grantApplicationId
-          }
         />
       );
 
@@ -436,9 +411,6 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId={
-            schemeApplicationsData.applicationForm.grantApplicationId
-          }
         />
       );
       screen.getByRole('heading', { name: 'Due diligence checks' });
@@ -452,11 +424,9 @@ describe('scheme/[schemeId]', () => {
         'href',
         `/apply/scheme/${
           mockScheme.schemeId
-        }/manage-due-diligence-checks?applicationId=${
-          schemeApplicationsData.applicationForm.grantApplicationId
-        }&hasCompletedSubmissions=${!(
-          schemeApplicationsData?.applicationFormStats?.submissionCount === 0
-        )}&isInternal=${schemeApplicationsData?.applicationForm ? true : false}`
+        }/manage-due-diligence-checks?isInternal=${
+          schemeApplicationsData?.applicationForm ? true : false
+        }`
       );
     });
 
@@ -467,7 +437,6 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={null}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
-          applicationId=""
         />
       );
       screen.getByRole('heading', { name: 'Due diligence checks' });
@@ -481,8 +450,23 @@ describe('scheme/[schemeId]', () => {
         'href',
         `/apply/scheme/${
           mockScheme.schemeId
-        }/manage-due-diligence-checks?applicationId=${''}&hasCompletedSubmissions=${true}&isInternal=${false}`
+        }/manage-due-diligence-checks?isInternal=${false}`
       );
+    });
+
+    it('Should not render a "Due diligence checks" section V1 schemes', () => {
+      mockScheme.version = '1';
+      render(
+        <ViewScheme
+          scheme={mockScheme}
+          schemeApplicationsData={null}
+          enabledAdBuilder={'disabled'}
+          grantAdvertPublishData={mockGrantadvertData}
+        />
+      );
+      expect(
+        screen.queryByText(/due diligence checks/)
+      ).not.toBeInTheDocument();
     });
   });
 });
