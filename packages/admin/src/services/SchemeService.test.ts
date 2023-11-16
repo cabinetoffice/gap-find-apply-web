@@ -9,7 +9,9 @@ import {
   getGrantScheme,
   getUserSchemes,
   patchScheme,
+  schemeApplicationIsInternal,
 } from './SchemeService';
+import { axiosSessionConfig } from '../utils/session';
 
 jest.mock('next/config', () => () => {
   return {
@@ -175,6 +177,46 @@ describe('SchemeService', () => {
           withCredentials: true,
         }
       );
+    });
+  });
+
+  describe('schemeApplicationIsInternal', () => {
+    it('should return false when the scheme does not have an internal application form', async () => {
+      const schemeId = 'schemeId';
+      const sessionId = 'sessionId';
+      const expected = false;
+      const axiosGetMock = jest
+        .spyOn(axios, 'get')
+        .mockResolvedValue({ data: expected });
+
+      const result = await schemeApplicationIsInternal(schemeId, sessionId);
+
+      expect(axiosGetMock).toHaveBeenCalledWith(
+        `${BASE_SCHEME_URL}/${schemeId}/hasInternalApplicationForm`,
+        axiosSessionConfig(sessionId)
+      );
+      expect(result).toBe(expected);
+
+      axiosGetMock.mockRestore();
+    });
+
+    it('should return true when the scheme does have an internal application form', async () => {
+      const schemeId = 'schemeId';
+      const sessionId = 'sessionId';
+      const expected = true;
+      const axiosGetMock = jest
+        .spyOn(axios, 'get')
+        .mockResolvedValue({ data: expected });
+
+      const result = await schemeApplicationIsInternal(schemeId, sessionId);
+
+      expect(axiosGetMock).toHaveBeenCalledWith(
+        `${BASE_SCHEME_URL}/${schemeId}/hasInternalApplicationForm`,
+        axiosSessionConfig(sessionId)
+      );
+      expect(result).toBe(expected);
+
+      axiosGetMock.mockRestore();
     });
   });
 });
