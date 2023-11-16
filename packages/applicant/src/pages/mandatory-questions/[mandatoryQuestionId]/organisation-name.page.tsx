@@ -16,9 +16,8 @@ export default function MandatoryQuestionOrganisationNamePage({
   fieldErrors,
   formAction,
   defaultFields,
-  mandatoryQuestionId,
+  backButtonUrl,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl = routes.mandatoryQuestions.typePage(mandatoryQuestionId);
   return (
     <>
       <>

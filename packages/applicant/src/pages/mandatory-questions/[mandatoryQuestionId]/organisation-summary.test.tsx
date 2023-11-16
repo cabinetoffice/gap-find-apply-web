@@ -12,7 +12,7 @@ import MandatoryQuestionOrganisationSummaryPage, {
 describe('Organisation summary page', () => {
   const defaultMandatoryQuestion = {
     schemeId: 1,
-    orgType: 'Test Organisation Type',
+    orgType: 'Limited company',
     name: 'Test Organisation',
     addressLine1: 'Test Address 1',
     addressLine2: 'Test Address 2',
@@ -34,6 +34,7 @@ describe('Organisation summary page', () => {
     defaultFields: {},
     mandatoryQuestion,
     mandatoryQuestionId: 'mandatoryQuestionId',
+    backButtonUrl: '/test/path',
   });
 
   const checkDetailItem = (detail) => {
