@@ -52,8 +52,7 @@ export const generateMandatoryQuestionDetails = (
         mandatoryQuestionId
       ),
       status: 'Change',
-      hidden:
-        !shouldDisplayExtraFields && !mandatoryQuestion?.companiesHouseNumber,
+      hidden: !shouldDisplayExtraFields,
     },
     {
       id: 'organisationCharity',
@@ -63,9 +62,7 @@ export const generateMandatoryQuestionDetails = (
         mandatoryQuestionId
       ),
       status: 'Change',
-      hidden:
-        !shouldDisplayExtraFields &&
-        !mandatoryQuestion?.charityCommissionNumber,
+      hidden: !shouldDisplayExtraFields,
     },
     {
       id: 'fundingAmount',
