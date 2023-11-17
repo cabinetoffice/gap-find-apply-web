@@ -46,7 +46,12 @@ const context = {
     submissionId: '12345678',
     sectionId: '987654321',
   },
-  req: { csrfToken: () => 'testCSRFToken' },
+  req: {
+    csrfToken: () => 'testCSRFToken',
+    headers: {
+      referer: `${process.env.HOST}/test/path`,
+    },
+  },
   res: {},
 } as unknown as GetServerSidePropsContext;
 const contextNoToken = {
@@ -54,7 +59,11 @@ const contextNoToken = {
     submissionId: '12345678',
     sectionId: '987654321',
   },
-  req: {},
+  req: {
+    headers: {
+      referer: `${process.env.HOST}/test/path`,
+    },
+  },
   res: {},
 } as unknown as GetServerSidePropsContext;
 const shortAnswer: QuestionType = {
@@ -111,6 +120,7 @@ const pageProps: SectionRecapPage = {
   fieldErrors: [],
   csrfToken: 'csrfToken',
   mandatoryQuestionId: '',
+  backButtonUrl: '/test/path',
 };
 
 const spiedGetMandatoryQuestionBySubmissionId = jest.spyOn(
@@ -161,6 +171,7 @@ describe('getServerSideProps', () => {
         fieldErrors: [],
         csrfToken: 'testCSRFToken',
         mandatoryQuestionId: null,
+        backButtonUrl: '/test/path',
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -188,6 +199,7 @@ describe('getServerSideProps', () => {
         fieldErrors: [],
         csrfToken: '',
         mandatoryQuestionId: null,
+        backButtonUrl: '/test/path',
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -211,7 +223,11 @@ describe('getServerSideProps', () => {
         submissionId: '12345678',
         sectionId: 'ORGANISATION_DETAILS',
       },
-      req: {},
+      req: {
+        headers: {
+          referer: `${process.env.HOST}/test/path`,
+        },
+      },
       res: {},
     } as unknown as GetServerSidePropsContext;
 
@@ -231,6 +247,7 @@ describe('getServerSideProps', () => {
         fieldErrors: [],
         csrfToken: '',
         mandatoryQuestionId: '87654321',
+        backButtonUrl: '/test/path',
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -254,7 +271,11 @@ describe('getServerSideProps', () => {
         submissionId: '12345678',
         sectionId: 'FUNDING_DETAILS',
       },
-      req: {},
+      req: {
+        headers: {
+          referer: `${process.env.HOST}/test/path`,
+        },
+      },
       res: {},
     } as unknown as GetServerSidePropsContext;
 
@@ -274,6 +295,7 @@ describe('getServerSideProps', () => {
         fieldErrors: [],
         csrfToken: '',
         mandatoryQuestionId: '87654321',
+        backButtonUrl: '/test/path',
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -290,6 +312,9 @@ describe('getServerSideProps', () => {
     const req = {
       method: 'POST',
       csrfToken: () => 'testCSRFToken',
+      headers: {
+        referer: `${process.env.HOST}/test/path`,
+      },
     };
 
     const ctx = {
@@ -329,6 +354,9 @@ describe('getServerSideProps', () => {
     const req = {
       method: 'POST',
       csrfToken: () => 'testCSRFToken',
+      headers: {
+        referer: `${process.env.HOST}/test/path`,
+      },
     };
 
     const ctx = {
@@ -358,6 +386,7 @@ describe('getServerSideProps', () => {
         section: SECTION_MOCK,
         csrfToken: 'testCSRFToken',
         fieldErrors: validationErrors,
+        backButtonUrl: '/test/path',
       },
     };
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
@@ -525,7 +554,7 @@ describe('Section Recap Page', () => {
       screen.getByText(/enter the amount/i);
       screen.getByText(/test,/i);
       screen.getByText(/test2/i);
-      screen.getByText('fieldTitleTest (optional)');
+      screen.getByText('fieldTitleTest');
       screen.getByText(/testResponse/i);
       screen.getByText(/enter the name of your organisation/i);
       screen.getByText('-');
@@ -565,10 +594,7 @@ describe('Section Recap Page', () => {
     test('should render the back button', () => {
       const backButton = screen.getByRole('link', { name: 'Back' });
 
-      expect(backButton).toHaveAttribute(
-        'href',
-        '/submissions/12345678/sections/987654321/questions/APPLICANT_ORG_NAME'
-      );
+      expect(backButton).toHaveAttribute('href', '/test/path');
     });
   });
 
