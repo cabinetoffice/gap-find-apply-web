@@ -23,7 +23,7 @@ export const getServerSideProps = async ({
     scheme.schemeId,
     sessionCookie
   );
-  const GgisSchemeRefUrl = `/scheme/edit/ggis-reference?schemeId=${scheme.schemeId}&defaultValue=${scheme.ggisReference}`;
+  const ggisSchemeRefUrl = `/scheme/edit/ggis-reference?schemeId=${scheme.schemeId}&defaultValue=${scheme.ggisReference}`;
 
   return {
     props: {
@@ -31,7 +31,7 @@ export const getServerSideProps = async ({
       hasInfoToDownload,
       spotlightUrl,
       isInternal,
-      GgisSchemeRefUrl,
+      ggisSchemeRefUrl,
     },
   };
 };
@@ -41,7 +41,7 @@ const ManageDueDiligenceChecks = ({
   hasInfoToDownload,
   spotlightUrl,
   isInternal,
-  GgisSchemeRefUrl,
+  ggisSchemeRefUrl,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
@@ -72,7 +72,7 @@ const ManageDueDiligenceChecks = ({
               <p className="govuk-body">
                 Spotlight did not recognise the GGIS reference number for your
                 grant.{' '}
-                <CustomLink href={GgisSchemeRefUrl}>
+                <CustomLink href={ggisSchemeRefUrl}>
                   Check that your grant reference number is correct.
                 </CustomLink>{' '}
                 Your data is still secure, and we&apos;ll try to send your data

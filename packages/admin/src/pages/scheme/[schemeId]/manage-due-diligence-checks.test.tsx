@@ -86,6 +86,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={false}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="ggisSchemeRefUrl"
         />
       );
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
@@ -101,6 +102,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={false}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="ggisSchemeRefUrl"
         />
       );
       screen.getByRole('heading', { name: 'Manage due diligence checks' });
@@ -113,6 +115,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={false}
+          ggisSchemeRefUrl="ggisSchemeRefUrl"
         />
       );
       screen.getByText(
@@ -130,6 +133,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="ggisSchemeRefUrl"
         />
       );
       screen.getByText(
@@ -150,6 +154,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="ggisSchemeRefUrl"
         />
       );
       screen.getByText(
@@ -170,6 +175,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="ggisSchemeRefUrl"
         />
       );
 
@@ -188,6 +194,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={false}
+          ggisSchemeRefUrl="ggisSchemeRefUrl"
         />
       );
 
@@ -203,6 +210,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="ggisSchemeRefUrl"
         />
       );
 
@@ -218,6 +226,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={false}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="ggisSchemeRefUrl"
         />
       );
 
