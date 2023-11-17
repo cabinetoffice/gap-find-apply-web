@@ -52,11 +52,7 @@ describe('getServerSideProps', () => {
 
   describe('when handling a GET request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
-      req: {
-        headers: {
-          referer: `${process.env.HOST}/test/path`,
-        },
-      },
+      req: {},
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
       query: {},
     });
@@ -77,7 +73,7 @@ describe('getServerSideProps', () => {
           defaultFields: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestionId: 'mandatoryQuestionId',
-          backButtonUrl: '/test/path',
+          backButtonUrl: undefined,
         },
       });
     });
@@ -114,12 +110,7 @@ describe('getServerSideProps', () => {
 
   describe('when handling a POST request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
-      req: {
-        method: 'POST',
-        headers: {
-          referer: `${process.env.HOST}/test/path`,
-        },
-      },
+      req: { method: 'POST' },
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
       query: {},
     });
@@ -167,12 +158,7 @@ describe('getServerSideProps', () => {
 
     it('Should redirect to the summary page after successfully updating if query parameter fromSummaryPage is true', async () => {
       const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
-        req: {
-          method: 'POST',
-          headers: {
-            referer: `${process.env.HOST}/test/path`,
-          },
-        },
+        req: { method: 'POST' },
         params: { mandatoryQuestionId: 'mandatoryQuestionId' },
         query: { fromSummaryPage: 'true' },
       });
@@ -190,12 +176,7 @@ describe('getServerSideProps', () => {
 
     it('Should redirect to the submission page after successfully updating if query parameter fromSubmissionPage is true', async () => {
       const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
-        req: {
-          method: 'POST',
-          headers: {
-            referer: `${process.env.HOST}/test/path`,
-          },
-        },
+        req: { method: 'POST' },
         params: {
           mandatoryQuestionId: 'mandatoryQuestionId',
         },
@@ -260,7 +241,7 @@ describe('getServerSideProps', () => {
           defaultFields: { name: 'test name' },
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestionId: 'mandatoryQuestionId',
-          backButtonUrl: '/test/path',
+          backButtonUrl: undefined,
         },
       });
     });

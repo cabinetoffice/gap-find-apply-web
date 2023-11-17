@@ -10,6 +10,47 @@ import callServiceMethod from '../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 
+const buildBackButtonMapper = (orgType, mandatoryQuestionId, schemeId) => {
+  const isIndividualOrNonLimitedCompany = [
+    'I am applying as an individual',
+    'Non-limited company',
+  ].includes(orgType);
+  const externalApplicationPage =
+    routes.mandatoryQuestions.externalApplicationPage(mandatoryQuestionId);
+  const summaryPage =
+    routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
+  const fundingLocationPage =
+    routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId);
+  const fundingAmountPage =
+    routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
+  const charityCommissionNumberPage =
+    routes.mandatoryQuestions.charityCommissionNumberPage(mandatoryQuestionId);
+  const companiesHouseNumberPage =
+    routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
+  const addressPage =
+    routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
+  const namePage = routes.mandatoryQuestions.namePage(mandatoryQuestionId);
+  const typePage = routes.mandatoryQuestions.typePage(mandatoryQuestionId);
+  const startPage = routes.mandatoryQuestions.startPage(schemeId.toString());
+  return {
+    [externalApplicationPage]: summaryPage,
+    [summaryPage]: fundingLocationPage,
+    [fundingLocationPage]: fundingAmountPage,
+    ...(isIndividualOrNonLimitedCompany
+      ? {
+          [fundingAmountPage]: addressPage,
+        }
+      : {
+          [fundingAmountPage]: charityCommissionNumberPage,
+          [charityCommissionNumberPage]: companiesHouseNumberPage,
+          [companiesHouseNumberPage]: addressPage,
+        }),
+    [addressPage]: namePage,
+    [namePage]: typePage,
+    [typePage]: startPage,
+  };
+};
+
 export default async function getServerSideProps({
   req,
   res,
@@ -17,7 +58,6 @@ export default async function getServerSideProps({
   query,
   resolvedUrl, //the url that the user requested
 }: GetServerSidePropsContext) {
-  const backButtonUrl = req.headers.referer.replace(process.env.HOST, '');
   const { mandatoryQuestionId } = params as Record<string, string>;
   const {
     fromSummaryPage = false,
@@ -100,6 +140,20 @@ export default async function getServerSideProps({
   if ('fieldErrors' in response) {
     fieldErrors = response.fieldErrors;
     defaultFields = response.body as Optional<GrantMandatoryQuestionDto>;
+  }
+
+  let backButtonUrl = '';
+  if (fromSubmissionPage) {
+    backButtonUrl = routes.submissions.section(submissionId, sectionId);
+  } else if (fromSummaryPage) {
+    backButtonUrl = routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
+  } else {
+    const mapper = buildBackButtonMapper(
+      mandatoryQuestion.orgType,
+      mandatoryQuestionId,
+      mandatoryQuestion.schemeId
+    );
+    backButtonUrl = mapper[resolvedUrl];
   }
 
   return {
