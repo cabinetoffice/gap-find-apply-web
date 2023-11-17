@@ -17,11 +17,8 @@ export default function MandatoryQuestionOrganisationFundingAmountPage({
   fieldErrors,
   formAction,
   defaultFields,
-  mandatoryQuestion,
-  mandatoryQuestionId,
+  backButtonUrl,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl =
-    routes.mandatoryQuestions.charityCommissionNumberPage(mandatoryQuestionId);
   return (
     <>
       <>

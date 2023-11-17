@@ -16,11 +16,8 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
   fieldErrors,
   formAction,
   defaultFields,
-  mandatoryQuestion,
-  mandatoryQuestionId,
+  backButtonUrl,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl =
-    routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
   return (
     <>
       <>

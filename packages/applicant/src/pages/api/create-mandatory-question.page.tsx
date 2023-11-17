@@ -18,11 +18,11 @@ export default async function handler(
       );
 
     const organisationProfileKeys = [
+      'orgType',
       'name',
       'addressLine1',
       'city',
       'postcode',
-      'orgType',
       'companiesHouseNumber',
       'charityCommissionNumber',
     ];
@@ -35,7 +35,7 @@ export default async function handler(
 
     const redirectionUrl = areOrganisationProfileQuestionsComplete
       ? routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestion.id)
-      : routes.mandatoryQuestions.namePage(mandatoryQuestion.id);
+      : routes.mandatoryQuestions.typePage(mandatoryQuestion.id);
 
     return res.redirect(`${process.env.HOST}${redirectionUrl}`);
   } catch (e) {

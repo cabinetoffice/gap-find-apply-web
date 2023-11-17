@@ -61,7 +61,7 @@ describe('API Handler Tests', () => {
     await handler(req(), res());
 
     expect(mockedRedirect).toHaveBeenCalledWith(
-      `http://localhost${routes.mandatoryQuestions.namePage(
+      `http://localhost${routes.mandatoryQuestions.typePage(
         'mandatoryQuestionId'
       )}`
     );

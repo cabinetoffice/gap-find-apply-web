@@ -30,6 +30,11 @@ const spiedGetMandatoryQuestionBySchemeId = jest.spyOn(
 );
 
 const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
+  req: {
+    headers: {
+      referer: `${process.env.HOST}/test/path`,
+    },
+  },
   query: { schemeId: '1' },
 });
 const mandatoryQuestionData: GrantMandatoryQuestionDto = {

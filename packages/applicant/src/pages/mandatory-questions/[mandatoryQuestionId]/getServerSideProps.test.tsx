@@ -52,6 +52,11 @@ describe('getServerSideProps', () => {
 
   describe('when handling a GET request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
+      req: {
+        headers: {
+          referer: `${process.env.HOST}/test/path`,
+        },
+      },
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
       query: {},
     });
@@ -72,6 +77,7 @@ describe('getServerSideProps', () => {
           defaultFields: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestionId: 'mandatoryQuestionId',
+          backButtonUrl: '/test/path',
         },
       });
     });
@@ -110,6 +116,9 @@ describe('getServerSideProps', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
       req: {
         method: 'POST',
+        headers: {
+          referer: `${process.env.HOST}/test/path`,
+        },
       },
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
       query: {},
@@ -160,6 +169,9 @@ describe('getServerSideProps', () => {
       const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
         req: {
           method: 'POST',
+          headers: {
+            referer: `${process.env.HOST}/test/path`,
+          },
         },
         params: { mandatoryQuestionId: 'mandatoryQuestionId' },
         query: { fromSummaryPage: 'true' },
@@ -180,6 +192,9 @@ describe('getServerSideProps', () => {
       const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
         req: {
           method: 'POST',
+          headers: {
+            referer: `${process.env.HOST}/test/path`,
+          },
         },
         params: {
           mandatoryQuestionId: 'mandatoryQuestionId',
@@ -245,6 +260,7 @@ describe('getServerSideProps', () => {
           defaultFields: { name: 'test name' },
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestionId: 'mandatoryQuestionId',
+          backButtonUrl: '/test/path',
         },
       });
     });
