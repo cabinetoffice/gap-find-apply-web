@@ -23,6 +23,8 @@ export const getServerSideProps = async ({
     scheme.schemeId,
     sessionCookie
   );
+  // TODO: Add logic to get the number of affected records
+  const numberOfAffectedRecords = 5;
 
   return {
     props: {
@@ -30,6 +32,7 @@ export const getServerSideProps = async ({
       hasInfoToDownload,
       spotlightUrl,
       isInternal,
+      numberOfAffectedRecords,
     },
   };
 };
@@ -39,6 +42,7 @@ const ManageDueDiligenceChecks = ({
   hasInfoToDownload,
   spotlightUrl,
   isInternal,
+  numberOfAffectedRecords,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
@@ -48,6 +52,44 @@ const ManageDueDiligenceChecks = ({
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+          <div
+            className="govuk-notification-banner"
+            role="region"
+            aria-labelledby="govuk-notification-banner-title"
+            data-module="govuk-notification-banner"
+          >
+            <div className="govuk-notification-banner__header">
+              <h2
+                className="govuk-notification-banner__title"
+                id="govuk-notification-banner-title"
+              >
+                Important
+              </h2>
+            </div>
+            <div className="govuk-notification-banner__content">
+              <p className="govuk-notification-banner__heading">
+                Automatic uploads are not running
+              </p>
+              <p className="govuk-body">
+                Due to a service outage, we cannot automatically send data to
+                Spotlight at the moment.
+              </p>
+              <p className="govuk-body">
+                This affects {numberOfAffectedRecords} of your records.
+                We&apos;ll try to send those records again tonight. You can
+                still download your data and upload it to Spotlight manually.
+              </p>
+              <p className="govuk-body">
+                If you need any further support, contact our support team at{' '}
+                <a
+                  className="govuk-notification-banner__link"
+                  href="mailto:findagrant@cabinetoffice.gov.uk"
+                >
+                  findagrant@cabinetoffice.gov.uk
+                </a>
+              </p>
+            </div>
+          </div>
           <h1 className="govuk-heading-l">Manage due diligence checks</h1>
 
           {!hasInfoToDownload ? (
