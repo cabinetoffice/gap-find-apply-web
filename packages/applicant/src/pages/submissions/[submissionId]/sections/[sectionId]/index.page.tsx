@@ -36,6 +36,11 @@ export const getQuestionUrl = (
   const queryParam = `?fromSubmissionPage=true&submissionId=${submissionId}&sectionId=${sectionId}`;
   if (sectionId === 'ORGANISATION_DETAILS') {
     switch (questionId) {
+      case 'APPLICANT_TYPE': {
+        return (
+          routes.mandatoryQuestions.typePage(mandatoryQuestionId) + queryParam
+        );
+      }
       case 'APPLICANT_ORG_NAME': {
         return (
           routes.mandatoryQuestions.namePage(mandatoryQuestionId) + queryParam
@@ -45,11 +50,6 @@ export const getQuestionUrl = (
         return (
           routes.mandatoryQuestions.addressPage(mandatoryQuestionId) +
           queryParam
-        );
-      }
-      case 'APPLICANT_TYPE': {
-        return (
-          routes.mandatoryQuestions.typePage(mandatoryQuestionId) + queryParam
         );
       }
       case 'APPLICANT_ORG_COMPANIES_HOUSE': {

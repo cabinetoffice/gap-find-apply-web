@@ -13,10 +13,8 @@ export default function MandatoryQuestionOrganisationAddressPage({
   fieldErrors,
   formAction,
   defaultFields,
-  mandatoryQuestion,
-  mandatoryQuestionId,
+  backButtonUrl,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl = routes.mandatoryQuestions.namePage(mandatoryQuestionId);
   const commonAddressInputProps = {
     boldHeading: false,
     titleSize: 's',
