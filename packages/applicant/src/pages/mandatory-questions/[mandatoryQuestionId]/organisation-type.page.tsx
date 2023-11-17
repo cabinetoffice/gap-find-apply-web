@@ -3,7 +3,6 @@ import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
 import InferProps from '../../../types/InferProps';
-import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 
 export { getServerSideProps };
@@ -28,34 +27,32 @@ export default function MandatoryQuestionOrganisationTypePage({
           csrfToken={csrfToken}
           formAction={formAction}
         >
-          <div className="govuk-grid-column-two-thirds">
-            <Radio
-              questionTitle="Choose your application type"
-              questionHintText="Choose the option that best describes you or your organisation"
-              fieldName="orgType"
-              fieldErrors={fieldErrors}
-              radioOptions={[
-                { label: 'Limited company', value: 'Limited company' },
-                { label: 'Non-limited company', value: 'Non-limited company' },
-                { label: 'Charity', value: 'Charity' },
-                {
-                  label: 'I am applying as an Individual',
-                  value: 'I am applying as an Individual',
-                },
-                { label: 'Other', value: 'Other' },
-              ]}
-              defaultChecked={defaultFields.orgType}
-            />
-            <Details
-              title="Why do we need this information?"
-              text="It helps us to identify you or your organisation. We use this information for due diligence checks and to prevent fraud."
-            />
+          <Radio
+            questionTitle="Choose your application type"
+            questionHintText="Choose the option that best describes you or your organisation"
+            fieldName="orgType"
+            fieldErrors={fieldErrors}
+            radioOptions={[
+              { label: 'Limited company', value: 'Limited company' },
+              { label: 'Non-limited company', value: 'Non-limited company' },
+              { label: 'Charity', value: 'Charity' },
+              {
+                label: 'I am applying as an Individual',
+                value: 'I am applying as an Individual',
+              },
+              { label: 'Other', value: 'Other' },
+            ]}
+            defaultChecked={defaultFields.orgType}
+          />
+          <Details
+            title="Why do we need this information?"
+            text="It helps us to identify you or your organisation. We use this information for due diligence checks and to prevent fraud."
+          />
 
-            <Button
-              text="Save and continue"
-              type={ButtonTypePropertyEnum.Submit}
-            />
-          </div>
+          <Button
+            text="Save and continue"
+            type={ButtonTypePropertyEnum.Submit}
+          />
         </FlexibleQuestionPageLayout>
       </Layout>
     </>
