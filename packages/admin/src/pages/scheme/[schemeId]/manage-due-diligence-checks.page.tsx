@@ -2,7 +2,10 @@ import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import { completedMandatoryQuestions } from '../../../services/MandatoryQuestionsService';
-import { getGrantScheme } from '../../../services/SchemeService';
+import {
+  getGrantScheme,
+  schemeApplicationIsInternal,
+} from '../../../services/SchemeService';
 import InferProps from '../../../types/InferProps';
 import { getSessionIdFromCookies } from '../../../utils/session';
 
@@ -14,6 +17,8 @@ export const getServerSideProps = async ({
 
   const sessionCookie = getSessionIdFromCookies(req);
   const scheme = await getGrantScheme(schemeId, sessionCookie);
+  const isInternal = await schemeApplicationIsInternal(schemeId, sessionCookie);
+  const spotlightUrl = process.env.SPOTLIGHT_LOGIN_URL;
   const hasInfoToDownload = await completedMandatoryQuestions(
     scheme.schemeId,
     sessionCookie
@@ -23,6 +28,8 @@ export const getServerSideProps = async ({
     props: {
       scheme,
       hasInfoToDownload,
+      spotlightUrl,
+      isInternal,
     },
   };
 };
@@ -30,6 +37,8 @@ export const getServerSideProps = async ({
 const ManageDueDiligenceChecks = ({
   scheme,
   hasInfoToDownload,
+  spotlightUrl,
+  isInternal,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
@@ -47,15 +56,43 @@ const ManageDueDiligenceChecks = ({
             </p>
           ) : (
             <>
-              <p className="govuk-body">
-                We gather the information you need to run due diligence checks.
-              </p>
+              {!isInternal ? (
+                <div>
+                  <p className="govuk-body">
+                    We gather the information you need to run due diligence
+                    checks.
+                  </p>
 
-              <p className="govuk-body">
-                You can use the government-owned due diligence tool ‘Spotlight’
-                to run your due diligence checks. The information is already in
-                the correct format to upload directly into Spotlight.
-              </p>
+                  <p className="govuk-body">
+                    You can use the government-owned due diligence tool
+                    ‘Spotlight’ to run your due diligence checks. The
+                    information is already in the correct format to upload
+                    directly into Spotlight.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p className="govuk-body">
+                    Your application form has been designed to capture all of
+                    the information you need to run due diligence checks in
+                    Spotlight, a government owned due diligence tool.
+                  </p>
+
+                  <p className="govuk-body">
+                    We automatically send the information to Spotlight. You need
+                    to log in to Spotlight to run your checks.
+                  </p>
+
+                  <p className="govuk-body">
+                    Spotlight does not run checks on individuals or local
+                    authorities.
+                  </p>
+                </div>
+              )}
+
+              <a href={spotlightUrl} className="govuk-button">
+                Log in to Spotlight
+              </a>
 
               <p className="govuk-body">
                 <CustomLink

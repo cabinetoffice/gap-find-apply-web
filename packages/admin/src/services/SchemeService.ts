@@ -109,3 +109,14 @@ export const changeSchemeOwnership = async (
     }
   );
 };
+
+export const schemeApplicationIsInternal = async (
+  schemeId: string,
+  sessionId: string
+): Promise<boolean> => {
+  const response = await axios.get(
+    `${BASE_SCHEME_URL}/${schemeId}/hasInternalApplicationForm`,
+    axiosSessionConfig(sessionId)
+  );
+  return response.data;
+};
