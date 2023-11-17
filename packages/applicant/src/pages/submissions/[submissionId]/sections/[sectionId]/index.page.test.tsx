@@ -120,7 +120,7 @@ const pageProps: SectionRecapPage = {
   fieldErrors: [],
   csrfToken: 'csrfToken',
   mandatoryQuestionId: '',
-  backButtonUrl: '/test/path',
+  backButtonUrl: '/submissions/12345678/sections',
 };
 
 const spiedGetMandatoryQuestionBySubmissionId = jest.spyOn(
@@ -171,7 +171,7 @@ describe('getServerSideProps', () => {
         fieldErrors: [],
         csrfToken: 'testCSRFToken',
         mandatoryQuestionId: null,
-        backButtonUrl: '/test/path',
+        backButtonUrl: '/submissions/12345678/sections',
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -199,7 +199,7 @@ describe('getServerSideProps', () => {
         fieldErrors: [],
         csrfToken: '',
         mandatoryQuestionId: null,
-        backButtonUrl: '/test/path',
+        backButtonUrl: '/submissions/12345678/sections',
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -247,7 +247,7 @@ describe('getServerSideProps', () => {
         fieldErrors: [],
         csrfToken: '',
         mandatoryQuestionId: '87654321',
-        backButtonUrl: '/test/path',
+        backButtonUrl: '/submissions/12345678/sections',
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -295,7 +295,7 @@ describe('getServerSideProps', () => {
         fieldErrors: [],
         csrfToken: '',
         mandatoryQuestionId: '87654321',
-        backButtonUrl: '/test/path',
+        backButtonUrl: '/submissions/12345678/sections',
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -386,7 +386,7 @@ describe('getServerSideProps', () => {
         section: SECTION_MOCK,
         csrfToken: 'testCSRFToken',
         fieldErrors: validationErrors,
-        backButtonUrl: '/test/path',
+        backButtonUrl: '/submissions/12345678/sections',
       },
     };
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
@@ -594,7 +594,10 @@ describe('Section Recap Page', () => {
     test('should render the back button', () => {
       const backButton = screen.getByRole('link', { name: 'Back' });
 
-      expect(backButton).toHaveAttribute('href', '/test/path');
+      expect(backButton).toHaveAttribute(
+        'href',
+        '/submissions/12345678/sections'
+      );
     });
   });
 

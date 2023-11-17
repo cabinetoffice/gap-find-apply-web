@@ -93,8 +93,8 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
   res,
   params,
 }) => {
-  const backButtonUrl = req.headers.referer.replace(process.env.HOST, '');
   const submissionId = params.submissionId.toString();
+  const backButtonUrl = `/submissions/${submissionId}/sections`;
   const sectionId = params.sectionId.toString();
   const jwt = getJwtFromCookies(req);
 
