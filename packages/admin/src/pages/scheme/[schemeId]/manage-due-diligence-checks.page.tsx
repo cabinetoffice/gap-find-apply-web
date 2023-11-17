@@ -48,6 +48,46 @@ const ManageDueDiligenceChecks = ({
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+          <div
+            className="govuk-notification-banner"
+            role="region"
+            aria-labelledby="govuk-notification-banner-title"
+            data-module="govuk-notification-banner"
+          >
+            <div className="govuk-notification-banner__header">
+              <h2
+                className="govuk-notification-banner__title"
+                id="govuk-notification-banner-title"
+              >
+                Important
+              </h2>
+            </div>
+            <div className="govuk-notification-banner__content">
+              <p className="govuk-notification-banner__heading">
+                Spotlight cannot accept your data
+              </p>
+              <p className="govuk-body">
+                Changes to Spotlight mean that some of your data cannot be
+                automatically sent to Spotlight. This affects {} of your
+                records. You can still download this data to upload it to
+                Spotlight manually.
+              </p>
+              {
+                // TODO - Changes to be made to copy below
+              }
+              <p className="govuk-body">
+                If you need further support, contact Spotlight&apos;s support
+                team at{' '}
+                <a
+                  className="govuk-notification-banner__link"
+                  href="mailto:findagrant@cabinetoffice.gov.uk"
+                >
+                  findagrant@cabinetoffice.gov.uk
+                </a>
+              </p>
+            </div>
+          </div>
+
           <h1 className="govuk-heading-l">Manage due diligence checks</h1>
 
           {!hasInfoToDownload ? (
