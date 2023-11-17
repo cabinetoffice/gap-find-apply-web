@@ -43,89 +43,54 @@ const MOCK_GRANT_APPLICANT: GrantApplicant = {
   },
 };
 
-const propsWithAllValues = {
-  displayOrganisationDetails: [
-    {
-      id: 'organisationName',
-      label: 'Name',
-      value: 'Chris charity',
-      url: '/organisation/name',
-      status: 'Change',
-    },
-    {
-      id: 'organisationAddress',
-      label: 'Address',
-      value: ['First Line', 'Second Line', 'Edinburgh', 'Lothian', 'EH22 2TH'],
-      url: '/organisation/address',
-      status: 'Change',
-    },
-    {
-      id: 'organisationType',
-      label: 'Type of organisation',
-      value: 'Limited',
-      url: '/organisation/type',
-      status: 'Change',
-    },
-    {
-      id: 'organisationCompaniesHouseNumber',
-      label: 'Companies house number',
-      value: '98239829382',
-      url: '/organisation/companies-house-number',
-      status: 'Change',
-    },
-    {
-      id: 'organisationCharity',
-      label: 'Charity commission number',
-      value: '09090909',
-      url: '/organisation/charity-commission-number',
-      status: 'Change',
-    },
-  ],
-};
-const propsWithoutValues = {
-  displayOrganisationDetails: [
-    {
-      id: 'organisationName',
-      label: 'Name',
-      value: '',
-      url: '/organisation/name',
-      status: 'Add',
-    },
-    {
-      id: 'organisationAddress',
-      label: 'Address',
-      value: null,
-      url: '/organisation/address',
-      status: 'Add',
-    },
-    {
-      id: 'organisationType',
-      label: 'Type of organisation',
-      value: '',
-      url: '/organisation/type',
-      status: 'Add',
-    },
-    {
-      id: 'organisationCompaniesHouseNumber',
-      label: 'Companies house number',
-      value: '',
-      url: '/organisation/companies-house-number',
-      status: 'Add',
-    },
-    {
-      id: 'organisationCharity',
-      label: 'Charity commission number',
-      value: '',
-      url: '/organisation/charity-commission-number',
-      status: 'Add',
-    },
-  ],
+type GetTestDataType = {
+  populatedRows: boolean;
 };
 
+const getGeneralOrganisationRows = ({ populatedRows }: GetTestDataType) => [
+  {
+    id: 'organisationName',
+    label: 'Name',
+    value: populatedRows ? 'Chris charity' : '',
+    url: '/organisation/name',
+    status: populatedRows ? 'Change' : 'Add',
+  },
+  {
+    id: 'organisationAddress',
+    label: 'Address',
+    value: populatedRows
+      ? ['First Line', 'Second Line', 'Edinburgh', 'Lothian', 'EH22 2TH']
+      : null,
+    url: '/organisation/address',
+    status: populatedRows ? 'Change' : 'Add',
+  },
+
+  {
+    id: 'organisationCompaniesHouseNumber',
+    label: 'Companies house number',
+    value: populatedRows ? '98239829382' : '',
+    url: '/organisation/companies-house-number',
+    status: populatedRows ? 'Change' : 'Add',
+  },
+  {
+    id: 'organisationCharity',
+    label: 'Charity commission number',
+    value: populatedRows ? '09090909' : '',
+    url: '/organisation/charity-commission-number',
+    status: populatedRows ? 'Change' : 'Add',
+  },
+];
+
+const getTypeOfOrganisationRow = ({ populatedRows }: GetTestDataType) => ({
+  id: 'organisationType',
+  label: 'Type of organisation',
+  value: populatedRows ? 'Limited' : '',
+  url: '/organisation/type',
+  status: populatedRows ? 'Change' : 'Add',
+});
+
 describe('getServerSideProps', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
+  afterEach(jest.resetAllMocks);
   it('should display change button and values if details are present', async () => {
     const getGrantApplicantSpy = jest
       .spyOn(GrantApplicantService.prototype, 'getGrantApplicant')
@@ -136,7 +101,13 @@ describe('getServerSideProps', () => {
 
     expect(response).toEqual({
       props: {
-        organisationDetails: propsWithAllValues,
+        generalOrganisationRows: getGeneralOrganisationRows({
+          populatedRows: true,
+        }),
+        typeOfOrganisationRow: getTypeOfOrganisationRow({
+          populatedRows: true,
+        }),
+        isIndividual: false,
       },
     });
     expect(getGrantApplicantSpy).toBeCalledTimes(1);
@@ -167,7 +138,13 @@ describe('getServerSideProps', () => {
 
     expect(response).toEqual({
       props: {
-        organisationDetails: propsWithoutValues,
+        generalOrganisationRows: getGeneralOrganisationRows({
+          populatedRows: false,
+        }),
+        typeOfOrganisationRow: getTypeOfOrganisationRow({
+          populatedRows: false,
+        }),
+        isIndividual: false,
       },
     });
     expect(getGrantApplicantSpy).toBeCalledTimes(1);
@@ -183,7 +160,15 @@ describe('Manage organisation page should render properly', () => {
           pathname: routes.organisation.index,
         })}
       >
-        <ManageOrganisationDetails organisationDetails={propsWithAllValues} />
+        <ManageOrganisationDetails
+          isIndividual={false}
+          typeOfOrganisationRow={getTypeOfOrganisationRow({
+            populatedRows: true,
+          })}
+          generalOrganisationRows={getGeneralOrganisationRows({
+            populatedRows: true,
+          })}
+        />
       </RouterContext.Provider>
     );
   });
@@ -265,7 +250,15 @@ describe('Manage page should render without an address', () => {
           pathname: routes.organisation.index,
         })}
       >
-        <ManageOrganisationDetails organisationDetails={propsWithoutValues} />
+        <ManageOrganisationDetails
+          isIndividual={false}
+          typeOfOrganisationRow={getTypeOfOrganisationRow({
+            populatedRows: false,
+          })}
+          generalOrganisationRows={getGeneralOrganisationRows({
+            populatedRows: false,
+          })}
+        />
       </RouterContext.Provider>
     );
   });

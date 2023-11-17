@@ -3,9 +3,10 @@ import { useRouter } from 'next/router';
 import { FC } from 'react';
 
 const INDIVIDUAL = 'I am applying as an Individual';
+const ORGANISATION = 'Organisation';
 
 export interface DescriptionListProps {
-  organisationType: string;
+  organisationType?: string;
   data: DescriptionListDataProps[];
   needAddOrChangeButtons: boolean;
   needBorder: boolean;
@@ -28,7 +29,7 @@ export const DescriptionList: FC<DescriptionListProps> = ({
   }
 
   const removeOrganisationRowForIndividuals = (row: DescriptionListDataProps) =>
-    row.term !== 'Organisation' || organisationType !== INDIVIDUAL;
+    row.term !== ORGANISATION || organisationType !== INDIVIDUAL;
 
   const accountData = data.filter(removeOrganisationRowForIndividuals);
 
