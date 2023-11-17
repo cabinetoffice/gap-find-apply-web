@@ -1,4 +1,3 @@
-import { GetServerSideProps } from 'next';
 import getConfig from 'next/config';
 import Link from 'next/link';
 import { FC } from 'react';
@@ -10,8 +9,6 @@ import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import ProcessAddress from './processAddress';
-import { arrayMove } from '../../utils/general';
-import InferProps from '../../types/InferProps';
 
 const { publicRuntimeConfig } = getConfig();
 
