@@ -83,10 +83,6 @@ export const generateMandatoryQuestionDetails = (
 };
 
 export default function MandatoryQuestionOrganisationSummaryPage({
-  csrfToken,
-  fieldErrors,
-  formAction,
-  defaultFields,
   mandatoryQuestion,
   mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
