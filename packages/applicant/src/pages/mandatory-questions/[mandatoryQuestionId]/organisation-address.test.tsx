@@ -22,17 +22,35 @@ describe('Organisation address page', () => {
     },
     mandatoryQuestion: {
       schemeId: 1,
+      orgType: 'I am applying as an Individual',
     },
     mandatoryQuestionId: 'mandatoryQuestionId',
   });
 
-  it('should display a heading', () => {
+  it('should display a heading for individuals', () => {
     renderWithRouter(
       <MandatoryQuestionOrganisationAddressPage
         {...getPageProps(getDefaultProps)}
       />
     );
 
+    screen.getByRole('heading', {
+      name: 'Enter your address',
+      level: 1,
+    });
+  });
+
+  it('should display a heading for organisations', () => {
+    renderWithRouter(
+      <MandatoryQuestionOrganisationAddressPage
+        {...getPageProps(getDefaultProps, {
+          mandatoryQuestion: {
+            schemeId: 1,
+            orgType: 'Organisation',
+          },
+        })}
+      />
+    );
     screen.getByRole('heading', {
       name: "Enter your organisation's address",
       level: 1,

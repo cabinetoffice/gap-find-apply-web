@@ -44,7 +44,7 @@ export default function MandatoryQuestionOrganisationAddressPage({
           >
             {isUserIndividual
               ? 'Enter your address'
-              : 'Enter your organisation&apos;s address'}
+              : "Enter your organisation's address"}
           </h1>
 
           <TextInput
