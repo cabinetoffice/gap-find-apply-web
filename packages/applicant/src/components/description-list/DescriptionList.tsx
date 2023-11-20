@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FC } from 'react';
+import { MQ_ORG_TYPES } from '../../utils/constants';
 
-const INDIVIDUAL = 'I am applying as an individual';
 const ORGANISATION = 'Organisation';
 
 export interface DescriptionListProps {
@@ -29,7 +29,7 @@ export const DescriptionList: FC<DescriptionListProps> = ({
   }
 
   const removeOrganisationRowForIndividuals = (row: DescriptionListDataProps) =>
-    row.term !== ORGANISATION || organisationType !== INDIVIDUAL;
+    row.term !== ORGANISATION || organisationType !== MQ_ORG_TYPES.INDIVIDUAL;
 
   const accountData = data.filter(removeOrganisationRowForIndividuals);
 

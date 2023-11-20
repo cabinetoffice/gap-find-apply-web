@@ -9,11 +9,9 @@ import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import ProcessAddress from './processAddress';
+import { MQ_ORG_TYPES } from '../../utils/constants';
 
 const { publicRuntimeConfig } = getConfig();
-
-const INDIVIDUAL = 'I am applying as an individual';
-const NON_LIMITED_COMPANY = 'Non-limited company';
 
 interface OrganisationDetails {
   id: string;
@@ -42,8 +40,9 @@ export const getServerSideProps = async ({ req }) => {
     await grantApplicantService.getGrantApplicant(getJwtFromCookies(req));
 
   const organisationData = grantApplicant.organisation;
-  const isIndividual = organisationData?.type === INDIVIDUAL;
-  const isNonLimitedCompany = organisationData?.type === NON_LIMITED_COMPANY;
+  const isIndividual = organisationData?.type === MQ_ORG_TYPES.INDIVIDUAL;
+  const isNonLimitedCompany =
+    organisationData?.type === MQ_ORG_TYPES.NON_LIMITED_COMPANY;
 
   const { generalOrganisationRows, typeOfOrganisationRow } =
     getOrganisationData(organisationData, {
@@ -187,7 +186,7 @@ const getOrganisationData = (
   const typeOfOrganisationRow = {
     id: 'organisationType',
     label: `Type of ${isIndividual ? 'application' : 'organisation'}`,
-    value: isIndividual ? 'I am applying as an individual' : organisationData?.type,
+    value: isIndividual ? MQ_ORG_TYPES.INDIVIDUAL : organisationData?.type,
     url: routes.organisation.type,
     status: organisationData?.type ? 'Change' : 'Add',
   };

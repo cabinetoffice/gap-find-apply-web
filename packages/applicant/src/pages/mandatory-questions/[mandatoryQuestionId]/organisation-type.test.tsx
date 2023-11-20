@@ -20,6 +20,7 @@ describe('Organisation Type page', () => {
       schemeId: 1,
     },
     mandatoryQuestionId: 'mandatoryQuestionId',
+    backButtonUrl: '/test/path',
   });
 
   it('should display a heading', () => {
@@ -61,7 +62,7 @@ describe('Organisation Type page', () => {
     });
     screen.getByRole('radio', { name: 'Charity', checked: false });
     screen.getByRole('radio', {
-      name: 'I am applying as an Individual',
+      name: 'I am applying as an individual',
       checked: false,
     });
     screen.getByRole('radio', { name: 'Other', checked: false });
@@ -85,7 +86,7 @@ describe('Organisation Type page', () => {
     });
     screen.getByRole('radio', { name: 'Charity', checked: true });
     screen.getByRole('radio', {
-      name: 'I am applying as an Individual',
+      name: 'I am applying as an individual',
       checked: false,
     });
     screen.getByRole('radio', { name: 'Other', checked: false });
