@@ -148,7 +148,7 @@ describe('getServerSideProps', () => {
     it('Should redirect to the next available page after successfully updating', async () => {
       const response = await getServerSideProps(getContext(getDefaultContext));
 
-      expect(response).toEqual(
+      expect(response).toStrictEqual(
         expect.objectContaining({
           redirect: {
             // not sure why we need to use `new String()` but the test fails otherwise
@@ -208,7 +208,7 @@ describe('getServerSideProps', () => {
       });
       const response = await getServerSideProps(getContext(getDefaultContext));
 
-      expect(response).toEqual(
+      expect(response).toStrictEqual(
         expect.objectContaining({
           redirect: {
             // not sure why we need to use `new String()` but the test fails otherwise
