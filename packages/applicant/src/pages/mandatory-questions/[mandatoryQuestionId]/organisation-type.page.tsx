@@ -37,8 +37,8 @@ export default function MandatoryQuestionOrganisationTypePage({
               { label: 'Non-limited company', value: 'Non-limited company' },
               { label: 'Charity', value: 'Charity' },
               {
-                label: 'I am applying as an Individual',
-                value: 'I am applying as an Individual',
+                label: 'I am applying as an individual',
+                value: 'I am applying as an individual',
               },
               { label: 'Other', value: 'Other' },
             ]}
