@@ -246,4 +246,166 @@ describe('getServerSideProps', () => {
       });
     });
   });
+
+  describe('should provide the correct back button url', () => {
+    const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
+      req: {},
+      params: { mandatoryQuestionId: 'mandatoryQuestionId' },
+      query: {},
+    });
+
+    it.each([
+      [
+        routes.mandatoryQuestions.startPage(
+          getDefaultGrantMandatoryQuestion().schemeId.toString()
+        ),
+        routes.mandatoryQuestions.typePage('mandatoryQuestionId'),
+        'I am applying as an individual',
+      ],
+      [
+        routes.mandatoryQuestions.typePage('mandatoryQuestionId'),
+        routes.mandatoryQuestions.namePage('mandatoryQuestionId'),
+        'I am applying as an individual',
+      ],
+      [
+        routes.mandatoryQuestions.addressPage('mandatoryQuestionId'),
+        routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
+        'I am applying as an individual',
+      ],
+      [
+        routes.mandatoryQuestions.addressPage('mandatoryQuestionId'),
+        routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
+        'Non-limited company',
+      ],
+      [
+        routes.mandatoryQuestions.addressPage('mandatoryQuestionId'),
+        routes.mandatoryQuestions.companiesHouseNumberPage(
+          'mandatoryQuestionId'
+        ),
+        'Limited company',
+      ],
+      [
+        routes.mandatoryQuestions.charityCommissionNumberPage(
+          'mandatoryQuestionId'
+        ),
+        routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
+        'Limited company',
+      ],
+      [
+        routes.mandatoryQuestions.charityCommissionNumberPage(
+          'mandatoryQuestionId'
+        ),
+        routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
+        'Charity',
+      ],
+      [
+        routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
+        routes.mandatoryQuestions.fundingLocationPage('mandatoryQuestionId'),
+        'Charity',
+      ],
+    ])(
+      'MQ Flow: should return %p for %p and %p',
+      async (expected, resolvedUrl, orgType) => {
+        const getGrantMandatoryQuestion = (): GrantMandatoryQuestionDto => ({
+          schemeId: 1,
+          submissionId: null,
+          name: null,
+          addressLine1: null,
+          addressLine2: null,
+          city: null,
+          county: null,
+          postcode: null,
+          charityCommissionNumber: null,
+          companiesHouseNumber: null,
+          orgType,
+          fundingAmount: null,
+          fundingLocation: null,
+        });
+        mockServiceMethod(
+          spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
+          getGrantMandatoryQuestion
+        );
+        (parseBody as jest.Mock).mockResolvedValue({
+          name: 'test name',
+        });
+        const mandatoryQuestionId = 'mandatoryQuestionId';
+        const getSummaryContext = (): Optional<GetServerSidePropsContext> => ({
+          req: {},
+          params: { mandatoryQuestionId },
+          query: {},
+          resolvedUrl,
+        });
+        const response = await getServerSideProps(
+          getContext(getSummaryContext)
+        );
+        expectObjectEquals(response, {
+          props: {
+            fieldErrors: [],
+            csrfToken: 'testCSRFToken',
+            formAction: resolvedUrl,
+            defaultFields: getGrantMandatoryQuestion(),
+            mandatoryQuestion: getGrantMandatoryQuestion(),
+            mandatoryQuestionId: 'mandatoryQuestionId',
+            backButtonUrl: expected,
+          },
+        });
+      }
+    );
+
+    it('Returns summary page for type page', async () => {
+      mockServiceMethod(
+        spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
+        getDefaultGrantMandatoryQuestion
+      );
+      const getSummaryContext = (): Optional<GetServerSidePropsContext> => ({
+        req: {},
+        params: { mandatoryQuestionId: 'mandatoryQuestionId' },
+        query: {
+          fromSummaryPage: true,
+        },
+      });
+      const response = await getServerSideProps(getContext(getSummaryContext));
+      expectObjectEquals(response, {
+        props: {
+          fieldErrors: [],
+          csrfToken: 'testCSRFToken',
+          formAction: '/testResolvedURL',
+          defaultFields: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestionId: 'mandatoryQuestionId',
+          backButtonUrl:
+            '/mandatory-questions/mandatoryQuestionId/organisation-summary',
+        },
+      });
+    });
+    it('Returns submission page for type page', async () => {
+      mockServiceMethod(
+        spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
+        getDefaultGrantMandatoryQuestion
+      );
+      const getSubmissionContext = (): Optional<GetServerSidePropsContext> => ({
+        req: {},
+        params: { mandatoryQuestionId: 'mandatoryQuestionId' },
+        query: {
+          fromSubmissionPage: true,
+          submissionId: 'submissionId',
+          sectionId: 'sectionId',
+        },
+      });
+      const response = await getServerSideProps(
+        getContext(getSubmissionContext)
+      );
+      expectObjectEquals(response, {
+        props: {
+          fieldErrors: [],
+          csrfToken: 'testCSRFToken',
+          formAction: '/testResolvedURL',
+          defaultFields: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestionId: 'mandatoryQuestionId',
+          backButtonUrl: '/submissions/submissionId/sections/sectionId',
+        },
+      });
+    });
+  });
 });
