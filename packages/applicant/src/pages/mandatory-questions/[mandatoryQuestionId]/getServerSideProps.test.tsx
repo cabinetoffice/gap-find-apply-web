@@ -148,15 +148,15 @@ describe('getServerSideProps', () => {
     it('Should redirect to the next available page after successfully updating', async () => {
       const response = await getServerSideProps(getContext(getDefaultContext));
 
-      expectObjectEquals(response, {
-        redirect: {
-          // not sure why we need to use new String but the test fails otherwise
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          destination: new String('/nextpage'),
-          statusCode: 302,
-        },
-      });
+      expect(response).toEqual(
+        expect.objectContaining({
+          redirect: {
+            // not sure why we need to use `new String()` but the test fails otherwise
+            destination: new String('/nextpage'),
+            statusCode: 302,
+          },
+        })
+      );
     });
 
     it('Should redirect to the summary page after successfully updating if query parameter fromSummaryPage is true', async () => {
@@ -208,15 +208,15 @@ describe('getServerSideProps', () => {
       });
       const response = await getServerSideProps(getContext(getDefaultContext));
 
-      expectObjectEquals(response, {
-        redirect: {
-          // not sure why we need to use new String but the test fails otherwise
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          destination: new String('/nextpage'),
-          statusCode: 302,
-        },
-      });
+      expect(response).toEqual(
+        expect.objectContaining({
+          redirect: {
+            // not sure why we need to use `new String()` but the test fails otherwise
+            destination: new String('/nextpage'),
+            statusCode: 302,
+          },
+        })
+      );
     });
 
     it('Should redirect to the error service page if there is an error when updating', async () => {
