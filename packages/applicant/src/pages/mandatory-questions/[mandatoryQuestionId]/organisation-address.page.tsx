@@ -14,7 +14,10 @@ export default function MandatoryQuestionOrganisationAddressPage({
   formAction,
   defaultFields,
   backButtonUrl,
+  mandatoryQuestion,
 }: InferProps<typeof getServerSideProps>) {
+  const isUserIndividual =
+    mandatoryQuestion.orgType === 'I am applying as an Individual';
   const commonAddressInputProps = {
     boldHeading: false,
     titleSize: 's',
@@ -39,7 +42,9 @@ export default function MandatoryQuestionOrganisationAddressPage({
             className="govuk-heading-l"
             data-cy="cy-addressInput-question-title"
           >
-            Enter your organisation&apos;s address
+            {isUserIndividual
+              ? 'Enter your address'
+              : 'Enter your organisation&apos;s address'}
           </h1>
 
           <TextInput

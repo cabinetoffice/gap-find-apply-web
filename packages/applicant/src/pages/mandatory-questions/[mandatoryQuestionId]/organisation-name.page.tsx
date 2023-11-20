@@ -17,38 +17,47 @@ export default function MandatoryQuestionOrganisationNamePage({
   formAction,
   defaultFields,
   backButtonUrl,
-}: InferProps<typeof getServerSideProps>) {
+  mandatoryQuestion,
+}: Readonly<InferProps<typeof getServerSideProps>>) {
+  const isUserIndividual =
+    mandatoryQuestion.orgType === 'I am applying as an Individual';
   return (
     <>
-      <>
-        <Meta
-          title={`${
-            fieldErrors.length > 0 ? 'Error: ' : ''
-          }Organisation name - Apply for a grant`}
-        />
+      <Meta
+        title={`${
+          fieldErrors.length > 0 ? 'Error: ' : ''
+        }Organisation name - Apply for a grant`}
+      />
 
-        <Layout backBtnUrl={backButtonUrl}>
-          <FlexibleQuestionPageLayout
-            formAction={formAction}
+      <Layout backBtnUrl={backButtonUrl}>
+        <FlexibleQuestionPageLayout
+          formAction={formAction}
+          fieldErrors={fieldErrors}
+          csrfToken={csrfToken}
+        >
+          <TextInput
+            questionTitle={
+              isUserIndividual
+                ? 'Enter your name'
+                : 'Enter the name of your organisation'
+            }
+            questionHintText={
+              isUserIndividual
+                ? 'Your name will appear on your application.'
+                : 'This is the official name of your organisation. It could be the name that is registered with Companies House or the Charities Commission'
+            }
+            fieldName="name"
+            defaultValue={defaultFields.name}
             fieldErrors={fieldErrors}
-            csrfToken={csrfToken}
-          >
-            <TextInput
-              questionTitle="Enter the name of your organisation"
-              questionHintText="This is the official name of your organisation. It could be the name that is registered with Companies House or the Charities Commission"
-              fieldName="name"
-              defaultValue={defaultFields.name}
-              fieldErrors={fieldErrors}
-              width="30"
-            />
+            width="30"
+          />
 
-            <Button
-              text="Save and continue"
-              type={ButtonTypePropertyEnum.Submit}
-            />
-          </FlexibleQuestionPageLayout>
-        </Layout>
-      </>
+          <Button
+            text="Save and continue"
+            type={ButtonTypePropertyEnum.Submit}
+          />
+        </FlexibleQuestionPageLayout>
+      </Layout>
     </>
   );
 }
