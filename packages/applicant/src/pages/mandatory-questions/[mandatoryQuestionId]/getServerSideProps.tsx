@@ -8,7 +8,105 @@ import {
 import { Optional } from '../../../testUtils/unitTestHelpers';
 import callServiceMethod from '../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../utils/jwt';
-import { routes } from '../../../utils/routes';
+import { routes, serviceErrorPropType } from '../../../utils/routes';
+
+const isIndividualOrNonLimitedCompany = (orgType: string) =>
+  ['I am applying as an individual', 'Non-limited company'].includes(orgType);
+
+const getRelatedOrgTypePages = ({
+  orgType,
+  mandatoryQuestionId,
+  addressPage,
+  fundingAmountPage,
+}) => {
+  const charityCommissionNumberPage =
+    routes.mandatoryQuestions.charityCommissionNumberPage(mandatoryQuestionId);
+  const companiesHouseNumberPage =
+    routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
+
+  return isIndividualOrNonLimitedCompany(orgType)
+    ? {
+        [fundingAmountPage]: addressPage,
+      }
+    : {
+        [fundingAmountPage]: charityCommissionNumberPage,
+        [charityCommissionNumberPage]: companiesHouseNumberPage,
+        [companiesHouseNumberPage]: addressPage,
+      };
+};
+
+const buildBackButtonMapper = (
+  orgType: string,
+  mandatoryQuestionId: string,
+  schemeId: number
+): { [p: string]: string } => {
+  const externalApplicationPage =
+    routes.mandatoryQuestions.externalApplicationPage(mandatoryQuestionId);
+  const summaryPage =
+    routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
+  const fundingLocationPage =
+    routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId);
+  const fundingAmountPage =
+    routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
+  const charityCommissionNumberPage =
+    routes.mandatoryQuestions.charityCommissionNumberPage(mandatoryQuestionId);
+  const companiesHouseNumberPage =
+    routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
+  const addressPage =
+    routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
+  const namePage = routes.mandatoryQuestions.namePage(mandatoryQuestionId);
+  const typePage = routes.mandatoryQuestions.typePage(mandatoryQuestionId);
+  const startPage = routes.mandatoryQuestions.startPage(schemeId.toString());
+  return {
+    [externalApplicationPage]: summaryPage,
+    [summaryPage]: fundingLocationPage,
+    [fundingLocationPage]: fundingAmountPage,
+    ...getRelatedOrgTypePages({
+      orgType,
+      mandatoryQuestionId,
+      addressPage,
+      fundingAmountPage,
+    }),
+    [addressPage]: namePage,
+    [namePage]: typePage,
+    [typePage]: startPage,
+  };
+};
+
+const mapBackButtonUrl = (
+  resolvedUrl: string,
+  mandatoryQuestion: GrantMandatoryQuestionDto,
+  mandatoryQuestionId: string,
+  fromSummaryPage: boolean,
+  fromSubmissionPage: boolean,
+  submissionId: string,
+  sectionId: string
+): string => {
+  if (fromSubmissionPage) {
+    return routes.submissions.section(submissionId, sectionId);
+  } else if (fromSummaryPage) {
+    return routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
+  } else {
+    const mapper = buildBackButtonMapper(
+      mandatoryQuestion.orgType,
+      mandatoryQuestionId,
+      mandatoryQuestion.schemeId
+    );
+    return mapper[resolvedUrl];
+  }
+};
+
+const createServiceErrorProps = (
+  errorInformation: string,
+  href: string
+): serviceErrorPropType => ({
+  errorInformation,
+  linkAttributes: {
+    href,
+    linkText: 'Please return',
+    linkInformation: ' and try again.',
+  },
+});
 
 export default async function getServerSideProps({
   req,
@@ -17,14 +115,11 @@ export default async function getServerSideProps({
   query,
   resolvedUrl, //the url that the user requested
 }: GetServerSidePropsContext) {
-  const backButtonUrl = req.headers.referer.replace(process.env.HOST, '');
   const { mandatoryQuestionId } = params as Record<string, string>;
-  const {
-    fromSummaryPage = false,
-    fromSubmissionPage = false,
-    submissionId,
-    sectionId,
-  } = query as Record<string, string>;
+  const { fromSummaryPage, fromSubmissionPage, submissionId, sectionId } =
+    query as Record<string, string>;
+  const isFromSummaryPage = fromSummaryPage === 'true';
+  const isFromSubmissionPage = fromSubmissionPage === 'true';
   const jwt = getJwtFromCookies(req);
   const { publicRuntimeConfig } = getConfig();
 
@@ -39,15 +134,10 @@ export default async function getServerSideProps({
         jwt
       );
   } catch (e) {
-    const serviceErrorProps = {
-      errorInformation:
-        'Something went wrong while trying to get the page you requested',
-      linkAttributes: {
-        href: resolvedUrl,
-        linkText: 'Please return',
-        linkInformation: ' and try again.',
-      },
-    };
+    const serviceErrorProps = createServiceErrorProps(
+      'Something went wrong while trying to get the page you requested',
+      resolvedUrl
+    );
     return {
       redirect: {
         destination: routes.serviceError(serviceErrorProps),
@@ -70,23 +160,18 @@ export default async function getServerSideProps({
       ),
     //the above method will return a string with the next page url
     (result) => {
-      if (fromSummaryPage) {
+      if (isFromSummaryPage) {
         return routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
-      } else if (fromSubmissionPage) {
+      } else if (isFromSubmissionPage) {
         return routes.submissions.section(submissionId, sectionId);
       } else {
         return result;
       }
     },
-    {
-      errorInformation:
-        'Something went wrong while trying to update your organisation details',
-      linkAttributes: {
-        href: resolvedUrl,
-        linkText: 'Please return',
-        linkInformation: ' and try again.',
-      },
-    }
+    createServiceErrorProps(
+      'Something went wrong while trying to update your organisation details',
+      resolvedUrl
+    )
   );
 
   if ('redirect' in response) {
@@ -101,6 +186,16 @@ export default async function getServerSideProps({
     fieldErrors = response.fieldErrors;
     defaultFields = response.body as Optional<GrantMandatoryQuestionDto>;
   }
+
+  const backButtonUrl = mapBackButtonUrl(
+    resolvedUrl,
+    mandatoryQuestion,
+    mandatoryQuestionId,
+    isFromSummaryPage,
+    isFromSubmissionPage,
+    submissionId,
+    sectionId
+  );
 
   return {
     props: {
