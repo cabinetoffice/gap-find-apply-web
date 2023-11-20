@@ -186,11 +186,7 @@ const ViewScheme = ({
               </p>
 
               <CustomLink
-                href={`/scheme/${
-                  scheme.schemeId
-                }/manage-due-diligence-checks?isInternal=${
-                  schemeApplicationsData?.applicationForm ? true : false
-                }`}
+                href={`/scheme/${scheme.schemeId}/manage-due-diligence-checks`}
                 isSecondaryButton
               >
                 Manage due diligence checks

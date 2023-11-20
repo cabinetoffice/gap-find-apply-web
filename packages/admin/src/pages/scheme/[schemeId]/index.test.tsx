@@ -422,11 +422,7 @@ describe('scheme/[schemeId]', () => {
         screen.getByRole('button', { name: 'Manage due diligence checks' })
       ).toHaveAttribute(
         'href',
-        `/apply/scheme/${
-          mockScheme.schemeId
-        }/manage-due-diligence-checks?isInternal=${
-          schemeApplicationsData?.applicationForm ? true : false
-        }`
+        `/apply/scheme/${mockScheme.schemeId}/manage-due-diligence-checks`
       );
     });
 
@@ -448,9 +444,7 @@ describe('scheme/[schemeId]', () => {
         screen.getByRole('button', { name: 'Manage due diligence checks' })
       ).toHaveAttribute(
         'href',
-        `/apply/scheme/${
-          mockScheme.schemeId
-        }/manage-due-diligence-checks?isInternal=${false}`
+        `/apply/scheme/${mockScheme.schemeId}/manage-due-diligence-checks`
       );
     });
 

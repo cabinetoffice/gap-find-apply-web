@@ -85,6 +85,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
 
     it('Should get spotlightSubmissionCount from getSpotlightSubmissionCount', async () => {
       mockedGetScheme.mockResolvedValue(scheme);
+      (schemeApplicationIsInternal as jest.Mock).mockReturnValue(true);
       (getSpotlightSubmissionCount as jest.Mock).mockReturnValue('2');
 
       const response = (await getServerSideProps(
@@ -96,6 +97,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
 
     it('Should get spotlightLastUpdated from getSpotlightLastUpdateDate', async () => {
       mockedGetScheme.mockResolvedValue(scheme);
+      (schemeApplicationIsInternal as jest.Mock).mockReturnValue(true);
       (getSpotlightLastUpdateDate as jest.Mock).mockReturnValue(
         SPOTLIGHT_LAST_UPDATED
       );
@@ -159,6 +161,28 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
+    it('Should render the paragraphs when the scheme has an internal application', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
+          spotlightUrl="url"
+          isInternal={true}
+        />
+      );
+      screen.getByText(
+        /Your application form has been designed to capture all of the information you need to run due diligence checks in Spotlight, a government owned due diligence tool\./i
+      );
+      screen.getByText(
+        /We automatically send the information to Spotlight. You need to log in to Spotlight to run your checks\./i
+      );
+      screen.getByText(
+        /Spotlight does not run checks on individuals or local authorities\./i
+      );
+    });
+
     it('Should render Spotlight submission info if there are successful submissions', () => {
       render(
         <ManageDueDiligenceChecks
@@ -184,7 +208,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           scheme={scheme}
           hasInfoToDownload={true}
           spotlightSubmissionCount={0}
-          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
+          spotlightLastUpdated={null}
           spotlightUrl="url"
           isInternal={true}
         />
@@ -194,28 +218,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
       expect(screen.getByTestId('spotlight-last-updated')).toHaveTextContent(
         'No records have been sent to Spotlight.'
-      );
-    });
-
-    it('Should render the paragraphs when the scheme has an internal application', () => {
-      render(
-        <ManageDueDiligenceChecks
-          scheme={scheme}
-          hasInfoToDownload={true}
-          spotlightSubmissionCount={2}
-          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
-          spotlightUrl="url"
-          isInternal={true}
-        />
-      );
-      screen.getByText(
-        /Your application form has been designed to capture all of the information you need to run due diligence checks in Spotlight, a government owned due diligence tool\./i
-      );
-      screen.getByText(
-        /We automatically send the information to Spotlight. You need to log in to Spotlight to run your checks\./i
-      );
-      screen.getByText(
-        /Spotlight does not run checks on individuals or local authorities\./i
       );
     });
 

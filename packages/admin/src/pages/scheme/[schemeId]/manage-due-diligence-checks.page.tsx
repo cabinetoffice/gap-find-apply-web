@@ -116,7 +116,8 @@ const ManageDueDiligenceChecks = ({
                     >
                       You have{' '}
                       <span className="govuk-!-font-weight-bold">
-                        {spotlightSubmissionCount} applications
+                        {spotlightSubmissionCount} application
+                        {spotlightSubmissionCount !== 1 && 's'}
                       </span>{' '}
                       in Spotlight.
                     </p>
