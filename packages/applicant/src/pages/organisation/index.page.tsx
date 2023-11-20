@@ -12,7 +12,7 @@ import ProcessAddress from './processAddress';
 
 const { publicRuntimeConfig } = getConfig();
 
-const INDIVIDUAL = 'I am applying as an Individual';
+const INDIVIDUAL = 'I am applying as an individual';
 const NON_LIMITED_COMPANY = 'Non-limited company';
 
 interface OrganisationDetails {
@@ -187,7 +187,7 @@ const getOrganisationData = (
   const typeOfOrganisationRow = {
     id: 'organisationType',
     label: `Type of ${isIndividual ? 'application' : 'organisation'}`,
-    value: isIndividual ? 'Applying as an individual' : organisationData?.type,
+    value: isIndividual ? 'I am applying as an individual' : organisationData?.type,
     url: routes.organisation.type,
     status: organisationData?.type ? 'Change' : 'Add',
   };

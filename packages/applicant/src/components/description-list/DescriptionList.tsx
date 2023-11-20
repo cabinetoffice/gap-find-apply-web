@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FC } from 'react';
 
-const INDIVIDUAL = 'I am applying as an Individual';
+const INDIVIDUAL = 'I am applying as an individual';
 const ORGANISATION = 'Organisation';
 
 export interface DescriptionListProps {
