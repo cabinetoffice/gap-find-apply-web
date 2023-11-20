@@ -10,11 +10,36 @@ import callServiceMethod from '../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes, serviceErrorPropType } from '../../../utils/routes';
 
-const buildBackButtonMapper = (orgType, mandatoryQuestionId, schemeId) => {
-  const isIndividualOrNonLimitedCompany = [
-    'I am applying as an individual',
-    'Non-limited company',
-  ].includes(orgType);
+const isIndividualOrNonLimitedCompany = (orgType: string) =>
+  ['I am applying as an individual', 'Non-limited company'].includes(orgType);
+
+const getRelatedOrgTypePages = ({
+  orgType,
+  mandatoryQuestionId,
+  addressPage,
+  fundingAmountPage,
+}) => {
+  const charityCommissionNumberPage =
+    routes.mandatoryQuestions.charityCommissionNumberPage(mandatoryQuestionId);
+  const companiesHouseNumberPage =
+    routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
+
+  return isIndividualOrNonLimitedCompany(orgType)
+    ? {
+        [fundingAmountPage]: addressPage,
+      }
+    : {
+        [fundingAmountPage]: charityCommissionNumberPage,
+        [charityCommissionNumberPage]: companiesHouseNumberPage,
+        [companiesHouseNumberPage]: addressPage,
+      };
+};
+
+const buildBackButtonMapper = (
+  orgType: string,
+  mandatoryQuestionId: string,
+  schemeId: number
+): { [p: string]: string } => {
   const externalApplicationPage =
     routes.mandatoryQuestions.externalApplicationPage(mandatoryQuestionId);
   const summaryPage =
@@ -36,15 +61,12 @@ const buildBackButtonMapper = (orgType, mandatoryQuestionId, schemeId) => {
     [externalApplicationPage]: summaryPage,
     [summaryPage]: fundingLocationPage,
     [fundingLocationPage]: fundingAmountPage,
-    ...(isIndividualOrNonLimitedCompany
-      ? {
-          [fundingAmountPage]: addressPage,
-        }
-      : {
-          [fundingAmountPage]: charityCommissionNumberPage,
-          [charityCommissionNumberPage]: companiesHouseNumberPage,
-          [companiesHouseNumberPage]: addressPage,
-        }),
+    ...getRelatedOrgTypePages({
+      orgType,
+      mandatoryQuestionId,
+      addressPage,
+      fundingAmountPage,
+    }),
     [addressPage]: namePage,
     [namePage]: typePage,
     [typePage]: startPage,
@@ -59,7 +81,7 @@ const mapBackButtonUrl = (
   fromSubmissionPage: boolean,
   submissionId: string,
   sectionId: string
-) => {
+): string => {
   if (fromSubmissionPage) {
     return routes.submissions.section(submissionId, sectionId);
   } else if (fromSummaryPage) {
