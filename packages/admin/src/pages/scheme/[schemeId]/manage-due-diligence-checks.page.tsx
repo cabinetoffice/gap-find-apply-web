@@ -115,7 +115,7 @@ const ManageDueDiligenceChecks = ({
                 <CustomLink
                   href={`/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`}
                 >
-                  Download checks from your application
+                  Download checks from applications
                 </CustomLink>
               </p>
             </>

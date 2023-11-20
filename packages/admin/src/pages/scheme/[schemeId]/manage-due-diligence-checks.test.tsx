@@ -213,7 +213,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
 
       expect(
         screen.getByRole('link', {
-          name: 'Download checks from your application',
+          name: 'Download checks from applications',
         })
       ).toHaveAttribute(
         'href',
