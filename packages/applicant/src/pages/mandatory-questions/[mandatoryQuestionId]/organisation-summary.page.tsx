@@ -112,8 +112,8 @@ export default function MandatoryQuestionOrganisationSummaryPage({
             </h1>
             <p className="govuk-body">
               Ensure the following details about your organisation are correct
-              and up to date. Funding organisations will use this information so
-              they can run checks to prevent fraud.
+              and up to date. Funding organisations will use this information to
+              run checks that prevent fraud.
             </p>
             <dl className="govuk-summary-list">
               {mandatoryQuestionDetails
