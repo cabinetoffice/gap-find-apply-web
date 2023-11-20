@@ -51,6 +51,29 @@ const buildBackButtonMapper = (orgType, mandatoryQuestionId, schemeId) => {
   };
 };
 
+const mapBackButtonUrl = (
+  resolvedUrl,
+  mandatoryQuestion,
+  mandatoryQuestionId,
+  fromSummaryPage,
+  fromSubmissionPage,
+  submissionId,
+  sectionId
+) => {
+  if (fromSubmissionPage) {
+    return routes.submissions.section(submissionId, sectionId);
+  } else if (fromSummaryPage) {
+    return routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
+  } else {
+    const mapper = buildBackButtonMapper(
+      mandatoryQuestion.orgType,
+      mandatoryQuestionId,
+      mandatoryQuestion.schemeId
+    );
+    return mapper[resolvedUrl];
+  }
+};
+
 export default async function getServerSideProps({
   req,
   res,
@@ -142,19 +165,15 @@ export default async function getServerSideProps({
     defaultFields = response.body as Optional<GrantMandatoryQuestionDto>;
   }
 
-  let backButtonUrl = '';
-  if (fromSubmissionPage) {
-    backButtonUrl = routes.submissions.section(submissionId, sectionId);
-  } else if (fromSummaryPage) {
-    backButtonUrl = routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
-  } else {
-    const mapper = buildBackButtonMapper(
-      mandatoryQuestion.orgType,
-      mandatoryQuestionId,
-      mandatoryQuestion.schemeId
-    );
-    backButtonUrl = mapper[resolvedUrl];
-  }
+  const backButtonUrl = mapBackButtonUrl(
+    resolvedUrl,
+    mandatoryQuestion,
+    mandatoryQuestionId,
+    fromSummaryPage,
+    fromSubmissionPage,
+    submissionId,
+    sectionId
+  );
 
   return {
     props: {
