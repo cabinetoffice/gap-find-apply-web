@@ -179,7 +179,7 @@ type OrganisationData = {
   generalOrganisationRows: OrganisationDetails[];
 };
 
-const getOrganisationData = (
+export const getOrganisationData = (
   organisationData: GrantApplicantOrganisationProfile,
   { isIndividual, isNonLimitedCompany }: Record<string, boolean>
 ): OrganisationData => {

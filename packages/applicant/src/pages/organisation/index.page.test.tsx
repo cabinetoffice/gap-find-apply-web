@@ -6,7 +6,11 @@ import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { createMockRouter } from '../../testUtils/createMockRouter';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
-import ManageOrganisationDetails, { getServerSideProps } from './index.page';
+import ManageOrganisationDetails, {
+  getOrganisationData,
+  getServerSideProps,
+} from './index.page';
+
 jest.mock('../../utils/jwt');
 jest.mock('next/config', () => () => {
   return {
@@ -179,6 +183,7 @@ describe('Manage organisation page should render properly', () => {
         'Funding organisations run checks to prevent fraud. The information below will be used as part of these checks.'
       )
     ).toBeDefined();
+    expect(screen.getAllByText("Your organisation's details")).toBeDefined();
   });
 
   it('should render the table keys', () => {
@@ -239,6 +244,37 @@ describe('Manage organisation page should render properly', () => {
       'href',
       'http://localhost' + routes.organisation.companiesHouseNumber
     );
+  });
+});
+
+describe('Manage organisation page should render properly', () => {
+  beforeEach(async () => {
+    render(
+      <RouterContext.Provider
+        value={createMockRouter({
+          pathname: routes.organisation.index,
+        })}
+      >
+        <ManageOrganisationDetails
+          isIndividual={true}
+          typeOfOrganisationRow={getTypeOfOrganisationRow({
+            populatedRows: true,
+          })}
+          generalOrganisationRows={getGeneralOrganisationRows({
+            populatedRows: true,
+          })}
+        />
+      </RouterContext.Provider>
+    );
+  });
+  it('should render the correct heading and paragraph', () => {
+    expect(screen.getAllByText('Your saved information')).toBeDefined();
+    expect(
+      screen.getByText(
+        'Funding organisations run checks to prevent fraud. The information below will be used as part of these checks.'
+      )
+    ).toBeDefined();
+    expect(screen.getAllByText('Your details')).toBeDefined();
   });
 });
 
@@ -315,5 +351,132 @@ describe('Manage page should render without an address', () => {
     expect(
       screen.getByRole('button', { name: 'Back to my account' })
     ).toHaveAttribute('href', '/dashboard');
+  });
+});
+
+describe('builds org data rows properly', () => {
+  const defaultProfile = {
+    id: 'id',
+    legalName: 'name',
+    type: 'type',
+    addressLine1: 'addressline1',
+    addressLine2: 'addressline1',
+    town: 'town',
+    county: 'county',
+    postcode: 'postcode',
+    charityCommissionNumber: 'ccnum',
+    companiesHouseNumber: 'chnum',
+  };
+  let profile = defaultProfile;
+  beforeEach(() => {
+    profile = defaultProfile;
+  });
+  it('should return all rows for limited company', () => {
+    const response = getOrganisationData(profile, {
+      isIndividual: false,
+      isNonLimitedCompany: false,
+    });
+    expect(response).toStrictEqual({
+      generalOrganisationRows: [
+        {
+          id: 'organisationName',
+          label: 'Name',
+          status: 'Change',
+          url: '/organisation/name',
+          value: 'name',
+        },
+        {
+          id: 'organisationAddress',
+          label: 'Address',
+          status: 'Change',
+          url: '/organisation/address',
+          value: ['addressline1', 'addressline1', 'town', 'county', 'postcode'],
+        },
+        {
+          id: 'organisationCompaniesHouseNumber',
+          label: 'Companies house number',
+          status: 'Change',
+          url: '/organisation/companies-house-number',
+          value: 'chnum',
+        },
+        {
+          id: 'organisationCharity',
+          label: 'Charity commission number',
+          status: 'Change',
+          url: '/organisation/charity-commission-number',
+          value: 'ccnum',
+        },
+      ],
+      typeOfOrganisationRow: {
+        id: 'organisationType',
+        label: 'Type of organisation',
+        status: 'Change',
+        url: '/organisation/type',
+        value: 'type',
+      },
+    });
+  });
+
+  it('should not return Companies House or Charity Commission rows for non-limited company', () => {
+    const response = getOrganisationData(profile, {
+      isIndividual: false,
+      isNonLimitedCompany: true,
+    });
+    expect(response).toStrictEqual({
+      generalOrganisationRows: [
+        {
+          id: 'organisationName',
+          label: 'Name',
+          status: 'Change',
+          url: '/organisation/name',
+          value: 'name',
+        },
+        {
+          id: 'organisationAddress',
+          label: 'Address',
+          status: 'Change',
+          url: '/organisation/address',
+          value: ['addressline1', 'addressline1', 'town', 'county', 'postcode'],
+        },
+      ],
+      typeOfOrganisationRow: {
+        id: 'organisationType',
+        label: 'Type of organisation',
+        status: 'Change',
+        url: '/organisation/type',
+        value: 'type',
+      },
+    });
+  });
+  it('should not return Companies House or Charity Commission rows and should remove ref to org for individual', () => {
+    const response = getOrganisationData(profile, {
+      isIndividual: true,
+      isNonLimitedCompany: false,
+    });
+    expect(response).toStrictEqual({
+      generalOrganisationRows: [
+        {
+          id: 'organisationName',
+          label: 'Name',
+          status: 'Change',
+          url: '/organisation/name',
+          value: 'name',
+        },
+        {
+          id: 'organisationAddress',
+          label: 'Address',
+          status: 'Change',
+          url: '/organisation/address',
+          value: ['addressline1', 'addressline1', 'town', 'county', 'postcode'],
+        },
+      ],
+      typeOfOrganisationRow: {
+        id: 'organisationType',
+        label: 'Type of application',
+        status: 'Change',
+        url: '/organisation/type',
+        value: 'I am applying as an individual',
+      },
+    });
   });
 });
