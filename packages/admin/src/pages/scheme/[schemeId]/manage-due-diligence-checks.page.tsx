@@ -3,7 +3,10 @@ import CustomLink from '../../../components/custom-link/CustomLink';
 import InsetText from '../../../components/inset-text/InsetText';
 import Meta from '../../../components/layout/Meta';
 import { completedMandatoryQuestions } from '../../../services/MandatoryQuestionsService';
-import { getGrantScheme } from '../../../services/SchemeService';
+import {
+  getGrantScheme,
+  schemeApplicationIsInternal,
+} from '../../../services/SchemeService';
 import {
   getSpotlightLastUpdateDate,
   getSpotlightSubmissionCount,
@@ -14,13 +17,13 @@ import { getSessionIdFromCookies } from '../../../utils/session';
 export const getServerSideProps = async ({
   params,
   req,
-  query,
 }: GetServerSidePropsContext) => {
   const { schemeId } = params as Record<string, string>;
-  const { isInternal } = query as Record<string, string>;
 
   const sessionCookie = getSessionIdFromCookies(req);
   const scheme = await getGrantScheme(schemeId, sessionCookie);
+  const isInternal = await schemeApplicationIsInternal(schemeId, sessionCookie);
+  const spotlightUrl = process.env.SPOTLIGHT_LOGIN_URL;
   const hasInfoToDownload = await completedMandatoryQuestions(
     scheme.schemeId,
     sessionCookie
@@ -28,7 +31,7 @@ export const getServerSideProps = async ({
 
   let spotlightSubmissionCount = 0;
   let spotlightLastUpdated = null;
-  if (isInternal == 'true') {
+  if (isInternal) {
     spotlightSubmissionCount = await getSpotlightSubmissionCount(
       schemeId,
       sessionCookie
@@ -45,6 +48,7 @@ export const getServerSideProps = async ({
       hasInfoToDownload,
       spotlightSubmissionCount,
       spotlightLastUpdated,
+      spotlightUrl,
       isInternal,
     },
   };
@@ -55,6 +59,7 @@ const ManageDueDiligenceChecks = ({
   hasInfoToDownload,
   spotlightSubmissionCount,
   spotlightLastUpdated,
+  spotlightUrl,
   isInternal,
 }: InferProps<typeof getServerSideProps>) => {
   return (
@@ -73,45 +78,71 @@ const ManageDueDiligenceChecks = ({
             </p>
           ) : (
             <>
-              {isInternal && (
-                <InsetText>
-                  <p
-                    className="govuk-!-margin-bottom-0"
-                    data-testid="spotlight-count"
-                  >
-                    You have{' '}
-                    <span className="govuk-!-font-weight-bold">
-                      {spotlightSubmissionCount} applications
-                    </span>{' '}
-                    in Spotlight.
+              {!isInternal ? (
+                <div>
+                  <p className="govuk-body">
+                    We gather the information you need to run due diligence
+                    checks.
                   </p>
-                  <p
-                    className="govuk-!-margin-top-0"
-                    data-testid="spotlight-last-updated"
-                  >
-                    {spotlightLastUpdated ? (
-                      <>
-                        Spotlight was last updated on{' '}
-                        <span className="govuk-!-font-weight-bold">
-                          {spotlightLastUpdated}
-                        </span>
-                        .{' '}
-                      </>
-                    ) : (
-                      <>No records have been sent to Spotlight. </>
-                    )}
-                  </p>
-                </InsetText>
-              )}
-              <p className="govuk-body">
-                We gather the information you need to run due diligence checks.
-              </p>
 
-              <p className="govuk-body">
-                You can use the government-owned due diligence tool ‘Spotlight’
-                to run your due diligence checks. The information is already in
-                the correct format to upload directly into Spotlight.
-              </p>
+                  <p className="govuk-body">
+                    You can use the government-owned due diligence tool
+                    ‘Spotlight’ to run your due diligence checks. The
+                    information is already in the correct format to upload
+                    directly into Spotlight.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p className="govuk-body">
+                    Your application form has been designed to capture all of
+                    the information you need to run due diligence checks in
+                    Spotlight, a government owned due diligence tool.
+                  </p>
+
+                  <p className="govuk-body">
+                    We automatically send the information to Spotlight. You need
+                    to log in to Spotlight to run your checks.
+                  </p>
+
+                  <p className="govuk-body">
+                    Spotlight does not run checks on individuals or local
+                    authorities.
+                  </p>
+                  <InsetText>
+                    <p
+                      className="govuk-!-margin-bottom-0"
+                      data-testid="spotlight-count"
+                    >
+                      You have{' '}
+                      <span className="govuk-!-font-weight-bold">
+                        {spotlightSubmissionCount} applications
+                      </span>{' '}
+                      in Spotlight.
+                    </p>
+                    <p
+                      className="govuk-!-margin-top-0"
+                      data-testid="spotlight-last-updated"
+                    >
+                      {spotlightLastUpdated ? (
+                        <>
+                          Spotlight was last updated on{' '}
+                          <span className="govuk-!-font-weight-bold">
+                            {spotlightLastUpdated}
+                          </span>
+                          .{' '}
+                        </>
+                      ) : (
+                        <>No records have been sent to Spotlight. </>
+                      )}
+                    </p>
+                  </InsetText>
+                </div>
+              )}
+
+              <a href={spotlightUrl} className="govuk-button">
+                Log in to Spotlight
+              </a>
 
               <p className="govuk-body">
                 <CustomLink

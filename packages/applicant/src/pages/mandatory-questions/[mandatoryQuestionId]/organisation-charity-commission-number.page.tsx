@@ -13,11 +13,8 @@ export default function MandatoryQuestionOrganisationCharityCommissionNumberPage
   fieldErrors,
   formAction,
   defaultFields,
-  mandatoryQuestion,
-  mandatoryQuestionId,
+  backButtonUrl,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl =
-    routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
   return (
     <>
       <Meta

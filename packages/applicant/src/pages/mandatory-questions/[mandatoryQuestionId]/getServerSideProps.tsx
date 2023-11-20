@@ -17,6 +17,7 @@ export default async function getServerSideProps({
   query,
   resolvedUrl, //the url that the user requested
 }: GetServerSidePropsContext) {
+  const backButtonUrl = req.headers.referer.replace(process.env.HOST, '');
   const { mandatoryQuestionId } = params as Record<string, string>;
   const {
     fromSummaryPage = false,
@@ -109,6 +110,7 @@ export default async function getServerSideProps({
       defaultFields,
       mandatoryQuestion,
       mandatoryQuestionId,
+      backButtonUrl,
     },
   };
 }
