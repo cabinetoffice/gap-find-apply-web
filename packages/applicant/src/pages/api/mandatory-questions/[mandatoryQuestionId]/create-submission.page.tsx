@@ -45,8 +45,6 @@ export default async function handler(
       jwt
     );
 
-    console.log(grantApplication);
-
     if (!grantApplication.id) {
       await grantMandatoryQuestionService.updateMandatoryQuestion(
         jwt,
@@ -56,7 +54,6 @@ export default async function handler(
           mandatoryQuestionsComplete: true,
         }
       );
-      console.log(grantAdverts);
       return res.redirect(
         `${process.env.HOST}${routes.mandatoryQuestions.externalApplicationPage(
           mandatoryQuestionId

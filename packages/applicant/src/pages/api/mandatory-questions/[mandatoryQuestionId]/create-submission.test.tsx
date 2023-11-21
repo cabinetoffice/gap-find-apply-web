@@ -2,10 +2,6 @@ import { merge } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { GrantApplicant } from '../../../../types/models/GrantApplicant';
 import {
-  AdvertDto,
-  getAdvertBySchemeId,
-} from '../../../../services/GrantAdvertService';
-import {
   GrantApplicantOrganisationProfileService,
   UpdateOrganisationDetailsDto,
 } from '../../../../services/GrantApplicantOrganisationProfileService';
@@ -22,13 +18,15 @@ import { Overrides } from '../../../../testUtils/unitTestHelpers';
 import { getJwtFromCookies } from '../../../../utils/jwt';
 import { routes } from '../../../../utils/routes';
 import handler from './create-submission.page';
+import { GrantAdvert } from '../../../../types/models/GrantAdvert';
+import { GrantSchemeService } from '../../../../services/GrantSchemeService';
 
-jest.mock('../../../../services/GrantAdvertService');
 jest.mock('../../../../services/SubmissionService');
 jest.mock('../../../../services/GrantMandatoryQuestionService.ts');
 jest.mock('../../../../services/GrantApplicantService');
 jest.mock('../../../../services/GrantApplicantOrganisationProfileService');
 jest.mock('../../../../utils/jwt');
+jest.mock('../../../../services/GrantSchemeService');
 
 const APPLICANT_ID = '75ab5fbd-0682-4d3d-a467-01c7a447f07c';
 const MOCK_GRANT_APPLICANT: GrantApplicant = {
@@ -109,7 +107,7 @@ describe('API Handler Tests', () => {
     charityCommissionNumber: 'charityCommissionNumber',
   };
 
-  const advertDTO: AdvertDto = {
+  const advertDTO: GrantAdvert = {
     id: null,
     version: null,
     grantApplicationId: null,
@@ -145,9 +143,12 @@ describe('API Handler Tests', () => {
     GrantApplicantOrganisationProfileService.getInstance.mockReturnValue({
       updateOrganisation: jest.fn().mockResolvedValue(MOCK_ORGANISATION_DATA),
     });
-    (getAdvertBySchemeId as jest.Mock).mockResolvedValue(
-      getAdvertBySchemeIdResponse
-    );
+    GrantSchemeService.getInstance.mockReturnValue({
+      getGrantSchemeById: jest.fn().mockResolvedValue({
+        grantAdverts: [getAdvertBySchemeIdResponse],
+        grantApplication: { id: null },
+      }),
+    });
 
     await handler(req(), res());
 
@@ -164,9 +165,12 @@ describe('API Handler Tests', () => {
       isInternal: true,
       grantApplicationId: 'grantApplicationId',
     };
-    (getAdvertBySchemeId as jest.Mock).mockResolvedValue(
-      getAdvertBySchemeIdResponse
-    );
+    GrantSchemeService.getInstance.mockReturnValue({
+      getGrantSchemeById: jest.fn().mockResolvedValue({
+        grantAdverts: [getAdvertBySchemeIdResponse],
+        grantApplication: { id: '1' },
+      }),
+    });
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     (createSubmission as jest.Mock).mockResolvedValue(createSubmissionResponse);
 

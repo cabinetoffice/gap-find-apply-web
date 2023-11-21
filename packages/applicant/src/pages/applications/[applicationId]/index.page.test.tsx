@@ -143,7 +143,9 @@ describe('getServerSideProps', () => {
     it('should return the correct props when application has scheme 1 version', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue(scheme);
+      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: scheme,
+      });
       (createSubmission as jest.Mock).mockReturnValue(mockData);
       const response = await getServerSideProps(context);
 
@@ -157,7 +159,9 @@ describe('getServerSideProps', () => {
     it('should redirect to submission page if submission does not  exists when application has scheme 1 version and ', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue(scheme);
+      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: scheme,
+      });
       (createSubmission as jest.Mock).mockReturnValue(submissionDoesNotExists);
 
       const response = await getServerSideProps(context);
@@ -172,7 +176,9 @@ describe('getServerSideProps', () => {
     it('should redirect to applications dashboard if submission already exists when application has scheme 1 version', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue(scheme);
+      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: scheme,
+      });
       (createSubmission as jest.Mock).mockReturnValue(submissionExists);
 
       const response = await getServerSideProps(context);
@@ -186,7 +192,9 @@ describe('getServerSideProps', () => {
 
     it('should redirect to grant is closed page if grant is closed', async () => {
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue(scheme);
+      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: scheme,
+      });
       (createSubmission as jest.Mock).mockImplementation(() => {
         throw grantClosed;
       });
@@ -209,9 +217,9 @@ describe('getServerSideProps', () => {
         ...application,
         grantScheme: { ...scheme, version: 2 },
       });
+
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
-        ...scheme,
-        version: 2,
+        grantScheme: { ...scheme, version: 2 },
       });
       const existBySchemeIdAndApplicantId =
         spiedExistBySchemeIdAndApplicantId.mockResolvedValue(false);
@@ -240,8 +248,7 @@ describe('getServerSideProps', () => {
       });
 
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
-        ...scheme,
-        version: 2,
+        grantScheme: { ...scheme, version: 2 },
       });
       const existBySchemeIdAndApplicantId =
         spiedExistBySchemeIdAndApplicantId.mockResolvedValue(true);
@@ -280,8 +287,7 @@ describe('getServerSideProps', () => {
       });
 
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
-        ...scheme,
-        version: 2,
+        grantScheme: { ...scheme, version: 2 },
       });
       const existBySchemeIdAndApplicantId =
         spiedExistBySchemeIdAndApplicantId.mockResolvedValue(true);
@@ -316,7 +322,9 @@ describe('getServerSideProps', () => {
   describe('common scenarios', () => {
     it('should redirect if there is an error', async () => {
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue(scheme);
+      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: scheme,
+      });
       (createSubmission as jest.Mock).mockReturnValue(null);
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
 

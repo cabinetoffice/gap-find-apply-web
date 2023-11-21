@@ -267,7 +267,7 @@ describe('getServerSideProps', () => {
     (isSubmissionReady as jest.Mock).mockReturnValue(true);
     const getGrantScheme = jest
       .spyOn(GrantSchemeService.prototype, 'getGrantSchemeById')
-      .mockResolvedValue(MOCK_GRANT_SCHEME);
+      .mockResolvedValue({ grantScheme: MOCK_GRANT_SCHEME });
     (getQuestionById as jest.Mock).mockReturnValue(
       questionDataStandardEligibilityResponseNo
     );
@@ -357,7 +357,7 @@ describe('getServerSideProps', () => {
     (isSubmissionReady as jest.Mock).mockReturnValue(true);
     const getGrantScheme = jest
       .spyOn(GrantSchemeService.prototype, 'getGrantSchemeById')
-      .mockResolvedValue(MOCK_GRANT_SCHEME);
+      .mockResolvedValue({ grantScheme: MOCK_GRANT_SCHEME });
     (getQuestionById as jest.Mock).mockReturnValue(
       questionDataStandardEligibilityResponseNo
     );
@@ -390,7 +390,7 @@ describe('getServerSideProps', () => {
     (isSubmissionReady as jest.Mock).mockReturnValue(true);
     const getGrantScheme = jest
       .spyOn(GrantSchemeService.prototype, 'getGrantSchemeById')
-      .mockResolvedValue(MOCK_GRANT_SCHEME);
+      .mockResolvedValue({ grantScheme: MOCK_GRANT_SCHEME });
 
     const response = await getServerSideProps(contextNoToken);
     expect(response).toEqual({
@@ -420,7 +420,7 @@ describe('getServerSideProps', () => {
     (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(true);
     const getGrantScheme = jest
       .spyOn(GrantSchemeService.prototype, 'getGrantSchemeById')
-      .mockResolvedValue(MOCK_GRANT_SCHEME);
+      .mockResolvedValue({ grantScheme: MOCK_GRANT_SCHEME });
 
     const response = await getServerSideProps(context);
 
