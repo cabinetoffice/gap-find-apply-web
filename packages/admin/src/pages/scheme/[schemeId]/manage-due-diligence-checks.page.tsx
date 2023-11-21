@@ -64,20 +64,15 @@ const ManageDueDiligenceChecks = ({
             </div>
             <div className="govuk-notification-banner__content">
               <p className="govuk-notification-banner__heading">
-                Spotlight cannot accept your data
+                We can&apos;t send your data to Spotlight
               </p>
               <p className="govuk-body">
-                Changes to Spotlight mean that some of your data cannot be
-                automatically sent to Spotlight. This affects {} of your
-                records. You can still download this data to upload it to
-                Spotlight manually.
+                Some of your data cannot be automatically sent to Spotlight.
+                This affects {} of your records. You can still download this
+                data to manually upload it to Spotlight.
               </p>
-              {
-                // TODO - Changes to be made to copy below
-              }
               <p className="govuk-body">
-                If you need further support, contact Spotlight&apos;s support
-                team at{' '}
+                If you need further support, contact our support team at{' '}
                 <a
                   className="govuk-notification-banner__link"
                   href="mailto:findagrant@cabinetoffice.gov.uk"
@@ -133,6 +128,17 @@ const ManageDueDiligenceChecks = ({
               <a href={spotlightUrl} className="govuk-button">
                 Log in to Spotlight
               </a>
+              {
+                //TODO: Add logic to download information
+              }
+              <p className="govuk-body">
+                You can download the information you need to run checks to
+                upload it to Spotlight manually.
+              </p>
+              <p className="govuk-body">
+                You can also download checks that Find a grant cannot send to
+                Spotlight
+              </p>
 
               <p className="govuk-body">
                 <CustomLink
