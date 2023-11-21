@@ -7,12 +7,14 @@ import InferProps from '../../../types/InferProps';
 import MandatoryQuestionOrganisationNamePage, {
   getServerSideProps,
 } from './organisation-name.page';
+import { MQ_ORG_TYPES } from '../../../utils/constants';
 
 describe('Organisation name page', () => {
   const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
     fieldErrors: [],
     csrfToken: 'testCSRFToken',
     formAction: 'testFormAction',
+    backButtonUrl: 'testBackButtonUrl',
     defaultFields: {
       name: '',
     },
@@ -41,10 +43,39 @@ describe('Organisation name page', () => {
         {...getPageProps(getDefaultProps)}
       />
     );
+  });
 
-    screen.getByText(
-      'This is the official name of your organisation. It could be the name that is registered with Companies House or the Charities Commission'
+  it('should display a different heading if user is individual', () => {
+    renderWithRouter(
+      <MandatoryQuestionOrganisationNamePage
+        {...getPageProps(getDefaultProps, {
+          mandatoryQuestion: {
+            schemeId: 1,
+            orgType: MQ_ORG_TYPES.INDIVIDUAL,
+          },
+        })}
+      />
     );
+
+    screen.getByRole('heading', {
+      name: 'Enter your name',
+      level: 1,
+    });
+  });
+
+  it('should display a different question hint text if user is individual', () => {
+    renderWithRouter(
+      <MandatoryQuestionOrganisationNamePage
+        {...getPageProps(getDefaultProps, {
+          mandatoryQuestion: {
+            schemeId: 1,
+            orgType: MQ_ORG_TYPES.INDIVIDUAL,
+          },
+        })}
+      />
+    );
+
+    screen.getByText('Your name will appear on your application.');
   });
 
   it('should display text input with no default', () => {
