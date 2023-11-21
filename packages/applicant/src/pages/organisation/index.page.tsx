@@ -76,9 +76,7 @@ const ManageOrganisationDetails: FC<ManageOrganisationDetailsProps> = ({
               tabIndex={-1}
               data-cy="cy-manage-organisation-header"
             >
-              {isIndividual
-                ? 'Your saved information'
-                : 'Your organisation details'}
+              Your saved information
             </h1>
             <p className="govuk-body">
               Funding organisations run checks to prevent fraud. The information
@@ -94,7 +92,7 @@ const ManageOrganisationDetails: FC<ManageOrganisationDetailsProps> = ({
               className="govuk-heading-m"
               data-cy="cy-manage-organisation-header"
             >
-              {`Your ${isIndividual ? 'details' : "organisation's details"}`}
+              {`Your ${isIndividual ? 'details' : 'organisation details'}`}
             </h2>
 
             <dl className="govuk-summary-list">
