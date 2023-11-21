@@ -12,6 +12,7 @@ import {
 } from '../../../testUtils/unitTestHelpers';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
+import { MQ_ORG_TYPES } from '../../../utils/constants';
 
 jest.mock('next/dist/server/api-utils/node');
 
@@ -271,60 +272,54 @@ describe('getServerSideProps', () => {
   });
 
   describe('should provide the correct back button url', () => {
-    const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
-      req: {},
-      params: { mandatoryQuestionId: 'mandatoryQuestionId' },
-      query: {},
-    });
-
     it.each([
       [
         routes.mandatoryQuestions.startPage(
           getDefaultGrantMandatoryQuestion().schemeId.toString()
         ),
         routes.mandatoryQuestions.typePage('mandatoryQuestionId'),
-        'I am applying as an individual',
+        MQ_ORG_TYPES.INDIVIDUAL,
       ],
       [
         routes.mandatoryQuestions.typePage('mandatoryQuestionId'),
         routes.mandatoryQuestions.namePage('mandatoryQuestionId'),
-        'I am applying as an individual',
+        MQ_ORG_TYPES.INDIVIDUAL,
       ],
       [
         routes.mandatoryQuestions.addressPage('mandatoryQuestionId'),
         routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
-        'I am applying as an individual',
+        MQ_ORG_TYPES.INDIVIDUAL,
       ],
       [
         routes.mandatoryQuestions.addressPage('mandatoryQuestionId'),
         routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
-        'Non-limited company',
+        MQ_ORG_TYPES.NON_LIMITED_COMPANY,
       ],
       [
         routes.mandatoryQuestions.addressPage('mandatoryQuestionId'),
         routes.mandatoryQuestions.companiesHouseNumberPage(
           'mandatoryQuestionId'
         ),
-        'Limited company',
+        MQ_ORG_TYPES.LIMITED_COMPANY,
       ],
       [
         routes.mandatoryQuestions.charityCommissionNumberPage(
           'mandatoryQuestionId'
         ),
         routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
-        'Limited company',
+        MQ_ORG_TYPES.LIMITED_COMPANY,
       ],
       [
         routes.mandatoryQuestions.charityCommissionNumberPage(
           'mandatoryQuestionId'
         ),
         routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
-        'Charity',
+        MQ_ORG_TYPES.CHARITY,
       ],
       [
         routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
         routes.mandatoryQuestions.fundingLocationPage('mandatoryQuestionId'),
-        'Charity',
+        MQ_ORG_TYPES.CHARITY,
       ],
     ])(
       'MQ Flow: should return %p for %p and %p',

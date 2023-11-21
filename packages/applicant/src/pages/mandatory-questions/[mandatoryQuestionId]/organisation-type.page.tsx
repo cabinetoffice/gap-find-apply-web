@@ -4,6 +4,7 @@ import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
 import InferProps from '../../../types/InferProps';
 import getServerSideProps from './getServerSideProps';
+import { MQ_ORG_TYPES } from '../../../utils/constants';
 
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationTypePage({
@@ -33,14 +34,20 @@ export default function MandatoryQuestionOrganisationTypePage({
             fieldName="orgType"
             fieldErrors={fieldErrors}
             radioOptions={[
-              { label: 'Limited company', value: 'Limited company' },
-              { label: 'Non-limited company', value: 'Non-limited company' },
-              { label: 'Charity', value: 'Charity' },
               {
-                label: 'I am applying as an individual',
-                value: 'I am applying as an individual',
+                label: MQ_ORG_TYPES.LIMITED_COMPANY,
+                value: MQ_ORG_TYPES.LIMITED_COMPANY,
               },
-              { label: 'Other', value: 'Other' },
+              {
+                label: MQ_ORG_TYPES.NON_LIMITED_COMPANY,
+                value: MQ_ORG_TYPES.NON_LIMITED_COMPANY,
+              },
+              { label: MQ_ORG_TYPES.CHARITY, value: MQ_ORG_TYPES.CHARITY },
+              {
+                label: MQ_ORG_TYPES.INDIVIDUAL,
+                value: MQ_ORG_TYPES.INDIVIDUAL,
+              },
+              { label: MQ_ORG_TYPES.OTHER, value: MQ_ORG_TYPES.OTHER },
             ]}
             defaultChecked={defaultFields.orgType}
           />
