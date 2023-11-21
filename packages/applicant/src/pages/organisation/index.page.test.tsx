@@ -183,7 +183,7 @@ describe('Manage organisation page should render properly', () => {
         'Funding organisations run checks to prevent fraud. The information below will be used as part of these checks.'
       )
     ).toBeDefined();
-    expect(screen.getAllByText("Your organisation's details")).toBeDefined();
+    expect(screen.getAllByText('Your organisation details')).toBeDefined();
   });
 
   it('should render the table keys', () => {

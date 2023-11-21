@@ -94,7 +94,7 @@ const ManageOrganisationDetails: FC<ManageOrganisationDetailsProps> = ({
               className="govuk-heading-m"
               data-cy="cy-manage-organisation-header"
             >
-              {`Your ${isIndividual ? 'details' : "organisation's details"}`}
+              {`Your ${isIndividual ? 'details' : 'organisation details'}`}
             </h2>
 
             <dl className="govuk-summary-list">
