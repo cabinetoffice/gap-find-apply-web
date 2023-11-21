@@ -81,6 +81,7 @@ export const getServerSideProps = async ({
 
   return {
     props: {
+      organisationType: grantApplicant?.organisation?.type,
       descriptionList,
       hasApplications,
       bannerProps,
@@ -94,12 +95,14 @@ export default function ApplicantDashboardPage({
   hasApplications,
   bannerProps,
   oneLoginEnabled,
+  organisationType,
 }: InferProps<typeof getServerSideProps>) {
   return (
     <>
       <Meta title="My account - Apply for a grant" />
       <Layout>
         <ApplicantDashboard
+          organisationType={organisationType}
           descriptionList={descriptionList}
           hasApplications={hasApplications}
           bannerProps={bannerProps}

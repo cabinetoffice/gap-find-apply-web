@@ -46,7 +46,7 @@ describe('Organisation type page', () => {
     });
     screen.getByRole('radio', { name: 'Charity', checked: false });
     screen.getByRole('radio', {
-      name: 'I am applying as an Individual',
+      name: 'I am applying as an individual',
       checked: false,
     });
     screen.getByRole('radio', { name: 'Other', checked: false });
@@ -70,7 +70,7 @@ describe('Organisation type page', () => {
     });
     screen.getByRole('radio', { name: 'Charity', checked: true });
     screen.getByRole('radio', {
-      name: 'I am applying as an Individual',
+      name: 'I am applying as an individual',
       checked: false,
     });
     screen.getByRole('radio', { name: 'Other', checked: false });
