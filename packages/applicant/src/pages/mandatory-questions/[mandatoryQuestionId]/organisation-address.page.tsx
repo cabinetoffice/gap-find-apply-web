@@ -5,6 +5,7 @@ import Meta from '../../../components/partials/Meta';
 import InferProps from '../../../types/InferProps';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
+import { MQ_ORG_TYPES } from '../../../utils/constants';
 
 export { getServerSideProps };
 
@@ -17,7 +18,7 @@ export default function MandatoryQuestionOrganisationAddressPage({
   mandatoryQuestion,
 }: InferProps<typeof getServerSideProps>) {
   const isUserIndividual =
-    mandatoryQuestion.orgType === 'I am applying as an Individual';
+    mandatoryQuestion.orgType === MQ_ORG_TYPES.INDIVIDUAL;
   const commonAddressInputProps = {
     boldHeading: false,
     titleSize: 's',

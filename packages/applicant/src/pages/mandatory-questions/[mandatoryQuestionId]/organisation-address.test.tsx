@@ -7,12 +7,14 @@ import InferProps from '../../../types/InferProps';
 import MandatoryQuestionOrganisationAddressPage, {
   getServerSideProps,
 } from './organisation-address.page';
+import { MQ_ORG_TYPES } from '../../../utils/constants';
 
 describe('Organisation address page', () => {
   const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
     fieldErrors: [],
     csrfToken: 'testCSRFToken',
     formAction: 'testFormAction',
+    backButtonUrl: 'testBackButtonUrl',
     defaultFields: {
       addressLine1: '',
       addressLine2: '',
@@ -22,7 +24,7 @@ describe('Organisation address page', () => {
     },
     mandatoryQuestion: {
       schemeId: 1,
-      orgType: 'I am applying as an Individual',
+      orgType: MQ_ORG_TYPES.INDIVIDUAL,
     },
     mandatoryQuestionId: 'mandatoryQuestionId',
   });
@@ -46,7 +48,7 @@ describe('Organisation address page', () => {
         {...getPageProps(getDefaultProps, {
           mandatoryQuestion: {
             schemeId: 1,
-            orgType: 'Organisation',
+            orgType: MQ_ORG_TYPES.LIMITED_COMPANY,
           },
         })}
       />
