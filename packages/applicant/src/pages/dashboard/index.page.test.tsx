@@ -115,6 +115,7 @@ describe('getServerSideProps', () => {
 
     expectObjectEquals(result, {
       props: {
+        organisationType: 'Registered Charity',
         descriptionList,
         hasApplications: true,
         bannerProps: null,
@@ -139,6 +140,7 @@ describe('getServerSideProps', () => {
 
     expectObjectEquals(result, {
       props: {
+        organisationType: 'Registered Charity',
         descriptionList: {
           data: [
             { term: 'Email', detail: MOCK_GRANT_APPLICANT_NO_LEGAL_NAME.email },

@@ -29,6 +29,10 @@ $navigation-height: 50px;
   border-bottom: 4px solid govuk-colour('blue');
 }
 
+.border-bottom-0-important {
+  border-bottom: 0 !important;
+}
+
 .app-navigation__link {
   @include govuk-typography-weight-bold;
   text-decoration: none;
