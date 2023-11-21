@@ -116,10 +116,10 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         />
       );
       screen.getByText(
-        /we gather the information you need to run due diligence checks\./i
+        /Data is gathered from applicants before they are sent to your application form\./i
       );
       screen.getByText(
-        /you can use the government-owned due diligence tool ‘spotlight’ to run your due diligence checks\. the information is already in the correct format to upload directly into spotlight\./i
+        /You may wish to use this data to run due diligence checks\./i
       );
     });
 
