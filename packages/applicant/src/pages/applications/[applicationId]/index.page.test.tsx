@@ -1,10 +1,7 @@
 import '@testing-library/jest-dom';
 import { GetServerSidePropsContext } from 'next';
-import { GrantScheme } from '../../../models/GrantScheme';
-import {
-  Application,
-  getApplicationById,
-} from '../../../services/ApplicationService';
+import { GrantScheme } from '../../../types/models/GrantScheme';
+import { getApplicationById } from '../../../services/ApplicationService';
 import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
@@ -17,22 +14,12 @@ import {
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { getServerSideProps } from './index.page';
+import { GrantApplication } from '../../../types/models/GrantApplication';
 
 jest.mock('next/dist/server/api-utils/node');
 jest.mock('../../../services/SubmissionService');
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../utils/jwt');
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-      subPath: '',
-    },
-    publicRuntimeConfig: {
-      subPath: '',
-    },
-  };
-});
 
 const mockData = {
   submissionCreated: 'string',
@@ -107,7 +94,7 @@ const scheme: GrantScheme = {
   version: 1,
   createdDate: 'string',
 };
-const application: Application = {
+const application: GrantApplication = {
   id: 1,
   grantScheme: scheme,
   version: 1,

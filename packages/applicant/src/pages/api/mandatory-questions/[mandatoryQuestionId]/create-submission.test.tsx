@@ -1,6 +1,6 @@
 import { merge } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { GrantApplicant } from '../../../../models/GrantApplicant';
+import { GrantApplicant } from '../../../../types/models/GrantApplicant';
 import {
   AdvertDto,
   getAdvertBySchemeId,
@@ -46,21 +46,6 @@ const MOCK_GRANT_APPLICANT: GrantApplicant = {
     companiesHouseNumber: '98239829382',
     charityCommissionNumber: '09090909',
   },
-};
-const MOCK_MANDATORY_QUESTION_DATA: GrantMandatoryQuestionDto = {
-  schemeId: 1,
-  submissionId: null,
-  name: null,
-  addressLine1: null,
-  addressLine2: null,
-  city: null,
-  county: null,
-  postcode: null,
-  charityCommissionNumber: null,
-  companiesHouseNumber: null,
-  orgType: null,
-  fundingAmount: null,
-  fundingLocation: null,
 };
 const ORGANISATION_ID = 'a048d000003Sk39AAC';
 const MOCK_ORGANISATION_DATA: UpdateOrganisationDetailsDto = {

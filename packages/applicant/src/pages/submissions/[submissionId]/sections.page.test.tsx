@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
-import { GrantScheme } from '../../../models/GrantScheme';
+import { GrantScheme } from '../../../types/models/GrantScheme';
 import { GrantSchemeService } from '../../../services/GrantSchemeService';
 import {
   ApplicationDetailsInterface,

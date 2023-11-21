@@ -1,7 +1,7 @@
 import { ValidationError } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 import getConfig from 'next/config';
-import { GrantApplicantOrganisationProfile } from '../../models/GrantApplicantOrganisationProfile';
+import { GrantApplicantOrganisationProfile } from '../../types/models/GrantApplicantOrganisationProfile';
 import { GrantApplicantOrganisationProfileService } from '../../services/GrantApplicantOrganisationProfileService';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import callServiceMethod from '../../utils/callServiceMethod';

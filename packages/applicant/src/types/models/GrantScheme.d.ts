@@ -1,4 +1,4 @@
-export interface GrantScheme {
+export type GrantScheme = {
   id: number;
   funderId: number;
   lastUpdated: string;
@@ -8,4 +8,4 @@ export interface GrantScheme {
   email: string;
   version: number;
   createdDate: string;
-}
+};

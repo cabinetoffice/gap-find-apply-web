@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { FundingOrganisation } from '../models/FundingOrganisation';
+import { FundingOrganisation } from '../types/models/FundingOrganisation';
 import { FundingOrganisationService } from './FundingOrganisationService';
 import getConfig from 'next/config';
 

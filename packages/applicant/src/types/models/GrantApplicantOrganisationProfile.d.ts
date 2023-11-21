@@ -1,4 +1,4 @@
-export interface GrantApplicantOrganisationProfile {
+export type GrantApplicantOrganisationProfile = {
   id: string;
   legalName: string;
   type: string;
@@ -9,4 +9,4 @@ export interface GrantApplicantOrganisationProfile {
   postcode: string;
   charityCommissionNumber: string;
   companiesHouseNumber: string;
-}
+};
