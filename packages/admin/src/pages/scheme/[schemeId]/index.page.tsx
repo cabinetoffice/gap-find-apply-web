@@ -87,6 +87,12 @@ const ViewScheme = ({
   enabledAdBuilder,
   grantAdvertPublishData,
 }: InferProps<typeof getServerSideProps>) => {
+  const schemeHasApplicationOrAdvert =
+    schemeApplicationsData || grantAdvertPublishData.status !== 404;
+
+  const showDueDilligenceSection =
+    schemeHasApplicationOrAdvert && parseInt(scheme.version!) > 1;
+
   return (
     <>
       <Meta title="Grant overview - Manage a grant" />
@@ -157,7 +163,7 @@ const ViewScheme = ({
             <BuildApplicationForm schemeId={scheme.schemeId} />
           )}
 
-          {scheme.version && parseInt(scheme.version) > 1 && (
+          {showDueDilligenceSection && (
             <>
               <h2
                 className="govuk-heading-m govuk-!-padding-top-4"
