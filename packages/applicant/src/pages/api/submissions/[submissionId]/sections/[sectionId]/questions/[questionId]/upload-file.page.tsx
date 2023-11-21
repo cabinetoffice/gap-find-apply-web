@@ -87,6 +87,11 @@ const handler = async (req, res) => {
     const questionId = req.query.questionId.toString();
     const jwt = getJwtFromCookies(req);
     const formData = await getfileFromRequest(req);
+
+    formData.files.attachment.originalFilename = santizeFileName(
+      formData.files.attachment.originalFilename
+    );
+
     const questionData = await getQuestionById(
       submissionId,
       sectionId,
@@ -185,6 +190,11 @@ const handler = async (req, res) => {
   } else {
     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
   }
+};
+
+const santizeFileName = (fileName: string) => {
+  const regex = /[^a-zA-Z0-9()_,.-]/g;
+  return fileName.replace(regex, '_');
 };
 
 export default handler;
