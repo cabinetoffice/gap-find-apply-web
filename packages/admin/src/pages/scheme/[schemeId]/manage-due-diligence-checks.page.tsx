@@ -81,15 +81,22 @@ const ManageDueDiligenceChecks = ({
               {!isInternal ? (
                 <div>
                   <p className="govuk-body">
-                    We gather the information you need to run due diligence
-                    checks.
+                    Data is gathered from applicants before they are sent to
+                    your application form.
+                  </p>
+                  <p className="govuk-body">
+                    You may wish to use this data to run due diligence checks.
                   </p>
 
                   <p className="govuk-body">
-                    You can use the government-owned due diligence tool
-                    ‘Spotlight’ to run your due diligence checks. The
-                    information is already in the correct format to upload
-                    directly into Spotlight.
+                    The data includes: <br />
+                    <ul>
+                      <li>name of organisation</li>
+                      <li>address of organisation</li>
+                      <li>Companies House number (if they have one)</li>
+                      <li>Charity Commission number (if they have one)</li>
+                      <li>how much funding an applicant is applying for</li>
+                    </ul>
                   </p>
                 </div>
               ) : (
