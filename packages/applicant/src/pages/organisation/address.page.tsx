@@ -6,10 +6,12 @@ import { SaveAndCancel } from '../../components/save-and-cancel/SaveAndCancel';
 import InferProps from '../../types/InferProps';
 import { routes } from '../../utils/routes';
 import getServerSideProps from './getServerSideProps';
+import { MQ_ORG_TYPES } from '../../utils/constants';
 
 export { getServerSideProps };
 
 const OrganisationAddress = ({
+  organisationType,
   csrfToken,
   formAction,
   fieldErrors,
@@ -21,6 +23,8 @@ const OrganisationAddress = ({
     titleSize: 's',
     fieldErrors: fieldErrors,
   } as const;
+
+  const isIndividual = organisationType === MQ_ORG_TYPES.INDIVIDUAL;
 
   return (
     <>
@@ -40,7 +44,9 @@ const OrganisationAddress = ({
             className="govuk-heading-l"
             data-cy="cy-addressInput-question-title"
           >
-            Enter the address of your organisation (optional)
+            {isIndividual
+              ? 'Enter your address (Optional)'
+              : 'Enter the address of your organisation (Optional)'}
           </h1>
 
           <TextInput
