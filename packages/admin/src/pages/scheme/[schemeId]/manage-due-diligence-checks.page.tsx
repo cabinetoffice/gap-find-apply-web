@@ -1,11 +1,16 @@
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
+import InsetText from '../../../components/inset-text/InsetText';
 import Meta from '../../../components/layout/Meta';
 import { completedMandatoryQuestions } from '../../../services/MandatoryQuestionsService';
 import {
   getGrantScheme,
   schemeApplicationIsInternal,
 } from '../../../services/SchemeService';
+import {
+  getSpotlightLastUpdateDate,
+  getSpotlightSubmissionCount,
+} from '../../../services/SpotlightSubmissionService';
 import InferProps from '../../../types/InferProps';
 import { getSessionIdFromCookies } from '../../../utils/session';
 
@@ -24,10 +29,25 @@ export const getServerSideProps = async ({
     sessionCookie
   );
 
+  let spotlightSubmissionCount = 0;
+  let spotlightLastUpdated = null;
+  if (isInternal) {
+    spotlightSubmissionCount = await getSpotlightSubmissionCount(
+      schemeId,
+      sessionCookie
+    );
+    spotlightLastUpdated = await getSpotlightLastUpdateDate(
+      schemeId,
+      sessionCookie
+    );
+  }
+
   return {
     props: {
       scheme,
       hasInfoToDownload,
+      spotlightSubmissionCount,
+      spotlightLastUpdated,
       spotlightUrl,
       isInternal,
     },
@@ -37,6 +57,8 @@ export const getServerSideProps = async ({
 const ManageDueDiligenceChecks = ({
   scheme,
   hasInfoToDownload,
+  spotlightSubmissionCount,
+  spotlightLastUpdated,
   spotlightUrl,
   isInternal,
 }: InferProps<typeof getServerSideProps>) => {
@@ -59,15 +81,22 @@ const ManageDueDiligenceChecks = ({
               {!isInternal ? (
                 <div>
                   <p className="govuk-body">
-                    We gather the information you need to run due diligence
-                    checks.
+                    Data is gathered from applicants before they are sent to
+                    your application form.
+                  </p>
+                  <p className="govuk-body">
+                    You may wish to use this data to run due diligence checks.
                   </p>
 
                   <p className="govuk-body">
-                    You can use the government-owned due diligence tool
-                    ‘Spotlight’ to run your due diligence checks. The
-                    information is already in the correct format to upload
-                    directly into Spotlight.
+                    The data includes: <br />
+                    <ul>
+                      <li>name of organisation</li>
+                      <li>address of organisation</li>
+                      <li>Companies House number (if they have one)</li>
+                      <li>Charity Commission number (if they have one)</li>
+                      <li>how much funding an applicant is applying for</li>
+                    </ul>
                   </p>
                 </div>
               ) : (
@@ -87,6 +116,35 @@ const ManageDueDiligenceChecks = ({
                     Spotlight does not run checks on individuals or local
                     authorities.
                   </p>
+                  <InsetText>
+                    <p
+                      className="govuk-!-margin-bottom-0"
+                      data-testid="spotlight-count"
+                    >
+                      You have{' '}
+                      <span className="govuk-!-font-weight-bold">
+                        {spotlightSubmissionCount} application
+                        {spotlightSubmissionCount !== 1 && 's'}
+                      </span>{' '}
+                      in Spotlight.
+                    </p>
+                    <p
+                      className="govuk-!-margin-top-0"
+                      data-testid="spotlight-last-updated"
+                    >
+                      {spotlightLastUpdated == '' ? (
+                        <>No records have been sent to Spotlight. </>
+                      ) : (
+                        <>
+                          Spotlight was last updated on{' '}
+                          <span className="govuk-!-font-weight-bold">
+                            {spotlightLastUpdated}
+                          </span>
+                          .{' '}
+                        </>
+                      )}
+                    </p>
+                  </InsetText>
                 </div>
               )}
 
