@@ -1,8 +1,12 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FC } from 'react';
+import { MQ_ORG_TYPES } from '../../utils/constants';
+
+const ORGANISATION = 'Organisation';
 
 export interface DescriptionListProps {
+  organisationType?: string;
   data: DescriptionListDataProps[];
   needAddOrChangeButtons: boolean;
   needBorder: boolean;
@@ -16,12 +20,18 @@ export const DescriptionList: FC<DescriptionListProps> = ({
   data,
   needAddOrChangeButtons,
   needBorder,
+  organisationType,
 }) => {
   const router = useRouter();
   let pathname: string;
   if (router) {
     pathname = router.pathname;
   }
+
+  const removeOrganisationRowForIndividuals = (row: DescriptionListDataProps) =>
+    row.term !== ORGANISATION || organisationType !== MQ_ORG_TYPES.INDIVIDUAL;
+
+  const accountData = data.filter(removeOrganisationRowForIndividuals);
 
   return (
     <>
@@ -33,7 +43,7 @@ export const DescriptionList: FC<DescriptionListProps> = ({
               needBorder ? '' : 'govuk-summary-list--no-border'
             }`}
           >
-            {data.map(({ term, detail }) => {
+            {accountData.map(({ term, detail }) => {
               return (
                 <div className="govuk-summary-list__row" key={term}>
                   <dt className="govuk-summary-list__key" aria-label={term}>

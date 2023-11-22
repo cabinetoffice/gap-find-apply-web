@@ -20,7 +20,7 @@ describe('Organisation Type page', () => {
       schemeId: 1,
     },
     mandatoryQuestionId: 'mandatoryQuestionId',
-    backButtonUrl: 'test/path',
+    backButtonUrl: '/test/path',
   });
 
   it('should display a heading', () => {
