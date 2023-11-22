@@ -5,9 +5,13 @@ import {
   renderWithRouter,
 } from '../../testUtils/unitTestHelpers';
 import AddressPage, { getServerSideProps } from './address.page';
+import { MQ_ORG_TYPES } from '../../utils/constants';
 
 describe('Organisation address page', () => {
-  const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
+  const getDefaultProps = (
+    organisationType?: string
+  ): InferProps<typeof getServerSideProps> => ({
+    organisationType,
     fieldErrors: [],
     csrfToken: 'testCSRFToken',
     formAction: 'testFormAction',
@@ -25,7 +29,20 @@ describe('Organisation address page', () => {
     renderWithRouter(<AddressPage {...getPageProps(getDefaultProps)} />);
 
     screen.getByRole('heading', {
-      name: 'Enter the address of your organisation (optional)',
+      name: 'Enter the address of your organisation (Optional)',
+      level: 1,
+    });
+  });
+
+  it('should display a heading for an individual', () => {
+    renderWithRouter(
+      <AddressPage
+        {...getPageProps(() => getDefaultProps(MQ_ORG_TYPES.INDIVIDUAL))}
+      />
+    );
+
+    screen.getByRole('heading', {
+      name: 'Enter your address (Optional)',
       level: 1,
     });
   });
