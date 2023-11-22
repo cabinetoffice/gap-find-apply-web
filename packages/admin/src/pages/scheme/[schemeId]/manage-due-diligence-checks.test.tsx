@@ -208,7 +208,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           scheme={scheme}
           hasInfoToDownload={true}
           spotlightSubmissionCount={0}
-          spotlightLastUpdated={null}
+          spotlightLastUpdated={''}
           spotlightUrl="url"
           isInternal={true}
         />

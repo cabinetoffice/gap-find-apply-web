@@ -125,7 +125,9 @@ const ManageDueDiligenceChecks = ({
                       className="govuk-!-margin-top-0"
                       data-testid="spotlight-last-updated"
                     >
-                      {spotlightLastUpdated ? (
+                      {spotlightLastUpdated == '' ? (
+                        <>No records have been sent to Spotlight. </>
+                      ) : (
                         <>
                           Spotlight was last updated on{' '}
                           <span className="govuk-!-font-weight-bold">
@@ -133,8 +135,6 @@ const ManageDueDiligenceChecks = ({
                           </span>
                           .{' '}
                         </>
-                      ) : (
-                        <>No records have been sent to Spotlight. </>
                       )}
                     </p>
                   </InsetText>
