@@ -9,9 +9,10 @@ import { Optional } from '../../../testUtils/unitTestHelpers';
 import callServiceMethod from '../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes, serviceErrorPropType } from '../../../utils/routes';
+import { MQ_ORG_TYPES } from '../../../utils/constants';
 
 const isIndividualOrNonLimitedCompany = (orgType: string) =>
-  ['I am applying as an individual', 'Non-limited company'].includes(orgType);
+  [MQ_ORG_TYPES.INDIVIDUAL, MQ_ORG_TYPES.NON_LIMITED_COMPANY].includes(orgType);
 
 const getRelatedOrgTypePages = ({
   orgType,

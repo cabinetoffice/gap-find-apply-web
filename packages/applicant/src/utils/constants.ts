@@ -110,3 +110,11 @@ export const ELASTIC_GRANT_PAGE_FIELDS = [
 ];
 
 export const MAX_FILE_UPLOAD_SIZE_BYTES = 314572800; //300MB in bytes
+
+export const MQ_ORG_TYPES = {
+  INDIVIDUAL: 'I am applying as an individual',
+  NON_LIMITED_COMPANY: 'Non-limited company',
+  LIMITED_COMPANY: 'Limited company',
+  CHARITY: 'Charity',
+  OTHER: 'Other',
+};

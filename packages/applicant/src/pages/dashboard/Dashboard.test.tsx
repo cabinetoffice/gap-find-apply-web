@@ -65,7 +65,7 @@ describe('Dashboard', () => {
       expect(
         screen.getByRole('button', { name: /find a grant/i })
       ).toHaveAttribute('href', routes.findAGrant);
-      screen.getByText(/Change your organisation details/i);
+      screen.getByText(/Change the details saved to your profile/i);
     });
   });
 
