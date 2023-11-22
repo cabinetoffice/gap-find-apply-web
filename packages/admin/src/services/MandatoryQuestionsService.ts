@@ -49,6 +49,5 @@ const completedMandatoryQuestions = async (
 export {
   completedMandatoryQuestions,
   downloadDueDiligenceData,
-  // eslint-disable-next-line prettier/prettier
   spotlightExport
 };
