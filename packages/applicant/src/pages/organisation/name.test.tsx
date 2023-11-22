@@ -5,9 +5,13 @@ import {
   renderWithRouter,
 } from '../../testUtils/unitTestHelpers';
 import OrganisationName, { getServerSideProps } from './name.page';
+import { MQ_ORG_TYPES } from '../../utils/constants';
 
 describe('Organisation name page', () => {
-  const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
+  const getDefaultProps = (
+    organisationType?: string
+  ): InferProps<typeof getServerSideProps> => ({
+    organisationType,
     fieldErrors: [],
     csrfToken: 'testCSRFToken',
     formAction: 'testFormAction',
@@ -21,7 +25,21 @@ describe('Organisation name page', () => {
     renderWithRouter(<OrganisationName {...getPageProps(getDefaultProps)} />);
 
     screen.getByRole('heading', {
-      name: 'Enter the name of your organisation (optional)',
+      name: 'Enter the name of your organisation (Optional)',
+      level: 1,
+    });
+  });
+
+  it('should display a heading and hint text for an individual', () => {
+    renderWithRouter(
+      <OrganisationName
+        {...getPageProps(() => getDefaultProps(MQ_ORG_TYPES.INDIVIDUAL))}
+      />
+    );
+
+    screen.getByText('Your name will appear on your application.');
+    screen.getByRole('heading', {
+      name: 'Enter your full name (Optional)',
       level: 1,
     });
   });

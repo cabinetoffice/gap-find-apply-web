@@ -56,6 +56,7 @@ describe('getServerSideProps', () => {
 
       expectObjectEquals(response, {
         props: {
+          organisationType: 'Limited',
           csrfToken: 'testCSRFToken',
           fieldErrors: [],
           formAction: '/testResolvedURL',
@@ -158,6 +159,7 @@ describe('getServerSideProps', () => {
 
       expectObjectEquals(response, {
         props: {
+          organisationType: 'Limited',
           fieldErrors: [
             { fieldName: 'type', errorMessage: 'Some validation error' },
           ],
