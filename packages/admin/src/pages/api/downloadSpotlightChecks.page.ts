@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { downloadDueDiligenceData } from '../../services/MandatoryQuestionsService';
+import { spotlightExport } from '../../services/MandatoryQuestionsService';
 import { getSessionIdFromCookies } from '../../utils/session';
 
-const downloadDueDiligenceChecks = async (
+const downloadSpotlightChecks = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
@@ -12,7 +12,7 @@ const downloadDueDiligenceChecks = async (
       `${process.env.SUB_PATH}/service-error?serviceErrorProps=${JSON.stringify(
         {
           errorInformation:
-            'Something went wrong while trying to download due diligence information.',
+            'Something went wrong while trying to download the information for Spotlight checks.',
           linkAttributes: {
             href: req.headers.referer,
             linkText: 'Please return',
@@ -25,10 +25,7 @@ const downloadDueDiligenceChecks = async (
 
   let result;
   try {
-    result = await downloadDueDiligenceData(
-      getSessionIdFromCookies(req),
-      schemeId
-    );
+    result = await spotlightExport(getSessionIdFromCookies(req), schemeId);
   } catch (error) {
     errorRedirect();
     return;
@@ -45,4 +42,4 @@ const downloadDueDiligenceChecks = async (
   }
 };
 
-export default downloadDueDiligenceChecks;
+export default downloadSpotlightChecks;

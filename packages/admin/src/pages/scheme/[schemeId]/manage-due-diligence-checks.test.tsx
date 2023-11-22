@@ -243,6 +243,44 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
+    it('Should render the spotlight checks download paragraphs', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={true}
+          spotlightUrl="url"
+          isInternal={true}
+        />
+      );
+
+      screen.queryByText(
+        /You can download the information you need to run checks to upload it to Spotlight manually\./i
+      );
+      screen.getByText(
+        /if you do not use spotlight, you can download all of the due diligence information to run checks in another service\./i
+      );
+    });
+
+    it('Should render the spotlight checks download link', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={true}
+          spotlightUrl="url"
+          isInternal={true}
+        />
+      );
+
+      expect(
+        screen.getByRole('link', {
+          name: 'download the information you need to run checks',
+        })
+      ).toHaveAttribute(
+        'href',
+        `/apply/api/downloadSpotlightChecks?schemeId=${SCHEME_ID}`
+      );
+    });
+
     it('Should render the download link', () => {
       render(
         <ManageDueDiligenceChecks
@@ -256,7 +294,9 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
 
       expect(
-        screen.getByRole('link', { name: 'Download due diligence information' })
+        screen.getByRole('link', {
+          name: 'Download checks from applications',
+        })
       ).toHaveAttribute(
         'href',
         `/apply/api/downloadDueDiligenceChecks?schemeId=${SCHEME_ID}`
