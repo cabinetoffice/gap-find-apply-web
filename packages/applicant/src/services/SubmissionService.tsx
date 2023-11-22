@@ -102,7 +102,7 @@ export async function postDocumentResponse(
 export async function createSubmission(applicationId: string, jwt: string) {
   const { data } = await axios.post<CreateSubmissionResponse>(
     `${BACKEND_HOST}/submissions/createSubmission/${applicationId}`,
-    applicationId,
+    null,
     axiosConfig(jwt)
   );
 
