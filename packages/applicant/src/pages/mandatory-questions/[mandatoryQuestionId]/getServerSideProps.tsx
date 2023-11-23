@@ -10,7 +10,7 @@ import callServiceMethod from '../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes, serviceErrorPropType } from '../../../utils/routes';
 import { MQ_ORG_TYPES } from '../../../utils/constants';
-import { from } from 'form-data';
+import { isOrgProfileComplete } from '../../api/create-mandatory-question.page';
 
 const isIndividualOrNonLimitedCompany = (orgType: string) =>
   [MQ_ORG_TYPES.INDIVIDUAL, MQ_ORG_TYPES.NON_LIMITED_COMPANY].includes(orgType);
@@ -50,10 +50,6 @@ const buildBackButtonMapper = (
     routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId);
   const fundingAmountPage =
     routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
-  const charityCommissionNumberPage =
-    routes.mandatoryQuestions.charityCommissionNumberPage(mandatoryQuestionId);
-  const companiesHouseNumberPage =
-    routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
   const addressPage =
     routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
   const namePage = routes.mandatoryQuestions.namePage(mandatoryQuestionId);
@@ -81,7 +77,6 @@ const mapBackButtonUrl = (
   mandatoryQuestionId: string,
   fromSummaryPage: boolean,
   fromSubmissionPage: boolean,
-  fromSkip: boolean,
   submissionId: string,
   sectionId: string
 ): string => {
@@ -89,7 +84,10 @@ const mapBackButtonUrl = (
     return routes.submissions.section(submissionId, sectionId);
   } else if (fromSummaryPage) {
     return routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
-  } else if (fromSkip) {
+  } else if (
+    isOrgProfileComplete(mandatoryQuestion) &&
+    resolvedUrl.includes('organisation-funding-amount')
+  ) {
     return routes.mandatoryQuestions.startPage(
       mandatoryQuestion.schemeId.toString()
     );
@@ -99,12 +97,7 @@ const mapBackButtonUrl = (
       mandatoryQuestionId,
       mandatoryQuestion.schemeId
     );
-    let url = mapper[resolvedUrl];
-    if (fromSkip) {
-      url += '?skip=true';
-    }
-
-    return url;
+    return mapper[resolvedUrl];
   }
 };
 
@@ -128,11 +121,10 @@ export default async function getServerSideProps({
   resolvedUrl, //the url that the user requested
 }: GetServerSidePropsContext) {
   const { mandatoryQuestionId } = params as Record<string, string>;
-  const { skip, fromSummaryPage, fromSubmissionPage, submissionId, sectionId } =
+  const { fromSummaryPage, fromSubmissionPage, submissionId, sectionId } =
     query as Record<string, string>;
   const isFromSummaryPage = fromSummaryPage === 'true';
   const isFromSubmissionPage = fromSubmissionPage === 'true';
-  const isFromSkip = skip === 'true';
   const jwt = getJwtFromCookies(req);
   const { publicRuntimeConfig } = getConfig();
 
@@ -168,7 +160,7 @@ export default async function getServerSideProps({
       grantMandatoryQuestionService.updateMandatoryQuestion(
         jwt,
         mandatoryQuestionId,
-        `${resolvedUrl}${isFromSkip ? '?skip=true' : ''}`,
+        resolvedUrl,
         body
       ),
     //the above method will return a string with the next page url
@@ -206,7 +198,6 @@ export default async function getServerSideProps({
     mandatoryQuestionId,
     isFromSummaryPage,
     isFromSubmissionPage,
-    isFromSkip,
     submissionId,
     sectionId
   );
