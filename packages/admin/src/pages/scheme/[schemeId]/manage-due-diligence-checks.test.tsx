@@ -248,6 +248,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
         />
@@ -266,6 +268,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
         />
@@ -303,7 +307,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
-    it('Should render the Spotlight button for schemes with external applications', () => {
+    it('Should not render the Spotlight button for schemes with external applications', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
@@ -315,9 +319,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         />
       );
 
-      expect(
-        screen.getByRole('link', { name: 'Log in to Spotlight' })
-      ).toHaveAttribute('href', `url`);
+      expect(screen.queryByText('Log in to Spotlight')).not.toBeInTheDocument();
     });
 
     it('Should render the Spotlight button for schemes with internal applications', () => {
