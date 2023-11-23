@@ -1,11 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import {
-  GrantMandatoryQuestionDto,
-  GrantMandatoryQuestionService,
-} from '../../services/GrantMandatoryQuestionService';
+import { GrantMandatoryQuestionService } from '../../services/GrantMandatoryQuestionService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
-import { MQ_ORG_TYPES } from '../../utils/constants';
+import { GrantApplicantOrganisationProfileService } from '../../services/GrantApplicantOrganisationProfileService';
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,16 +10,20 @@ export default async function handler(
 ) {
   const grantMandatoryQuestionService =
     GrantMandatoryQuestionService.getInstance();
+  const grantApplicantOrganisationProfileService =
+    GrantApplicantOrganisationProfileService.getInstance();
 
   const schemeId = req.query.schemeId as string;
+  const jwt = getJwtFromCookies(req);
   try {
     const mandatoryQuestion =
       await grantMandatoryQuestionService.createMandatoryQuestion(
         schemeId,
-        getJwtFromCookies(req)
+        jwt
       );
 
-    const isOrgProfileCompleted = isOrgProfileComplete(mandatoryQuestion);
+    const isOrgProfileCompleted =
+      await grantApplicantOrganisationProfileService.isOrgProfileComplete(jwt);
 
     if (isOrgProfileCompleted) {
       return res.redirect(
@@ -40,22 +41,6 @@ export default async function handler(
   } catch (e) {
     return handleError(e, res);
   }
-}
-
-export function isOrgProfileComplete(
-  mandatoryQuestion: GrantMandatoryQuestionDto
-) {
-  const shouldShowCompaniesHouseAndCharityCommission =
-    mandatoryQuestion.orgType !== MQ_ORG_TYPES.INDIVIDUAL &&
-    mandatoryQuestion.orgType !== MQ_ORG_TYPES.NON_LIMITED_COMPANY;
-
-  return Object.values(mandatoryQuestion)
-    .filter(
-      (key) =>
-        shouldShowCompaniesHouseAndCharityCommission ||
-        (key !== 'companiesHouseNumber' && key !== 'charityCommissionNumber')
-    )
-    .every((key) => !!key);
 }
 
 function handleError(e: any, res: NextApiResponse) {

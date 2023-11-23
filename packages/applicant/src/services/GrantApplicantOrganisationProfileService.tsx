@@ -47,6 +47,12 @@ export class GrantApplicantOrganisationProfileService {
     return data;
   }
 
+  public async isOrgProfileComplete(jwt: string) {
+    const url = `${this.BACKEND_HOST}/grant-applicant-organisation-profile/isComplete`;
+    const { data } = await axios.get<boolean>(url, axiosConfig(jwt));
+    return data;
+  }
+
   public async updateOrganisation(
     organisation: UpdateOrganisationDetailsDto,
     jwt: string
