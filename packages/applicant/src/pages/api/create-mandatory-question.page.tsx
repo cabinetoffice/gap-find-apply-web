@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { GrantMandatoryQuestionService } from '../../services/GrantMandatoryQuestionService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
+import { MQ_ORG_TYPES } from '../../utils/constants';
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -17,14 +18,20 @@ export default async function handler(
         getJwtFromCookies(req)
       );
 
+    const shouldShowCompaniesHouseAndCharityCommission = ![
+      MQ_ORG_TYPES.INDIVIDUAL,
+      MQ_ORG_TYPES.NON_LIMITED_COMPANY,
+    ].includes(mandatoryQuestion.orgType);
+
     const organisationProfileKeys = [
       'orgType',
       'name',
       'addressLine1',
       'city',
       'postcode',
-      'companiesHouseNumber',
-      'charityCommissionNumber',
+      ...(shouldShowCompaniesHouseAndCharityCommission
+        ? ['companiesHouseNumber', 'charityCommissionNumber']
+        : []),
     ];
 
     const areOrganisationProfileQuestionsComplete =
@@ -34,7 +41,9 @@ export default async function handler(
       });
 
     const redirectionUrl = areOrganisationProfileQuestionsComplete
-      ? routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestion.id)
+      ? `${routes.mandatoryQuestions.fundingAmountPage(
+          mandatoryQuestion.id
+        )}?skip=true`
       : routes.mandatoryQuestions.typePage(mandatoryQuestion.id);
 
     return res.redirect(`${process.env.HOST}${redirectionUrl}`);
