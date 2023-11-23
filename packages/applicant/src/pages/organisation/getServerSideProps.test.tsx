@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import { GrantApplicant } from '../../models/GrantApplicant';
+import { GrantApplicant } from '../../types/models/GrantApplicant';
 import {
   expectObjectEquals,
   getContext,

@@ -1,10 +1,7 @@
 import '@testing-library/jest-dom';
 import { GetServerSidePropsContext } from 'next';
-import { GrantScheme } from '../../../models/GrantScheme';
-import {
-  Application,
-  getApplicationById,
-} from '../../../services/ApplicationService';
+import { GrantScheme } from '../../../types/models/GrantScheme';
+import { getApplicationById } from '../../../services/ApplicationService';
 import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
@@ -17,22 +14,12 @@ import {
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { getServerSideProps } from './index.page';
+import { GrantApplication } from '../../../types/models/GrantApplication';
 
 jest.mock('next/dist/server/api-utils/node');
 jest.mock('../../../services/SubmissionService');
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../utils/jwt');
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-      subPath: '',
-    },
-    publicRuntimeConfig: {
-      subPath: '',
-    },
-  };
-});
 
 const mockData = {
   submissionCreated: 'string',
@@ -107,7 +94,7 @@ const scheme: GrantScheme = {
   version: 1,
   createdDate: 'string',
 };
-const application: Application = {
+const application: GrantApplication = {
   id: 1,
   grantScheme: scheme,
   version: 1,
@@ -156,7 +143,9 @@ describe('getServerSideProps', () => {
     it('should return the correct props when application has scheme 1 version', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue(scheme);
+      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: scheme,
+      });
       (createSubmission as jest.Mock).mockReturnValue(mockData);
       const response = await getServerSideProps(context);
 
@@ -170,7 +159,9 @@ describe('getServerSideProps', () => {
     it('should redirect to submission page if submission does not  exists when application has scheme 1 version and ', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue(scheme);
+      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: scheme,
+      });
       (createSubmission as jest.Mock).mockReturnValue(submissionDoesNotExists);
 
       const response = await getServerSideProps(context);
@@ -185,7 +176,9 @@ describe('getServerSideProps', () => {
     it('should redirect to applications dashboard if submission already exists when application has scheme 1 version', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue(scheme);
+      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: scheme,
+      });
       (createSubmission as jest.Mock).mockReturnValue(submissionExists);
 
       const response = await getServerSideProps(context);
@@ -199,7 +192,9 @@ describe('getServerSideProps', () => {
 
     it('should redirect to grant is closed page if grant is closed', async () => {
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue(scheme);
+      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: scheme,
+      });
       (createSubmission as jest.Mock).mockImplementation(() => {
         throw grantClosed;
       });
@@ -222,9 +217,9 @@ describe('getServerSideProps', () => {
         ...application,
         grantScheme: { ...scheme, version: 2 },
       });
+
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
-        ...scheme,
-        version: 2,
+        grantScheme: { ...scheme, version: 2 },
       });
       const existBySchemeIdAndApplicantId =
         spiedExistBySchemeIdAndApplicantId.mockResolvedValue(false);
@@ -253,8 +248,7 @@ describe('getServerSideProps', () => {
       });
 
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
-        ...scheme,
-        version: 2,
+        grantScheme: { ...scheme, version: 2 },
       });
       const existBySchemeIdAndApplicantId =
         spiedExistBySchemeIdAndApplicantId.mockResolvedValue(true);
@@ -293,8 +287,7 @@ describe('getServerSideProps', () => {
       });
 
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
-        ...scheme,
-        version: 2,
+        grantScheme: { ...scheme, version: 2 },
       });
       const existBySchemeIdAndApplicantId =
         spiedExistBySchemeIdAndApplicantId.mockResolvedValue(true);
@@ -329,7 +322,9 @@ describe('getServerSideProps', () => {
   describe('common scenarios', () => {
     it('should redirect if there is an error', async () => {
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue(scheme);
+      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: scheme,
+      });
       (createSubmission as jest.Mock).mockReturnValue(null);
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
 

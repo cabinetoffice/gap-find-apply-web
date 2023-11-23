@@ -17,7 +17,7 @@ const req = (overrides: any = {}) =>
         schemeId: SCHEME_ID,
       },
       headers: {
-        referer: `/scheme/${SCHEME_ID}/manage-spotlight-checks`,
+        referer: `/scheme/${SCHEME_ID}/manage-due-diligence-checks`,
       },
       cookies: { sessionCookieName: 'testSessionId' },
     },
@@ -47,7 +47,7 @@ describe('spotlightExportHandler', () => {
 
     expect(mockedRedirect).toHaveBeenNthCalledWith(
       1,
-      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download the information for Spotlight checks.","linkAttributes":{"href":"/scheme/testSchemeId/manage-spotlight-checks","linkText":"Please return","linkInformation":" and try again."}}`
+      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download the information for Spotlight checks.","linkAttributes":{"href":"/scheme/testSchemeId/manage-due-diligence-checks","linkText":"Please return","linkInformation":" and try again."}}`
     );
   });
 
@@ -57,7 +57,7 @@ describe('spotlightExportHandler', () => {
     await downloadSpotlightChecks(req(), res());
     expect(mockedRedirect).toHaveBeenNthCalledWith(
       1,
-      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download the information for Spotlight checks.","linkAttributes":{"href":"/scheme/testSchemeId/manage-spotlight-checks","linkText":"Please return","linkInformation":" and try again."}}`
+      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download the information for Spotlight checks.","linkAttributes":{"href":"/scheme/testSchemeId/manage-due-diligence-checks","linkText":"Please return","linkInformation":" and try again."}}`
     );
   });
 

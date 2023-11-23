@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { GetServerSidePropsContext } from 'next';
 import { DescriptionListProps } from '../../components/description-list/DescriptionList';
-import { GrantApplicant } from '../../models/GrantApplicant';
+import { GrantApplicant } from '../../types/models/GrantApplicant';
 import { getApplicationsListById } from '../../services/ApplicationService';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { getJwtFromCookies } from '../../utils/jwt';

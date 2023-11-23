@@ -179,7 +179,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                 className="govuk-button"
                 data-module="govuk-button"
                 aria-disabled="false"
-                role="button"
+                type="button"
               >
                 Confirm and submit
               </a>
@@ -203,24 +203,22 @@ const DisplayMultilineSummaryListValue = ({
   cyTag,
 }: DisplayMultilineSummaryListValueProps) => {
   return data.length > 0 ? (
-    <>
-      <dd
-        className="govuk-summary-list__value"
-        data-cy={`cy-organisation-value-${cyTag}`}
-      >
-        <ul className="govuk-list">
-          {data.map((line: string, index: number, array: string[]) => {
-            if (line) {
-              return (
-                <li key={line}>
-                  {index === array.length - 1 ? line : `${line},`}
-                </li>
-              );
-            }
-          })}
-        </ul>
-      </dd>
-    </>
+    <dd
+      className="govuk-summary-list__value"
+      data-cy={`cy-organisation-value-${cyTag}`}
+    >
+      <ul className="govuk-list">
+        {data.map((line: string, index: number, array: string[]) => {
+          if (line) {
+            return (
+              <li key={line}>
+                {index === array.length - 1 ? line : `${line},`}
+              </li>
+            );
+          }
+        })}
+      </ul>
+    </dd>
   ) : (
     <dd
       className="govuk-summary-list__value"
