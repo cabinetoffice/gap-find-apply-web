@@ -14,7 +14,7 @@ const downloadDueDiligenceChecks = async (
           errorInformation:
             'Something went wrong while trying to download due diligence information.',
           linkAttributes: {
-            href: req.headers.referer,
+            href: `/scheme/${schemeId}/manage-due-diligence-checks`,
             linkText: 'Please return',
             linkInformation: ' and try again.',
           },

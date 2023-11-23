@@ -1,6 +1,6 @@
+import { merge } from 'lodash';
 import { spotlightExport } from '../../services/SubmissionsService';
 import downloadRequiredChecks from './downloadRequiredChecks.page';
-import { merge } from 'lodash';
 
 jest.mock('../../services/SubmissionsService');
 
@@ -16,6 +16,7 @@ const req = (overrides: any = {}) =>
     {
       query: {
         applicationId: APPLICATION_ID,
+        schemeId: SCHEME_ID,
       },
       headers: {
         referer: `/scheme/${SCHEME_ID}`,
