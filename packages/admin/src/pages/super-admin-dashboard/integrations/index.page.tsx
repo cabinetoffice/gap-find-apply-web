@@ -38,7 +38,7 @@ const Integrations = ({
           </h2>
           <p className="govuk-body">
             <span className={styles['fw-bold']}>{integrations.length} </span>
-            service integrations
+            {`service integration${integrations.length > 1 ? 's' : ''}`}
           </p>
         </div>
 
