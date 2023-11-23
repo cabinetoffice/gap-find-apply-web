@@ -41,36 +41,32 @@ const Navigation = () => {
     },
   ];
 
-  console.log({ pathName: router.pathname, zork: router.asPath });
-
   // Build the links in the main navigation && set active states
   return (
     <nav className="app-navigation govuk-clearfix g2_navigation govuk-width-container super-admin-navbar">
       <ul className="app-navigation__list app-width-container g2_navigation__menu gap_nav-wrapper">
-        {navItems.map(({ href, title, pageId, routerPathname }, index) => {
-          return (
-            <li
-              data-value="parent"
-              key={index}
-              className={`app-navigation__list-item ${
-                router.pathname === routerPathname
-                  ? 'app-navigation__list-item--current'
-                  : ''
-              }`}
-              id={`${pageId}DesktopLink`}
-              data-cy={`cy${pageId}PageLink`}
-            >
-              <Link href={href} as={href}>
-                <a
-                  className="govuk-link govuk-link--no-visited-state app-navigation__link"
-                  data-topnav={title}
-                >
-                  {title}
-                </a>
-              </Link>
-            </li>
-          );
-        })}
+        {navItems.map(({ href, title, pageId, routerPathname }, index) => (
+          <li
+            data-value="parent"
+            key={index}
+            className={`app-navigation__list-item ${
+              router.pathname === routerPathname
+                ? 'app-navigation__list-item--current'
+                : ''
+            }`}
+            id={`${pageId}DesktopLink`}
+            data-cy={`cy${pageId}PageLink`}
+          >
+            <Link href={href} as={href}>
+              <a
+                className="govuk-link govuk-link--no-visited-state app-navigation__link"
+                data-topnav={title}
+              >
+                {title}
+              </a>
+            </Link>
+          </li>
+        ))}
       </ul>
     </nav>
   );
