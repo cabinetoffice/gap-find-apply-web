@@ -18,6 +18,7 @@ const req = (overrides: any = {}) =>
     query: {
       schemeId: 'schemeId',
     },
+    overrides,
   });
 
 const res = (overrides: any = {}) =>
@@ -29,6 +30,7 @@ const res = (overrides: any = {}) =>
     },
     overrides
   );
+
 const backup_host = process.env.HOST;
 
 describe('API Handler Tests', () => {
@@ -50,7 +52,9 @@ describe('API Handler Tests', () => {
     orgType: 'orgType',
     companiesHouseNumber: 'companiesHouseNumber',
     charityCommissionNumber: 'charityCommissionNumber',
+    addressLine1: '',
   };
+
   it('should redirect to organisation-name page when mandatory question gets created in db and NONE or SOME of the organisation profile have been filled in the applicant organisation Profile', async () => {
     GrantMandatoryQuestionService.getInstance.mockReturnValue({
       createMandatoryQuestion: jest
@@ -66,6 +70,7 @@ describe('API Handler Tests', () => {
       )}`
     );
   });
+
   it('should redirect to fundingAmount page when mandatory question gets created in db and ALL of the organisation profile have been filled in the applicant organisation Profile', async () => {
     GrantMandatoryQuestionService.getInstance.mockReturnValue({
       createMandatoryQuestion: jest.fn().mockResolvedValue({
@@ -82,6 +87,7 @@ describe('API Handler Tests', () => {
       )}`
     );
   });
+
   it('should redirect to error page when there is an error in the backend', async () => {
     await handler(req(), res());
 

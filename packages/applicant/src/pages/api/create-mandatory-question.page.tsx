@@ -1,17 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { GrantMandatoryQuestionService } from '../../services/GrantMandatoryQuestionService';
+import {
+  GrantMandatoryQuestionDto,
+  GrantMandatoryQuestionService,
+} from '../../services/GrantMandatoryQuestionService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import { MQ_ORG_TYPES } from '../../utils/constants';
-import { InferServiceMethodResponse } from 'gap-web-ui';
-
-const grantMandatoryQuestionService =
-  GrantMandatoryQuestionService.getInstance();
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const grantMandatoryQuestionService =
+    GrantMandatoryQuestionService.getInstance();
+
   const schemeId = req.query.schemeId as string;
   try {
     const mandatoryQuestion =
@@ -40,16 +42,14 @@ export default async function handler(
   }
 }
 
-type MandatoryQuestion = InferServiceMethodResponse<
-  typeof GrantMandatoryQuestionService.prototype.createMandatoryQuestion
->;
-
-export function isOrgProfileComplete(mandatoryQuestion: MandatoryQuestion) {
+export function isOrgProfileComplete(
+  mandatoryQuestion: GrantMandatoryQuestionDto
+) {
   const shouldShowCompaniesHouseAndCharityCommission =
     mandatoryQuestion.orgType !== MQ_ORG_TYPES.INDIVIDUAL &&
     mandatoryQuestion.orgType !== MQ_ORG_TYPES.NON_LIMITED_COMPANY;
 
-  return Object.keys(mandatoryQuestion)
+  return Object.values(mandatoryQuestion)
     .filter(
       (key) =>
         shouldShowCompaniesHouseAndCharityCommission ||
