@@ -8,7 +8,7 @@ import { GetServerSideProps } from 'next';
 import getConfig from 'next/config';
 import Layout from '../../../../components/partials/Layout';
 import Meta from '../../../../components/partials/Meta';
-import { GrantBeneficiary } from '../../../../models/GrantBeneficiary';
+import { GrantBeneficiary } from '../../../../types/models/GrantBeneficiary';
 import {
   getGrantBeneficiary,
   postGrantBeneficiaryResponse,

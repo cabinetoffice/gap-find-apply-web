@@ -122,7 +122,7 @@ describe('Organisation summary page', () => {
       />
     );
 
-    const button = screen.getByRole('button', {
+    const button = screen.getByRole('link', {
       name: 'Confirm and submit',
     });
     expect(button).toBeInTheDocument();

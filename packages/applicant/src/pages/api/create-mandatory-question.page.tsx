@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { GrantMandatoryQuestionService } from '../../services/GrantMandatoryQuestionService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
