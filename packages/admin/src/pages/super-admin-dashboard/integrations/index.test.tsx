@@ -15,26 +15,25 @@ const getProps = ({ isConnected }: { isConnected: boolean }) => ({
   ] as Integration[],
 });
 
+const getConnectionCellInFirstRow = () =>
+  document.querySelector(
+    '[data-cy="cy_table_row-for-Connection-row-0-cell-3"]'
+  );
+
 describe('Integrations page', () => {
   it('renders formatted data with integration status "connected"', () => {
     render(<Integrations {...getProps({ isConnected: true })} />);
 
-    const connectionEndpointCell = document.querySelector(
-      '[data-cy="cy_table_row-for-Connection-row-0-cell-3"]'
-    );
     expect(screen.getByText('01 January 2003')).toBeVisible();
     expect(screen.getByText('Connected')).toBeVisible();
-    expect(connectionEndpointCell).toHaveTextContent('-');
+    expect(getConnectionCellInFirstRow()).toHaveTextContent('-');
   });
 
-  it('renders formatted data with integration status "connected"', () => {
+  it('renders formatted data with integration status "disconnected"', () => {
     render(<Integrations {...getProps({ isConnected: false })} />);
 
-    const connectionEndpointCell = document.querySelector(
-      '[data-cy="cy_table_row-for-Connection-row-0-cell-3"]'
-    );
     expect(screen.getByText('01 January 2003')).toBeVisible();
     expect(screen.queryByText('Disconnected')).toBeVisible();
-    expect(connectionEndpointCell).toHaveTextContent('Reconnect');
+    expect(getConnectionCellInFirstRow()).toHaveTextContent('Reconnect');
   });
 });
