@@ -151,12 +151,29 @@ const ManageDueDiligenceChecks = ({
               <a href={spotlightUrl} className="govuk-button">
                 Log in to Spotlight
               </a>
-
+              {isInternal && (
+                <>
+                  <p className="govuk-body">
+                    You can{' '}
+                    <CustomLink
+                      href={`/api/downloadSpotlightChecks?schemeId=${scheme.schemeId}`}
+                    >
+                      download the information you need to run checks
+                    </CustomLink>{' '}
+                    to upload it to Spotlight manually.
+                  </p>
+                  <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible"></hr>
+                </>
+              )}
+              <p className="govuk-body">
+                If you do not use Spotlight, you can download all of the due
+                diligence information to run checks in another service.
+              </p>
               <p className="govuk-body">
                 <CustomLink
                   href={`/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`}
                 >
-                  Download due diligence information
+                  Download checks from applications
                 </CustomLink>
               </p>
             </>
