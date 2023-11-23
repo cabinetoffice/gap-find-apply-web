@@ -9,6 +9,7 @@ import {
   User,
 } from '../pages/super-admin-dashboard/types';
 import PaginationType from '../types/Pagination';
+import { Integration } from '../pages/super-admin-dashboard/integrations/index.page';
 
 const { serverRuntimeConfig } = getConfig();
 
@@ -178,3 +179,33 @@ export const createDepartmentInformation = async (
     body,
     axiosUserServiceConfig(userToken)
   );
+
+export const getIntegrations = async (
+  userToken: string
+): Promise<Integration[]> => {
+  // return axios.get(`${process.env.USER_SERVICE_URL}/integrations`, axiosUserServiceConfig(userToken));
+  return [
+    {
+      name: 'Spotlight',
+      status: 'Connected',
+      lastUpdated: '2003-10-25 21:28:50.164146',
+    },
+    {
+      name: 'Spotlight 2',
+      status: 'Disconnected',
+      lastUpdated: '2003-10-25 21:28:50.164146',
+      connectionEndpoint: 'some next /api/* route for the request',
+    },
+    {
+      name: 'Spotlight 3',
+      status: 'Connected',
+      lastUpdated: '2003-10-25 21:28:50.164146',
+    },
+    {
+      name: 'Spotlight 4',
+      status: 'Disconnected',
+      lastUpdated: '2003-10-25 21:28:50.164146',
+      connectionEndpoint: 'some next /api/* route for the request',
+    },
+  ];
+};
