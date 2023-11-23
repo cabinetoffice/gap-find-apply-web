@@ -26,10 +26,7 @@ export async function getServerSideProps({
           jwt,
           schemeId
         );
-      if (
-        mandatoryQuestion.submissionId !== null &&
-        mandatoryQuestion.submissionId !== undefined
-      ) {
+      if (mandatoryQuestion.submissionId) {
         return {
           redirect: {
             destination: routes.applications,
