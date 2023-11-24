@@ -36,7 +36,6 @@ const requestSubmissionsExport = async (
   sessionCookie: string,
   applicationId: string
 ) => {
-  console.log('downloading!');
   await axios.post(
     `${BASE_SUBMISSIONS_URL}/export-all/${applicationId}`,
     null,
@@ -63,7 +62,6 @@ const createPresignedUrl = async (sessionCookie: string, s3Key: string) => {
     },
     axiosSessionConfig(sessionCookie)
   );
-  console.log({ response });
   return response.data;
 };
 

@@ -9,7 +9,6 @@ const signUrl = async (req: NextApiRequest, res: NextApiResponse) => {
     sessionCookie,
     decodeURIComponent(s3Key)
   );
-  console.log({ url });
   return res.redirect(url);
 };
 

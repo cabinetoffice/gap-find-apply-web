@@ -44,7 +44,6 @@ export const getServerSideProps = async ({
       schemeName: grantScheme.name,
       submissionList,
       csrfToken: (req as any).csrfToken?.() || '',
-      // HOST,
     },
   };
 };
@@ -54,8 +53,7 @@ export const CompletedSubmissions = ({
   schemeName,
   submissionList,
   csrfToken,
-}: // HOST,
-InferGetServerSidePropsType<typeof getServerSideProps>) => {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [isChecked, setIsChecked] = useState([] as string[]);
 
