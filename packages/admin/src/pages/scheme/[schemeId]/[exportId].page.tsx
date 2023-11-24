@@ -44,6 +44,7 @@ export const getServerSideProps = async ({
       schemeName: grantScheme.name,
       submissionList,
       csrfToken: (req as any).csrfToken?.() || '',
+      // HOST,
     },
   };
 };
@@ -53,7 +54,8 @@ export const CompletedSubmissions = ({
   schemeName,
   submissionList,
   csrfToken,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+}: // HOST,
+InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [isChecked, setIsChecked] = useState([] as string[]);
 
@@ -158,7 +160,9 @@ export const CompletedSubmissions = ({
           content: (
             <div className="govuk-!-text-align-right">
               <CustomLink
-                href={submission.url}
+                href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
+                  submission.s3key
+                )}`}
                 ariaLabel={`Download submission "${submission.label}"`}
                 excludeSubPath
               >
@@ -172,12 +176,16 @@ export const CompletedSubmissions = ({
   });
 
   const multiDownloadHandler = async () => {
-    for (const fileName of isChecked) {
-      const fileInfo = submissionList.find(
-        (submission) => submission.label === fileName
-      );
-      if (fileInfo) await downloadFile(fileInfo.url, fileInfo.label);
-    }
+    const filesToDownload = isChecked
+      .map((filename) =>
+        submissionList.find((submission) => submission.label === filename)
+      )
+      .filter((fileInfo) => !!fileInfo);
+    await Promise.all(
+      filesToDownload.map((fileInfo) =>
+        downloadFile(fileInfo!.s3key, fileInfo!.label)
+      )
+    );
   };
 
   return (

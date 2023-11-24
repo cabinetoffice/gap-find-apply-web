@@ -13,6 +13,7 @@ const CustomLink = ({
   isBackButton,
   disabled = false,
   excludeSubPath = false,
+  openInNewTab = false,
 }: CustomLinkProps) => {
   const { publicRuntimeConfig } = getConfig();
 
@@ -49,6 +50,8 @@ const CustomLink = ({
       {...props}
       className={`${props.className}${customStyle ? ' ' + customStyle : ''}`}
       aria-disabled={disabled}
+      target={openInNewTab ? '_blank' : ''}
+      rel={openInNewTab ? 'noreferrer' : ''}
     >
       {isBackButton ? 'Back' : children}
     </a>

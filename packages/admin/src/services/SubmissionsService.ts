@@ -36,6 +36,7 @@ const requestSubmissionsExport = async (
   sessionCookie: string,
   applicationId: string
 ) => {
+  console.log('downloading!');
   await axios.post(
     `${BASE_SUBMISSIONS_URL}/export-all/${applicationId}`,
     null,
@@ -46,11 +47,23 @@ const requestSubmissionsExport = async (
 const getCompletedSubmissionExportList = async (
   sessionCookie: string,
   exportId: string
-): Promise<{ label: string; url: string }[]> => {
+): Promise<{ label: string; s3key: string }[]> => {
   const response = await axios.get(
     `${BASE_SUBMISSIONS_URL}/exports/${exportId}`,
     axiosSessionConfig(sessionCookie)
   );
+  return response.data;
+};
+
+const createPresignedUrl = async (sessionCookie: string, s3Key: string) => {
+  const response = await axios.post(
+    `${BASE_SUBMISSIONS_URL}/signed-url`,
+    {
+      s3ObjectKey: s3Key,
+    },
+    axiosSessionConfig(sessionCookie)
+  );
+  console.log({ response });
   return response.data;
 };
 
@@ -59,4 +72,5 @@ export {
   getApplicationExportStatus,
   requestSubmissionsExport,
   getCompletedSubmissionExportList,
+  createPresignedUrl,
 };
