@@ -2,7 +2,10 @@ import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import InsetText from '../../../components/inset-text/InsetText';
 import Meta from '../../../components/layout/Meta';
-import { completedMandatoryQuestions } from '../../../services/MandatoryQuestionsService';
+import {
+  completedMandatoryQuestions,
+  hasSpotlightData,
+} from '../../../services/MandatoryQuestionsService';
 import {
   getGrantScheme,
   schemeApplicationIsInternal,
@@ -25,7 +28,11 @@ export const getServerSideProps = async ({
   const isInternal = await schemeApplicationIsInternal(schemeId, sessionCookie);
   const spotlightUrl = process.env.SPOTLIGHT_LOGIN_URL;
   const hasInfoToDownload = await completedMandatoryQuestions(
-    scheme.schemeId,
+    schemeId,
+    sessionCookie
+  );
+  const hasSpotlightDataToDownload = await hasSpotlightData(
+    schemeId,
     sessionCookie
   );
 
@@ -50,6 +57,7 @@ export const getServerSideProps = async ({
       spotlightLastUpdated,
       spotlightUrl,
       isInternal,
+      hasSpotlightDataToDownload,
     },
   };
 };
@@ -61,6 +69,7 @@ const ManageDueDiligenceChecks = ({
   spotlightLastUpdated,
   spotlightUrl,
   isInternal,
+  hasSpotlightDataToDownload,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
@@ -148,15 +157,17 @@ const ManageDueDiligenceChecks = ({
                   <a href={spotlightUrl} className="govuk-button">
                     Log in to Spotlight
                   </a>
-                  <p className="govuk-body">
-                    You can{' '}
-                    <CustomLink
-                      href={`/api/downloadSpotlightChecks?schemeId=${scheme.schemeId}`}
-                    >
-                      download the information you need to run checks
-                    </CustomLink>{' '}
-                    to upload it to Spotlight manually.
-                  </p>
+                  {hasSpotlightDataToDownload && (
+                    <p className="govuk-body">
+                      You can{' '}
+                      <CustomLink
+                        href={`/api/downloadSpotlightChecks?schemeId=${scheme.schemeId}`}
+                      >
+                        download the information you need to run checks
+                      </CustomLink>{' '}
+                      to upload it to Spotlight manually.
+                    </p>
+                  )}
                   <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible"></hr>
                 </div>
               )}

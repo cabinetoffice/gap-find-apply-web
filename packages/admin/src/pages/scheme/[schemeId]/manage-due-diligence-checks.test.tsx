@@ -120,6 +120,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          hasSpotlightDataToDownload={true}
         />
       );
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
@@ -137,6 +138,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          hasSpotlightDataToDownload={true}
         />
       );
       screen.getByRole('heading', { name: 'Manage due diligence checks' });
@@ -151,6 +153,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={false}
+          hasSpotlightDataToDownload={true}
         />
       );
       screen.getByText(
@@ -170,6 +173,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          hasSpotlightDataToDownload={true}
         />
       );
       screen.getByText(
@@ -192,6 +196,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          hasSpotlightDataToDownload={true}
         />
       );
 
@@ -211,6 +216,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={''}
           spotlightUrl="url"
           isInternal={true}
+          hasSpotlightDataToDownload={true}
         />
       );
       expect(screen.getByTestId('spotlight-count')).toHaveTextContent(
@@ -230,6 +236,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          hasSpotlightDataToDownload={true}
         />
       );
       screen.getByText(
@@ -252,6 +259,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          hasSpotlightDataToDownload={true}
         />
       );
 
@@ -272,6 +280,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          hasSpotlightDataToDownload={true}
         />
       );
 
@@ -285,6 +294,24 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
+    it('Should not render the spotlight checks download link if there is nothing to download', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
+          spotlightUrl="url"
+          isInternal={true}
+          hasSpotlightDataToDownload={false}
+        />
+      );
+
+      expect(
+        screen.queryByText('download the information you need to run checks')
+      ).not.toBeInTheDocument();
+    });
+
     it('Should render the download link', () => {
       render(
         <ManageDueDiligenceChecks
@@ -294,6 +321,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          hasSpotlightDataToDownload={true}
         />
       );
 
@@ -316,6 +344,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={false}
+          hasSpotlightDataToDownload={true}
         />
       );
 
@@ -331,6 +360,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          hasSpotlightDataToDownload={true}
         />
       );
 
@@ -348,6 +378,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          hasSpotlightDataToDownload={true}
         />
       );
 
