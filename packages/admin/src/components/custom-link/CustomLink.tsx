@@ -65,6 +65,7 @@ type CustomLinkProps = {
   customStyle?: string;
   dataTestId?: string;
   excludeSubPath?: boolean;
+  openInNewTab?: boolean;
 } & AdditionalProps;
 
 type AdditionalProps =
