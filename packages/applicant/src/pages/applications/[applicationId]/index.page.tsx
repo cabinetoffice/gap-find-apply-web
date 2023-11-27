@@ -1,15 +1,12 @@
 import { GetServerSideProps } from 'next';
-import { GrantScheme } from '../../../models/GrantScheme';
-import {
-  Application,
-  getApplicationById,
-} from '../../../services/ApplicationService';
+import { getApplicationById } from '../../../services/ApplicationService';
 import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
 import { GrantSchemeService } from '../../../services/GrantSchemeService';
 import { createSubmission } from '../../../services/SubmissionService';
 import { validateCSRF } from '../../../utils/csrf';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
+import { GrantApplication } from '../../../types/models/GrantApplication';
 
 //TODO: we could make this an API endpoint since it doesn't actually render anything
 export const getServerSideProps: GetServerSideProps = async ({
@@ -24,14 +21,14 @@ export const getServerSideProps: GetServerSideProps = async ({
   try {
     const jwt = getJwtFromCookies(req);
 
-    const application: Application = await getApplicationById(
+    const application: GrantApplication = await getApplicationById(
       applicationId,
       jwt
     );
 
     const schemeService = GrantSchemeService.getInstance();
 
-    const scheme: GrantScheme = await schemeService.getGrantSchemeById(
+    const { grantScheme: scheme } = await schemeService.getGrantSchemeById(
       application.grantScheme.id.toString(),
       jwt
     );

@@ -1,13 +1,13 @@
 import axios from 'axios';
 import getConfig from 'next/config';
 import { axiosConfig } from '../utils/jwt';
-import { GrantMandatoryQuestionDto } from './GrantMandatoryQuestionService';
+import { GrantAdvert } from '../types/models/GrantAdvert';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
 
 export async function getAdvertBySlug(jwt: string, slug: string) {
-  const { data } = await axios.get<AdvertDto>(
+  const { data } = await axios.get<GrantAdvert>(
     `${BACKEND_HOST}/grant-adverts?contentfulSlug=${slug}`,
     axiosConfig(jwt)
   );
@@ -15,7 +15,7 @@ export async function getAdvertBySlug(jwt: string, slug: string) {
 }
 
 export async function getAdvertBySchemeId(schemeId: string, jwt: string) {
-  const { data } = await axios.get<AdvertDto>(
+  const { data } = await axios.get<GrantAdvert>(
     `${BACKEND_HOST}/grant-adverts/scheme/${schemeId}`,
     axiosConfig(jwt)
   );
@@ -35,14 +35,4 @@ export async function checkIfGrantExistsInContentful(
 
 export interface GrantExistsInContentfulDto {
   isAdvertInContentful: boolean;
-}
-export interface AdvertDto {
-  id?: string;
-  externalSubmissionUrl?: string;
-  version?: number;
-  grantApplicationId?: number;
-  isInternal?: boolean;
-  grantSchemeId?: number;
-  isAdvertInDatabase: boolean;
-  mandatoryQuestionsDto?: GrantMandatoryQuestionDto;
 }

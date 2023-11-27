@@ -8,14 +8,17 @@ import getServerSideProps from './getServerSideProps';
 export { getServerSideProps };
 
 export const generateMandatoryQuestionDetails = (
-  mandatoryQuestion,
-  mandatoryQuestionId
-): MandatoryQuestionDetails[] => {
+  mandatoryQuestion: InferProps<typeof getServerSideProps>['mandatoryQuestion'],
+  mandatoryQuestionId: InferProps<
+    typeof getServerSideProps
+  >['mandatoryQuestionId']
+) => {
   const shouldDisplayExtraFields = [
     'Limited company',
     'Charity',
     'Other',
   ].includes(mandatoryQuestion.orgType);
+
   return [
     {
       id: 'organisationType',
@@ -106,15 +109,17 @@ export default function MandatoryQuestionOrganisationSummaryPage({
             >
               Confirm your details
             </h1>
+
             <p className="govuk-body">
               Ensure the following details about your organisation are correct
               and up to date. Funding organisations will use this information to
               run checks that prevent fraud.
             </p>
+
             <dl className="govuk-summary-list">
               {mandatoryQuestionDetails
-                ?.filter((item) => !item.hidden)
-                ?.map((mandatoryQuestionDetail) => (
+                .filter((item) => !item.hidden)
+                .map((mandatoryQuestionDetail) => (
                   <div
                     className="govuk-summary-list__row"
                     key={'row-' + mandatoryQuestionDetail.id}
@@ -128,7 +133,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                     {['organisationAddress', 'fundingLocation'].includes(
                       mandatoryQuestionDetail.id
                     ) ? (
-                      <DisplayArrayData
+                      <DisplayMultilineSummaryListValue
                         data={mandatoryQuestionDetail.value as string[]}
                         id={mandatoryQuestionDetail.id}
                         cyTag={mandatoryQuestionDetail.label}
@@ -163,6 +168,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                   </div>
                 ))}
             </dl>
+
             <Link
               href={routes.api.mandatoryQuestions.createSubmission(
                 mandatoryQuestionId,
@@ -173,7 +179,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                 className="govuk-button"
                 data-module="govuk-button"
                 aria-disabled="false"
-                role="button"
+                type="button"
               >
                 Confirm and submit
               </a>
@@ -185,41 +191,34 @@ export default function MandatoryQuestionOrganisationSummaryPage({
   );
 }
 
-interface MandatoryQuestionDetails {
-  id?: string;
-  label?: string;
-  value?: string | string[];
-  url?: string;
-  status?: 'Change';
-  showCurrency?: boolean;
-  hidden?: boolean;
-}
-interface DisplayArrayDataProps {
+type DisplayMultilineSummaryListValueProps = {
   data: string[];
   id: string;
   cyTag: string;
-}
+};
 
-const DisplayArrayData = ({ data, id, cyTag }: DisplayArrayDataProps) => {
+const DisplayMultilineSummaryListValue = ({
+  data,
+  id,
+  cyTag,
+}: DisplayMultilineSummaryListValueProps) => {
   return data.length > 0 ? (
-    <>
-      <dd
-        className="govuk-summary-list__value"
-        data-cy={`cy-organisation-value-${cyTag}`}
-      >
-        <ul className="govuk-list">
-          {data.map((line: string, index: number, array: string[]) => {
-            if (line) {
-              return (
-                <li key={line}>
-                  {index === array.length - 1 ? line : `${line},`}
-                </li>
-              );
-            }
-          })}
-        </ul>
-      </dd>
-    </>
+    <dd
+      className="govuk-summary-list__value"
+      data-cy={`cy-organisation-value-${cyTag}`}
+    >
+      <ul className="govuk-list">
+        {data.map((line: string, index: number, array: string[]) => {
+          if (line) {
+            return (
+              <li key={line}>
+                {index === array.length - 1 ? line : `${line},`}
+              </li>
+            );
+          }
+        })}
+      </ul>
+    </dd>
   ) : (
     <dd
       className="govuk-summary-list__value"

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import getConfig from 'next/config';
-import { GrantScheme } from '../models/GrantScheme';
 import { axiosConfig } from '../utils/jwt';
+import { GrantApplication } from '../types/models/GrantApplication';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -28,23 +28,11 @@ export const getApplicationStatusBySchemeId = async (
 };
 
 export async function getApplicationById(applicationId: string, jwt: string) {
-  const { data } = await axios.get<Application>(
+  const { data } = await axios.get<GrantApplication>(
     `${BACKEND_HOST}/grant-application/${applicationId}`,
     axiosConfig(jwt)
   );
   return data;
-}
-
-export interface Application {
-  id: number;
-  grantScheme: GrantScheme;
-  version: number;
-  created: string;
-  lastUpdated: string;
-  lastUpdatedBy: number;
-  applicationName: string;
-  applicationStatus: string;
-  definition: string;
 }
 
 export interface ApplicationsList {

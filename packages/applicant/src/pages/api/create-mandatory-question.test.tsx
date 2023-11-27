@@ -3,10 +3,12 @@ import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
 } from '../../services/GrantMandatoryQuestionService';
+import { GrantApplicantOrganisationProfileService } from '../../services/GrantApplicantOrganisationProfileService';
 import { routes } from '../../utils/routes';
 import handler from './create-mandatory-question.page';
 
-jest.mock('../../services/GrantMandatoryQuestionService.ts');
+jest.mock('../../services/GrantMandatoryQuestionService');
+jest.mock('../../services/GrantApplicantOrganisationProfileService');
 jest.mock('../../utils/jwt');
 
 const mockedRedirect = jest.fn();
@@ -18,6 +20,7 @@ const req = (overrides: any = {}) =>
     query: {
       schemeId: 'schemeId',
     },
+    overrides,
   });
 
 const res = (overrides: any = {}) =>
@@ -29,6 +32,7 @@ const res = (overrides: any = {}) =>
     },
     overrides
   );
+
 const backup_host = process.env.HOST;
 
 describe('API Handler Tests', () => {
@@ -50,8 +54,13 @@ describe('API Handler Tests', () => {
     orgType: 'orgType',
     companiesHouseNumber: 'companiesHouseNumber',
     charityCommissionNumber: 'charityCommissionNumber',
+    addressLine1: '',
   };
+
   it('should redirect to organisation-name page when mandatory question gets created in db and NONE or SOME of the organisation profile have been filled in the applicant organisation Profile', async () => {
+    GrantApplicantOrganisationProfileService.getInstance.mockReturnValue({
+      isOrgProfileComplete: jest.fn().mockResolvedValue(false),
+    });
     GrantMandatoryQuestionService.getInstance.mockReturnValue({
       createMandatoryQuestion: jest
         .fn()
@@ -66,7 +75,11 @@ describe('API Handler Tests', () => {
       )}`
     );
   });
+
   it('should redirect to fundingAmount page when mandatory question gets created in db and ALL of the organisation profile have been filled in the applicant organisation Profile', async () => {
+    GrantApplicantOrganisationProfileService.getInstance.mockReturnValue({
+      isOrgProfileComplete: jest.fn().mockResolvedValue(true),
+    });
     GrantMandatoryQuestionService.getInstance.mockReturnValue({
       createMandatoryQuestion: jest.fn().mockResolvedValue({
         ...grantMandatoryQuestion,
@@ -82,6 +95,7 @@ describe('API Handler Tests', () => {
       )}`
     );
   });
+
   it('should redirect to error page when there is an error in the backend', async () => {
     await handler(req(), res());
 

@@ -1,7 +1,7 @@
 import { ValidationError } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 import getConfig from 'next/config';
-import { GrantApplicantOrganisationProfile } from '../../models/GrantApplicantOrganisationProfile';
+import { GrantApplicantOrganisationProfile } from '../../types/models/GrantApplicantOrganisationProfile';
 import { GrantApplicantOrganisationProfileService } from '../../services/GrantApplicantOrganisationProfileService';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import callServiceMethod from '../../utils/callServiceMethod';
@@ -18,7 +18,7 @@ export default async function getServerSideProps({
   const grantApplicantService = GrantApplicantService.getInstance();
   const grantApplicantOrganisationProfileService =
     GrantApplicantOrganisationProfileService.getInstance();
-  const grantApplicant = await grantApplicantService.getGrantApplicant(jwt);
+  const { organisation } = await grantApplicantService.getGrantApplicant(jwt);
 
   const response = await callServiceMethod(
     req,
@@ -42,7 +42,7 @@ export default async function getServerSideProps({
   }
 
   let defaultFields =
-    grantApplicant.organisation as Optional<GrantApplicantOrganisationProfile>;
+    organisation as Optional<GrantApplicantOrganisationProfile>;
   let fieldErrors = [] as ValidationError[];
   if ('fieldErrors' in response) {
     fieldErrors = response.fieldErrors;
@@ -53,7 +53,8 @@ export default async function getServerSideProps({
   const { publicRuntimeConfig } = getConfig();
   return {
     props: {
-      organisationId: grantApplicant.organisation.id,
+      organisationType: organisation.type,
+      organisationId: organisation.id,
       csrfToken: (req as any).csrfToken?.() || '',
       formAction: publicRuntimeConfig.subPath + resolvedUrl,
       fieldErrors,

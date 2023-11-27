@@ -1,7 +1,9 @@
 import axios from 'axios';
-import { GrantScheme } from '../models/GrantScheme';
+import { GrantScheme } from '../types/models/GrantScheme';
 import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
+import { GrantApplication } from '../types/models/GrantApplication';
+import { GrantAdvert } from '../types/models/GrantAdvert';
 
 export class GrantSchemeService {
   private static instance: GrantSchemeService;
@@ -22,8 +24,12 @@ export class GrantSchemeService {
   public async getGrantSchemeById(
     grantSchemeId: string,
     jwt: string
-  ): Promise<GrantScheme> {
-    const { data } = await axios.get<GrantScheme>(
+  ): Promise<{
+    grantScheme: GrantScheme;
+    grantApplication?: GrantApplication;
+    grantAdverts?: GrantAdvert[];
+  }> {
+    const { data } = await axios.get(
       `${this.BACKEND_HOST}/grant-schemes/${grantSchemeId}`,
       axiosConfig(jwt)
     );

@@ -6,6 +6,10 @@ import {
   getGrantScheme,
   schemeApplicationIsInternal,
 } from '../../../services/SchemeService';
+import {
+  getSpotlightLastUpdateDate,
+  getSpotlightSubmissionCount,
+} from '../../../services/SpotlightSubmissionService';
 import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
 import Scheme from '../../../types/Scheme';
 import ManageDueDiligenceChecks, {
@@ -14,6 +18,7 @@ import ManageDueDiligenceChecks, {
 
 const APPLICATION_ID = '1';
 const SCHEME_ID = '2';
+const SPOTLIGHT_LAST_UPDATED = '23 September 2023';
 
 const scheme = {
   name: 'schemeName',
@@ -52,6 +57,7 @@ const getContext = (overrides: any = {}) =>
 
 jest.mock('../../../services/SchemeService');
 jest.mock('../../../services/MandatoryQuestionsService');
+jest.mock('../../../services/SpotlightSubmissionService');
 
 describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
   describe('getServerSideProps', () => {
@@ -82,6 +88,32 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
 
       expect(response.props.hasInfoToDownload).toBeFalsy();
     });
+
+    it('Should get spotlightSubmissionCount from getSpotlightSubmissionCount', async () => {
+      mockedGetScheme.mockResolvedValue(scheme);
+      (schemeApplicationIsInternal as jest.Mock).mockReturnValue(true);
+      (getSpotlightSubmissionCount as jest.Mock).mockReturnValue('2');
+
+      const response = (await getServerSideProps(
+        getContext()
+      )) as NextGetServerSidePropsResponse;
+
+      expect(response.props.spotlightSubmissionCount).toBe('2');
+    });
+
+    it('Should get spotlightLastUpdated from getSpotlightLastUpdateDate', async () => {
+      mockedGetScheme.mockResolvedValue(scheme);
+      (schemeApplicationIsInternal as jest.Mock).mockReturnValue(true);
+      (getSpotlightLastUpdateDate as jest.Mock).mockReturnValue(
+        SPOTLIGHT_LAST_UPDATED
+      );
+
+      const response = (await getServerSideProps(
+        getContext()
+      )) as NextGetServerSidePropsResponse;
+
+      expect(response.props.spotlightLastUpdated).toBe(SPOTLIGHT_LAST_UPDATED);
+    });
   });
 
   describe('Manage due diligence checks page', () => {
@@ -90,10 +122,13 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           hasInfoToDownload={false}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
           ggisSchemeRefUrl="url"
           spotlightErrors={spotlightErrors}
+          hasSpotlightDataToDownload={true}
         />
       );
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
@@ -107,10 +142,13 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           hasInfoToDownload={false}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
           ggisSchemeRefUrl="url"
           spotlightErrors={spotlightErrors}
+          hasSpotlightDataToDownload={true}
         />
       );
       screen.getByRole('heading', { name: 'Manage due diligence checks' });
@@ -121,17 +159,20 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={false}
           ggisSchemeRefUrl="url"
           spotlightErrors={spotlightErrors}
+          hasSpotlightDataToDownload={true}
         />
       );
       screen.getByText(
-        /we gather the information you need to run due diligence checks\./i
+        /Data is gathered from applicants before they are sent to your application form\./i
       );
       screen.getByText(
-        /you can use the government-owned due diligence tool ‘spotlight’ to run your due diligence checks\. the information is already in the correct format to upload directly into spotlight\./i
+        /You may wish to use this data to run due diligence checks\./i
       );
     });
 
@@ -140,10 +181,13 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
           ggisSchemeRefUrl="url"
           spotlightErrors={spotlightErrors}
+          hasSpotlightDataToDownload={true}
         />
       );
       screen.getByText(
@@ -157,15 +201,58 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
+    it('Should render Spotlight submission info if there are successful submissions', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
+          spotlightUrl="url"
+          isInternal={true}
+          hasSpotlightDataToDownload={true}
+        />
+      );
+
+      expect(screen.getByTestId('spotlight-count')).toHaveTextContent(
+        'You have 2 applications in Spotlight.'
+      );
+      expect(screen.getByTestId('spotlight-last-updated')).toHaveTextContent(
+        'Spotlight was last updated on 23 September 2023.'
+      );
+    });
+    it('Should render Spotlight submission info if no successful submissions', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={true}
+          spotlightSubmissionCount={0}
+          spotlightLastUpdated={''}
+          spotlightUrl="url"
+          isInternal={true}
+          hasSpotlightDataToDownload={true}
+        />
+      );
+      expect(screen.getByTestId('spotlight-count')).toHaveTextContent(
+        'You have 0 applications in Spotlight'
+      );
+      expect(screen.getByTestId('spotlight-last-updated')).toHaveTextContent(
+        'No records have been sent to Spotlight.'
+      );
+    });
+
     it('Should render the paragraphs when the scheme has an internal application', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
           hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
           ggisSchemeRefUrl="url"
           spotlightErrors={spotlightErrors}
+          hasSpotlightDataToDownload={true}
         />
       );
       screen.getByText(
@@ -177,6 +264,68 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       screen.getByText(
         /Spotlight does not run checks on individuals or local authorities\./i
       );
+    });
+
+    it('Should render the spotlight checks download paragraphs', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
+          spotlightUrl="url"
+          isInternal={true}
+          hasSpotlightDataToDownload={true}
+        />
+      );
+
+      screen.queryByText(
+        /You can download the information you need to run checks to upload it to Spotlight manually\./i
+      );
+      screen.getByText(
+        /if you do not use spotlight, you can download all of the due diligence information to run checks in another service\./i
+      );
+    });
+
+    it('Should render the spotlight checks download link', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
+          spotlightUrl="url"
+          isInternal={true}
+          hasSpotlightDataToDownload={true}
+        />
+      );
+
+      expect(
+        screen.getByRole('link', {
+          name: 'download the information you need to run checks',
+        })
+      ).toHaveAttribute(
+        'href',
+        `/apply/api/downloadSpotlightChecks?schemeId=${SCHEME_ID}`
+      );
+    });
+
+    it('Should not render the spotlight checks download link if there is nothing to download', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
+          spotlightUrl="url"
+          isInternal={true}
+          hasSpotlightDataToDownload={false}
+        />
+      );
+
+      expect(
+        screen.queryByText('download the information you need to run checks')
+      ).not.toBeInTheDocument();
     });
 
     it('Should render the download link', () => {
@@ -184,36 +333,42 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
           ggisSchemeRefUrl="url"
           spotlightErrors={spotlightErrors}
+          hasSpotlightDataToDownload={true}
         />
       );
 
       expect(
-        screen.getByRole('link', { name: 'Download due diligence information' })
+        screen.getByRole('link', {
+          name: 'Download checks from applications',
+        })
       ).toHaveAttribute(
         'href',
         `/apply/api/downloadDueDiligenceChecks?schemeId=${SCHEME_ID}`
       );
     });
 
-    it('Should render the Spotlight button for schemes with external applications', () => {
+    it('Should not render the Spotlight button for schemes with external applications', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
           hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={false}
           ggisSchemeRefUrl="url"
           spotlightErrors={spotlightErrors}
+          hasSpotlightDataToDownload={true}
         />
       );
 
-      expect(
-        screen.getByRole('link', { name: 'Log in to Spotlight' })
-      ).toHaveAttribute('href', `url`);
+      expect(screen.queryByText('Log in to Spotlight')).not.toBeInTheDocument();
     });
 
     it('Should render the Spotlight button for schemes with internal applications', () => {
@@ -221,10 +376,13 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
           ggisSchemeRefUrl="url"
           spotlightErrors={spotlightErrors}
+          hasSpotlightDataToDownload={true}
         />
       );
 
@@ -238,10 +396,13 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         <ManageDueDiligenceChecks
           scheme={scheme}
           hasInfoToDownload={false}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
           ggisSchemeRefUrl="url"
           spotlightErrors={spotlightErrors}
+          hasSpotlightDataToDownload={true}
         />
       );
 

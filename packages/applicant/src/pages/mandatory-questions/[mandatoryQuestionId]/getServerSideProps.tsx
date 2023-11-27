@@ -10,6 +10,7 @@ import callServiceMethod from '../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes, serviceErrorPropType } from '../../../utils/routes';
 import { MQ_ORG_TYPES } from '../../../utils/constants';
+import { GrantApplicantOrganisationProfileService } from '../../../services/GrantApplicantOrganisationProfileService';
 
 const isIndividualOrNonLimitedCompany = (orgType: string) =>
   [MQ_ORG_TYPES.INDIVIDUAL, MQ_ORG_TYPES.NON_LIMITED_COMPANY].includes(orgType);
@@ -49,10 +50,6 @@ const buildBackButtonMapper = (
     routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId);
   const fundingAmountPage =
     routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
-  const charityCommissionNumberPage =
-    routes.mandatoryQuestions.charityCommissionNumberPage(mandatoryQuestionId);
-  const companiesHouseNumberPage =
-    routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
   const addressPage =
     routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
   const namePage = routes.mandatoryQuestions.namePage(mandatoryQuestionId);
@@ -81,12 +78,20 @@ const mapBackButtonUrl = (
   fromSummaryPage: boolean,
   fromSubmissionPage: boolean,
   submissionId: string,
-  sectionId: string
-): string => {
+  sectionId: string,
+  isOrgProfileComplete: boolean
+) => {
   if (fromSubmissionPage) {
     return routes.submissions.section(submissionId, sectionId);
   } else if (fromSummaryPage) {
     return routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
+  } else if (
+    isOrgProfileComplete &&
+    resolvedUrl.includes('organisation-funding-amount')
+  ) {
+    return routes.mandatoryQuestions.startPage(
+      mandatoryQuestion.schemeId.toString()
+    );
   } else {
     const mapper = buildBackButtonMapper(
       mandatoryQuestion.orgType,
@@ -127,6 +132,11 @@ export default async function getServerSideProps({
   let mandatoryQuestion: GrantMandatoryQuestionDto;
   const grantMandatoryQuestionService =
     GrantMandatoryQuestionService.getInstance();
+  const grantApplicantOrganisationProfileService =
+    GrantApplicantOrganisationProfileService.getInstance();
+
+  const isOrgProfileComplete =
+    await grantApplicantOrganisationProfileService.isOrgProfileComplete(jwt);
 
   try {
     mandatoryQuestion =
@@ -195,7 +205,8 @@ export default async function getServerSideProps({
     isFromSummaryPage,
     isFromSubmissionPage,
     submissionId,
-    sectionId
+    sectionId,
+    isOrgProfileComplete
   );
 
   return {
