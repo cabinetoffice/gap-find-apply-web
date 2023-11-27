@@ -4,6 +4,7 @@ import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
 } from '../../../services/GrantMandatoryQuestionService';
+import { GrantApplicantOrganisationProfileService } from '../../../services/GrantApplicantOrganisationProfileService';
 import {
   Optional,
   expectObjectEquals,
@@ -24,6 +25,10 @@ const spiedGrantMandatoryQuestionServiceGetMandatoryQuestion = jest.spyOn(
 const spiedGrantMandatoryQuestionServiceUpdateMandatoryQuestion = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
   'updateMandatoryQuestion'
+);
+const spiedGrantApplicantOrganisationProfileService = jest.spyOn(
+  GrantApplicantOrganisationProfileService.prototype,
+  'isOrgProfileComplete'
 );
 const userTokenNameBackup = process.env.USER_TOKEN_NAME;
 describe('getServerSideProps', () => {

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
-import { GrantApplicant } from '../../models/GrantApplicant';
+import { GrantApplicant } from '../../types/models/GrantApplicant';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { createMockRouter } from '../../testUtils/createMockRouter';
 import { getJwtFromCookies } from '../../utils/jwt';

@@ -25,13 +25,6 @@ import {
 } from './SubmissionService';
 
 jest.mock('../utils/jwt');
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-  };
-});
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -329,7 +322,7 @@ describe('Submission service ', () => {
       const result = await createSubmission(applicationId, 'testJwt');
       expect(result).toEqual(MockCreateSubmissionData);
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(createSubmissionURL, '1', {
+      expect(spy).toBeCalledWith(createSubmissionURL, null, {
         headers: {
           Authorization: `Bearer testJwt`,
           Accept: 'application/json',

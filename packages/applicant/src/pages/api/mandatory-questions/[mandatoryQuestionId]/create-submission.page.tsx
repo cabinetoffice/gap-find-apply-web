@@ -1,11 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { GrantApplicant } from '../../../../models/GrantApplicant';
-import { GrantApplicantOrganisationProfile } from '../../../../models/GrantApplicantOrganisationProfile';
-import { getAdvertBySchemeId } from '../../../../services/GrantAdvertService';
-import {
-  GrantApplicantOrganisationProfileService,
-  UpdateOrganisationDetailsDto,
-} from '../../../../services/GrantApplicantOrganisationProfileService';
+import { GrantApplicantOrganisationProfile } from '../../../../types/models/GrantApplicantOrganisationProfile';
+import { GrantApplicantOrganisationProfileService } from '../../../../services/GrantApplicantOrganisationProfileService';
 import { GrantApplicantService } from '../../../../services/GrantApplicantService';
 import {
   GrantMandatoryQuestionDto,
@@ -14,45 +9,45 @@ import {
 import { createSubmission } from '../../../../services/SubmissionService';
 import { getJwtFromCookies } from '../../../../utils/jwt';
 import { routes } from '../../../../utils/routes';
+import { GrantSchemeService } from '../../../../services/GrantSchemeService';
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const grantMandatoryQuestionService =
+    GrantMandatoryQuestionService.getInstance();
+  const grantApplicantService = GrantApplicantService.getInstance();
+  const grantApplicantOrganisationProfileService =
+    GrantApplicantOrganisationProfileService.getInstance();
+  const grantSchemeService = GrantSchemeService.getInstance();
+
   const mandatoryQuestionId = req.query.mandatoryQuestionId.toString();
   const schemeId = req.query.schemeId.toString();
+  const jwt = getJwtFromCookies(req);
 
   try {
-    const grantMandatoryQuestionService =
-      GrantMandatoryQuestionService.getInstance();
-    const grantApplicantService = GrantApplicantService.getInstance();
-    const grantApplicantOrganisationProfileService =
-      GrantApplicantOrganisationProfileService.getInstance();
-
-    const grantApplicant: GrantApplicant =
-      await grantApplicantService.getGrantApplicant(getJwtFromCookies(req));
-    const organisationData = grantApplicant.organisation;
-
+    const grantApplicant = await grantApplicantService.getGrantApplicant(jwt);
     const mandatoryQuestionData =
       await grantMandatoryQuestionService.getMandatoryQuestionById(
         mandatoryQuestionId,
-        getJwtFromCookies(req)
+        jwt
       );
+    const { grantApplication, grantAdverts } =
+      await grantSchemeService.getGrantSchemeById(schemeId.toString(), jwt);
 
-    const updateOrganisationDetailsDto: UpdateOrganisationDetailsDto =
-      mapUpdateOrganisationDetailsDto(organisationData, mandatoryQuestionData);
-
+    const updateOrganisationDetailsDto = mapUpdateOrganisationDetailsDto(
+      grantApplicant.organisation,
+      mandatoryQuestionData
+    );
     await grantApplicantOrganisationProfileService.updateOrganisation(
       updateOrganisationDetailsDto,
-      getJwtFromCookies(req)
+      jwt
     );
 
-    const advertDto = await getAdvertBySchemeId(
-      schemeId,
-      getJwtFromCookies(req)
-    );
-    if (!advertDto.isInternal) {
+    if (!grantApplication.id) {
       await grantMandatoryQuestionService.updateMandatoryQuestion(
-        getJwtFromCookies(req),
+        jwt,
         mandatoryQuestionId,
         'external',
         {
@@ -62,17 +57,14 @@ export default async function handler(
       return res.redirect(
         `${process.env.HOST}${routes.mandatoryQuestions.externalApplicationPage(
           mandatoryQuestionId
-        )}?url=${advertDto.externalSubmissionUrl}`
+        )}?url=${grantAdverts[0].externalSubmissionUrl}`
       );
     }
 
-    const { submissionId } = await createSubmission(
-      advertDto.grantApplicationId.toString(),
-      getJwtFromCookies(req)
-    );
+    const { submissionId } = await createSubmission(grantApplication.id, jwt);
 
     await grantMandatoryQuestionService.updateMandatoryQuestion(
-      getJwtFromCookies(req),
+      jwt,
       mandatoryQuestionId,
       'creatingSubmissionFromMandatoryQuestion',
       {
@@ -90,37 +82,41 @@ export default async function handler(
       `${process.env.HOST}${routes.submissions.sections(submissionId)}`
     );
   } catch (e) {
-    console.error('error: ', e);
-    const serviceErrorProps = {
-      errorInformation: 'There was an error in the service',
-      linkAttributes: {
-        href: routes.mandatoryQuestions.summaryPage(mandatoryQuestionId),
-        linkText: 'Go back to the summary page and try again',
-        linkInformation: '',
-      },
-    };
-    return res.redirect(routes.serviceError(serviceErrorProps));
+    return handleError(e, mandatoryQuestionId, res);
   }
+}
 
-  function mapUpdateOrganisationDetailsDto(
-    organisationData: GrantApplicantOrganisationProfile,
-    mandatoryQuestionData: GrantMandatoryQuestionDto
-  ) {
-    const updateOrganisationDetailsDto: UpdateOrganisationDetailsDto = {};
-    updateOrganisationDetailsDto.id = organisationData.id;
-    updateOrganisationDetailsDto.legalName = mandatoryQuestionData.name;
-    updateOrganisationDetailsDto.type = mandatoryQuestionData.orgType;
-    updateOrganisationDetailsDto.addressLine1 =
-      mandatoryQuestionData.addressLine1;
-    updateOrganisationDetailsDto.addressLine2 =
-      mandatoryQuestionData.addressLine2;
-    updateOrganisationDetailsDto.town = mandatoryQuestionData.city;
-    updateOrganisationDetailsDto.county = mandatoryQuestionData.county;
-    updateOrganisationDetailsDto.postcode = mandatoryQuestionData.postcode;
-    updateOrganisationDetailsDto.charityCommissionNumber =
-      mandatoryQuestionData.charityCommissionNumber;
-    updateOrganisationDetailsDto.companiesHouseNumber =
-      mandatoryQuestionData.companiesHouseNumber;
-    return updateOrganisationDetailsDto;
-  }
+function mapUpdateOrganisationDetailsDto(
+  organisationData: GrantApplicantOrganisationProfile,
+  mandatoryQuestionData: GrantMandatoryQuestionDto
+) {
+  return {
+    id: organisationData.id,
+    legalName: mandatoryQuestionData.name,
+    type: mandatoryQuestionData.orgType,
+    addressLine1: mandatoryQuestionData.addressLine1,
+    addressLine2: mandatoryQuestionData.addressLine2,
+    town: mandatoryQuestionData.city,
+    county: mandatoryQuestionData.county,
+    postcode: mandatoryQuestionData.postcode,
+    charityCommissionNumber: mandatoryQuestionData.charityCommissionNumber,
+    companiesHouseNumber: mandatoryQuestionData.companiesHouseNumber,
+  };
+}
+
+function handleError(
+  e: any,
+  mandatoryQuestionId: string,
+  res: NextApiResponse
+) {
+  console.error('error: ', e);
+  const serviceErrorProps = {
+    errorInformation: 'There was an error in the service',
+    linkAttributes: {
+      href: routes.mandatoryQuestions.summaryPage(mandatoryQuestionId),
+      linkText: 'Go back to the summary page and try again',
+      linkInformation: '',
+    },
+  };
+  return res.redirect(routes.serviceError(serviceErrorProps));
 }

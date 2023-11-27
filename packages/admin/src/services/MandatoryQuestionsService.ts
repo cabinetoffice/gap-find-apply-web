@@ -46,9 +46,21 @@ const completedMandatoryQuestions = async (
   return response.data;
 };
 
+const hasSpotlightData = async (
+  schemeId: string,
+  sessionCookie: string
+): Promise<boolean> => {
+  const response = await axios.get(
+    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/spotlight-complete`,
+    axiosSessionConfig(sessionCookie)
+  );
+  return response.data;
+};
+
 export {
   completedMandatoryQuestions,
   downloadDueDiligenceData,
+  hasSpotlightData,
   // eslint-disable-next-line prettier/prettier
   spotlightExport
 };

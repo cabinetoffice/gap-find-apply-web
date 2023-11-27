@@ -29,7 +29,7 @@ Please attach screenshots of the change if it is a UI change:
 
 # Checklist:
 
-- [ ] If I have listed depedenencies above, I have ensured that they are present in the target branch.
+- [ ] If I have listed dependencies above, I have ensured that they are present in the target branch.
 - [ ] I have performed a self-review of my code.
 - [ ] I have commented my code in hard-to-understand areas.
 - [ ] I have made corresponding changes to the documentation where applicable.

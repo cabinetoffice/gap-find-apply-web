@@ -61,7 +61,7 @@ export const getServerSideProps: GetServerSideProps<
     getJwtFromCookies(req)
   );
   const grantSchemeService = GrantSchemeService.getInstance();
-  const { email: supportEmail } = await grantSchemeService.getGrantSchemeById(
+  const { grantScheme } = await grantSchemeService.getGrantSchemeById(
     grantSchemeId,
     getJwtFromCookies(req)
   );
@@ -91,7 +91,7 @@ export const getServerSideProps: GetServerSideProps<
       applicationName,
       isSubmissionReady: submissionReady,
       hasSubmissionBeenSubmitted: hasBeenSubmitted,
-      supportEmail,
+      supportEmail: grantScheme.email || '',
       csrfToken: (req as any).csrfToken?.() || '',
       eligibilityCheckPassed: questionData?.question?.response === 'Yes',
     },

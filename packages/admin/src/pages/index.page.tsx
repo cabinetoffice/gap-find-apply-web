@@ -1,5 +1,5 @@
 import React from 'react';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { authenticateUser } from '../services/AuthService';
 import { fetchDataOrGetRedirect } from '../utils/fetchDataOrGetRedirect';
 
