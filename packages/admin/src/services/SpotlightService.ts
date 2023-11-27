@@ -1,6 +1,7 @@
 import axios from 'axios';
 import getConfig from 'next/config';
 import { axiosSessionConfig } from '../utils/session';
+import { SpotlightError } from '../types/SpotlightError';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;

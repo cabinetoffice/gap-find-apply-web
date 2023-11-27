@@ -1,4 +1,4 @@
-interface SpotlightError {
+export interface SpotlightError {
   errorStatus: string;
   errorCount: number;
   errorFound: boolean;
