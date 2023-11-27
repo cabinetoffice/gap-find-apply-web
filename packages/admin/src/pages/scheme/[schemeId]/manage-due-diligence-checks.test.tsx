@@ -15,6 +15,7 @@ import Scheme from '../../../types/Scheme';
 import ManageDueDiligenceChecks, {
   getServerSideProps,
 } from './manage-due-diligence-checks.page';
+import { SpotlightError } from '../../../types/SpotlightError';
 
 const APPLICATION_ID = '1';
 const SCHEME_ID = '2';
@@ -285,12 +286,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         />
       );
 
-      screen.queryByText(
-        /You can download the information you need to run checks to upload it to Spotlight manually\./i
-      );
-      screen.getByText(
-        /if you do not use spotlight, you can download all of the due diligence information to run checks in another service\./i
-      );
+      screen.queryByText(/download the information you need to run checks\./i);
     });
 
     it('Should render the spotlight checks download link', () => {
@@ -318,7 +314,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
-    it('Should not render the spotlight checks download link if there is nothing to download', () => {
+    it('Should not render the Spotlight checks download link if there is nothing to download', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}

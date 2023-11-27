@@ -13,10 +13,10 @@ import {
 import {
   getSpotlightLastUpdateDate,
   getSpotlightSubmissionCount,
+  getSpotlightErrors,
 } from '../../../services/SpotlightSubmissionService';
 import InferProps from '../../../types/InferProps';
 import { getSessionIdFromCookies } from '../../../utils/session';
-import { getSpotlightErrors } from '../../../services/SpotlightService';
 import { SpotlightMessage } from '../../../components/notification-banner/SpotlightMessage';
 
 export const getServerSideProps = async ({
@@ -33,12 +33,14 @@ export const getServerSideProps = async ({
     schemeId,
     sessionCookie
   );
+
   const hasSpotlightDataToDownload = await hasSpotlightData(
     schemeId,
     sessionCookie
   );
 
   const ggisSchemeRefUrl = `/scheme/edit/ggis-reference?schemeId=${scheme.schemeId}&defaultValue=${scheme.ggisReference}`;
+
   const spotlightErrors = await getSpotlightErrors(
     scheme.schemeId,
     sessionCookie
@@ -192,21 +194,10 @@ const ManageDueDiligenceChecks = ({
                 </div>
               )}
 
-              <a href={spotlightUrl} className="govuk-button">
-                Log in to Spotlight
-              </a>
-              {
-                //TODO: Add logic to download information
-              }
               <p className="govuk-body">
-                You can download the information you need to run checks to
-                upload it to Spotlight manually.
+                If you do not use Spotlight, you can download all of the due
+                diligence information to run checks in another service.
               </p>
-              <p className="govuk-body">
-                You can also download checks that Find a grant cannot send to
-                Spotlight
-              </p>
-
               <p className="govuk-body">
                 <CustomLink
                   href={`/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`}
