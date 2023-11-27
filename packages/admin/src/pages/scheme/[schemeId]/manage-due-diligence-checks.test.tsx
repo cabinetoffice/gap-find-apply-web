@@ -211,6 +211,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           hasSpotlightDataToDownload={true}
+          ggisSchemeRefUrl={''}
+          spotlightErrors={spotlightErrors}
         />
       );
 
@@ -231,6 +233,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           hasSpotlightDataToDownload={true}
+          ggisSchemeRefUrl={''}
+          spotlightErrors={spotlightErrors}
         />
       );
       expect(screen.getByTestId('spotlight-count')).toHaveTextContent(
@@ -276,6 +280,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           hasSpotlightDataToDownload={true}
+          ggisSchemeRefUrl={''}
+          spotlightErrors={spotlightErrors}
         />
       );
 
@@ -297,6 +303,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           hasSpotlightDataToDownload={true}
+          ggisSchemeRefUrl={''}
+          spotlightErrors={spotlightErrors}
         />
       );
 
@@ -320,6 +328,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           hasSpotlightDataToDownload={false}
+          ggisSchemeRefUrl={''}
+          spotlightErrors={spotlightErrors}
         />
       );
 
@@ -420,6 +430,9 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           isInternal={true}
           ggisSchemeRefUrl="url"
           spotlightErrors={spotlightErrors}
+          spotlightSubmissionCount={0}
+          spotlightLastUpdated={undefined}
+          hasSpotlightDataToDownload={false}
         />
       );
 
@@ -441,6 +454,9 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           isInternal={true}
           ggisSchemeRefUrl="url"
           spotlightErrors={apiError}
+          spotlightSubmissionCount={0}
+          spotlightLastUpdated={undefined}
+          hasSpotlightDataToDownload={false}
         />
       );
 
@@ -462,6 +478,9 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           isInternal={true}
           ggisSchemeRefUrl="url"
           spotlightErrors={ggisError}
+          spotlightSubmissionCount={0}
+          spotlightLastUpdated={undefined}
+          hasSpotlightDataToDownload={false}
         />
       );
 
@@ -483,6 +502,9 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           isInternal={true}
           ggisSchemeRefUrl="url"
           spotlightErrors={validationError}
+          spotlightSubmissionCount={0}
+          spotlightLastUpdated={undefined}
+          hasSpotlightDataToDownload={false}
         />
       );
 
