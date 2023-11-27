@@ -180,32 +180,22 @@ export const createDepartmentInformation = async (
     axiosUserServiceConfig(userToken)
   );
 
+type UserServiceIntegrationResponse = Omit<Integration, 'connectionUrl'>;
+
+const getSpotlightIntegration = async (userToken: string) => {
+  const integration = await axios.get<UserServiceIntegrationResponse>(
+    `${process.env.USER_SERVICE_URL}/spotlight/integration`,
+    axiosUserServiceConfig(userToken)
+  );
+  return {
+    ...integration.data,
+    connectionUrl: `${serverRuntimeConfig.userServiceHost}/spotlight/oauth/authorize`,
+  };
+};
+
 export const getIntegrations = async (
   userToken: string
 ): Promise<Integration[]> => {
-  // return axios.get(`${process.env.USER_SERVICE_URL}/integrations`, axiosUserServiceConfig(userToken));
-  return [
-    {
-      name: 'Spotlight',
-      status: 'Connected',
-      lastUpdated: '2003-10-25 21:28:50.164146',
-    },
-    {
-      name: 'Spotlight 2',
-      status: 'Disconnected',
-      lastUpdated: '2003-10-25 21:28:50.164146',
-      connectionEndpoint: 'some next /api/* route for the request',
-    },
-    {
-      name: 'Spotlight 3',
-      status: 'Connected',
-      lastUpdated: '2003-10-25 21:28:50.164146',
-    },
-    {
-      name: 'Spotlight 4',
-      status: 'Disconnected',
-      lastUpdated: '2003-10-25 21:28:50.164146',
-      connectionEndpoint: 'some next /api/* route for the request',
-    },
-  ];
+  const spotlightIntegration = await getSpotlightIntegration(userToken);
+  return [spotlightIntegration];
 };

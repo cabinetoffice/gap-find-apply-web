@@ -8,9 +8,9 @@ const getProps = ({ isConnected }: { isConnected: boolean }) => ({
   integrations: [
     {
       name: 'Test Integration',
-      status: isConnected ? 'Connected' : 'Disconnected',
-      lastUpdated: '2003-01-01T00:00:00.000Z',
-      connectionEndpoint: isConnected ? undefined : 'https://example.com',
+      status: isConnected ? 'Connected' : 'FAILURE',
+      timestamp: '2003-01-01T00:00:00.000Z',
+      connectionUrl: 'https://example.com',
     },
   ] as Integration[],
 });

@@ -10,6 +10,8 @@ import Navigation from '../Navigation';
 import styles from '../superadmin-dashboard.module.scss';
 import moment from 'moment';
 
+const FAILURE = 'FAILURE';
+
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
@@ -59,36 +61,37 @@ const Integrations = ({
 );
 
 const convertIntegrationsToTableRows = (integrations: Integration[]) =>
-  integrations.map(({ lastUpdated, name, status, connectionEndpoint }) => ({
+  integrations.map(({ timestamp, name, status, connectionUrl }) => ({
     cells: [
       { content: name },
-      { content: status },
+      { content: status === FAILURE ? 'Disconnected' : 'Connected' },
       {
-        content: <LastUpdatedCell lastUpdated={lastUpdated} />,
+        content: <LastUpdatedCell timestamp={timestamp} />,
       },
       {
-        content: connectionEndpoint ? (
-          <Link href={`${connectionEndpoint}`}>
-            <a className="govuk-link">Reconnect</a>
-          </Link>
-        ) : (
-          '-'
-        ),
+        content:
+          status === FAILURE ? (
+            <Link href={`${connectionUrl}`}>
+              <a className="govuk-link">Reconnect</a>
+            </Link>
+          ) : (
+            '-'
+          ),
       },
     ],
   }));
 
-const LastUpdatedCell = ({ lastUpdated }: { lastUpdated: string }) => {
-  const mobileLastUpdated = moment(lastUpdated).format('DD MMMM YYYY');
-  const lastUpdatedDayAndMonth = moment(lastUpdated).format('DD MMMM');
-  const lastUpdatedYear = moment(lastUpdated).format('YYYY');
+const LastUpdatedCell = ({ timestamp }: { timestamp: string }) => {
+  const mobileTimestamp = moment(timestamp).format('DD MMMM YYYY');
+  const timestampDayAndMonth = moment(timestamp).format('DD MMMM');
+  const timestampYear = moment(timestamp).format('YYYY');
 
   return (
     <>
-      <span className={styles['d-none-desktop']}>{mobileLastUpdated}</span>
+      <span className={styles['d-none-desktop']}>{mobileTimestamp}</span>
       <div className={styles['d-none-mobile']}>
-        <span>{lastUpdatedDayAndMonth} </span> <br />
-        <span> {lastUpdatedYear}</span>
+        <span>{timestampDayAndMonth} </span> <br />
+        <span> {timestampYear}</span>
       </div>
     </>
   );
@@ -96,9 +99,9 @@ const LastUpdatedCell = ({ lastUpdated }: { lastUpdated: string }) => {
 
 export type Integration = {
   name: string;
-  status: 'Connected' | 'Disconnected';
-  lastUpdated: string;
-  connectionEndpoint?: string;
+  status: 'FAILURE' | 'REQUEST';
+  timestamp: string;
+  connectionUrl: string;
 };
 
 export default Integrations;
