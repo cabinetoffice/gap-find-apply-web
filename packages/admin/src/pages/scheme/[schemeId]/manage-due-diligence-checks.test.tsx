@@ -24,6 +24,12 @@ const scheme = {
   version: '2',
 } as Scheme;
 
+const spotlightErrors = {
+  errorCount: 0,
+  errorStatus: 'API',
+  errorFound: false,
+} as SpotlightError;
+
 const getContext = (overrides: any = {}) =>
   merge(
     {
@@ -86,6 +92,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={false}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
         />
       );
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
@@ -101,6 +109,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={false}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
         />
       );
       screen.getByRole('heading', { name: 'Manage due diligence checks' });
@@ -113,6 +123,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={false}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
         />
       );
       screen.getByText(
@@ -130,6 +142,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
         />
       );
       screen.getByText(
@@ -150,6 +164,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
         />
       );
       screen.getByText(
@@ -170,6 +186,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
         />
       );
 
@@ -188,6 +206,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={false}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
         />
       );
 
@@ -203,6 +223,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={true}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
         />
       );
 
@@ -218,12 +240,92 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           hasInfoToDownload={false}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
         />
       );
 
       expect(
         screen.getByRole('button', { name: 'Back to grant summary' })
       ).toHaveAttribute('href', `/apply/scheme/${SCHEME_ID}`);
+    });
+
+    it('Should not show the Spotlight error banner if no errors have been found', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={false}
+          spotlightUrl="url"
+          isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
+        />
+      );
+
+      expect(screen.queryByTestId('spotlight-banner')).toBe(null);
+    });
+
+    it('Should show the Spotlight outage error banner if the API error is returned', () => {
+      const apiError = {
+        errorCount: 1,
+        errorStatus: 'API',
+        errorFound: true,
+      };
+
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={false}
+          spotlightUrl="url"
+          isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={apiError}
+        />
+      );
+
+      screen.getByText("We can't send your data to Spotlight");
+    });
+
+    it('Should show the Spotlight GGIS reference error banner if the GGIS error is returned', () => {
+      const ggisError = {
+        errorCount: 1,
+        errorStatus: 'GGIS',
+        errorFound: true,
+      };
+
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={false}
+          spotlightUrl="url"
+          isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={ggisError}
+        />
+      );
+
+      screen.getByText('Spotlight did not recognise your GGIS number');
+    });
+
+    it('Should show the Spotlight Outdated Format error banner if the VALIDATION error is returned', () => {
+      const validationError = {
+        errorCount: 1,
+        errorStatus: 'VALIDATION',
+        errorFound: true,
+      } as SpotlightError;
+
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={false}
+          spotlightUrl="url"
+          isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={validationError}
+        />
+      );
+
+      screen.getByText('Automatic uploads are not running');
     });
   });
 });

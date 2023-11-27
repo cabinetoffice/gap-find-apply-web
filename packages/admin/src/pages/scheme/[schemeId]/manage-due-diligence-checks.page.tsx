@@ -8,6 +8,8 @@ import {
 } from '../../../services/SchemeService';
 import InferProps from '../../../types/InferProps';
 import { getSessionIdFromCookies } from '../../../utils/session';
+import { getSpotlightErrors } from '../../../services/SpotlightService';
+import { SpotlightMessage } from '../../../components/notification-banner/SpotlightMessage';
 
 export const getServerSideProps = async ({
   params,
@@ -18,8 +20,14 @@ export const getServerSideProps = async ({
   const sessionCookie = getSessionIdFromCookies(req);
   const scheme = await getGrantScheme(schemeId, sessionCookie);
   const isInternal = await schemeApplicationIsInternal(schemeId, sessionCookie);
-  const spotlightUrl = process.env.SPOTLIGHT_LOGIN_URL;
+  const spotlightUrl = process.env.SPOTLIGHT_URL;
   const hasInfoToDownload = await completedMandatoryQuestions(
+    scheme.schemeId,
+    sessionCookie
+  );
+
+  const ggisSchemeRefUrl = `/scheme/edit/ggis-reference?schemeId=${scheme.schemeId}&defaultValue=${scheme.ggisReference}`;
+  const spotlightErrors = await getSpotlightErrors(
     scheme.schemeId,
     sessionCookie
   );
@@ -30,6 +38,8 @@ export const getServerSideProps = async ({
       hasInfoToDownload,
       spotlightUrl,
       isInternal,
+      ggisSchemeRefUrl,
+      spotlightErrors,
     },
   };
 };
@@ -39,6 +49,8 @@ const ManageDueDiligenceChecks = ({
   hasInfoToDownload,
   spotlightUrl,
   isInternal,
+  ggisSchemeRefUrl,
+  spotlightErrors,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
@@ -48,40 +60,13 @@ const ManageDueDiligenceChecks = ({
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-          <div
-            className="govuk-notification-banner"
-            role="region"
-            aria-labelledby="govuk-notification-banner-title"
-            data-module="govuk-notification-banner"
-          >
-            <div className="govuk-notification-banner__header">
-              <h2
-                className="govuk-notification-banner__title"
-                id="govuk-notification-banner-title"
-              >
-                Important
-              </h2>
-            </div>
-            <div className="govuk-notification-banner__content">
-              <p className="govuk-notification-banner__heading">
-                We can&apos;t send your data to Spotlight
-              </p>
-              <p className="govuk-body">
-                Some of your data cannot be automatically sent to Spotlight.
-                This affects {} of your records. You can still download this
-                data to manually upload it to Spotlight.
-              </p>
-              <p className="govuk-body">
-                If you need further support, contact our support team at{' '}
-                <a
-                  className="govuk-notification-banner__link"
-                  href="mailto:findagrant@cabinetoffice.gov.uk"
-                >
-                  findagrant@cabinetoffice.gov.uk
-                </a>
-              </p>
-            </div>
-          </div>
+          {spotlightErrors.errorFound && (
+            <SpotlightMessage
+              status={spotlightErrors.errorStatus}
+              count={spotlightErrors.errorCount}
+              schemeUrl={ggisSchemeRefUrl}
+            />
+          )}
 
           <h1 className="govuk-heading-l">Manage due diligence checks</h1>
 
