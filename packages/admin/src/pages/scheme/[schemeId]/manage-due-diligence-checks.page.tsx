@@ -13,9 +13,11 @@ import {
 import {
   getSpotlightLastUpdateDate,
   getSpotlightSubmissionCount,
+  getSpotlightErrors,
 } from '../../../services/SpotlightSubmissionService';
 import InferProps from '../../../types/InferProps';
 import { getSessionIdFromCookies } from '../../../utils/session';
+import { SpotlightMessage } from '../../../components/notification-banner/SpotlightMessage';
 
 export const getServerSideProps = async ({
   params,
@@ -26,13 +28,21 @@ export const getServerSideProps = async ({
   const sessionCookie = getSessionIdFromCookies(req);
   const scheme = await getGrantScheme(schemeId, sessionCookie);
   const isInternal = await schemeApplicationIsInternal(schemeId, sessionCookie);
-  const spotlightUrl = process.env.SPOTLIGHT_LOGIN_URL;
+  const spotlightUrl = process.env.SPOTLIGHT_URL;
   const hasInfoToDownload = await completedMandatoryQuestions(
     schemeId,
     sessionCookie
   );
+
   const hasSpotlightDataToDownload = await hasSpotlightData(
     schemeId,
+    sessionCookie
+  );
+
+  const ggisSchemeRefUrl = `/scheme/edit/ggis-reference?schemeId=${scheme.schemeId}&defaultValue=${scheme.ggisReference}`;
+
+  const spotlightErrors = await getSpotlightErrors(
+    scheme.schemeId,
     sessionCookie
   );
 
@@ -57,6 +67,8 @@ export const getServerSideProps = async ({
       spotlightLastUpdated,
       spotlightUrl,
       isInternal,
+      ggisSchemeRefUrl,
+      spotlightErrors,
       hasSpotlightDataToDownload,
     },
   };
@@ -69,6 +81,8 @@ const ManageDueDiligenceChecks = ({
   spotlightLastUpdated,
   spotlightUrl,
   isInternal,
+  ggisSchemeRefUrl,
+  spotlightErrors,
   hasSpotlightDataToDownload,
 }: InferProps<typeof getServerSideProps>) => {
   return (
@@ -79,6 +93,14 @@ const ManageDueDiligenceChecks = ({
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+          {spotlightErrors.errorFound && (
+            <SpotlightMessage
+              status={spotlightErrors.errorStatus}
+              count={spotlightErrors.errorCount}
+              schemeUrl={ggisSchemeRefUrl}
+            />
+          )}
+
           <h1 className="govuk-heading-l">Manage due diligence checks</h1>
 
           {!hasInfoToDownload ? (
