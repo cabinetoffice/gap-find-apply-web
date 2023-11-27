@@ -15,6 +15,7 @@ import Scheme from '../../../types/Scheme';
 import ManageDueDiligenceChecks, {
   getServerSideProps,
 } from './manage-due-diligence-checks.page';
+import { SpotlightError } from '../../../types/SpotlightError';
 
 const APPLICATION_ID = '1';
 const SCHEME_ID = '2';
@@ -28,6 +29,12 @@ const scheme = {
   createdDate: '',
   version: '2',
 } as Scheme;
+
+const spotlightErrors = {
+  errorCount: 0,
+  errorStatus: 'API',
+  errorFound: false,
+} as SpotlightError;
 
 const getContext = (overrides: any = {}) =>
   merge(
@@ -120,6 +127,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
           hasSpotlightDataToDownload={true}
         />
       );
@@ -138,6 +147,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
           hasSpotlightDataToDownload={true}
         />
       );
@@ -153,6 +164,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={false}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
           hasSpotlightDataToDownload={true}
         />
       );
@@ -173,6 +186,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
           hasSpotlightDataToDownload={true}
         />
       );
@@ -197,6 +212,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           hasSpotlightDataToDownload={true}
+          ggisSchemeRefUrl={''}
+          spotlightErrors={spotlightErrors}
         />
       );
 
@@ -217,6 +234,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           hasSpotlightDataToDownload={true}
+          ggisSchemeRefUrl={''}
+          spotlightErrors={spotlightErrors}
         />
       );
       expect(screen.getByTestId('spotlight-count')).toHaveTextContent(
@@ -236,6 +255,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
           hasSpotlightDataToDownload={true}
         />
       );
@@ -260,15 +281,12 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           hasSpotlightDataToDownload={true}
+          ggisSchemeRefUrl={''}
+          spotlightErrors={spotlightErrors}
         />
       );
 
-      screen.queryByText(
-        /You can download the information you need to run checks to upload it to Spotlight manually\./i
-      );
-      screen.getByText(
-        /if you do not use spotlight, you can download all of the due diligence information to run checks in another service\./i
-      );
+      screen.queryByText(/download the information you need to run checks\./i);
     });
 
     it('Should render the spotlight checks download link', () => {
@@ -281,6 +299,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           hasSpotlightDataToDownload={true}
+          ggisSchemeRefUrl={''}
+          spotlightErrors={spotlightErrors}
         />
       );
 
@@ -294,7 +314,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
     });
 
-    it('Should not render the spotlight checks download link if there is nothing to download', () => {
+    it('Should not render the Spotlight checks download link if there is nothing to download', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
@@ -304,6 +324,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           hasSpotlightDataToDownload={false}
+          ggisSchemeRefUrl={''}
+          spotlightErrors={spotlightErrors}
         />
       );
 
@@ -321,6 +343,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
           hasSpotlightDataToDownload={true}
         />
       );
@@ -344,6 +368,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={false}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
           hasSpotlightDataToDownload={true}
         />
       );
@@ -360,6 +386,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
           hasSpotlightDataToDownload={true}
         />
       );
@@ -378,6 +406,8 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
           hasSpotlightDataToDownload={true}
         />
       );
@@ -385,6 +415,96 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       expect(
         screen.getByRole('button', { name: 'Back to grant summary' })
       ).toHaveAttribute('href', `/apply/scheme/${SCHEME_ID}`);
+    });
+
+    it('Should not show the Spotlight error banner if no errors have been found', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={false}
+          spotlightUrl="url"
+          isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
+          spotlightSubmissionCount={0}
+          spotlightLastUpdated={undefined}
+          hasSpotlightDataToDownload={false}
+        />
+      );
+
+      expect(screen.queryByTestId('spotlight-banner')).toBe(null);
+    });
+
+    it('Should show the Spotlight outage error banner if the API error is returned', () => {
+      const apiError = {
+        errorCount: 1,
+        errorStatus: 'API',
+        errorFound: true,
+      };
+
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={false}
+          spotlightUrl="url"
+          isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={apiError}
+          spotlightSubmissionCount={0}
+          spotlightLastUpdated={undefined}
+          hasSpotlightDataToDownload={false}
+        />
+      );
+
+      screen.getByText("We can't send your data to Spotlight");
+    });
+
+    it('Should show the Spotlight GGIS reference error banner if the GGIS error is returned', () => {
+      const ggisError = {
+        errorCount: 1,
+        errorStatus: 'GGIS',
+        errorFound: true,
+      };
+
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={false}
+          spotlightUrl="url"
+          isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={ggisError}
+          spotlightSubmissionCount={0}
+          spotlightLastUpdated={undefined}
+          hasSpotlightDataToDownload={false}
+        />
+      );
+
+      screen.getByText('Spotlight did not recognise your GGIS number');
+    });
+
+    it('Should show the Spotlight Outdated Format error banner if the VALIDATION error is returned', () => {
+      const validationError = {
+        errorCount: 1,
+        errorStatus: 'VALIDATION',
+        errorFound: true,
+      } as SpotlightError;
+
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={false}
+          spotlightUrl="url"
+          isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={validationError}
+          spotlightSubmissionCount={0}
+          spotlightLastUpdated={undefined}
+          hasSpotlightDataToDownload={false}
+        />
+      );
+
+      screen.getByText('Automatic uploads are not running');
     });
   });
 });

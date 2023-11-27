@@ -50,7 +50,7 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
                 'Yorkshire and the Humber',
                 'East Midlands (England)',
                 'West Midlands (England)',
-                'East England',
+                'East (England)',
                 'London',
                 'South East (England)',
                 'South West (England)',
