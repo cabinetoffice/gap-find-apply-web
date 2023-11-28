@@ -120,7 +120,7 @@ export async function middleware(req: NextRequest) {
       return buildMiddlewareResponse(req, HOST);
     }
 
-    if (isWithinNumberOfMinsOfExpiry(expiresAt, 120)) {
+    if (isWithinNumberOfMinsOfExpiry(expiresAt, 30)) {
       return buildMiddlewareResponse(
         req,
         `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}${
