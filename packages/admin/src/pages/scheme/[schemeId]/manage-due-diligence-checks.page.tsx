@@ -137,12 +137,10 @@ const ManageDueDiligenceChecks = ({
                     the information you need to run due diligence checks in
                     Spotlight, a government owned due diligence tool.
                   </p>
-
                   <p className="govuk-body">
                     We automatically send the information to Spotlight. You need
                     to log in to Spotlight to run your checks.
                   </p>
-
                   <p className="govuk-body">
                     Spotlight does not run checks on individuals or local
                     authorities.
@@ -190,6 +188,18 @@ const ManageDueDiligenceChecks = ({
                       to upload it to Spotlight manually.
                     </p>
                   )}
+                  {spotlightErrors.errorFound &&
+                    spotlightErrors.errorStatus === 'VALIDATION' && (
+                      <p className="govuk-body">
+                        You can also{' '}
+                        <CustomLink
+                          href={`/api/downloadSpotlightChecks?schemeId=${scheme.schemeId}`}
+                        >
+                          download checks that Find a grant cannot send to
+                          Spotlight
+                        </CustomLink>{' '}
+                      </p>
+                    )}
                   <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible"></hr>
                 </div>
               )}
