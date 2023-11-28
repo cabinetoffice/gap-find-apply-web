@@ -39,13 +39,15 @@ describe('Middleware', () => {
       expiresAt: expiresAt.toISOString(),
     });
 
-    const req = new NextRequest(new Request('https://some.website.com/test'));
+    const req = new NextRequest(
+      new Request('https://some.website.com/test?scheme=1')
+    );
     req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
     const res = await middleware(req);
 
     expect(res.status).toBe(307);
     expect(res.headers.get('Location')).toBe(
-      `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}/test`
+      `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}/test?scheme=1`
     );
   });
 
