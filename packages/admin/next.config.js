@@ -1,3 +1,4 @@
+require('dotenv-safe').config();
 const path = require('path');
 
 module.exports = {
