@@ -435,10 +435,10 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       expect(screen.queryByTestId('spotlight-banner')).toBe(null);
     });
 
-    it('Should show the Spotlight outage error banner if the API error is returned', () => {
+    it('Should show the Spotlight outage error banner if the VALIDATION error is returned', () => {
       const apiError = {
         errorCount: 1,
-        errorStatus: 'API',
+        errorStatus: 'VALIDATION',
         errorFound: true,
       };
 
@@ -483,10 +483,10 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       screen.getByText('Spotlight did not recognise your GGIS number');
     });
 
-    it('Should show the Spotlight Outdated Format error banner if the VALIDATION error is returned', () => {
+    it('Should show the Spotlight Outdated Format error banner if the API error is returned', () => {
       const validationError = {
         errorCount: 1,
-        errorStatus: 'VALIDATION',
+        errorStatus: 'API',
         errorFound: true,
       } as SpotlightError;
 
