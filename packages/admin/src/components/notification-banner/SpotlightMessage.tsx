@@ -7,16 +7,16 @@ type SpotlightMessageProps = {
 };
 
 const spotlightErrorTitles: { [key: string]: string } = {
-  API: "We can't send your data to Spotlight",
+  VALIDATION: "We can't send your data to Spotlight",
   GGIS: 'Spotlight did not recognise your GGIS number',
-  VALIDATION: 'Automatic uploads are not running',
+  API: 'Automatic uploads are not running',
 };
 
 const spotlightErrorMessages: { [key: string]: string } = {
-  API: 'Some of your data cannot be automatically sent to Spotlight.\nThis affects {count} of your records. You can still download this data to manually upload it to Spotlight.',
-  GGIS: "Spotlight did not recognise the GGIS reference number for your grant. Your data is still secure, and we'll try to send your data to Spotlight again tonight.",
   VALIDATION:
-    "Due to a service outage, we cannot automatically send data to Spotlight at the moment.\nThis affects {count} of your records. We'll try to send those records again tonight. You can still download your data and upload it to Spotlight manually.",
+    'Some of your data cannot be automatically sent to Spotlight.\nThis affects {count} of your records. You can still download this data to manually upload it to Spotlight.',
+  GGIS: "Spotlight did not recognise the GGIS reference number for your grant. Your data is still secure, and we'll try to send your data to Spotlight again tonight.",
+  API: "Due to a service outage, we cannot automatically send data to Spotlight at the moment.\nThis affects {count} of your records. We'll try to send those records again tonight. You can still download your data and upload it to Spotlight manually.",
 };
 
 const SpotlightMessage = ({
