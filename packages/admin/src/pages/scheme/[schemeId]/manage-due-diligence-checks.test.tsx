@@ -436,7 +436,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     });
 
     it('Should show the Spotlight outage error banner if the VALIDATION error is returned', () => {
-      const apiError = {
+      const validationError = {
         errorCount: 1,
         errorStatus: 'VALIDATION',
         errorFound: true,
@@ -449,7 +449,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           ggisSchemeRefUrl="url"
-          spotlightErrors={apiError}
+          spotlightErrors={validationError}
           spotlightSubmissionCount={0}
           spotlightLastUpdated={undefined}
           hasSpotlightDataToDownload={false}
@@ -484,7 +484,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     });
 
     it('Should show the Spotlight Outdated Format error banner if the API error is returned', () => {
-      const validationError = {
+      const apiError = {
         errorCount: 1,
         errorStatus: 'API',
         errorFound: true,
@@ -497,7 +497,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightUrl="url"
           isInternal={true}
           ggisSchemeRefUrl="url"
-          spotlightErrors={validationError}
+          spotlightErrors={apiError}
           spotlightSubmissionCount={0}
           spotlightLastUpdated={undefined}
           hasSpotlightDataToDownload={false}
@@ -505,6 +505,36 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
 
       screen.getByText('Automatic uploads are not running');
+    });
+
+    it('Should show the download failed Spotlight checks link if the VALIDATION error is returned', () => {
+      const validationError = {
+        errorCount: 1,
+        errorStatus: 'VALIDATION',
+        errorFound: true,
+      };
+
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={true}
+          spotlightUrl="url"
+          isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={validationError}
+          spotlightSubmissionCount={1}
+          spotlightLastUpdated={undefined}
+          hasSpotlightDataToDownload={true}
+        />
+      );
+      expect(
+        screen.getByRole('link', {
+          name: 'download checks that Find a grant cannot send to Spotlight',
+        })
+      ).toHaveAttribute(
+        'href',
+        `/apply/api/downloadSpotlightValidationErrorSubmissions?schemeId=${scheme.schemeId}`
+      );
     });
   });
 });

@@ -193,7 +193,7 @@ const ManageDueDiligenceChecks = ({
                       <p className="govuk-body">
                         You can also{' '}
                         <CustomLink
-                          href={`/api/downloadSpotlightValidationErrorFiles?schemeId=${scheme.schemeId}`}
+                          href={`/api/downloadSpotlightValidationErrorSubmissions?schemeId=${scheme.schemeId}`}
                         >
                           download checks that Find a grant cannot send to
                           Spotlight
@@ -210,7 +210,7 @@ const ManageDueDiligenceChecks = ({
               </p>
               <p className="govuk-body">
                 <CustomLink
-                  href={`/api/downloadSpotlightValidationErrorSubmissions?schemeId=${scheme.schemeId}`}
+                  href={`/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`}
                 >
                   Download checks from applications
                 </CustomLink>
