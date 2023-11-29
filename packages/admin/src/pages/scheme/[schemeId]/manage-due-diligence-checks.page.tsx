@@ -2,6 +2,7 @@ import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import InsetText from '../../../components/inset-text/InsetText';
 import Meta from '../../../components/layout/Meta';
+import { SpotlightMessage } from '../../../components/notification-banner/SpotlightMessage';
 import {
   completedMandatoryQuestions,
   hasSpotlightData,
@@ -11,13 +12,12 @@ import {
   schemeApplicationIsInternal,
 } from '../../../services/SchemeService';
 import {
+  getSpotlightErrors,
   getSpotlightLastUpdateDate,
   getSpotlightSubmissionCount,
-  getSpotlightErrors,
 } from '../../../services/SpotlightSubmissionService';
 import InferProps from '../../../types/InferProps';
 import { getSessionIdFromCookies } from '../../../utils/session';
-import { SpotlightMessage } from '../../../components/notification-banner/SpotlightMessage';
 
 export const getServerSideProps = async ({
   params,
@@ -193,7 +193,7 @@ const ManageDueDiligenceChecks = ({
                       <p className="govuk-body">
                         You can also{' '}
                         <CustomLink
-                          href={`/api/downloadSpotlightChecks?schemeId=${scheme.schemeId}`}
+                          href={`/api/downloadSpotlightValidationErrorFiles?schemeId=${scheme.schemeId}`}
                         >
                           download checks that Find a grant cannot send to
                           Spotlight
@@ -210,7 +210,7 @@ const ManageDueDiligenceChecks = ({
               </p>
               <p className="govuk-body">
                 <CustomLink
-                  href={`/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`}
+                  href={`/api/downloadSpotlightValidationErrorSubmissions?schemeId=${scheme.schemeId}`}
                 >
                   Download checks from applications
                 </CustomLink>

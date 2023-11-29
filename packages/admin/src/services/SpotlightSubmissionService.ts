@@ -1,7 +1,7 @@
 import axios from 'axios';
 import getConfig from 'next/config';
-import { axiosSessionConfig } from '../utils/session';
 import { SpotlightError } from '../types/SpotlightError';
+import { axiosSessionConfig } from '../utils/session';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -50,4 +50,21 @@ export const getSpotlightErrors = async (
   );
 
   return response.data as SpotlightError;
+};
+
+export const getSpotlightValidationErrorSubmissions = async (
+  sessionCookie: string,
+  schemeId: string
+) => {
+  const response = await axios.get(
+    `${BASE_SPOTLIGHT_BATCH_URL}/get-validation-error-files/${schemeId}`,
+    {
+      withCredentials: true,
+      responseType: 'arraybuffer',
+      headers: {
+        Cookie: `SESSION=${sessionCookie};`,
+      },
+    }
+  );
+  return response;
 };
