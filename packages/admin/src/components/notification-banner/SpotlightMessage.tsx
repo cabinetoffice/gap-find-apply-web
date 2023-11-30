@@ -53,20 +53,35 @@ const SpotlightMessage = ({
                 Check that your grant reference number is correct.
               </CustomLink>{' '}
               Your data is still secure, and we&apos;ll try to send your data to
-              Spotlight again tonight.
+              Spotlight again tonight. If your GGIS number is correct and this
+              error persists after we retry sending your data, get in contact
+              with our support team at{' '}
+              <a
+                className="govuk-notification-banner__link"
+                href="mailto:findagrant@cabinetoffice.gov.uk"
+              >
+                findagrant@cabinetoffice.gov.uk
+              </a>
             </p>
           ) : (
-            spotlightErrorMessages[status].replace('{count}', count.toString())
+            <>
+              <p>
+                {spotlightErrorMessages[status].replace(
+                  '{count}',
+                  count.toString()
+                )}
+              </p>
+              <p className="govuk-body">
+                If you need further support, contact our support team at{' '}
+                <a
+                  className="govuk-notification-banner__link"
+                  href="mailto:findagrant@cabinetoffice.gov.uk"
+                >
+                  findagrant@cabinetoffice.gov.uk
+                </a>
+              </p>
+            </>
           )}
-        </p>
-        <p className="govuk-body">
-          If you need further support, contact our support team at{' '}
-          <a
-            className="govuk-notification-banner__link"
-            href="mailto:findagrant@cabinetoffice.gov.uk"
-          >
-            findagrant@cabinetoffice.gov.uk
-          </a>
         </p>
       </div>
     </div>
