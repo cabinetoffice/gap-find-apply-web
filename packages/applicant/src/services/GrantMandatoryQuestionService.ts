@@ -107,4 +107,5 @@ export interface GrantMandatoryQuestionDto {
   schemeId?: number;
   submissionId?: string;
   mandatoryQuestionsComplete?: boolean;
+  status?: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 }
