@@ -1,7 +1,6 @@
 import { merge } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
 import {
-  AdvertDto,
   GrantExistsInContentfulDto,
   checkIfGrantExistsInContentful,
   getAdvertBySlug,
@@ -10,6 +9,7 @@ import { GrantMandatoryQuestionDto } from '../../services/GrantMandatoryQuestion
 import { Overrides } from '../../testUtils/unitTestHelpers';
 import { getJwtFromCookies } from '../../utils/jwt';
 import handler from './redirect-from-find.page';
+import { GrantAdvert } from '../../types/models/GrantAdvert';
 
 // Mock the getAdvertBySlug function (you may need to adjust this based on your actual implementation)
 jest.mock('../../services/GrantAdvertService');
@@ -55,7 +55,7 @@ describe('API Handler Tests', () => {
   });
 
   it('should redirect to /grantWebPageUrl when advert is only in contentful', async () => {
-    const advertDTO: AdvertDto = {
+    const advertDTO: GrantAdvert = {
       id: null,
       version: null,
       grantApplicationId: null,
@@ -77,7 +77,7 @@ describe('API Handler Tests', () => {
     expect(mockedRedirect).toHaveBeenCalledWith('grantWebpageUrl');
   });
   it('should redirect to /applications/<applicationId> when advert is version 1 and have internal application', async () => {
-    const advertDTO: AdvertDto = {
+    const advertDTO: GrantAdvert = {
       id: '123',
       version: 1,
       grantApplicationId: 123,
@@ -100,7 +100,7 @@ describe('API Handler Tests', () => {
     );
   });
   it('should redirect to the external Submission Url when advert is version 1 and have internal application', async () => {
-    const advertDTO: AdvertDto = {
+    const advertDTO: GrantAdvert = {
       id: '123',
       version: 1,
       grantApplicationId: 123,
@@ -122,7 +122,7 @@ describe('API Handler Tests', () => {
   });
 
   it('should redirect to the new Mandatory Question journey start page when advert is version 2 and have internal application', async () => {
-    const advertDTO: AdvertDto = {
+    const advertDTO: GrantAdvert = {
       id: '123',
       version: 2,
       grantApplicationId: 123,
@@ -146,7 +146,7 @@ describe('API Handler Tests', () => {
   });
 
   it('should redirect to the new Mandatory Question journey start page when advert is version 2 and have external application', async () => {
-    const advertDTO: AdvertDto = {
+    const advertDTO: GrantAdvert = {
       id: '123',
       version: 2,
       grantApplicationId: 123,
@@ -171,9 +171,10 @@ describe('API Handler Tests', () => {
   it('should redirect to the new Mandatory Question journey start page when advert is version 2 and mandatoryQuestionsDto has not submissionId', async () => {
     const mandatoryQuestionsDto: GrantMandatoryQuestionDto = {
       submissionId: null,
+      status: 'NOT_STARTED',
     };
 
-    const advertDTO: AdvertDto = {
+    const advertDTO: GrantAdvert = {
       id: '123',
       version: 2,
       grantApplicationId: 123,
@@ -196,12 +197,13 @@ describe('API Handler Tests', () => {
     );
   });
 
-  it('should redirect to the submission page when advert is version 2 and mandatoryQuestionsDto has already been answered', async () => {
+  it('should redirect to the submission page when advert is version 2 and mandatoryQuestionsDto has COMPLETED status, and advert is internal', async () => {
     const mandatoryQuestionsDto: GrantMandatoryQuestionDto = {
       submissionId: '125',
+      status: 'COMPLETED',
     };
 
-    const advertDTO: AdvertDto = {
+    const advertDTO: GrantAdvert = {
       id: '123',
       version: 2,
       grantApplicationId: 123,
@@ -222,6 +224,33 @@ describe('API Handler Tests', () => {
     expect(mockedRedirect).toHaveBeenCalledWith(
       'http://localhost/applications'
     );
+  });
+
+  it('should redirect to the externalSubmissionUrl when advert is version 2, mandatoryQuestionsDto have COMPLETED status and advert is external', async () => {
+    const mandatoryQuestionsDto: GrantMandatoryQuestionDto = {
+      submissionId: null,
+      status: 'COMPLETED',
+    };
+
+    const advertDTO: GrantAdvert = {
+      id: '123',
+      version: 2,
+      grantApplicationId: 123,
+      isInternal: false,
+      grantSchemeId: 456,
+      externalSubmissionUrl: 'http://example.com',
+      isAdvertInDatabase: true,
+      mandatoryQuestionsDto: mandatoryQuestionsDto,
+    };
+
+    (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
+      advertIsInContenful
+    );
+    (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    await handler(req(), res());
+
+    expect(mockedRedirect).toHaveBeenCalledWith('http://example.com');
   });
 
   it('should redirect to the service Error when there is an error in the call to the backend', async () => {
