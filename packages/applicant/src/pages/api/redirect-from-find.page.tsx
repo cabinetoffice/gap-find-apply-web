@@ -46,7 +46,9 @@ export default async function handler(
 
     if (version === 2) {
       if (!isPublished) {
-        throw new Error();
+        throw new Error(
+          'Grant is not in a published state - cannot redirect the user'
+        );
       }
 
       const mqAreCompleted =
