@@ -212,7 +212,7 @@ const ManageDueDiligenceChecks = ({
                 <CustomLink
                   href={`/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`}
                 >
-                  Download checks from applications
+                  Download due diligence information
                 </CustomLink>
               </p>
             </>
