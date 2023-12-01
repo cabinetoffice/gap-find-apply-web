@@ -334,7 +334,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('Should render the download link', () => {
+    it('Should render the download link and text for internal applications', () => {
       render(
         <ManageDueDiligenceChecks
           scheme={scheme}
@@ -343,6 +343,31 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
           spotlightUrl="url"
           isInternal={true}
+          ggisSchemeRefUrl="url"
+          spotlightErrors={spotlightErrors}
+          hasSpotlightDataToDownload={true}
+        />
+      );
+
+      expect(
+        screen.getByRole('link', {
+          name: 'Download checks from applications',
+        })
+      ).toHaveAttribute(
+        'href',
+        `/apply/api/downloadDueDiligenceChecks?schemeId=${SCHEME_ID}`
+      );
+    });
+
+    it('Should render the download link and text for external applications', () => {
+      render(
+        <ManageDueDiligenceChecks
+          scheme={scheme}
+          hasInfoToDownload={true}
+          spotlightSubmissionCount={2}
+          spotlightLastUpdated={SPOTLIGHT_LAST_UPDATED}
+          spotlightUrl="url"
+          isInternal={false}
           ggisSchemeRefUrl="url"
           spotlightErrors={spotlightErrors}
           hasSpotlightDataToDownload={true}

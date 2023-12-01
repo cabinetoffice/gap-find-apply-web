@@ -209,11 +209,19 @@ const ManageDueDiligenceChecks = ({
                 diligence information to run checks in another service.
               </p>
               <p className="govuk-body">
-                <CustomLink
-                  href={`/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`}
-                >
-                  Download due diligence information
-                </CustomLink>
+                {isInternal ? (
+                  <CustomLink
+                    href={`/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`}
+                  >
+                    Download checks from applications
+                  </CustomLink>
+                ) : (
+                  <CustomLink
+                    href={`/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`}
+                  >
+                    Download due diligence information
+                  </CustomLink>
+                )}
               </p>
             </>
           )}
