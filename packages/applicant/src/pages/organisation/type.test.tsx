@@ -29,11 +29,15 @@ describe('Organisation type page', () => {
   it('should display a question hint text', () => {
     renderWithRouter(<OrganisationType {...getPageProps(getDefaultProps)} />);
 
-    screen.getByText('Why do we need this information?');
     screen.getByText(
-      'It helps us to identify you or your organisation. We use this information for due diligence checks and to prevent fraud.'
+      'Choose the option that best describes you or your organisation'
     );
-    screen.getByText('Choose one:');
+  });
+
+  it('should display an according with additional information', () => {
+    renderWithRouter(<OrganisationType {...getPageProps(getDefaultProps)} />);
+
+    screen.getByText('Why do we need this information?');
   });
 
   it('should display radio buttons with no default', () => {
