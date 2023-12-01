@@ -30,6 +30,7 @@ export default async function handler(
       grantSchemeId,
       isAdvertInDatabase,
       mandatoryQuestionsDto,
+      isPublished,
     } = await getAdvertBySlug(getJwtFromCookies(req), slug);
 
     if (!isAdvertInDatabase && isAdvertInContentful) {
@@ -44,6 +45,10 @@ export default async function handler(
     }
 
     if (version === 2) {
+      if (!isPublished) {
+        throw new Error();
+      }
+
       const mqAreCompleted =
         mandatoryQuestionsDto !== null &&
         mandatoryQuestionsDto.status === 'COMPLETED';

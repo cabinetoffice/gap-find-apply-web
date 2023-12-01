@@ -9,4 +9,5 @@ export type GrantAdvert = {
   grantSchemeId?: number;
   isAdvertInDatabase: boolean;
   mandatoryQuestionsDto?: GrantMandatoryQuestionDto;
+  isPublished?: boolean;
 };
