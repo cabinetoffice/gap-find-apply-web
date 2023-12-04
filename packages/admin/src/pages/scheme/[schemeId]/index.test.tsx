@@ -462,7 +462,7 @@ describe('scheme/[schemeId]', () => {
         screen.queryByText(/due diligence checks/)
       ).not.toBeInTheDocument();
     });
-
+    
     it('Should not render a "Due diligence checks" section when no advert and no application', () => {
       mockScheme.version = '2';
       render(
