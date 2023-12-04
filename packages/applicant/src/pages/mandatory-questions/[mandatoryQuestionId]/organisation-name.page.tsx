@@ -38,7 +38,7 @@ export default function MandatoryQuestionOrganisationNamePage({
           <TextInput
             questionTitle={
               isUserIndividual
-                ? 'Enter your name'
+                ? 'Enter your full name'
                 : 'Enter the name of your organisation'
             }
             questionHintText={

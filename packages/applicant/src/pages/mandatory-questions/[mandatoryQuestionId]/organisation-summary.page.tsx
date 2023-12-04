@@ -18,11 +18,13 @@ export const generateMandatoryQuestionDetails = (
     'Charity',
     'Other',
   ].includes(mandatoryQuestion.orgType);
+  const isIndividual =
+    mandatoryQuestion.orgType === 'I am applying as an individual';
 
   return [
     {
       id: 'organisationType',
-      label: 'Type of organisation',
+      label: isIndividual ? 'Type of application' : 'Type of organisation',
       value: mandatoryQuestion?.orgType,
       url: routes.mandatoryQuestions.typePage(mandatoryQuestionId),
       status: 'Change',
