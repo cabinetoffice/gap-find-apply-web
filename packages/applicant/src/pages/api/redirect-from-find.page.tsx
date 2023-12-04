@@ -46,9 +46,7 @@ export default async function handler(
 
     if (version === 2) {
       if (!isPublished) {
-        throw new Error(
-          'Grant is not in a published state - cannot redirect the user'
-        );
+        redirectToServiceError();
       }
 
       const mqAreCompleted =
@@ -73,6 +71,11 @@ export default async function handler(
       );
     }
   } catch (e) {
+    console.log(e);
+    redirectToServiceError();
+  }
+
+  function redirectToServiceError() {
     const serviceErrorProps = {
       errorInformation: 'There was an error in the service',
       linkAttributes: {
@@ -81,7 +84,6 @@ export default async function handler(
         linkInformation: '',
       },
     };
-    console.log(e);
     res.redirect(
       `${process.env.HOST}${routes.serviceError(serviceErrorProps)}`
     );
