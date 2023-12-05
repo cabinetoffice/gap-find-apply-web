@@ -58,7 +58,7 @@ describe('Organisation name page', () => {
     );
 
     screen.getByRole('heading', {
-      name: 'Enter your name',
+      name: 'Enter your full name',
       level: 1,
     });
   });
