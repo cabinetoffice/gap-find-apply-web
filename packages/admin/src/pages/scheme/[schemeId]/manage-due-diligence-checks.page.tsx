@@ -1,6 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
-import InsetText from '../../../components/inset-text/InsetText';
 import Meta from '../../../components/layout/Meta';
 import { SpotlightMessage } from '../../../components/notification-banner/SpotlightMessage';
 import {
@@ -12,7 +11,6 @@ import {
   schemeApplicationIsInternal,
 } from '../../../services/SchemeService';
 import {
-  getSpotlightErrors,
   getSpotlightLastUpdateDate,
   getSpotlightSubmissionCount,
 } from '../../../services/SpotlightSubmissionService';
@@ -20,6 +18,7 @@ import InferProps from '../../../types/InferProps';
 import { getSessionIdFromCookies } from '../../../utils/session';
 import { InternalApplication } from './components/InternalApplication';
 import { ExternalApplication } from './components/ExternalApplication';
+import { getSpotlightErrors } from '../../../services/SpotlightBatchService';
 
 export const getServerSideProps = async ({
   params,

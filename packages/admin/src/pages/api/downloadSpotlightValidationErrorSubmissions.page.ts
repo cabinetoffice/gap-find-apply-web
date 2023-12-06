@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getSpotlightValidationErrorSubmissions } from '../../services/SpotlightSubmissionService';
+import { getSpotlightValidationErrorSubmissions } from '../../services/SpotlightBatchService';
 import { getSessionIdFromCookies } from '../../utils/session';
 
 const downloadSpotlightValidationErrorSubmissions = async (
