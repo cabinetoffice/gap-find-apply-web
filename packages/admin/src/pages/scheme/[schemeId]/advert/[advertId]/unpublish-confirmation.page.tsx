@@ -112,49 +112,44 @@ const UnpublishConfirmationPage = ({
       <CustomLink isBackButton href={backHref} />
 
       <div className="govuk-!-padding-top-7">
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
-            <FlexibleQuestionPageLayout
-              formAction={formAction}
-              fieldErrors={fieldErrors}
-              csrfToken={csrfToken}
-            >
-              <Radio
-                questionTitle="Are you sure you want to unpublish this advert?"
-                questionHintText={
-                  <div>
-                    <p className="govuk-body">
-                      Once unpublished, your advert will no longer appear on
-                      Find a grant.
-                    </p>
-                    <p className="govuk-body">
-                      If you used this service to build an application form that
-                      is linked to this advert, and you want to stop applicants
-                      from submitting, you need to unpublish the application
-                      form too.
-                    </p>
-                  </div>
-                }
-                fieldName="confirmation"
-                radioOptions={[
-                  { label: 'Yes, unpublish my advert', value: 'true' },
-                  {
-                    label: 'No, keep my advert on Find a grant',
-                    value: 'false',
-                  },
-                ]}
-                fieldErrors={fieldErrors}
-              />
-              <button
-                className="govuk-button"
-                data-module="govuk-button"
-                data-cy="cy_unpublishConfirmation-ConfirmButton"
-              >
-                Confirm
-              </button>
-            </FlexibleQuestionPageLayout>
-          </div>
-        </div>
+        <FlexibleQuestionPageLayout
+          formAction={formAction}
+          fieldErrors={fieldErrors}
+          csrfToken={csrfToken}
+        >
+          <Radio
+            questionTitle="Are you sure you want to unpublish this advert?"
+            questionHintText={
+              <div>
+                <p className="govuk-body">
+                  Once unpublished, your advert will no longer appear on Find a
+                  grant.
+                </p>
+                <p className="govuk-body">
+                  If you used this service to build an application form that is
+                  linked to this advert, and you want to stop applicants from
+                  submitting, you need to unpublish the application form too.
+                </p>
+              </div>
+            }
+            fieldName="confirmation"
+            radioOptions={[
+              { label: 'Yes, unpublish my advert', value: 'true' },
+              {
+                label: 'No, keep my advert on Find a grant',
+                value: 'false',
+              },
+            ]}
+            fieldErrors={fieldErrors}
+          />
+          <button
+            className="govuk-button"
+            data-module="govuk-button"
+            data-cy="cy_unpublishConfirmation-ConfirmButton"
+          >
+            Confirm
+          </button>
+        </FlexibleQuestionPageLayout>
       </div>
     </>
   );
