@@ -6559,6 +6559,7 @@ __metadata:
     cypress-recurse: ^1.18.0
     date-fns: ^2.19.0
     dotenv: ^16.0.0
+    dotenv-safe: ^8.2.0
     gap-web-ui: "*"
     govuk-frontend: 4.7.0
     gray-matter: 4.0.3
@@ -6800,6 +6801,7 @@ __metadata:
     cypress-recurse: ^1.18.0
     date-fns: ^2.19.0
     dotenv: ^16.0.0
+    dotenv-safe: ^8.2.0
     eslint: 8.42.0
     eslint-config-next: 12.0.7
     eslint-config-prettier: ^8.5.0
@@ -9320,10 +9322,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dotenv-safe@npm:^8.2.0":
+  version: 8.2.0
+  resolution: "dotenv-safe@npm:8.2.0"
+  dependencies:
+    dotenv: ^8.2.0
+  checksum: 8b73770330528d77630009afa44239127c44d634b0fa7d7545932a8e72686d774ceadea62d381ed7c911e0facac4ee1489132e44b746f36eb8f2e3ee6929eb78
+  languageName: node
+  linkType: hard
+
 "dotenv@npm:^16.0.0":
   version: 16.1.4
   resolution: "dotenv@npm:16.1.4"
   checksum: c1b2e13df4d374a6a29e134c56c7b040ba20500677fe8b9939ea654f3b3badb9aaa0b172e40e4dfa1233a4177dbb8fb79d84cc79a50ac9c9641fe2ad98c14876
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^8.2.0":
+  version: 8.6.0
+  resolution: "dotenv@npm:8.6.0"
+  checksum: 38e902c80b0666ab59e9310a3d24ed237029a7ce34d976796349765ac96b8d769f6df19090f1f471b77a25ca391971efde8a1ea63bb83111bd8bec8e5cc9b2cd
   languageName: node
   linkType: hard
 
