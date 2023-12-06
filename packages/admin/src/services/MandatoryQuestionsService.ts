@@ -6,10 +6,11 @@ const BASE_MANDATORY_QUESTIONS_URL =
 
 const downloadDueDiligenceData = async (
   sessionCookie: string,
-  schemeId: string
+  schemeId: string,
+  internal: string
 ) => {
   const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/due-diligence/${schemeId}`,
+    `${BASE_MANDATORY_QUESTIONS_URL}/due-diligence/${schemeId}?internal=${internal}`,
     {
       withCredentials: true,
       responseType: 'arraybuffer',
@@ -62,5 +63,5 @@ export {
   downloadDueDiligenceData,
   hasSpotlightData,
   // eslint-disable-next-line prettier/prettier
-  spotlightExport
+  spotlightExport,
 };
