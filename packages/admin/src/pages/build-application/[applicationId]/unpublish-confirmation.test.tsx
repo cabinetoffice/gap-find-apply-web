@@ -9,17 +9,6 @@ import NextGetServerSidePropsResponse from '../../../types/NextGetServerSideProp
 import { updateApplicationFormStatus } from '../../../services/ApplicationService';
 import { parseBody } from 'next/dist/server/api-utils/node';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
 jest.mock('next/dist/server/api-utils/node');
 jest.mock('../../../services/ApplicationService');
 
