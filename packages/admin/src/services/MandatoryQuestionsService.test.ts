@@ -17,10 +17,14 @@ describe('MandatoryQuestionsService', () => {
     it('Should return due diligence data when a valid schemeId is provided', async () => {
       mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
 
-      await downloadDueDiligenceData('testSessionCookie', 'testSchemeId');
+      await downloadDueDiligenceData(
+        'testSessionCookie',
+        'testSchemeId',
+        'true'
+      );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/due-diligence/testSchemeId`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/due-diligence/testSchemeId?internal=true`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           responseType: 'arraybuffer',
