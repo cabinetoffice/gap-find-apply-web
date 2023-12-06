@@ -26,10 +26,7 @@ export async function getServerSideProps({
           jwt,
           schemeId
         );
-      if (
-        mandatoryQuestion.submissionId !== null &&
-        mandatoryQuestion.submissionId !== undefined
-      ) {
+      if (mandatoryQuestion.submissionId) {
         return {
           redirect: {
             destination: routes.applications,
@@ -66,14 +63,12 @@ export default function MandatoryQuestionsBeforeYouStart({
           Before you start, we’d like to ask you a few questions.
         </p>
         <p className="govuk-body">
-          These questions will be used by the grant’s administrators to prevent
-          fraud and help Find a grant understand the demand for this grant.
+          These questions will be used by the grant administrators to prevent
+          fraud and help understand the demand for this grant.
         </p>
         <p className="govuk-body">You will need:</p>
         <ul className="govuk-list govuk-list--bullet">
-          <li data-cy="cy-before-you-start-help-text-bullet-1">
-            your organisation’s address
-          </li>
+          <li data-cy="cy-before-you-start-help-text-bullet-1">your address</li>
           <li data-cy="cy-before-you-start-help-text-bullet-2">
             your Companies House number (if you have one)
           </li>

@@ -16,11 +16,8 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
   fieldErrors,
   formAction,
   defaultFields,
-  mandatoryQuestion,
-  mandatoryQuestionId,
+  backButtonUrl,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl =
-    routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
   return (
     <>
       <>
@@ -53,7 +50,7 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
                 'Yorkshire and the Humber',
                 'East Midlands (England)',
                 'West Midlands (England)',
-                'East England',
+                'East (England)',
                 'London',
                 'South East (England)',
                 'South West (England)',

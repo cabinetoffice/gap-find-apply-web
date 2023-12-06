@@ -9,6 +9,7 @@ import { ImportantBanner } from 'gap-web-ui';
 import Link from 'next/link';
 
 export type ApplicantDashBoardProps = {
+  organisationType: string;
   descriptionList: DescriptionListProps;
   hasApplications: boolean;
   bannerProps?:
@@ -43,6 +44,7 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
   hasApplications,
   bannerProps,
   oneLoginEnabled,
+  organisationType,
 }) => {
   const migrationBannerProps =
     bannerProps === 'FAILED'
@@ -65,6 +67,7 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
             Your account
           </h1>
           <DescriptionList
+            organisationType={organisationType}
             data={descriptionList.data}
             needAddOrChangeButtons={descriptionList.needAddOrChangeButtons}
             needBorder={descriptionList.needBorder}
@@ -132,8 +135,8 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
           <div className="govuk-grid-row">
             <Card
               link={routes.organisation.index} // TODO this will change the organisationID to be dynamic
-              linkDescription={'Your organisation details'}
-              description={'Change your organisation details'}
+              linkDescription="Your saved information"
+              description="Change the details saved to your profile"
             />
             {oneLoginEnabled && (
               <Card

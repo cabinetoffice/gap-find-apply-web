@@ -1,5 +1,10 @@
 import getConfig from 'next/config';
 
+export type serviceErrorPropType = {
+  errorInformation: string;
+  linkAttributes: { href: string; linkText: string; linkInformation: string };
+};
+
 const { publicRuntimeConfig } = getConfig();
 
 export const routes = {
@@ -55,7 +60,7 @@ export const routes = {
       `/submissions/${grantSubmissionId}/submission-confirmation`,
   },
   findAGrant: publicRuntimeConfig.FIND_A_GRANT_URL,
-  serviceError: (serviceErrorProps) =>
+  serviceError: (serviceErrorProps: serviceErrorPropType): string =>
     `/service-error?serviceErrorProps=${JSON.stringify(serviceErrorProps)}`,
   api: {
     submissions: {

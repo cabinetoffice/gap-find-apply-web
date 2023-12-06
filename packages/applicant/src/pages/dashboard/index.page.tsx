@@ -2,7 +2,7 @@ import { GetServerSidePropsContext } from 'next';
 import { DescriptionListProps } from '../../components/description-list/DescriptionList';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
-import { GrantApplicant } from '../../models/GrantApplicant';
+import { GrantApplicant } from '../../types/models/GrantApplicant';
 import { getApplicationsListById } from '../../services/ApplicationService';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { getJwtFromCookies } from '../../utils/jwt';
@@ -81,6 +81,7 @@ export const getServerSideProps = async ({
 
   return {
     props: {
+      organisationType: grantApplicant?.organisation?.type,
       descriptionList,
       hasApplications,
       bannerProps,
@@ -94,12 +95,14 @@ export default function ApplicantDashboardPage({
   hasApplications,
   bannerProps,
   oneLoginEnabled,
+  organisationType,
 }: InferProps<typeof getServerSideProps>) {
   return (
     <>
       <Meta title="My account - Apply for a grant" />
       <Layout>
         <ApplicantDashboard
+          organisationType={organisationType}
           descriptionList={descriptionList}
           hasApplications={hasApplications}
           bannerProps={bannerProps}

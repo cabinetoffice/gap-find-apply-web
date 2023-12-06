@@ -5,6 +5,7 @@ import Meta from '../../../components/partials/Meta';
 import InferProps from '../../../types/InferProps';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
+import { MQ_ORG_TYPES } from '../../../utils/constants';
 
 export { getServerSideProps };
 
@@ -13,10 +14,11 @@ export default function MandatoryQuestionOrganisationAddressPage({
   fieldErrors,
   formAction,
   defaultFields,
+  backButtonUrl,
   mandatoryQuestion,
-  mandatoryQuestionId,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl = routes.mandatoryQuestions.namePage(mandatoryQuestionId);
+  const isUserIndividual =
+    mandatoryQuestion.orgType === MQ_ORG_TYPES.INDIVIDUAL;
   const commonAddressInputProps = {
     boldHeading: false,
     titleSize: 's',
@@ -41,7 +43,9 @@ export default function MandatoryQuestionOrganisationAddressPage({
             className="govuk-heading-l"
             data-cy="cy-addressInput-question-title"
           >
-            Enter your organisation&apos;s address
+            {isUserIndividual
+              ? 'Enter your address'
+              : "Enter your organisation's address"}
           </h1>
 
           <TextInput

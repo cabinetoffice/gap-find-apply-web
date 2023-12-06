@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { FundingOrganisation } from '../models/FundingOrganisation';
+import { FundingOrganisation } from '../types/models/FundingOrganisation';
 import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
 

@@ -29,5 +29,6 @@ module.exports = {
       'https://www.find-government-grants.service.gov.uk',
     oneLoginEnabled: process.env.ONE_LOGIN_ENABLED === 'true',
     TECHNICAL_SUPPORT_DOMAIN: process.env.TECHNICAL_SUPPORT_DOMAIN,
+    SUPER_ADMIN_DASHBOARD_URL: process.env.SUPER_ADMIN_DASHBOARD_URL,
   },
 };

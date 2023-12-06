@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import { GrantApplicant } from '../../models/GrantApplicant';
+import { GrantApplicant } from '../../types/models/GrantApplicant';
 import {
   expectObjectEquals,
   getContext,
@@ -56,6 +56,7 @@ describe('getServerSideProps', () => {
 
       expectObjectEquals(response, {
         props: {
+          organisationType: 'Limited',
           csrfToken: 'testCSRFToken',
           fieldErrors: [],
           formAction: '/testResolvedURL',
@@ -158,6 +159,7 @@ describe('getServerSideProps', () => {
 
       expectObjectEquals(response, {
         props: {
+          organisationType: 'Limited',
           fieldErrors: [
             { fieldName: 'type', errorMessage: 'Some validation error' },
           ],

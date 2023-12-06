@@ -7,6 +7,7 @@ const downloadRequiredChecks = async (
   res: NextApiResponse
 ) => {
   const applicationId = req.query.applicationId as string;
+  const schemeId = req.query.schemeId as string;
   const errorRedirect = () => {
     res.redirect(
       `${process.env.SUB_PATH}/service-error?serviceErrorProps=${JSON.stringify(
@@ -14,7 +15,7 @@ const downloadRequiredChecks = async (
           errorInformation:
             'Something went wrong while trying to download required checks.',
           linkAttributes: {
-            href: req.headers.referer,
+            href: `/scheme/${schemeId}`,
             linkText: 'Please return',
             linkInformation: ' and try again.',
           },

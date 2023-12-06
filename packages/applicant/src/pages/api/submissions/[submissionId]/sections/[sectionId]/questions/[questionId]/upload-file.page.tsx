@@ -50,7 +50,7 @@ function urlValidationFailureParams(
     .join('');
 }
 
-const getfileFromRequest = async (req) => {
+const getFileFromRequest = async (req) => {
   return await new Promise<{ fields: any; files: any }>((resolve, reject) => {
     const form = new IncomingForm({ maxFileSize: MAX_FILE_UPLOAD_SIZE_BYTES });
     form.parse(req, (err, fields, files) => {
@@ -86,7 +86,17 @@ const handler = async (req, res) => {
     const sectionId = req.query.sectionId.toString();
     const questionId = req.query.questionId.toString();
     const jwt = getJwtFromCookies(req);
-    const formData = await getfileFromRequest(req);
+    const formData = await getFileFromRequest(req);
+
+    //form data will contains files.attachment.originalFilename only when the user has just uploaded a file
+    //if the user has already uploaded an attachment previously,and press Save and continue on the question page,
+    // the formData will not contain files.attachment.originalFilename
+    if (formData.files?.attachment?.originalFilename !== undefined) {
+      formData.files.attachment.originalFilename = sanitizeFileName(
+        formData.files.attachment.originalFilename
+      );
+    }
+
     const questionData = await getQuestionById(
       submissionId,
       sectionId,
@@ -185,6 +195,11 @@ const handler = async (req, res) => {
   } else {
     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
   }
+};
+
+const sanitizeFileName = (fileName: string) => {
+  const regex = /[^a-zA-Z0-9()_,.-]/g;
+  return fileName.replace(regex, '_');
 };
 
 export default handler;

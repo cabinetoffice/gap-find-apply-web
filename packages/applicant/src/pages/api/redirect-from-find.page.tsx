@@ -30,6 +30,7 @@ export default async function handler(
       grantSchemeId,
       isAdvertInDatabase,
       mandatoryQuestionsDto,
+      isPublished,
     } = await getAdvertBySlug(getJwtFromCookies(req), slug);
 
     if (!isAdvertInDatabase && isAdvertInContentful) {
@@ -44,21 +45,37 @@ export default async function handler(
     }
 
     if (version === 2) {
-      //in case the user already answered the mandatory questions, and reapply through find a grant,  redirect to the applications list page
-      if (
-        mandatoryQuestionsDto !== null &&
-        mandatoryQuestionsDto.submissionId !== null
-      ) {
-        res.redirect(`${process.env.HOST}${routes.applications}`);
-      } else {
-        res.redirect(
-          `${process.env.HOST}${routes.mandatoryQuestions.startPage(
-            grantSchemeId.toString()
-          )}`
-        );
+      if (!isPublished) {
+        redirectToServiceError();
       }
+
+      const mqAreCompleted =
+        mandatoryQuestionsDto !== null &&
+        mandatoryQuestionsDto.status === 'COMPLETED';
+
+      const advertIsInternal = mandatoryQuestionsDto?.submissionId !== null;
+
+      if (mqAreCompleted) {
+        const redirectUrl = advertIsInternal
+          ? `${process.env.HOST}${routes.applications}`
+          : externalSubmissionUrl;
+
+        return res.redirect(redirectUrl);
+      }
+
+      //if they are not completed, redirect to the start page
+      return res.redirect(
+        `${process.env.HOST}${routes.mandatoryQuestions.startPage(
+          grantSchemeId.toString()
+        )}`
+      );
     }
   } catch (e) {
+    console.log(e);
+    redirectToServiceError();
+  }
+
+  function redirectToServiceError() {
     const serviceErrorProps = {
       errorInformation: 'There was an error in the service',
       linkAttributes: {
@@ -67,7 +84,6 @@ export default async function handler(
         linkInformation: '',
       },
     };
-    console.log(e);
     res.redirect(
       `${process.env.HOST}${routes.serviceError(serviceErrorProps)}`
     );
