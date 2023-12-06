@@ -59,6 +59,7 @@ const getContext = (overrides: any = {}) =>
 jest.mock('../../../services/SchemeService');
 jest.mock('../../../services/MandatoryQuestionsService');
 jest.mock('../../../services/SpotlightSubmissionService');
+jest.mock('../../../services/SpotlightBatchService');
 
 describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
   describe('getServerSideProps', () => {
@@ -355,7 +356,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/apply/api/downloadDueDiligenceChecks?schemeId=${SCHEME_ID}`
+        `/apply/api/downloadDueDiligenceChecks?schemeId=${SCHEME_ID}&internal=true`
       );
     });
 
@@ -380,7 +381,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/apply/api/downloadDueDiligenceChecks?schemeId=${SCHEME_ID}`
+        `/apply/api/downloadDueDiligenceChecks?schemeId=${SCHEME_ID}&internal=false`
       );
     });
 

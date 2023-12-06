@@ -15,6 +15,7 @@ const req = (overrides: any = {}) =>
     {
       query: {
         schemeId: SCHEME_ID,
+        internal: 'true',
       },
       headers: {
         referer: `/scheme/${SCHEME_ID}/manage-due-diligence-checks`,
@@ -86,5 +87,10 @@ describe('spotlightExportHandler', () => {
       'Test content length'
     );
     expect(mockedSend).toHaveBeenNthCalledWith(1, 'Some csv data');
+    expect(downloadDueDiligenceData).toHaveBeenCalledWith(
+      'testSessionId',
+      'testSchemeId',
+      'true'
+    );
   });
 });
