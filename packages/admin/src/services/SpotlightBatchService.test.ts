@@ -27,7 +27,7 @@ describe('SpotlightBatchService', () => {
       const response = await getSpotlightErrors(SCHEME_ID, SESSION_ID);
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SPOTLIGHT_BATCH_URL}/get-spotlight-scheme-errors/${SCHEME_ID}`,
+        `${BASE_SPOTLIGHT_BATCH_URL}/scheme/${SCHEME_ID}/spotlight/get-errors`,
         { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
       );
       expect(response).toEqual(spotlightErrors);
@@ -44,7 +44,7 @@ describe('SpotlightBatchService', () => {
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SPOTLIGHT_BATCH_URL}/get-validation-error-files/${SCHEME_ID}`,
+        `${BASE_SPOTLIGHT_BATCH_URL}/scheme/${SCHEME_ID}/spotlight/download-validation-errors`,
         {
           headers: { Cookie: 'SESSION=SessionId;' },
           responseType: 'arraybuffer',

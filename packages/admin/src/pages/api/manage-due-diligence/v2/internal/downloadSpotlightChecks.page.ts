@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getSpotlightValidationErrorSubmissions } from '../../services/SpotlightBatchService';
-import { getSessionIdFromCookies } from '../../utils/session';
+import { spotlightExport } from '../../../../../services/MandatoryQuestionsService';
+import { getSessionIdFromCookies } from '../../../../../utils/session';
 
-const downloadSpotlightValidationErrorSubmissions = async (
+const downloadSpotlightChecks = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
@@ -12,7 +12,7 @@ const downloadSpotlightValidationErrorSubmissions = async (
       `${process.env.SUB_PATH}/service-error?serviceErrorProps=${JSON.stringify(
         {
           errorInformation:
-            'Something went wrong while trying to download the information for Spotlight submissions with validation errors.',
+            'Something went wrong while trying to download the information for Spotlight checks.',
           linkAttributes: {
             href: `/scheme/${schemeId}/manage-due-diligence-checks`,
             linkText: 'Please return',
@@ -25,10 +25,7 @@ const downloadSpotlightValidationErrorSubmissions = async (
 
   let result;
   try {
-    result = await getSpotlightValidationErrorSubmissions(
-      getSessionIdFromCookies(req),
-      schemeId
-    );
+    result = await spotlightExport(getSessionIdFromCookies(req), schemeId);
   } catch (error) {
     errorRedirect();
     return;
@@ -45,4 +42,4 @@ const downloadSpotlightValidationErrorSubmissions = async (
   }
 };
 
-export default downloadSpotlightValidationErrorSubmissions;
+export default downloadSpotlightChecks;

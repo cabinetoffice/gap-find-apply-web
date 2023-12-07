@@ -16,7 +16,7 @@ export const getSpotlightErrors = async (
   );
 
   const response = await axios.get(
-    `${BASE_SPOTLIGHT_BATCH_URL}/get-spotlight-scheme-errors/${schemeId}`,
+    `${BASE_SPOTLIGHT_BATCH_URL}/scheme/${schemeId}/spotlight/get-errors`,
     axiosSessionConfig(sessionId)
   );
 
@@ -28,7 +28,7 @@ export const getSpotlightValidationErrorSubmissions = async (
   schemeId: string
 ) => {
   const response = await axios.get(
-    `${BASE_SPOTLIGHT_BATCH_URL}/get-validation-error-files/${schemeId}`,
+    `${BASE_SPOTLIGHT_BATCH_URL}/scheme/${schemeId}/spotlight/download-validation-errors`,
     {
       withCredentials: true,
       responseType: 'arraybuffer',

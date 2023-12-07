@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { spotlightExport } from '../../services/SubmissionsService';
-import { getSessionIdFromCookies } from '../../utils/session';
+import { spotlightExport } from '../../../../services/SubmissionsService';
+import { getSessionIdFromCookies } from '../../../../utils/session';
 
 const downloadRequiredChecks = async (
   req: NextApiRequest,

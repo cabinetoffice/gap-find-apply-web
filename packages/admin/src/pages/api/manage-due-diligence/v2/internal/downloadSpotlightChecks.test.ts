@@ -1,11 +1,10 @@
 import { merge } from 'lodash';
-import { spotlightExport } from '../../services/SubmissionsService';
-import downloadRequiredChecks from './downloadRequiredChecks.page';
+import { spotlightExport } from '../../../../../services/MandatoryQuestionsService';
+import downloadSpotlightChecks from './downloadSpotlightChecks.page';
 
-jest.mock('../../services/SubmissionsService');
+jest.mock('../../../../../services/MandatoryQuestionsService');
 
 const SCHEME_ID = 'testSchemeId';
-const APPLICATION_ID = 'testApplicationId';
 
 const mockedRedirect = jest.fn();
 const mockedSetHeader = jest.fn();
@@ -15,11 +14,10 @@ const req = (overrides: any = {}) =>
   merge(
     {
       query: {
-        applicationId: APPLICATION_ID,
         schemeId: SCHEME_ID,
       },
       headers: {
-        referer: `/scheme/${SCHEME_ID}`,
+        referer: `/scheme/${SCHEME_ID}/manage-due-diligence-checks`,
       },
       cookies: { sessionCookieName: 'testSessionId' },
     },
@@ -45,21 +43,21 @@ describe('spotlightExportHandler', () => {
   it('Should redirect to service error page when trying to retrieve spotlight export csv file throws an error', async () => {
     (spotlightExport as jest.Mock).mockRejectedValue({});
 
-    await downloadRequiredChecks(req(), res());
+    await downloadSpotlightChecks(req(), res());
 
     expect(mockedRedirect).toHaveBeenNthCalledWith(
       1,
-      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download required checks.","linkAttributes":{"href":"/scheme/testSchemeId","linkText":"Please return","linkInformation":" and try again."}}`
+      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download the information for Spotlight checks.","linkAttributes":{"href":"/scheme/testSchemeId/manage-due-diligence-checks","linkText":"Please return","linkInformation":" and try again."}}`
     );
   });
 
   it('Should redirect to service error page when result for spotlightExport is undefined', async () => {
     (spotlightExport as jest.Mock).mockResolvedValue(undefined);
 
-    await downloadRequiredChecks(req(), res());
+    await downloadSpotlightChecks(req(), res());
     expect(mockedRedirect).toHaveBeenNthCalledWith(
       1,
-      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download required checks.","linkAttributes":{"href":"/scheme/testSchemeId","linkText":"Please return","linkInformation":" and try again."}}`
+      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download the information for Spotlight checks.","linkAttributes":{"href":"/scheme/testSchemeId/manage-due-diligence-checks","linkText":"Please return","linkInformation":" and try again."}}`
     );
   });
 
@@ -73,7 +71,7 @@ describe('spotlightExportHandler', () => {
       data: 'Some csv data',
     });
 
-    await downloadRequiredChecks(req(), res());
+    await downloadSpotlightChecks(req(), res());
     expect(mockedSetHeader).toHaveBeenCalledTimes(3);
     expect(mockedSetHeader).toHaveBeenCalledWith(
       'Content-Disposition',

@@ -6,30 +6,19 @@ const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
 const BASE_SPOTLIGHT_SUBMISSION_URL = BACKEND_HOST + '/spotlight-submissions';
 
-export const getSpotlightSubmissionCount = async (
+export const getSpotlightSubmissionSentData = async (
   schemeId: string,
   sessionId: string
-) => {
-  const response = await axios.get(
-    `${BASE_SPOTLIGHT_SUBMISSION_URL}/count/${schemeId}`,
+): Promise<GetSpotlightSubmissionSentData> => {
+  const { data } = await axios.get(
+    `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${schemeId}/get-sent-data`,
     {
       ...axiosSessionConfig(sessionId),
     }
   );
-
-  return response.data;
+  return data;
 };
-
-export const getSpotlightLastUpdateDate = async (
-  schemeId: string,
-  sessionId: string
-) => {
-  const response = await axios.get(
-    `${BASE_SPOTLIGHT_SUBMISSION_URL}/last-updated/${schemeId}`,
-    {
-      ...axiosSessionConfig(sessionId),
-    }
-  );
-
-  return response.data;
-};
+export interface GetSpotlightSubmissionSentData {
+  count: number;
+  lastUpdatedDate: string;
+}

@@ -11,8 +11,8 @@ import {
   schemeApplicationIsInternal,
 } from '../../../services/SchemeService';
 import {
-  getSpotlightLastUpdateDate,
-  getSpotlightSubmissionCount,
+  GetSpotlightSubmissionSentData,
+  getSpotlightSubmissionSentData,
 } from '../../../services/SpotlightSubmissionService';
 import InferProps from '../../../types/InferProps';
 import { getSessionIdFromCookies } from '../../../utils/session';
@@ -34,40 +34,31 @@ export const getServerSideProps = async ({
     schemeId,
     sessionCookie
   );
-  console.log('hasInfoToDownload', hasInfoToDownload);
 
   const hasSpotlightDataToDownload = await hasSpotlightData(
     schemeId,
     sessionCookie
   );
-  console.log('hasSpotlightDataToDownload', hasSpotlightDataToDownload);
 
   const ggisSchemeRefUrl = `/scheme/edit/ggis-reference?schemeId=${scheme.schemeId}&defaultValue=${scheme.ggisReference}`;
 
-  const spotlightErrors = await getSpotlightErrors(
-    scheme.schemeId,
-    sessionCookie
-  );
+  let spotlightErrors;
+  let spotlightSubmissionCountAndLastUpdated: GetSpotlightSubmissionSentData = {
+    count: 0,
+    lastUpdatedDate: '',
+  };
 
-  let spotlightSubmissionCount = 0;
-  let spotlightLastUpdated = null;
   if (isInternal) {
-    spotlightSubmissionCount = await getSpotlightSubmissionCount(
-      schemeId,
-      sessionCookie
-    );
-    spotlightLastUpdated = await getSpotlightLastUpdateDate(
-      schemeId,
-      sessionCookie
-    );
+    spotlightSubmissionCountAndLastUpdated =
+      await getSpotlightSubmissionSentData(schemeId, sessionCookie);
+    spotlightErrors = await getSpotlightErrors(scheme.schemeId, sessionCookie);
   }
 
   return {
     props: {
       scheme,
       hasInfoToDownload,
-      spotlightSubmissionCount,
-      spotlightLastUpdated,
+      spotlightSubmissionCountAndLastUpdated,
       spotlightUrl,
       isInternal,
       ggisSchemeRefUrl,
@@ -80,8 +71,7 @@ export const getServerSideProps = async ({
 const ManageDueDiligenceChecks = ({
   scheme,
   hasInfoToDownload,
-  spotlightSubmissionCount,
-  spotlightLastUpdated,
+  spotlightSubmissionCountAndLastUpdated,
   spotlightUrl,
   isInternal,
   ggisSchemeRefUrl,
@@ -91,7 +81,8 @@ const ManageDueDiligenceChecks = ({
   const downloadFullDueDiligenceChecksMessage = isInternal
     ? 'Download checks from applications'
     : 'Download due diligence information';
-  const downloadFullDueDiligenceChecksUrl = `/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}&internal=${isInternal}`;
+
+  const downloadFullDueDiligenceChecksUrl = `/api/manage-due-diligence/v2/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}&internal=${isInternal}`;
 
   return (
     <>
@@ -101,10 +92,10 @@ const ManageDueDiligenceChecks = ({
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-          {spotlightErrors.errorFound && (
+          {isInternal && spotlightErrors!.errorFound && (
             <SpotlightMessage
-              status={spotlightErrors.errorStatus}
-              count={spotlightErrors.errorCount}
+              status={spotlightErrors!.errorStatus}
+              count={spotlightErrors!.errorCount}
               schemeUrl={ggisSchemeRefUrl}
             />
           )}
@@ -117,15 +108,17 @@ const ManageDueDiligenceChecks = ({
             </p>
           )}
 
-          {hasInfoToDownload && (
+          {hasInfoToDownload && ( // we need to check if the scheme is an internal or not and based on that hasInfoToDownload
+            //will check if Internal  that there are mq completed and with sumbmission submitted, or if external if there are mq completed
             <>
               {isInternal ? (
                 <InternalApplication
-                  spotlightErrors={spotlightErrors}
-                  spotlightLastUpdated={spotlightLastUpdated}
-                  spotlightSubmissionCount={spotlightSubmissionCount}
+                  spotlightErrors={spotlightErrors!}
+                  spotlightSubmissionCountAndLastUpdated={
+                    spotlightSubmissionCountAndLastUpdated
+                  }
                   spotlightUrl={spotlightUrl}
-                  scheme={scheme}
+                  schemeId={scheme.schemeId}
                   hasSpotlightDataToDownload={hasSpotlightDataToDownload}
                 />
               ) : (
@@ -136,6 +129,7 @@ const ManageDueDiligenceChecks = ({
                 diligence information to run checks in another service.
               </p>
               <p className="govuk-body">
+                {/* done */}
                 <CustomLink href={downloadFullDueDiligenceChecksUrl}>
                   {downloadFullDueDiligenceChecksMessage}
                 </CustomLink>

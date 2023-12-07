@@ -1,8 +1,8 @@
 import { merge } from 'lodash';
-import { downloadDueDiligenceData } from '../../services/MandatoryQuestionsService';
+import { downloadDueDiligenceData } from '../../../../services/MandatoryQuestionsService';
 import downloadDueDiligenceChecks from './downloadDueDiligenceChecks.page';
 
-jest.mock('../../services/MandatoryQuestionsService');
+jest.mock('../../../../services/MandatoryQuestionsService');
 
 const SCHEME_ID = 'testSchemeId';
 
