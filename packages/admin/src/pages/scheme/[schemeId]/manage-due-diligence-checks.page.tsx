@@ -2,16 +2,13 @@ import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import { SpotlightMessage } from '../../../components/notification-banner/SpotlightMessage';
-import {
-  completedMandatoryQuestions,
-  hasSpotlightData,
-} from '../../../services/MandatoryQuestionsService';
+import { hasCompletedMandatoryQuestions } from '../../../services/MandatoryQuestionsService';
 import {
   getGrantScheme,
   schemeApplicationIsInternal,
 } from '../../../services/SchemeService';
 import {
-  GetSpotlightSubmissionSentData,
+  GetSpotlightSubmissionDataBySchemeIdDto,
   getSpotlightSubmissionSentData,
 } from '../../../services/SpotlightSubmissionService';
 import InferProps from '../../../types/InferProps';
@@ -30,40 +27,38 @@ export const getServerSideProps = async ({
   const scheme = await getGrantScheme(schemeId, sessionCookie);
   const isInternal = await schemeApplicationIsInternal(schemeId, sessionCookie);
   const spotlightUrl = process.env.SPOTLIGHT_URL;
-  const hasInfoToDownload = await completedMandatoryQuestions(
+  const hasInfoToDownload = await hasCompletedMandatoryQuestions(
     schemeId,
-    sessionCookie
-  );
-
-  const hasSpotlightDataToDownload = await hasSpotlightData(
-    schemeId,
-    sessionCookie
+    sessionCookie,
+    isInternal
   );
 
   const ggisSchemeRefUrl = `/scheme/edit/ggis-reference?schemeId=${scheme.schemeId}&defaultValue=${scheme.ggisReference}`;
 
-  let spotlightErrors;
-  let spotlightSubmissionCountAndLastUpdated: GetSpotlightSubmissionSentData = {
-    count: 0,
-    lastUpdatedDate: '',
+  let spotlightErrors = null;
+  let internalDueDiligenceData: GetSpotlightSubmissionDataBySchemeIdDto = {
+    sentCount: 0,
+    sentLastUpdatedDate: '',
+    hasSpotlightSubmissions: false,
   };
 
   if (isInternal) {
-    spotlightSubmissionCountAndLastUpdated =
-      await getSpotlightSubmissionSentData(schemeId, sessionCookie);
-    spotlightErrors = await getSpotlightErrors(scheme.schemeId, sessionCookie);
+    internalDueDiligenceData = await getSpotlightSubmissionSentData(
+      schemeId,
+      sessionCookie
+    );
+    spotlightErrors = await getSpotlightErrors(schemeId, sessionCookie);
   }
 
   return {
     props: {
       scheme,
       hasInfoToDownload,
-      spotlightSubmissionCountAndLastUpdated,
+      internalDueDiligenceData,
       spotlightUrl,
       isInternal,
       ggisSchemeRefUrl,
       spotlightErrors,
-      hasSpotlightDataToDownload,
     },
   };
 };
@@ -71,12 +66,11 @@ export const getServerSideProps = async ({
 const ManageDueDiligenceChecks = ({
   scheme,
   hasInfoToDownload,
-  spotlightSubmissionCountAndLastUpdated,
+  internalDueDiligenceData,
   spotlightUrl,
   isInternal,
   ggisSchemeRefUrl,
   spotlightErrors,
-  hasSpotlightDataToDownload,
 }: InferProps<typeof getServerSideProps>) => {
   const downloadFullDueDiligenceChecksMessage = isInternal
     ? 'Download checks from applications'
@@ -108,18 +102,14 @@ const ManageDueDiligenceChecks = ({
             </p>
           )}
 
-          {hasInfoToDownload && ( // we need to check if the scheme is an internal or not and based on that hasInfoToDownload
-            //will check if Internal  that there are mq completed and with sumbmission submitted, or if external if there are mq completed
+          {hasInfoToDownload && (
             <>
               {isInternal ? (
                 <InternalApplication
                   spotlightErrors={spotlightErrors!}
-                  spotlightSubmissionCountAndLastUpdated={
-                    spotlightSubmissionCountAndLastUpdated
-                  }
+                  internalDueDiligenceData={internalDueDiligenceData}
                   spotlightUrl={spotlightUrl}
                   schemeId={scheme.schemeId}
-                  hasSpotlightDataToDownload={hasSpotlightDataToDownload}
                 />
               ) : (
                 <ExternalApplication />
@@ -129,7 +119,6 @@ const ManageDueDiligenceChecks = ({
                 diligence information to run checks in another service.
               </p>
               <p className="govuk-body">
-                {/* done */}
                 <CustomLink href={downloadFullDueDiligenceChecksUrl}>
                   {downloadFullDueDiligenceChecksMessage}
                 </CustomLink>

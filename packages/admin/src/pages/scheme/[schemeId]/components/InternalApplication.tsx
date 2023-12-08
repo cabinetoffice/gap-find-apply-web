@@ -1,24 +1,23 @@
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import InsetText from '../../../../components/inset-text/InsetText';
-import { GetSpotlightSubmissionSentData } from '../../../../services/SpotlightSubmissionService';
+import { GetSpotlightSubmissionDataBySchemeIdDto } from '../../../../services/SpotlightSubmissionService';
 import { SpotlightError } from '../../../../types/SpotlightError';
 interface InternalApplicationProps {
-  spotlightSubmissionCountAndLastUpdated: GetSpotlightSubmissionSentData;
+  internalDueDiligenceData: GetSpotlightSubmissionDataBySchemeIdDto;
   spotlightUrl: string;
-  hasSpotlightDataToDownload: boolean;
   schemeId: string;
   spotlightErrors: SpotlightError;
 }
 
 export const InternalApplication = ({
-  spotlightSubmissionCountAndLastUpdated,
+  internalDueDiligenceData,
   spotlightUrl,
-  hasSpotlightDataToDownload,
   schemeId,
   spotlightErrors,
 }: InternalApplicationProps) => {
-  const { count, lastUpdatedDate } = spotlightSubmissionCountAndLastUpdated;
-  //checks if the mandatory question submission is submitted
+  const { sentCount, sentLastUpdatedDate, hasSpotlightSubmissions } =
+    internalDueDiligenceData;
+
   return (
     <div>
       <p className="govuk-body">
@@ -37,8 +36,8 @@ export const InternalApplication = ({
         <p className="govuk-!-margin-bottom-0" data-testid="spotlight-count">
           You have{' '}
           <span className="govuk-!-font-weight-bold">
-            {count} application
-            {count !== 1 && 's'}
+            {sentCount} application
+            {sentCount !== 1 && 's'}
           </span>{' '}
           in Spotlight.
         </p>
@@ -46,13 +45,13 @@ export const InternalApplication = ({
           className="govuk-!-margin-top-0"
           data-testid="spotlight-last-updated"
         >
-          {lastUpdatedDate == '' ? (
+          {sentLastUpdatedDate == '' ? (
             <>No records have been sent to Spotlight. </>
           ) : (
             <>
               Spotlight was last updated on{' '}
               <span className="govuk-!-font-weight-bold">
-                {lastUpdatedDate}
+                {sentLastUpdatedDate}
               </span>
               .{' '}
             </>
@@ -62,11 +61,11 @@ export const InternalApplication = ({
       <a href={spotlightUrl} className="govuk-button">
         Log in to Spotlight
       </a>
-      {hasSpotlightDataToDownload && (
+      {hasSpotlightSubmissions && (
         <p className="govuk-body">
           You can{' '}
           <CustomLink
-            href={`/api/manage-due-diligence/v2/internal/downloadSpotlightChecks?schemeId=${schemeId}`}
+            href={`/api/manage-due-diligence/v2/internal/downloadSpotlightChecks?schemeId=${schemeId}`} //TODO
           >
             download the information you need to run checks
           </CustomLink>{' '}
@@ -78,7 +77,7 @@ export const InternalApplication = ({
           <p className="govuk-body">
             You can also{' '}
             <CustomLink
-              href={`/api/manage-due-diligence/v2/internal/downloadSpotlightValidationErrorSubmissions?schemeId=${schemeId}`}
+              href={`/api/manage-due-diligence/v2/internal/downloadSpotlightValidationErrorSubmissions?schemeId=${schemeId}`} //TODO
             >
               download checks that Find a grant cannot send to Spotlight
             </CustomLink>{' '}

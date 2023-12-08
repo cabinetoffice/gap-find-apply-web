@@ -1,13 +1,13 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
-import { completedMandatoryQuestions } from '../../../services/MandatoryQuestionsService';
+import { hasCompletedMandatoryQuestions } from '../../../services/MandatoryQuestionsService';
 import {
   getGrantScheme,
   schemeApplicationIsInternal,
 } from '../../../services/SchemeService';
 import {
-  GetSpotlightSubmissionSentData,
+  GetSpotlightSubmissionDataBySchemeIdDto,
   getSpotlightSubmissionSentData,
 } from '../../../services/SpotlightSubmissionService';
 import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
@@ -35,9 +35,10 @@ const scheme = {
   version: '2',
 } as Scheme;
 
-const spotlightSubmissionCountAndLastUpdated: GetSpotlightSubmissionSentData = {
-  count: 2,
-  lastUpdatedDate: SPOTLIGHT_LAST_UPDATED,
+const internalDueDiligenceData: GetSpotlightSubmissionDataBySchemeIdDto = {
+  sentCount: 2,
+  sentLastUpdatedDate: SPOTLIGHT_LAST_UPDATED,
+  hasSpotlightSubmissions: true,
 };
 
 const spotlightErrors = {
@@ -90,9 +91,9 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       expect(response.props.scheme).toStrictEqual(scheme);
     });
 
-    it('Should get hasInfoToDownload false from completedMandatoryQuestions', async () => {
+    it('Should get hasInfoToDownload false from hasCompletedMandatoryQuestions', async () => {
       mockedGetScheme.mockResolvedValue(scheme);
-      (completedMandatoryQuestions as jest.Mock).mockReturnValue(false);
+      (hasCompletedMandatoryQuestions as jest.Mock).mockReturnValue(false);
 
       const response = (await getServerSideProps(
         getContext()
@@ -105,19 +106,20 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       mockedGetScheme.mockResolvedValue(scheme);
       (schemeApplicationIsInternal as jest.Mock).mockReturnValue(true);
       (getSpotlightSubmissionSentData as jest.Mock).mockReturnValue(
-        spotlightSubmissionCountAndLastUpdated
+        internalDueDiligenceData
       );
 
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
 
-      expect(response.props.spotlightSubmissionCountAndLastUpdated.count).toBe(
-        2
+      expect(response.props.internalDueDiligenceData.sentCount).toBe(2);
+      expect(response.props.internalDueDiligenceData.sentLastUpdatedDate).toBe(
+        SPOTLIGHT_LAST_UPDATED
       );
       expect(
-        response.props.spotlightSubmissionCountAndLastUpdated.lastUpdatedDate
-      ).toBe(SPOTLIGHT_LAST_UPDATED);
+        response.props.internalDueDiligenceData.hasSpotlightSubmissions
+      ).toBe(true);
     });
   });
 
@@ -125,12 +127,11 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
       scheme,
       hasInfoToDownload: false,
-      spotlightSubmissionCountAndLastUpdated,
+      internalDueDiligenceData,
       spotlightUrl: 'url',
       isInternal: true,
       ggisSchemeRefUrl: 'url',
       spotlightErrors,
-      hasSpotlightDataToDownload: true,
     });
 
     it('Should render back button', () => {
@@ -207,9 +208,10 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           {...getPageProps(getDefaultProps, {
             hasInfoToDownload: true,
             ggisSchemeRefUrl: '',
-            spotlightSubmissionCountAndLastUpdated: {
-              count: 0,
-              lastUpdatedDate: '',
+            internalDueDiligenceData: {
+              sentCount: 0,
+              sentLastUpdatedDate: '',
+              hasSpotlightSubmissions: true,
             },
           })}
         />
@@ -281,7 +283,10 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
           {...getPageProps(getDefaultProps, {
             hasInfoToDownload: true,
             ggisSchemeRefUrl: '',
-            hasSpotlightDataToDownload: false,
+            internalDueDiligenceData: {
+              ...internalDueDiligenceData,
+              hasSpotlightSubmissions: false,
+            },
           })}
         />
       );
@@ -370,10 +375,10 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       renderWithRouter(
         <ManageDueDiligenceChecks
           {...getPageProps(getDefaultProps, {
-            hasSpotlightDataToDownload: false,
-            spotlightSubmissionCountAndLastUpdated: {
-              ...spotlightSubmissionCountAndLastUpdated,
-              lastUpdatedDate: undefined,
+            internalDueDiligenceData: {
+              ...internalDueDiligenceData,
+              sentLastUpdatedDate: undefined,
+              hasSpotlightSubmissions: false,
             },
           })}
         />
@@ -391,12 +396,12 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       renderWithRouter(
         <ManageDueDiligenceChecks
           {...getPageProps(getDefaultProps, {
-            spotlightSubmissionCountAndLastUpdated: {
-              count: 0,
-              lastUpdatedDate: undefined,
+            internalDueDiligenceData: {
+              sentCount: 0,
+              sentLastUpdatedDate: undefined,
+              hasSpotlightSubmissions: false,
             },
             spotlightErrors: validationError,
-            hasSpotlightDataToDownload: false,
           })}
         />
       );
@@ -414,12 +419,12 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       renderWithRouter(
         <ManageDueDiligenceChecks
           {...getPageProps(getDefaultProps, {
-            spotlightSubmissionCountAndLastUpdated: {
-              count: 0,
-              lastUpdatedDate: undefined,
+            internalDueDiligenceData: {
+              sentCount: 0,
+              sentLastUpdatedDate: undefined,
+              hasSpotlightSubmissions: false,
             },
             spotlightErrors: ggisError,
-            hasSpotlightDataToDownload: false,
           })}
         />
       );
@@ -437,12 +442,12 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       renderWithRouter(
         <ManageDueDiligenceChecks
           {...getPageProps(getDefaultProps, {
-            spotlightSubmissionCountAndLastUpdated: {
-              count: 0,
-              lastUpdatedDate: undefined,
+            internalDueDiligenceData: {
+              sentCount: 0,
+              sentLastUpdatedDate: undefined,
+              hasSpotlightSubmissions: false,
             },
             spotlightErrors: apiError,
-            hasSpotlightDataToDownload: false,
           })}
         />
       );
@@ -460,12 +465,12 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       renderWithRouter(
         <ManageDueDiligenceChecks
           {...getPageProps(getDefaultProps, {
-            spotlightSubmissionCountAndLastUpdated: {
-              count: 1,
-              lastUpdatedDate: undefined,
+            internalDueDiligenceData: {
+              sentCount: 1,
+              sentLastUpdatedDate: undefined,
+              hasSpotlightSubmissions: false,
             },
             spotlightErrors: validationError,
-            hasSpotlightDataToDownload: false,
             hasInfoToDownload: true,
           })}
         />

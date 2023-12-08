@@ -1,7 +1,7 @@
 import axios from 'axios';
 import getConfig from 'next/config';
 import {
-  GetSpotlightSubmissionSentData,
+  GetSpotlightSubmissionDataBySchemeIdDto,
   getSpotlightSubmissionSentData,
 } from './SpotlightSubmissionService';
 
@@ -12,9 +12,10 @@ const BACKEND_HOST = serverRuntimeConfig.backendHost;
 const BASE_SPOTLIGHT_SUBMISSION_URL = BACKEND_HOST + '/spotlight-submissions';
 const SCHEME_ID = 'schemeId';
 const SESSION_ID = 'SessionId';
-const spotlightSubmissionSentData: GetSpotlightSubmissionSentData = {
-  count: 2,
-  lastUpdatedDate: '2 September 2023',
+const spotlightSubmissionSentData: GetSpotlightSubmissionDataBySchemeIdDto = {
+  sentCount: 2,
+  sentLastUpdatedDate: '2 September 2023',
+  hasSpotlightSubmissions: true,
 };
 
 beforeEach(() => {
@@ -32,7 +33,7 @@ describe('SpotlightSubmissionService', () => {
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${SCHEME_ID}/get-sent-data`,
+        `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${SCHEME_ID}/get-due-diligence-data`,
         { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
       );
       expect(response).toEqual(spotlightSubmissionSentData);

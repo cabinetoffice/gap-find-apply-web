@@ -9,16 +9,18 @@ const BASE_SPOTLIGHT_SUBMISSION_URL = BACKEND_HOST + '/spotlight-submissions';
 export const getSpotlightSubmissionSentData = async (
   schemeId: string,
   sessionId: string
-): Promise<GetSpotlightSubmissionSentData> => {
+): Promise<GetSpotlightSubmissionDataBySchemeIdDto> => {
   const { data } = await axios.get(
-    `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${schemeId}/get-sent-data`,
+    `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${schemeId}/get-due-diligence-data`,
     {
       ...axiosSessionConfig(sessionId),
     }
   );
   return data;
 };
-export interface GetSpotlightSubmissionSentData {
-  count: number;
-  lastUpdatedDate: string;
+
+export interface GetSpotlightSubmissionDataBySchemeIdDto {
+  sentCount: number;
+  sentLastUpdatedDate: string;
+  hasSpotlightSubmissions: boolean;
 }

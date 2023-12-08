@@ -10,7 +10,7 @@ const downloadDueDiligenceData = async (
   internal: string
 ) => {
   const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/due-diligence/${schemeId}?internal=${internal}`,
+    `${BASE_MANDATORY_QUESTIONS_URL}/due-diligence/${schemeId}?isInternal=${internal}`,
     {
       withCredentials: true,
       responseType: 'arraybuffer',
@@ -36,32 +36,20 @@ const spotlightExport = async (sessionCookie: string, schemeId: string) => {
   return response;
 };
 
-const completedMandatoryQuestions = async (
+const hasCompletedMandatoryQuestions = async (
   schemeId: string,
-  sessionCookie: string
+  sessionCookie: string,
+  isInternal: boolean
 ): Promise<boolean> => {
   const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/complete`,
-    axiosSessionConfig(sessionCookie)
-  );
-  return response.data;
-};
-
-const hasSpotlightData = async (
-  schemeId: string,
-  sessionCookie: string
-): Promise<boolean> => {
-  const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/spotlight-complete`,
+    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/isCompleted?isInternal=${isInternal}`,
     axiosSessionConfig(sessionCookie)
   );
   return response.data;
 };
 
 export {
-  completedMandatoryQuestions,
+  hasCompletedMandatoryQuestions,
   downloadDueDiligenceData,
-  hasSpotlightData,
-  // eslint-disable-next-line prettier/prettier
   spotlightExport,
 };
