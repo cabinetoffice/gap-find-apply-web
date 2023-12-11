@@ -1,8 +1,8 @@
 import { merge } from 'lodash';
-import { spotlightExport } from '../../../../../services/MandatoryQuestionsService';
-import downloadSpotlightChecks from './downloadSpotlightChecks.page';
+import { downloadDueDiligenceData } from '../../../../../services/SpotlightSubmissionService';
+import downloadSpotlightChecks from './downloadSpotlightSubmissionsChecks.page';
 
-jest.mock('../../../../../services/MandatoryQuestionsService');
+jest.mock('../../../../../services/SpotlightSubmissionService');
 
 const SCHEME_ID = 'testSchemeId';
 
@@ -41,7 +41,7 @@ describe('spotlightExportHandler', () => {
   });
 
   it('Should redirect to service error page when trying to retrieve spotlight export csv file throws an error', async () => {
-    (spotlightExport as jest.Mock).mockRejectedValue({});
+    (downloadDueDiligenceData as jest.Mock).mockRejectedValue({});
 
     await downloadSpotlightChecks(req(), res());
 
@@ -51,8 +51,8 @@ describe('spotlightExportHandler', () => {
     );
   });
 
-  it('Should redirect to service error page when result for spotlightExport is undefined', async () => {
-    (spotlightExport as jest.Mock).mockResolvedValue(undefined);
+  it('Should redirect to service error page when result for downloadDueDiligenceData is undefined', async () => {
+    (downloadDueDiligenceData as jest.Mock).mockResolvedValue(undefined);
 
     await downloadSpotlightChecks(req(), res());
     expect(mockedRedirect).toHaveBeenNthCalledWith(
@@ -61,8 +61,8 @@ describe('spotlightExportHandler', () => {
     );
   });
 
-  it('Should set the correct headers and send the data back to client when spotlightExport data is retrieved successfully', async () => {
-    (spotlightExport as jest.Mock).mockResolvedValue({
+  it('Should set the correct headers and send the data back to client when downloadDueDiligenceData data is retrieved successfully', async () => {
+    (downloadDueDiligenceData as jest.Mock).mockResolvedValue({
       headers: {
         'content-disposition': 'Test content disposition',
         'content-type': 'Test content type',

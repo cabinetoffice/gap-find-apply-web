@@ -1,8 +1,7 @@
 import axios from 'axios';
 import {
   hasCompletedMandatoryQuestions,
-  downloadDueDiligenceData,
-  spotlightExport,
+  downloadAllDueDiligenceData,
 } from './MandatoryQuestionsService';
 
 jest.mock('axios');
@@ -12,35 +11,18 @@ describe('MandatoryQuestionsService', () => {
   const BASE_MANDATORY_QUESTIONS_URL =
     process.env.BACKEND_HOST + '/mandatory-questions';
 
-  describe('downloadDueDiligenceData function', () => {
+  describe('downloadAllDueDiligenceData function', () => {
     it('Should return due diligence data when a valid schemeId is provided', async () => {
       mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
 
-      await downloadDueDiligenceData(
+      await downloadAllDueDiligenceData(
         'testSessionCookie',
         'testSchemeId',
         'true'
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/due-diligence/testSchemeId?isInternal=true`,
-        {
-          headers: { Cookie: 'SESSION=testSessionCookie;' },
-          responseType: 'arraybuffer',
-          withCredentials: true,
-        }
-      );
-    });
-  });
-
-  describe('spotlightExport function', () => {
-    it('Should return spotlight binary data when a valid schemeId is provided', async () => {
-      mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
-
-      await spotlightExport('testSessionCookie', 'testSchemeId');
-
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/spotlight-export/testSchemeId`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/due-diligence/?isInternal=true`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           responseType: 'arraybuffer',

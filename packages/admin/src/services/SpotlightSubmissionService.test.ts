@@ -2,6 +2,7 @@ import axios from 'axios';
 import getConfig from 'next/config';
 import {
   GetSpotlightSubmissionDataBySchemeIdDto,
+  downloadDueDiligenceData,
   getSpotlightSubmissionSentData,
 } from './SpotlightSubmissionService';
 
@@ -37,6 +38,23 @@ describe('SpotlightSubmissionService', () => {
         { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
       );
       expect(response).toEqual(spotlightSubmissionSentData);
+    });
+  });
+
+  describe('downloadDueDiligenceData function', () => {
+    it('Should return spotlight binary data when a valid schemeId is provided', async () => {
+      mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
+
+      await downloadDueDiligenceData('testSessionCookie', 'testSchemeId');
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/testSchemeId/download`,
+        {
+          headers: { Cookie: 'SESSION=testSessionCookie;' },
+          responseType: 'arraybuffer',
+          withCredentials: true,
+        }
+      );
     });
   });
 });

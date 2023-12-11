@@ -273,7 +273,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/apply/api/manage-due-diligence/v2/internal/downloadSpotlightChecks?schemeId=${SCHEME_ID}`
+        `/apply/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsChecks?schemeId=${SCHEME_ID}`
       );
     });
 
@@ -310,7 +310,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/apply/api/manage-due-diligence/v2/downloadDueDiligenceChecks?schemeId=${SCHEME_ID}&internal=true`
+        `/apply/api/manage-due-diligence/v2/downloadAllDueDiligenceChecks?schemeId=${SCHEME_ID}&internal=true`
       );
     });
 
@@ -330,7 +330,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/apply/api/manage-due-diligence/v2/downloadDueDiligenceChecks?schemeId=${SCHEME_ID}&internal=false`
+        `/apply/api/manage-due-diligence/v2/downloadAllDueDiligenceChecks?schemeId=${SCHEME_ID}&internal=false`
       );
     });
 
@@ -482,7 +482,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/apply/api/manage-due-diligence/v2/internal/downloadSpotlightValidationErrorSubmissions?schemeId=${scheme.schemeId}`
+        `/apply/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsValidationError?schemeId=${scheme.schemeId}`
       );
     });
   });

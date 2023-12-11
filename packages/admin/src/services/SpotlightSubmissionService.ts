@@ -19,6 +19,23 @@ export const getSpotlightSubmissionSentData = async (
   return data;
 };
 
+export const downloadDueDiligenceData = async (
+  sessionCookie: string,
+  schemeId: string
+) => {
+  const response = await axios.get(
+    `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${schemeId}/download`,
+    {
+      withCredentials: true,
+      responseType: 'arraybuffer',
+      headers: {
+        Cookie: `SESSION=${sessionCookie};`,
+      },
+    }
+  );
+  return response;
+};
+
 export interface GetSpotlightSubmissionDataBySchemeIdDto {
   sentCount: number;
   sentLastUpdatedDate: string;

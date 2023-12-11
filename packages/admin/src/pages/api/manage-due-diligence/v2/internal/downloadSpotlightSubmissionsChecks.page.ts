@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { spotlightExport } from '../../../../../services/MandatoryQuestionsService';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
+import { downloadDueDiligenceData } from '../../../../../services/SpotlightSubmissionService';
 
 const downloadSpotlightChecks = async (
   req: NextApiRequest,
@@ -25,7 +25,10 @@ const downloadSpotlightChecks = async (
 
   let result;
   try {
-    result = await spotlightExport(getSessionIdFromCookies(req), schemeId);
+    result = await downloadDueDiligenceData(
+      getSessionIdFromCookies(req),
+      schemeId
+    );
   } catch (error) {
     errorRedirect();
     return;

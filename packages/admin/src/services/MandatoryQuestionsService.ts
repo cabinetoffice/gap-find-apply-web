@@ -4,27 +4,13 @@ import { axiosSessionConfig } from '../utils/session';
 const BASE_MANDATORY_QUESTIONS_URL =
   process.env.BACKEND_HOST + '/mandatory-questions';
 
-const downloadDueDiligenceData = async (
+const downloadAllDueDiligenceData = async (
   sessionCookie: string,
   schemeId: string,
   internal: string
 ) => {
   const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/due-diligence/${schemeId}?isInternal=${internal}`,
-    {
-      withCredentials: true,
-      responseType: 'arraybuffer',
-      headers: {
-        Cookie: `SESSION=${sessionCookie};`,
-      },
-    }
-  );
-  return response;
-};
-
-const spotlightExport = async (sessionCookie: string, schemeId: string) => {
-  const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/spotlight-export/${schemeId}`,
+    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/due-diligence/?isInternal=${internal}`,
     {
       withCredentials: true,
       responseType: 'arraybuffer',
@@ -48,8 +34,4 @@ const hasCompletedMandatoryQuestions = async (
   return response.data;
 };
 
-export {
-  hasCompletedMandatoryQuestions,
-  downloadDueDiligenceData,
-  spotlightExport,
-};
+export { hasCompletedMandatoryQuestions, downloadAllDueDiligenceData };

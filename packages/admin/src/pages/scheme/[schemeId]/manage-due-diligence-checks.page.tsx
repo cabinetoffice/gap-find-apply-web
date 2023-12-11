@@ -76,7 +76,7 @@ const ManageDueDiligenceChecks = ({
     ? 'Download checks from applications'
     : 'Download due diligence information';
 
-  const downloadFullDueDiligenceChecksUrl = `/api/manage-due-diligence/v2/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}&internal=${isInternal}`;
+  const downloadFullDueDiligenceChecksUrl = `/api/manage-due-diligence/v2/downloadAllDueDiligenceChecks?schemeId=${scheme.schemeId}&internal=${isInternal}`;
 
   return (
     <>
