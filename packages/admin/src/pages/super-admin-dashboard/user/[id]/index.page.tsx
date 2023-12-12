@@ -32,7 +32,8 @@ export const getServerSideProps = async ({
       ? jwtUser
       : await getUserById(userId, userToken);
 
-    const usersSchemes = await getAdminsSchemes(user.sub, sessionId);
+    const sub = user?.sub ? user.sub : user.colaSub;
+    const usersSchemes = await getAdminsSchemes(sub, sessionId);
 
     return {
       isViewingOwnAccount,

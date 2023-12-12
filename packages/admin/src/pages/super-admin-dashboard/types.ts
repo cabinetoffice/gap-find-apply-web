@@ -12,6 +12,7 @@ export type Role = {
 };
 
 export type User = {
+  colaSub: string;
   gapUserId: string;
   emailAddress: string;
   sub: string;
