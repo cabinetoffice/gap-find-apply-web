@@ -21,12 +21,12 @@ import handler from './create-submission.page';
 import { GrantAdvert } from '../../types/models/GrantAdvert';
 import { GrantSchemeService } from '../../services/GrantSchemeService';
 
-jest.mock('../../../../services/SubmissionService');
-jest.mock('../../../../services/GrantMandatoryQuestionService.ts');
-jest.mock('../../../../services/GrantApplicantService');
-jest.mock('../../../../services/GrantApplicantOrganisationProfileService');
-jest.mock('../../../../utils/jwt');
-jest.mock('../../../../services/GrantSchemeService');
+jest.mock('../../services/SubmissionService');
+jest.mock('../../services/GrantMandatoryQuestionService.ts');
+jest.mock('../../services/GrantApplicantService');
+jest.mock('../../services/GrantApplicantOrganisationProfileService');
+jest.mock('../../utils/jwt');
+jest.mock('../../services/GrantSchemeService');
 
 const APPLICANT_ID = '75ab5fbd-0682-4d3d-a467-01c7a447f07c';
 const MOCK_GRANT_APPLICANT: GrantApplicant = {
