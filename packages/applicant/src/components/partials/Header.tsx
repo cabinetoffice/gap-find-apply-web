@@ -104,11 +104,7 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn, oneLoginEnabledInFind }) => {
         >
           {isUserLoggedIn ? (
             <Link href={'/api/logout'}>
-              <a
-                className="govuk-link govuk-link--no-visited-state"
-                type="button"
-                data-module="govuk-button"
-              >
+              <a className="govuk-link govuk-link--no-visited-state">
                 Sign out
               </a>
             </Link>
