@@ -12,10 +12,15 @@ const ONE_LOGIN_ENABLED = process.env.ONE_LOGIN_ENABLED === 'true';
 export const config = {
   matcher: [
     '/applications/:path*',
+    // '/applications.json',
     '/dashboard/:path*',
+    // '/dashboard.json',
     '/organisation/:path*',
+    // '/organisation.json',
     '/personal-details/:path*',
+    // '/personal-details.json',
     '/submissions/:path*',
+    // '/submissions.json',
     '/grant-is-closed',
     '/sign-in-details',
     '/api/redirect-from-find',
@@ -93,6 +98,7 @@ export const getJwtFromMiddlewareCookies = (req: NextRequest) => {
 };
 
 export async function middleware(req: NextRequest) {
+  console.log(process.env.__NEXT_NO_MIDDLEWARE_URL_NORMALIZE);
   if (signInDetailsPage.test({ pathname: req.nextUrl.pathname })) {
     if (!ONE_LOGIN_ENABLED) {
       const url = req.nextUrl.clone();
@@ -120,7 +126,7 @@ export async function middleware(req: NextRequest) {
       return buildMiddlewareResponse(req, HOST);
     }
 
-    if (isWithinNumberOfMinsOfExpiry(expiresAt, 30)) {
+    if (isWithinNumberOfMinsOfExpiry(expiresAt, 59)) {
       return buildMiddlewareResponse(
         req,
         `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}${

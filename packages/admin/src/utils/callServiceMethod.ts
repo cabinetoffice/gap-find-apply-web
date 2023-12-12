@@ -66,6 +66,7 @@ export default async function callServiceMethod<
       },
     };
   } catch (err: any) {
+    console.log(err);
     // If we encounter an error that conforms to the old way of handling form validation errors
     const data = err?.response?.data;
     const fieldErrors = data?.errors || data?.fieldErrors;
