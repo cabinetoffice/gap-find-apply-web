@@ -118,9 +118,7 @@ describe('Question Options', () => {
         />
       );
       screen.getByRole('heading', { name: 'There is a problem' });
-      const topLevelErrors = screen.getAllByRole('link', {
-        name: 'Example error for all options',
-      });
+
       screen.getByRole('link', { name: 'Example error for the second option' });
     });
 

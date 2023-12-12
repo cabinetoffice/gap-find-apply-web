@@ -4,16 +4,15 @@ import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
 } from '../../../services/GrantMandatoryQuestionService';
-import { GrantApplicantOrganisationProfileService } from '../../../services/GrantApplicantOrganisationProfileService';
 import {
   Optional,
   expectObjectEquals,
   getContext,
   mockServiceMethod,
 } from '../../../testUtils/unitTestHelpers';
+import { MQ_ORG_TYPES } from '../../../utils/constants';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
-import { MQ_ORG_TYPES } from '../../../utils/constants';
 
 jest.mock('next/dist/server/api-utils/node');
 
@@ -25,10 +24,6 @@ const spiedGrantMandatoryQuestionServiceGetMandatoryQuestion = jest.spyOn(
 const spiedGrantMandatoryQuestionServiceUpdateMandatoryQuestion = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
   'updateMandatoryQuestion'
-);
-const spiedGrantApplicantOrganisationProfileService = jest.spyOn(
-  GrantApplicantOrganisationProfileService.prototype,
-  'isOrgProfileComplete'
 );
 const userTokenNameBackup = process.env.USER_TOKEN_NAME;
 describe('getServerSideProps', () => {

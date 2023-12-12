@@ -26,7 +26,6 @@ const serviceErrorProps = {
     linkInformation: 'so we can test this page.',
   },
 };
-const expectedResult = { age: 30, city: 'New York', name: 'John' };
 
 const context = {
   query: {
@@ -80,7 +79,7 @@ describe('Service error page render', () => {
   });
 
   it('Should not include redirect link if no link attributes are provided', () => {
-    const { linkAttributes, ...errorInformation } = serviceErrorProps;
+    const { linkAttributes: _, ...errorInformation } = serviceErrorProps;
     renderWithRouter(<ServiceErrorPage serviceError={errorInformation} />);
     const link = screen.queryByRole('link', { name: 'test redirect ' });
     expect(link).toBeNull();

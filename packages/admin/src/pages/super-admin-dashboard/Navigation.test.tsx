@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
 import Navigation from './Navigation';
-import { useRouter } from 'next/router';
 
 jest.mock('next/config', () => () => ({
   publicRuntimeConfig: {

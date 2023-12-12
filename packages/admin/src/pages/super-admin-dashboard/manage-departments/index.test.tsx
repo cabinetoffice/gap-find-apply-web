@@ -1,8 +1,6 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
-import EditDepartmentPage from './index.page';
+import { render, screen } from '@testing-library/react';
 import ManageDepartmentsPage from './index.page';
-import { Department } from '../types';
 
 const getMockDepartmentData = () => [
   {

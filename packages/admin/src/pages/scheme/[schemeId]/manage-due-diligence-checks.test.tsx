@@ -65,10 +65,6 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     const mockedGetScheme = getGrantScheme as jest.MockedFn<
       typeof getGrantScheme
     >;
-    const mockedSchemeApplicationIsInternal =
-      schemeApplicationIsInternal as jest.MockedFn<
-        typeof schemeApplicationIsInternal
-      >;
 
     it('Should get the scheme id from the path param', async () => {
       mockedGetScheme.mockResolvedValue(scheme);

@@ -26,7 +26,7 @@ export function removeAllCarriageReturns<T>(obj: T) {
 }
 
 //TODO this function needs a major refactor
-export default async function postQuestion<B, R>(
+export default async function postQuestion<B, _R>(
   req: IncomingMessage,
   res: any,
   serviceFunc: (body: QuestionPostBody) => Promise<PostQuestionResponse>,
@@ -144,7 +144,7 @@ export default async function postQuestion<B, R>(
       return {
         body: body!,
         values: fieldsStartingWithQuestionIdInBody(cleanedBody, questionId).map(
-          ([key, value]) => value
+          ([_key, value]) => value
         ),
         fieldErrors: errorsArray,
         isRefererCheckYourAnswerScreen,
@@ -160,7 +160,7 @@ export const fieldsStartingWithQuestionIdInBody = (
   questionId: string
 ): [string, string][] => {
   const regex = new RegExp(questionId);
-  return Object.entries(body).filter(([key, value]) => regex.test(key));
+  return Object.entries(body).filter(([key, _value]) => regex.test(key));
 };
 
 export const convertAddressFieldNameFromErrors = (
@@ -236,7 +236,7 @@ export const createRequestBody = (
   const multiResponseValues =
     isMultiResponse || isMultiSelectionQuestion
       ? fieldsStartingWithQuestionIdInBody(cleanedBody, questionId).map(
-          ([key, value]) => value
+          ([_key, value]) => value
         )
       : null;
   const requestBody: QuestionPostBody = {

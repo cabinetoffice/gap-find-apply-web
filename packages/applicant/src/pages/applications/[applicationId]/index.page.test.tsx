@@ -95,7 +95,7 @@ const scheme: GrantScheme = {
   createdDate: 'string',
 };
 const application: GrantApplication = {
-  id: 1,
+  id: '1',
   grantScheme: scheme,
   version: 1,
   created: 'string',

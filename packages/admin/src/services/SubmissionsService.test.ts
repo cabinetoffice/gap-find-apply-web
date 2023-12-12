@@ -57,10 +57,7 @@ describe('SubmissionsService', () => {
     it('Should call axios with correct parameters when a valid applicationId is provided', async () => {
       mockedAxios.post.mockResolvedValue({});
 
-      const response = await requestSubmissionsExport(
-        'testSessionCookie',
-        'testApplicationId'
-      );
+      await requestSubmissionsExport('testSessionCookie', 'testApplicationId');
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         `${BASE_SUBMISSIONS_URL}/export-all/testApplicationId`,
