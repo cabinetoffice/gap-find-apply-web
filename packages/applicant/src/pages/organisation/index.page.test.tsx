@@ -71,14 +71,14 @@ const getGeneralOrganisationRows = ({ populatedRows }: GetTestDataType) => [
 
   {
     id: 'organisationCompaniesHouseNumber',
-    label: 'Companies house number',
+    label: 'Companies House number',
     value: populatedRows ? '98239829382' : '',
     url: '/organisation/companies-house-number',
     status: populatedRows ? 'Change' : 'Add',
   },
   {
     id: 'organisationCharity',
-    label: 'Charity commission number',
+    label: 'Charity Commission number',
     value: populatedRows ? '09090909' : '',
     url: '/organisation/charity-commission-number',
     status: populatedRows ? 'Change' : 'Add',
@@ -190,8 +190,8 @@ describe('Manage organisation page should render properly', () => {
     expect(screen.getAllByText('Name')).toBeDefined();
     expect(screen.getAllByText('Address')).toBeDefined();
     expect(screen.getAllByText('Type of organisation')).toBeDefined();
-    expect(screen.getAllByText('Companies house number')).toBeDefined();
-    expect(screen.getAllByText('Charity commission number')).toBeDefined();
+    expect(screen.getAllByText('Companies House number')).toBeDefined();
+    expect(screen.getAllByText('Charity Commission number')).toBeDefined();
   });
 
   it('should render the correct key values', () => {
@@ -394,14 +394,14 @@ describe('builds org data rows properly', () => {
         },
         {
           id: 'organisationCompaniesHouseNumber',
-          label: 'Companies house number',
+          label: 'Companies House number',
           status: 'Change',
           url: '/organisation/companies-house-number',
           value: 'chnum',
         },
         {
           id: 'organisationCharity',
-          label: 'Charity commission number',
+          label: 'Charity Commission number',
           status: 'Change',
           url: '/organisation/charity-commission-number',
           value: 'ccnum',
