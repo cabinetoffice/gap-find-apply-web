@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
-import { downloadDueDiligenceData } from '../../../../../services/SpotlightSubmissionService';
+import { downloadSpotlightSubmissionsDueDiligenceData } from '../../../../../services/SpotlightSubmissionService';
 
 const downloadSpotlightChecks = async (
   req: NextApiRequest,
@@ -27,7 +27,7 @@ const downloadSpotlightChecks = async (
 
   let result;
   try {
-    result = await downloadDueDiligenceData(
+    result = await downloadSpotlightSubmissionsDueDiligenceData(
       getSessionIdFromCookies(req),
       schemeId,
       onlyValidationErrors

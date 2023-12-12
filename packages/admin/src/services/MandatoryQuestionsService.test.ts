@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {
   hasCompletedMandatoryQuestions,
-  downloadAllDueDiligenceData,
+  downloadMandatoryQuestionsDueDiligenceData,
 } from './MandatoryQuestionsService';
 
 jest.mock('axios');
@@ -11,11 +11,11 @@ describe('MandatoryQuestionsService', () => {
   const BASE_MANDATORY_QUESTIONS_URL =
     process.env.BACKEND_HOST + '/mandatory-questions';
 
-  describe('downloadAllDueDiligenceData function', () => {
+  describe('downloadMandatoryQuestionsDueDiligenceData function', () => {
     it('Should return due diligence data when a valid schemeId is provided', async () => {
       mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
 
-      await downloadAllDueDiligenceData(
+      await downloadMandatoryQuestionsDueDiligenceData(
         'testSessionCookie',
         'testSchemeId',
         'true'

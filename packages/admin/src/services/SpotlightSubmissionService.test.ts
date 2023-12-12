@@ -2,7 +2,7 @@ import axios from 'axios';
 import getConfig from 'next/config';
 import {
   GetSpotlightSubmissionDataBySchemeIdDto,
-  downloadDueDiligenceData,
+  downloadSpotlightSubmissionsDueDiligenceData,
   getSpotlightSubmissionSentData,
 } from './SpotlightSubmissionService';
 
@@ -45,7 +45,7 @@ describe('SpotlightSubmissionService', () => {
     it('Should return spotlight binary data when a valid schemeId is provided and onlyValidationErrors is false', async () => {
       mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
 
-      await downloadDueDiligenceData(
+      await downloadSpotlightSubmissionsDueDiligenceData(
         'testSessionCookie',
         'testSchemeId',
         'false'
@@ -64,7 +64,7 @@ describe('SpotlightSubmissionService', () => {
     it('Should return spotlight binary data when a valid schemeId is provided and onlyValidationErrors is true', async () => {
       mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
 
-      await downloadDueDiligenceData(
+      await downloadSpotlightSubmissionsDueDiligenceData(
         'testSessionCookie',
         'testSchemeId',
         'true'

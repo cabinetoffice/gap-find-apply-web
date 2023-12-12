@@ -388,10 +388,11 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     });
 
     it('Should show the Spotlight outage error banner if the VALIDATION error is returned', () => {
-      const validationError = {
+      const validationError: SpotlightError = {
         errorCount: 1,
         errorStatus: 'VALIDATION',
         errorFound: true,
+        isValidationErrorPresent: true,
       };
       renderWithRouter(
         <ManageDueDiligenceChecks
@@ -410,10 +411,11 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     });
 
     it('Should show the Spotlight GGIS reference error banner if the GGIS error is returned', () => {
-      const ggisError = {
+      const ggisError: SpotlightError = {
         errorCount: 1,
         errorStatus: 'GGIS',
         errorFound: true,
+        isValidationErrorPresent: false,
       };
 
       renderWithRouter(
@@ -433,11 +435,12 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     });
 
     it('Should show the Spotlight Outdated Format error banner if the API error is returned', () => {
-      const apiError = {
+      const apiError: SpotlightError = {
         errorCount: 1,
         errorStatus: 'API',
         errorFound: true,
-      } as SpotlightError;
+        isValidationErrorPresent: false,
+      };
 
       renderWithRouter(
         <ManageDueDiligenceChecks
@@ -456,10 +459,11 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
     });
 
     it('Should show the download failed Spotlight checks link if the VALIDATION error is returned', () => {
-      const validationError = {
+      const validationError: SpotlightError = {
         errorCount: 1,
         errorStatus: 'VALIDATION',
         errorFound: true,
+        isValidationErrorPresent: true,
       };
 
       renderWithRouter(

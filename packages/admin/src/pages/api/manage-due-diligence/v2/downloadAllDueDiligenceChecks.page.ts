@@ -1,13 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { downloadAllDueDiligenceData } from '../../../../services/MandatoryQuestionsService';
+import { downloadMandatoryQuestionsDueDiligenceData } from '../../../../services/MandatoryQuestionsService';
 import { getSessionIdFromCookies } from '../../../../utils/session';
 
 const downloadAllDueDiligenceChecks = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  console.log('downloadDueDiligenceChecks');
-
   const schemeId = req.query.schemeId as string;
   const internal = req.query.internal as string;
 
@@ -29,7 +27,7 @@ const downloadAllDueDiligenceChecks = async (
 
   let result;
   try {
-    result = await downloadAllDueDiligenceData(
+    result = await downloadMandatoryQuestionsDueDiligenceData(
       getSessionIdFromCookies(req),
       schemeId,
       internal

@@ -4,7 +4,7 @@ import { axiosSessionConfig } from '../utils/session';
 const BASE_MANDATORY_QUESTIONS_URL =
   process.env.BACKEND_HOST + '/mandatory-questions';
 
-const downloadAllDueDiligenceData = async (
+const downloadMandatoryQuestionsDueDiligenceData = async (
   sessionCookie: string,
   schemeId: string,
   internal: string
@@ -34,4 +34,7 @@ const hasCompletedMandatoryQuestions = async (
   return response.data;
 };
 
-export { hasCompletedMandatoryQuestions, downloadAllDueDiligenceData };
+export {
+  hasCompletedMandatoryQuestions,
+  downloadMandatoryQuestionsDueDiligenceData,
+};

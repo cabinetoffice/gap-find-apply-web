@@ -72,17 +72,16 @@ export const InternalApplication = ({
           to upload it to Spotlight manually.
         </p>
       )}
-      {spotlightErrors.errorFound &&
-        spotlightErrors.errorStatus === 'VALIDATION' && (
-          <p className="govuk-body">
-            You can also{' '}
-            <CustomLink
-              href={`/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsChecks?schemeId=${schemeId}&onlyValidationErrors=true`}
-            >
-              download checks that Find a grant cannot send to Spotlight
-            </CustomLink>{' '}
-          </p>
-        )}
+      {spotlightErrors.isValidationErrorPresent && (
+        <p className="govuk-body">
+          You can also{' '}
+          <CustomLink
+            href={`/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsChecks?schemeId=${schemeId}&onlyValidationErrors=true`}
+          >
+            download checks that Find a grant cannot send to Spotlight
+          </CustomLink>{' '}
+        </p>
+      )}
       <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible"></hr>
     </div>
   );

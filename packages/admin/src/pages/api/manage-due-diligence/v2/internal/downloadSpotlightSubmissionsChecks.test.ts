@@ -1,5 +1,5 @@
 import { merge } from 'lodash';
-import { downloadDueDiligenceData } from '../../../../../services/SpotlightSubmissionService';
+import { downloadSpotlightSubmissionsDueDiligenceData } from '../../../../../services/SpotlightSubmissionService';
 import downloadSpotlightChecks from './downloadSpotlightSubmissionsChecks.page';
 
 jest.mock('../../../../../services/SpotlightSubmissionService');
@@ -41,7 +41,9 @@ describe('spotlightExportHandler', () => {
   });
 
   it('Should redirect to service error page when trying to retrieve spotlight export csv file throws an error', async () => {
-    (downloadDueDiligenceData as jest.Mock).mockRejectedValue({});
+    (
+      downloadSpotlightSubmissionsDueDiligenceData as jest.Mock
+    ).mockRejectedValue({});
 
     await downloadSpotlightChecks(req(), res());
 
@@ -52,7 +54,9 @@ describe('spotlightExportHandler', () => {
   });
 
   it('Should redirect to service error page when result for downloadDueDiligenceData is undefined', async () => {
-    (downloadDueDiligenceData as jest.Mock).mockResolvedValue(undefined);
+    (
+      downloadSpotlightSubmissionsDueDiligenceData as jest.Mock
+    ).mockResolvedValue(undefined);
 
     await downloadSpotlightChecks(req(), res());
     expect(mockedRedirect).toHaveBeenNthCalledWith(
@@ -62,7 +66,9 @@ describe('spotlightExportHandler', () => {
   });
 
   it('Should set the correct headers and send the data back to client when downloadDueDiligenceData data is retrieved successfully', async () => {
-    (downloadDueDiligenceData as jest.Mock).mockResolvedValue({
+    (
+      downloadSpotlightSubmissionsDueDiligenceData as jest.Mock
+    ).mockResolvedValue({
       headers: {
         'content-disposition': 'Test content disposition',
         'content-type': 'Test content type',

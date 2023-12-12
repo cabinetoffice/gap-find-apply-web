@@ -1,5 +1,5 @@
 import { merge } from 'lodash';
-import { downloadAllDueDiligenceData } from '../../../../services/MandatoryQuestionsService';
+import { downloadMandatoryQuestionsDueDiligenceData } from '../../../../services/MandatoryQuestionsService';
 import downloadAllDueDiligenceChecks from './downloadAllDueDiligenceChecks.page';
 
 jest.mock('../../../../services/MandatoryQuestionsService');
@@ -42,7 +42,9 @@ describe('spotlightExportHandler', () => {
   });
 
   it('Should redirect to service error page when trying to retrieve due diligence export csv file throws an error', async () => {
-    (downloadAllDueDiligenceData as jest.Mock).mockRejectedValue({});
+    (downloadMandatoryQuestionsDueDiligenceData as jest.Mock).mockRejectedValue(
+      {}
+    );
 
     await downloadAllDueDiligenceChecks(req(), res());
 
@@ -53,7 +55,9 @@ describe('spotlightExportHandler', () => {
   });
 
   it('Should redirect to service error page when result for downloadDueDiligenceData is undefined', async () => {
-    (downloadAllDueDiligenceData as jest.Mock).mockResolvedValue(undefined);
+    (downloadMandatoryQuestionsDueDiligenceData as jest.Mock).mockResolvedValue(
+      undefined
+    );
 
     await downloadAllDueDiligenceChecks(req(), res());
     expect(mockedRedirect).toHaveBeenNthCalledWith(
@@ -62,15 +66,17 @@ describe('spotlightExportHandler', () => {
     );
   });
 
-  it('Should set the correct headers and send the data back to client when downloadAllDueDiligenceData data is retrieved successfully', async () => {
-    (downloadAllDueDiligenceData as jest.Mock).mockResolvedValue({
-      headers: {
-        'content-disposition': 'Test content disposition',
-        'content-type': 'Test content type',
-        'content-length': 'Test content length',
-      },
-      data: 'Some csv data',
-    });
+  it('Should set the correct headers and send the data back to client when downloadMandatoryQuestionsDueDiligenceData data is retrieved successfully', async () => {
+    (downloadMandatoryQuestionsDueDiligenceData as jest.Mock).mockResolvedValue(
+      {
+        headers: {
+          'content-disposition': 'Test content disposition',
+          'content-type': 'Test content type',
+          'content-length': 'Test content length',
+        },
+        data: 'Some csv data',
+      }
+    );
 
     await downloadAllDueDiligenceChecks(req(), res());
     expect(mockedSetHeader).toHaveBeenCalledTimes(3);
@@ -87,7 +93,7 @@ describe('spotlightExportHandler', () => {
       'Test content length'
     );
     expect(mockedSend).toHaveBeenNthCalledWith(1, 'Some csv data');
-    expect(downloadAllDueDiligenceData).toHaveBeenCalledWith(
+    expect(downloadMandatoryQuestionsDueDiligenceData).toHaveBeenCalledWith(
       'testSessionId',
       'testSchemeId',
       'true'

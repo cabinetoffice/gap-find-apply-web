@@ -19,7 +19,7 @@ export const getSpotlightSubmissionSentData = async (
   return data;
 };
 
-export const downloadDueDiligenceData = async (
+export const downloadSpotlightSubmissionsDueDiligenceData = async (
   sessionCookie: string,
   schemeId: string,
   onlyValidationErrors: string
