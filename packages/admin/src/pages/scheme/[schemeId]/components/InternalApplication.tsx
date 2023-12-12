@@ -65,7 +65,7 @@ export const InternalApplication = ({
         <p className="govuk-body">
           You can{' '}
           <CustomLink
-            href={`/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsChecks?schemeId=${schemeId}`} //TODO
+            href={`/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsChecks?schemeId=${schemeId}&onlyValidationErrors=false`}
           >
             download the information you need to run checks
           </CustomLink>{' '}
@@ -77,7 +77,7 @@ export const InternalApplication = ({
           <p className="govuk-body">
             You can also{' '}
             <CustomLink
-              href={`/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsValidationError?schemeId=${schemeId}`} //TODO
+              href={`/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsChecks?schemeId=${schemeId}&onlyValidationErrors=true`}
             >
               download checks that Find a grant cannot send to Spotlight
             </CustomLink>{' '}

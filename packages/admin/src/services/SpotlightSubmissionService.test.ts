@@ -42,13 +42,36 @@ describe('SpotlightSubmissionService', () => {
   });
 
   describe('downloadDueDiligenceData function', () => {
-    it('Should return spotlight binary data when a valid schemeId is provided', async () => {
+    it('Should return spotlight binary data when a valid schemeId is provided and onlyValidationErrors is false', async () => {
       mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
 
-      await downloadDueDiligenceData('testSessionCookie', 'testSchemeId');
+      await downloadDueDiligenceData(
+        'testSessionCookie',
+        'testSchemeId',
+        'false'
+      );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/testSchemeId/download`,
+        `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/testSchemeId/download?onlyValidationErrors=false`,
+        {
+          headers: { Cookie: 'SESSION=testSessionCookie;' },
+          responseType: 'arraybuffer',
+          withCredentials: true,
+        }
+      );
+    });
+
+    it('Should return spotlight binary data when a valid schemeId is provided and onlyValidationErrors is true', async () => {
+      mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
+
+      await downloadDueDiligenceData(
+        'testSessionCookie',
+        'testSchemeId',
+        'true'
+      );
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/testSchemeId/download?onlyValidationErrors=true`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           responseType: 'arraybuffer',

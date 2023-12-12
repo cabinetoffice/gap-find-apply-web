@@ -7,6 +7,8 @@ const downloadSpotlightChecks = async (
   res: NextApiResponse
 ) => {
   const schemeId = req.query.schemeId as string;
+  const onlyValidationErrors = req.query.onlyValidationErrors as string;
+
   const errorRedirect = () => {
     res.redirect(
       `${process.env.SUB_PATH}/service-error?serviceErrorProps=${JSON.stringify(
@@ -27,7 +29,8 @@ const downloadSpotlightChecks = async (
   try {
     result = await downloadDueDiligenceData(
       getSessionIdFromCookies(req),
-      schemeId
+      schemeId,
+      onlyValidationErrors
     );
   } catch (error) {
     errorRedirect();

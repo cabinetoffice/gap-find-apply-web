@@ -1,9 +1,6 @@
 import axios from 'axios';
 import getConfig from 'next/config';
-import {
-  getSpotlightErrors,
-  getSpotlightValidationErrorSubmissions,
-} from './SpotlightBatchService';
+import { getSpotlightErrors } from './SpotlightBatchService';
 import { SpotlightError } from '../types/SpotlightError';
 
 jest.mock('axios');
@@ -31,27 +28,6 @@ describe('SpotlightBatchService', () => {
         { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
       );
       expect(response).toEqual(spotlightErrors);
-    });
-  });
-
-  describe('getSpotlightValidationErrorSubmissions', () => {
-    it('Should get Spotlight submissions with validation errors', async () => {
-      mockedAxios.get.mockResolvedValue({ data: 'some binary data' });
-
-      const response = await getSpotlightValidationErrorSubmissions(
-        SESSION_ID,
-        SCHEME_ID
-      );
-
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SPOTLIGHT_BATCH_URL}/scheme/${SCHEME_ID}/spotlight/download-validation-errors`,
-        {
-          headers: { Cookie: 'SESSION=SessionId;' },
-          responseType: 'arraybuffer',
-          withCredentials: true,
-        }
-      );
-      expect(response).toEqual({ data: 'some binary data' });
     });
   });
 });

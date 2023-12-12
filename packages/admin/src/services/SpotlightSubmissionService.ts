@@ -21,10 +21,11 @@ export const getSpotlightSubmissionSentData = async (
 
 export const downloadDueDiligenceData = async (
   sessionCookie: string,
-  schemeId: string
+  schemeId: string,
+  onlyValidationErrors: string
 ) => {
   const response = await axios.get(
-    `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${schemeId}/download`,
+    `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${schemeId}/download?onlyValidationErrors=${onlyValidationErrors}`,
     {
       withCredentials: true,
       responseType: 'arraybuffer',
