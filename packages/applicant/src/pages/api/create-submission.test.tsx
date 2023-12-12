@@ -1,25 +1,25 @@
 import { merge } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { GrantApplicant } from '../../../../types/models/GrantApplicant';
+import { GrantApplicant } from '../../types/models/GrantApplicant';
 import {
   GrantApplicantOrganisationProfileService,
   UpdateOrganisationDetailsDto,
-} from '../../../../services/GrantApplicantOrganisationProfileService';
-import { GrantApplicantService } from '../../../../services/GrantApplicantService';
+} from '../../services/GrantApplicantOrganisationProfileService';
+import { GrantApplicantService } from '../../services/GrantApplicantService';
 import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
-} from '../../../../services/GrantMandatoryQuestionService';
+} from '../../services/GrantMandatoryQuestionService';
 import {
   CreateSubmissionResponse,
   createSubmission,
-} from '../../../../services/SubmissionService';
-import { Overrides } from '../../../../testUtils/unitTestHelpers';
-import { getJwtFromCookies } from '../../../../utils/jwt';
-import { routes } from '../../../../utils/routes';
+} from '../../services/SubmissionService';
+import { Overrides } from '../../testUtils/unitTestHelpers';
+import { getJwtFromCookies } from '../../utils/jwt';
+import { routes } from '../../utils/routes';
 import handler from './create-submission.page';
-import { GrantAdvert } from '../../../../types/models/GrantAdvert';
-import { GrantSchemeService } from '../../../../services/GrantSchemeService';
+import { GrantAdvert } from '../../types/models/GrantAdvert';
+import { GrantSchemeService } from '../../services/GrantSchemeService';
 
 jest.mock('../../../../services/SubmissionService');
 jest.mock('../../../../services/GrantMandatoryQuestionService.ts');
