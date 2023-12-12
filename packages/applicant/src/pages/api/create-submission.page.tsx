@@ -21,9 +21,11 @@ export default async function handler(
   const grantApplicantOrganisationProfileService =
     GrantApplicantOrganisationProfileService.getInstance();
   const grantSchemeService = GrantSchemeService.getInstance();
+
   const mandatoryQuestionId = req.query.mandatoryQuestionId.toString();
   const schemeId = req.query.schemeId.toString();
   const jwt = getJwtFromCookies(req);
+
   try {
     const grantApplicant = await grantApplicantService.getGrantApplicant(jwt);
     const mandatoryQuestionData =
@@ -33,6 +35,7 @@ export default async function handler(
       );
     const { grantApplication, grantAdverts } =
       await grantSchemeService.getGrantSchemeById(schemeId.toString(), jwt);
+
     const updateOrganisationDetailsDto = mapUpdateOrganisationDetailsDto(
       grantApplicant.organisation,
       mandatoryQuestionData
@@ -41,6 +44,7 @@ export default async function handler(
       updateOrganisationDetailsDto,
       jwt
     );
+
     if (!grantApplication.id) {
       await grantMandatoryQuestionService.updateMandatoryQuestion(
         jwt,
@@ -56,7 +60,9 @@ export default async function handler(
         )}?url=${grantAdverts[0].externalSubmissionUrl}`
       );
     }
+
     const { submissionId } = await createSubmission(grantApplication.id, jwt);
+
     await grantMandatoryQuestionService.updateMandatoryQuestion(
       jwt,
       mandatoryQuestionId,
@@ -66,10 +72,12 @@ export default async function handler(
         mandatoryQuestionsComplete: true,
       }
     );
+
     console.info(
       'Submission has been added to mandatory question: ',
       mandatoryQuestionId
     );
+
     return res.redirect(
       `${process.env.HOST}${routes.submissions.sections(submissionId)}`
     );
