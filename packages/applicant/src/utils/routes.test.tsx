@@ -44,7 +44,7 @@ describe('api', () => {
           'sectionId'
         );
         expect(url).toBe(
-          `/api/submissions/grantSubmissionId/sections/sectionId`
+          `/api/submissions/grantSubmissionId/sections/sectionId/redirect`
         );
       });
     });

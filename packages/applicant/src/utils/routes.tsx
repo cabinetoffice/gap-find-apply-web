@@ -65,7 +65,7 @@ export const routes = {
   api: {
     submissions: {
       section: (grantSubmissionId: string, sectionId: string) =>
-        `/api/submissions/${grantSubmissionId}/sections/${sectionId}`,
+        `/api/submissions/${grantSubmissionId}/sections/${sectionId}/redirect`,
       question: (
         grantSubmissionId: string,
         sectionId: string,
