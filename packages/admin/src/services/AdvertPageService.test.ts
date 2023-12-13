@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import getConfig from 'next/config';
 import AdvertStatusEnum from '../enums/AdvertStatus';
 import { InferServiceMethodResponse } from '../testUtils/unitTestHelpers';
