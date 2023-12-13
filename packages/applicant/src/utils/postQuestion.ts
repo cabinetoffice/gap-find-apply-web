@@ -160,7 +160,7 @@ export const fieldsStartingWithQuestionIdInBody = (
   questionId: string
 ): [string, string][] => {
   const regex = new RegExp(questionId);
-  return Object.entries(body).filter(([key, _value]) => regex.test(key));
+  return Object.entries(body).filter(([key]) => regex.test(key));
 };
 
 export const convertAddressFieldNameFromErrors = (
@@ -236,7 +236,7 @@ export const createRequestBody = (
   const multiResponseValues =
     isMultiResponse || isMultiSelectionQuestion
       ? fieldsStartingWithQuestionIdInBody(cleanedBody, questionId).map(
-          ([_key, value]) => value
+          ([, value]) => value
         )
       : null;
   const requestBody: QuestionPostBody = {
