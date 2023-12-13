@@ -1,7 +1,7 @@
 import axios from 'axios';
 import getConfig from 'next/config';
-import { getSpotlightErrors } from './SpotlightBatchService';
 import { SpotlightError } from '../types/SpotlightError';
+import { getSpotlightErrors } from './SpotlightBatchService';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -24,7 +24,7 @@ describe('SpotlightBatchService', () => {
       const response = await getSpotlightErrors(SCHEME_ID, SESSION_ID);
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SPOTLIGHT_BATCH_URL}/scheme/${SCHEME_ID}/spotlight/get-errors`,
+        `${BASE_SPOTLIGHT_BATCH_URL}/scheme/${SCHEME_ID}/spotlight-errors`,
         { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
       );
       expect(response).toEqual(spotlightErrors);

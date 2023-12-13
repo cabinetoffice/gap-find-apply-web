@@ -34,7 +34,7 @@ describe('SpotlightSubmissionService', () => {
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${SCHEME_ID}/get-due-diligence-data`,
+        `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${SCHEME_ID}/due-diligence-data`,
         { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
       );
       expect(response).toEqual(spotlightSubmissionSentData);

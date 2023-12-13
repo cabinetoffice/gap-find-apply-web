@@ -11,7 +11,7 @@ export const getSpotlightSubmissionSentData = async (
   sessionId: string
 ): Promise<GetSpotlightSubmissionDataBySchemeIdDto> => {
   const { data } = await axios.get(
-    `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${schemeId}/get-due-diligence-data`,
+    `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${schemeId}/due-diligence-data`,
     {
       ...axiosSessionConfig(sessionId),
     }

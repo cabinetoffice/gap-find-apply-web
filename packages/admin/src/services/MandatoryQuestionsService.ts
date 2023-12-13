@@ -28,13 +28,14 @@ const hasCompletedMandatoryQuestions = async (
   isInternal: boolean
 ): Promise<boolean> => {
   const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/isCompleted?isInternal=${isInternal}`,
+    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/completed?isInternal=${isInternal}`,
     axiosSessionConfig(sessionCookie)
   );
   return response.data;
 };
 
 export {
-  hasCompletedMandatoryQuestions,
   downloadMandatoryQuestionsDueDiligenceData,
+  // eslint-disable-next-line prettier/prettier
+  hasCompletedMandatoryQuestions
 };

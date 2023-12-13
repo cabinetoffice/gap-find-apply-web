@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {
-  hasCompletedMandatoryQuestions,
   downloadMandatoryQuestionsDueDiligenceData,
+  hasCompletedMandatoryQuestions,
 } from './MandatoryQuestionsService';
 
 jest.mock('axios');
@@ -43,7 +43,7 @@ describe('MandatoryQuestionsService', () => {
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/isCompleted?isInternal=true`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/completed?isInternal=true`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           withCredentials: true,
@@ -62,7 +62,7 @@ describe('MandatoryQuestionsService', () => {
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/isCompleted?isInternal=true`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/completed?isInternal=true`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           withCredentials: true,

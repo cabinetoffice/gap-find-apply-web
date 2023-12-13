@@ -16,7 +16,7 @@ export const getSpotlightErrors = async (
   );
 
   const response = await axios.get(
-    `${BASE_SPOTLIGHT_BATCH_URL}/scheme/${schemeId}/spotlight/get-errors`,
+    `${BASE_SPOTLIGHT_BATCH_URL}/scheme/${schemeId}/spotlight-errors`,
     axiosSessionConfig(sessionId)
   );
 
