@@ -172,16 +172,18 @@ export default function MandatoryQuestionOrganisationSummaryPage({
             </dl>
 
             <Link
-              href={routes.api.mandatoryQuestions.createSubmission(
-                mandatoryQuestionId,
-                mandatoryQuestion.schemeId.toString()
-              )}
+              href={{
+                pathname: `/api/create-submission`,
+                query: {
+                  schemeId: mandatoryQuestion.schemeId.toString(),
+                  mandatoryQuestionId,
+                },
+              }}
             >
               <a
                 className="govuk-button"
                 data-module="govuk-button"
                 aria-disabled="false"
-                type="button"
               >
                 Confirm and submit
               </a>

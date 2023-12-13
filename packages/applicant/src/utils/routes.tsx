@@ -81,10 +81,6 @@ export const routes = {
     },
     createMandatoryQuestion: (schemeId: string) =>
       `/api/create-mandatory-question?schemeId=${schemeId}`,
-    mandatoryQuestions: {
-      createSubmission: (mandatoryQuestionId: string, schemeId: string) =>
-        `/api/mandatory-questions/${mandatoryQuestionId}/create-submission?schemeId=${schemeId}`,
-    },
   },
 };
 
