@@ -68,21 +68,6 @@ describe('api', () => {
       expect(routes.api.createMandatoryQuestion(schemeId)).toBe(expectedURL);
     });
   });
-  describe('api.mandatoryQuestions', () => {
-    describe('Api.mandatoryQuestions.createSubmission', () => {
-      it('should generate the correct URL', () => {
-        const schemeId = 'schemeId';
-        const mandatoryQuestionId = 'exampleMandatoryQuestionId';
-        const expectedURL = `/api/mandatory-questions/${mandatoryQuestionId}/create-submission?schemeId=${schemeId}`;
-        expect(
-          routes.api.mandatoryQuestions.createSubmission(
-            mandatoryQuestionId,
-            schemeId
-          )
-        ).toBe(expectedURL);
-      });
-    });
-  });
   describe('isNewApplicant', () => {
     describe('isNewApplicant.index', () => {
       it('should generate the correct URL when migrationStatus is present', () => {
