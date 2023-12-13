@@ -146,7 +146,6 @@ const getAdvertStatusBySchemeId = async (
   sessionId: string,
   grantSchemeId: string
 ): Promise<getAdvertStatusBySchemeIdResponse> => {
-  // TO DO: remove try catch block from service level
   const res = await axios.get(`${BASE_ADVERT_URL}/status`, {
     ...axiosSessionConfig(sessionId),
     params: {

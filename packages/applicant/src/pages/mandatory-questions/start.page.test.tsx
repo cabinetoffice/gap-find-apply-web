@@ -132,6 +132,8 @@ describe('Mandatory Questions Start', () => {
 
     it('should redirect if there is an error', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+      const existBySchemeIdAndApplicantId =
+        spiedExistBySchemeIdAndApplicantId.mockRejectedValue('error');
 
       const response = await getServerSideProps(getContext(getDefaultContext));
 

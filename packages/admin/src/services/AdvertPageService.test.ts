@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import getConfig from 'next/config';
 import AdvertStatusEnum from '../enums/AdvertStatus';
 import { InferServiceMethodResponse } from '../testUtils/unitTestHelpers';
@@ -196,23 +196,17 @@ describe('AdvertPageService', () => {
     });
 
     it('Should handle 404 errors correctly and return status object', async () => {
-      mockedAxios.get.mockRejectedValue({
+      mockedAxios.get.mockResolvedValue({
         status: 404,
+        data: null,
       });
 
       const response = await getAdvertStatusBySchemeId(sessionId, schemeId);
 
       expect(response).toStrictEqual({
         status: 404,
+        data: null,
       });
-    });
-
-    it('Should handle axios errors correctly', async () => {
-      mockedAxios.get.mockRejectedValue(new Error('Some error'));
-
-      const response = await getAdvertStatusBySchemeId(sessionId, schemeId);
-
-      expect(response).toStrictEqual(new Error('Some error'));
     });
   });
 
