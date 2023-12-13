@@ -28,7 +28,7 @@ const hasCompletedMandatoryQuestions = async (
   isInternal: boolean
 ): Promise<boolean> => {
   const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/completed?isInternal=${isInternal}`,
+    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/is-completed?isInternal=${isInternal}`,
     axiosSessionConfig(sessionCookie)
   );
   return response.data;
