@@ -44,7 +44,7 @@ describe('api', () => {
           'sectionId'
         );
         expect(url).toBe(
-          `/api/submissions/grantSubmissionId/sections/sectionId`
+          `/api/routes/submissions/grantSubmissionId/sections/sectionId`
         );
       });
     });
@@ -56,7 +56,7 @@ describe('api', () => {
           'questionId'
         );
         expect(url).toBe(
-          `/api/submissions/grantSubmissionId/sections/sectionId/questions/questionId`
+          `/api/routes/submissions/grantSubmissionId/sections/sectionId/questions/questionId`
         );
       });
     });

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getSectionById } from '../../../../../../services/SubmissionService';
-import { getJwtFromCookies } from '../../../../../../utils/jwt';
-import { routes } from '../../../../../../utils/routes';
+import { getSectionById } from '../../../../../../../services/SubmissionService';
+import { getJwtFromCookies } from '../../../../../../../utils/jwt';
+import { routes } from '../../../../../../../utils/routes';
 
 export default async function handler(
   req: NextApiRequest,

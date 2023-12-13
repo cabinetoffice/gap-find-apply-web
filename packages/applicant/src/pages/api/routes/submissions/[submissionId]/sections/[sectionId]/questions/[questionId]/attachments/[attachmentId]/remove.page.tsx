@@ -1,6 +1,6 @@
-import { deleteAttachmentByQuestionId } from '../../../../../../../../../../services/SubmissionService';
-import { getJwtFromCookies } from '../../../../../../../../../../utils/jwt';
-import { routes } from '../../../../../../../../../../utils/routes';
+import { deleteAttachmentByQuestionId } from '../../../../../../../../../../../services/SubmissionService';
+import { getJwtFromCookies } from '../../../../../../../../../../../utils/jwt';
+import { routes } from '../../../../../../../../../../../utils/routes';
 
 const handler = async (req, res) => {
   const submissionId = req.query.submissionId.toString();
