@@ -23,17 +23,6 @@ jest.mock('../../../../../../../services/SubmissionService');
 jest.mock('../../../../../../../utils/postQuestion');
 jest.mock('../../../../../../../utils/jwt');
 jest.mock('next/dist/server/api-utils/node');
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-      subPath: '',
-    },
-    publicRuntimeConfig: {
-      subPath: '',
-    },
-  };
-});
 
 const context = {
   req: {
@@ -1214,11 +1203,11 @@ describe('QuestionPage', () => {
       const form = screen.getByTestId('question-page-form');
       expect(removeButton).toHaveAttribute(
         'href',
-        '/api/submissions/333333333/sections/ESSENTIAL/questions/UPLOAD/attachments/attachmentId/remove'
+        '/api/routes/submissions/333333333/sections/ESSENTIAL/questions/UPLOAD/attachments/attachmentId/remove'
       );
       expect(form).toHaveAttribute(
         'action',
-        '/api/submissions/333333333/sections/ESSENTIAL/questions/UPLOAD/upload-file'
+        '/api/routes/submissions/333333333/sections/ESSENTIAL/questions/UPLOAD/upload-file'
       );
       expect(form).toHaveAttribute('encType', 'multipart/form-data');
     });

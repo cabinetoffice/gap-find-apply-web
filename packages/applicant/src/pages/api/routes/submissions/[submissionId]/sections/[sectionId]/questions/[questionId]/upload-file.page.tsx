@@ -7,10 +7,10 @@ import {
   postDocumentResponse,
   PostQuestionResponse,
   QuestionNavigation,
-} from '../../../../../../../../services/SubmissionService';
-import { MAX_FILE_UPLOAD_SIZE_BYTES } from '../../../../../../../../utils/constants';
-import { getJwtFromCookies } from '../../../../../../../../utils/jwt';
-import { routes } from '../../../../../../../../utils/routes';
+} from '../../../../../../../../../services/SubmissionService';
+import { MAX_FILE_UPLOAD_SIZE_BYTES } from '../../../../../../../../../utils/constants';
+import { getJwtFromCookies } from '../../../../../../../../../utils/jwt';
+import { routes } from '../../../../../../../../../utils/routes';
 
 export const config = {
   api: {
