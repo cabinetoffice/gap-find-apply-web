@@ -7,7 +7,7 @@ import json from '@rollup/plugin-json';
 
 const packageJson = require('./package.json');
 
-const rollup = [
+export default [
   {
     input: 'src/index.ts',
     output: [
@@ -40,5 +40,3 @@ const rollup = [
     external: [/\.css$/],
   },
 ];
-
-export default rollup;

@@ -23,7 +23,6 @@ module.exports = {
       ],
       rules: {
         '@typescript-eslint/no-non-null-assertion': 'off',
-        '@typescript-eslint/no-explicit-any': 'off',
       },
     },
   ],
@@ -32,8 +31,7 @@ module.exports = {
     'no-shadow-restricted-names': 'off',
     'no-prototype-builtins': 'off',
     'prettier/prettier': 'error',
-    // Following ruleset allows us to use underscore as a marker for
-    // unused variables without tripping ESLint warnings
+    // Following ruleset allows us to use underscore as a marker for unused variables without tripping ESLint warnings
     'no-unused-vars': 'off', // must disable the base rule as it can report incorrect errors
     '@typescript-eslint/no-unused-vars': [
       'warn', // or "error"
@@ -49,4 +47,5 @@ module.exports = {
       rootDir: ['packages/applicant/', 'packages/admin/'],
     },
   },
+  ignorePatterns: ['**/rollup.config.js'],
 };
