@@ -1,4 +1,4 @@
-ARG NODE_VERSION=16.14.0
+ARG NODE_VERSION=18.17.0
 FROM --platform=linux/amd64 node:${NODE_VERSION}-alpine as build
 
 ARG APP_NAME
