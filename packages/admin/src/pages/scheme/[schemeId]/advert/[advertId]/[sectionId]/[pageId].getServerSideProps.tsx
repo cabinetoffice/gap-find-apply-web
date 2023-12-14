@@ -103,7 +103,6 @@ export const getServerSideProps = async ({
       advertId: advertId,
       previousValues: body || null,
       pageId,
-      tinyMceApiKey: process.env.TINYMCE_API_KEY,
     },
   };
 };

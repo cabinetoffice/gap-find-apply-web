@@ -11,7 +11,8 @@
     "lint": "next lint",
     "integration": "yarn cypress run",
     "integration:gui": "yarn run cypress open",
-    "contentful-typescript-codegen": "contentful-typescript-codegen --output @types/generated/contentful.d.ts"
+    "contentful-typescript-codegen": "contentful-typescript-codegen --output @types/generated/contentful.d.ts",
+    "postinstall": "node ./postinstall.js"
   },
   "dependencies": {
     "@auth0/auth0-react": "^1.4.0",
@@ -19,6 +20,7 @@
     "@contentful/rich-text-from-markdown": "15.16.6",
     "@contentful/rich-text-react-renderer": "^15.12.1",
     "@elastic/elasticsearch": "7.10",
+    "@tinymce/tinymce-react": "4.3.2",
     "axios": "^0.27.2",
     "body-parser": "^1.19.2",
     "contentful": "^9.1.5",
@@ -48,7 +50,8 @@
     "react-dom": "18.2.0",
     "react-gtm-module": "^2.0.11",
     "react-moment": "^1.1.1",
-    "react-number-format": "^4.9.1"
+    "react-number-format": "^4.9.1",
+    "tinymce": "6.8.2"
   },
   "devDependencies": {
     "@elastic/elasticsearch-mock": "^1.0.0",
@@ -61,6 +64,7 @@
     "contentful-typescript-codegen": "^3.2.3",
     "cypress": "^9.5.0",
     "cypress-axe": "^0.14.0",
+    "fs-extra": "11.2.0",
     "isomorphic-fetch": "^3.0.0",
     "sass": "1.62.1",
     "typescript": "^4.6.3",
