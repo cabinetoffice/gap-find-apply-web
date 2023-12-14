@@ -20,8 +20,8 @@ type PageBodyResponse = {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
 
-  function handleRequest(body: PageBodyResponse, jwt: string) {
-    return updateDepartment(userId, body.department, jwt);
+  async function handleRequest(body: PageBodyResponse, jwt: string) {
+    return await updateDepartment(userId, body.department, jwt);
   }
 
   function fetchPageData(jwt: string) {
@@ -78,7 +78,8 @@ const UserPage = ({
               value: department.id,
             }))}
             fieldErrors={fieldErrors}
-            defaultChecked={user.department?.name}
+            defaultChecked={user.department?.name ?? 'Cabinet Office'}
+            //may need to have handleRequest return a fieldError if the value sent is null (example in change-owner.page.tsx)
           />
 
           <div className="govuk-button-group">

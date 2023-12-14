@@ -1,8 +1,5 @@
-import {
-  Checkboxes,
-  FlexibleQuestionPageLayout,
-  QuestionPageGetServerSideProps,
-} from 'gap-web-ui';
+import { Checkboxes, FlexibleQuestionPageLayout } from 'gap-web-ui';
+
 import { GetServerSidePropsContext } from 'next';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import {
@@ -13,6 +10,7 @@ import {
 import Meta from '../../../../components/layout/Meta';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
+import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
 
 type PageBodyResponse = {
   newUserRoles: string | string[];
@@ -28,7 +26,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   ) {
     const findAndApplicantRoles = ['1', '2'];
     const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
-    const oldUserRoles = pageData.roles;
+    const oldUserRoles = pageData.user.roles;
     await updateUserRoles(userId, newUserRoles, jwt);
     return { oldUserRoles, newUserRoles, userId };
   }
@@ -51,10 +49,19 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     newUserRoles,
     userId,
   }: Awaited<ReturnType<typeof handleRequest>>) {
-    console.log(`OLD ROLES: ${oldUserRoles}`);
-    console.log(`NEW ROLES: ${newUserRoles}`);
-    console.log(`"userId: ${userId}`);
-    return `/super-admin-dashboard/user/${userId}`;
+    const adminRoles = [`ADMIN`, `SUPER_ADMIN`, `TECHNICAL_SUPPORT`];
+    const adminIds = ['3', '4', '5'];
+
+    const wasPreviouslyAdmin = oldUserRoles.some(({ name }) =>
+      adminRoles.includes(name)
+    );
+    const isBeingPromotedToAdmin = newUserRoles.some((id) =>
+      adminIds.includes(id)
+    );
+
+    return !wasPreviouslyAdmin && isBeingPromotedToAdmin
+      ? `/super-admin-dashboard/user/${userId}/change-department`
+      : `/super-admin-dashboard/user/${userId}`;
   }
 
   return QuestionPageGetServerSideProps<
@@ -63,6 +70,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     Awaited<ReturnType<typeof handleRequest>>
   >({
     context,
+    fetchPageData,
     handleRequest,
     jwt: getUserTokenFromCookies(context.req),
     onErrorMessage: 'Failed to update roles, please try again later.',
