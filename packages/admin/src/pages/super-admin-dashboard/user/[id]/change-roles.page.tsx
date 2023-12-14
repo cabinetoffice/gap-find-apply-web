@@ -21,10 +21,16 @@ type PageBodyResponse = {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
 
-  async function handleRequest(body: PageBodyResponse, jwt: string) {
+  async function handleRequest(
+    body: PageBodyResponse,
+    jwt: string,
+    pageData: Awaited<ReturnType<typeof fetchPageData>>
+  ) {
     const findAndApplicantRoles = ['1', '2'];
     const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
-    return updateUserRoles(userId, newUserRoles, jwt);
+    const oldUserRoles = pageData.roles;
+    await updateUserRoles(userId, newUserRoles, jwt);
+    return { oldUserRoles, newUserRoles, userId };
   }
 
   async function fetchPageData(jwt: string) {
@@ -40,17 +46,27 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     };
   }
 
+  function onSuccessRedirectHref({
+    oldUserRoles,
+    newUserRoles,
+    userId,
+  }: Awaited<ReturnType<typeof handleRequest>>) {
+    console.log(`OLD ROLES: ${oldUserRoles}`);
+    console.log(`NEW ROLES: ${newUserRoles}`);
+    console.log(`"userId: ${userId}`);
+    return `/super-admin-dashboard/user/${userId}`;
+  }
+
   return QuestionPageGetServerSideProps<
     PageBodyResponse,
     Awaited<ReturnType<typeof fetchPageData>>,
     Awaited<ReturnType<typeof handleRequest>>
   >({
     context,
-    fetchPageData,
     handleRequest,
     jwt: getUserTokenFromCookies(context.req),
     onErrorMessage: 'Failed to update roles, please try again later.',
-    onSuccessRedirectHref: `/super-admin-dashboard/user/${userId}`,
+    onSuccessRedirectHref,
   });
 }
 
