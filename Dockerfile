@@ -38,6 +38,8 @@ COPY --from=build /usr/src/app/packages/${APP_NAME}/next.config.js /usr/src/app/
 COPY --from=build /usr/src/app/packages/${APP_NAME}/next-logger.config.js /usr/src/app/packages/${APP_NAME}/next-logger.config.js
 COPY --from=build /usr/src/app/packages/${APP_NAME}/.next /usr/src/app/packages/${APP_NAME}/.next
 COPY --from=build /usr/src/app/packages/${APP_NAME}/public /usr/src/app/packages/${APP_NAME}/public
+# use glob pattern to copy file only if it exists, without throwing an error
+COPY --from=build /usr/src/app/packages/${APP_NAME}/postinstall.j[s] /usr/src/app/packages/${APP_NAME}/postinstall.js
 
 ENV NODE_ENV production
 ENV CI true
