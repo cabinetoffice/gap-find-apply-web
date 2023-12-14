@@ -79,7 +79,6 @@ const UserPage = ({
             }))}
             fieldErrors={fieldErrors}
             defaultChecked={user.department?.name ?? 'Cabinet Office'}
-            //may need to have handleRequest return a fieldError if the value sent is null (example in change-owner.page.tsx)
           />
 
           <div className="govuk-button-group">
