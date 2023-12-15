@@ -51,7 +51,6 @@ const getMockUser = (): User => ({
   created: 'NULL',
 
 });
-
 const component = (
   <EditRoleWithId
     formAction="."
