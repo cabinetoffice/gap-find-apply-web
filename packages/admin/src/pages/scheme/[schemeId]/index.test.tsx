@@ -4,10 +4,7 @@ import { AxiosError } from 'axios';
 import { merge } from 'lodash';
 import { GetServerSidePropsResult, Redirect } from 'next';
 import AdvertStatusEnum from '../../../enums/AdvertStatus';
-import {
-  getAdvertStatusBySchemeId,
-  getGrantAdvertPublishInformationBySchemeId,
-} from '../../../services/AdvertPageService';
+import { getGrantAdvertPublishInformationBySchemeId } from '../../../services/AdvertPageService';
 import { getAdvertPublishInformationBySchemeIdResponse } from '../../../services/AdvertPageService.d';
 import { getApplicationFormSummary } from '../../../services/ApplicationService';
 import {
@@ -97,10 +94,6 @@ describe('scheme/[schemeId]', () => {
     const mockedFindApplicationFormFromScheme =
       findApplicationFormFromScheme as jest.MockedFn<
         typeof findApplicationFormFromScheme
-      >;
-    const mockGetAdvertStatusBySchemeId =
-      getAdvertStatusBySchemeId as jest.MockedFn<
-        typeof getAdvertStatusBySchemeId
       >;
     const mockGetAdvertPublishInformationBySchemeId =
       getGrantAdvertPublishInformationBySchemeId as jest.MockedFn<

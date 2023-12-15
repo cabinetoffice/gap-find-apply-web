@@ -1,9 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { merge } from 'lodash';
 import { getAdvertStatusBySchemeId } from '../../../../../services/AdvertPageService';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
-import { getAdvertStatusBySchemeIdResponse } from '../../../../../services/AdvertPageService.d';
 import PublishSuccessPage, { getServerSideProps } from './publish-success.page';
 import { GetServerSidePropsContext } from 'next';
 import {

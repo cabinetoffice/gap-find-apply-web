@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import EditRoleWithId from './change-roles.page';
-import UserDetails from '../../../../types/UserDetails';
+import { User } from '../../types';
 
 const getMockRoles = () => [
   {
@@ -30,12 +30,12 @@ const getMockRoles = () => [
   },
 ];
 
-const getMockUser = (): UserDetails => ({
-  firstName: 'john',
-  lastName: 'm',
-  organisationName: 'tco',
+const getMockUser = (): User => ({
+  gapUserId: 'john',
+  sub: 'sub',
   emailAddress: 'superAdmin@and.digital',
   roles: [getMockRoles()[0], getMockRoles()[1]],
+  created: '2023-11-27 14:23:42.641781',
 });
 
 const component = (

@@ -339,9 +339,7 @@ describe('Question Options', () => {
             'delete_options[0]': '',
           });
 
-          const result = (await getServerSideProps(
-            postContext()
-          )) as NextGetServerSidePropsResponse;
+          await getServerSideProps(postContext());
 
           expect(patchQuestion).not.toHaveBeenCalled();
         });
@@ -374,9 +372,7 @@ describe('Question Options', () => {
             'delete_options[0]': '',
           });
 
-          const result = (await getServerSideProps(
-            postContext()
-          )) as NextGetServerSidePropsResponse;
+          await getServerSideProps(postContext());
 
           expect(patchQuestion).not.toHaveBeenCalled();
         });

@@ -30,6 +30,7 @@ const customProps = {
   backButtonHref: '/dashboard',
   formAction: '',
   defaultValue: '',
+  csrfToken: '',
 };
 
 const expectedRedirectObject = {

@@ -22,7 +22,7 @@ export const getServerSideProps = async ({
       applicationId,
       getSessionIdFromCookies(req)
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
     return generateErrorPageRedirect(
       'Something went wrong while trying to preview this question.',
       `/build-application/${applicationId}/dashboard`

@@ -38,7 +38,7 @@ describe('DateInput component', () => {
     });
 
     test('Should render example text as page description when a description is not provided', () => {
-      const { questionHintText, ...noDescProps } = props;
+      const { questionHintText: _, ...noDescProps } = props;
       render(<DateInput {...noDescProps} />);
       expect(screen.getByTestId('date-hint').textContent).toBe(
         'For example, 31 3 2023'

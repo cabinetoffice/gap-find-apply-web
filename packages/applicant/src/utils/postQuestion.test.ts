@@ -394,7 +394,13 @@ describe('createRequestBody', () => {
     };
     const questionId = 'test';
     const submissionId = 'testSubmission';
-    const result = createRequestBody(body, questionId, submissionId);
+    const questionType = 'questionType';
+    const result = createRequestBody(
+      body,
+      questionId,
+      submissionId,
+      questionType
+    );
     const expectedResult: QuestionPostBody = {
       response: 'saddsasda',
       submissionId,
@@ -415,7 +421,13 @@ describe('createRequestBody', () => {
     };
     const questionId = 'test';
     const submissionId = 'testSubmission';
-    const result = createRequestBody(body, questionId, submissionId);
+    const questionType = 'questionType';
+    const result = createRequestBody(
+      body,
+      questionId,
+      submissionId,
+      questionType
+    );
     const expectedResult: QuestionPostBody = {
       response: null,
       submissionId,
@@ -431,7 +443,13 @@ describe('createRequestBody', () => {
     };
     const questionId = 'test';
     const submissionId = 'testSubmission';
-    const result = createRequestBody(body, questionId, submissionId);
+    const questionType = 'questionType';
+    const result = createRequestBody(
+      body,
+      questionId,
+      submissionId,
+      questionType
+    );
     const expectedResult: QuestionPostBody = {
       response: null,
       submissionId,
@@ -447,7 +465,12 @@ describe('createRequestBody', () => {
     };
     const questionId = 'test';
     const submissionId = 'testSubmission';
-    const result = createRequestBody(body, questionId, submissionId);
+    const result = createRequestBody(
+      body,
+      questionId,
+      submissionId,
+      questionType
+    );
     const expectedResult: QuestionPostBody = {
       response: null,
       submissionId,

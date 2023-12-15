@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-import NextGetServerSidePropsResponse from '../types/NextGetServerSidePropsResponse';
 import { getServerSideProps } from './index.page';
 import { authenticateUser } from '../services/AuthService';
 import { expectObjectEquals, getContext, mockServiceMethod } from 'gap-web-ui';
