@@ -5,6 +5,7 @@ import EditRoleWithId, { getServerSideProps } from './change-roles.page';
 import UserDetails from '../../../../types/UserDetails';
 import { getContext } from 'gap-web-ui';
 import { getUserById } from '../../../../services/SuperAdminService';
+import { User } from '../../types';
 
 jest.mock('../../../../services/SuperAdminService', () => ({
   getUserById: jest.fn(),
@@ -49,7 +50,6 @@ const getMockUser = (): User => ({
   emailAddress: 'superAdmin@and.digital',
   roles: [getMockRoles()[0], getMockRoles()[3]],
   created: 'NULL',
-
 });
 const component = (
   <EditRoleWithId
