@@ -96,7 +96,6 @@ describe('The advert question pages getServerSideProps component', () => {
           schemeId: 'testSchemeId',
           previousValues: null,
           pageId: 'testPageId',
-          tinyMceApiKey: 'testApiKey',
           ...getDefaultPageContent(),
         },
       });
@@ -413,7 +412,6 @@ describe('The advert question pages getServerSideProps component', () => {
           formAction: '/testResolvedURL',
           schemeId: 'testSchemeId',
           pageId: 'testPageId',
-          tinyMceApiKey: 'testApiKey',
           ...getDefaultPageContent(),
           fieldErrors: [
             {

@@ -483,7 +483,6 @@ describe('Submission section page', () => {
     });
 
     it('should render the summary list keys with the correct href', () => {
-      const sectionData = propsWithAllValues.sections;
       expect(screen.getByText('Non Essential Information')).toBeDefined();
       expect(screen.getByText('Essential Information')).toBeDefined();
       expect(

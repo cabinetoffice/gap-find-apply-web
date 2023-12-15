@@ -35,6 +35,7 @@ const customProps = {
   fieldTitle: '',
   hintText: '',
   optional: '',
+  csrfToken: '',
 };
 
 const expectedRedirectObject = {

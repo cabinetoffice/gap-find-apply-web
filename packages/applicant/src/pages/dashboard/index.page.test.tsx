@@ -222,7 +222,7 @@ describe('getServerSideProps', () => {
     const mandatoryQuestionsEnabledBackup =
       process.env.MANDATORY_QUESTIONS_ENABLED;
     process.env.MANDATORY_QUESTIONS_ENABLED = 'false';
-    const result = await getServerSideProps(
+    await getServerSideProps(
       getContext(getDefaultContext, {
         req: {
           cookies: {

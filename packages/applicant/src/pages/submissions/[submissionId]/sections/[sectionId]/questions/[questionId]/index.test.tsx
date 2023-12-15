@@ -152,11 +152,6 @@ const eligibility = {
   multiResponse: null,
 };
 
-const eligibilityWithDisplayTextLineBreaks = {
-  ...eligibility,
-  displayText: 'This is a text with a \n line break in it',
-};
-
 const multipleSelection: QuestionType = {
   questionId: 'APPLICANT_ORG_CHARITY_COMMISSION_NUMBER',
   profileField: 'ORG_CHARITY_COMMISSION_NUMBER',

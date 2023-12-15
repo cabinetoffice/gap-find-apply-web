@@ -43,13 +43,13 @@ const getMockRoles = () => [
   },
 ];
 
-const getMockUser = (): UserDetails => ({
-  firstName: 'john',
-  lastName: 'm',
-  organisationName: 'tco',
+const getMockUser = (): User => ({
+  gapUserId: 'john',
+  sub: 'sub',
   emailAddress: 'superAdmin@and.digital',
   roles: [getMockRoles()[0], getMockRoles()[3]],
   created: 'NULL',
+
 });
 
 const component = (

@@ -352,9 +352,7 @@ describe('Question type', () => {
         });
 
         it('Should add responseType to session if options are needed', async () => {
-          const result = (await getServerSideProps(
-            getPostContext({})
-          )) as NextGetServerSidePropsResponse;
+          await getServerSideProps(getPostContext({}));
 
           expect(addFieldsToSession).toBeCalled();
         });

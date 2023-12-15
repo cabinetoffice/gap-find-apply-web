@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import ApplicationName, { getServerSideProps } from './name.page';
-import { getValueFromSession } from '../../services/SessionService';
 import { findApplicationFormFromScheme } from '../../services/SchemeService';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSidePropsContext } from 'next';
