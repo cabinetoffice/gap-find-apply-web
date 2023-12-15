@@ -36,4 +36,23 @@ const getLoginUrl = (options?: GetLoginUrlOptions) => {
   return oneLoginEnabled ? process.env.V2_LOGIN_URL : process.env.LOGIN_URL;
 };
 
-export { isJSEnabled, downloadFile, getObjEntriesByKeySubstr, getLoginUrl };
+const validateRedirectUrl = (redirectUrl: string) => {
+  const isInternalRedirect = redirectUrl.startsWith('/');
+  if (isInternalRedirect) return;
+
+  const url = new URL(redirectUrl);
+
+  const redirectUrlHost = (url.protocol + '//' + url.host).replace('www.', '');
+
+  const isValid = redirectUrlHost.startsWith(process.env.FIND_A_GRANT_URL);
+
+  if (!isValid) throw new Error('Invalid redirect URL');
+};
+
+export {
+  validateRedirectUrl,
+  isJSEnabled,
+  downloadFile,
+  getObjEntriesByKeySubstr,
+  getLoginUrl,
+};

@@ -2,20 +2,22 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import {
   checkIfGrantExistsInContentful,
   getAdvertBySlug,
+  validateGrantWebpageUrl,
 } from '../../services/GrantAdvertService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const slug = req.query.slug as string;
+  const contentfulSlug = req.query.slug as string;
   const grantWebpageUrl = req.query.grantWebpageUrl as string;
-
+  const jwt = getJwtFromCookies(req);
   try {
     const { isAdvertInContentful } = await checkIfGrantExistsInContentful(
-      slug,
-      getJwtFromCookies(req)
+      contentfulSlug,
+      jwt
     );
 
     if (!isAdvertInContentful) {
@@ -30,9 +32,10 @@ export default async function handler(
       grantSchemeId,
       isAdvertInDatabase,
       mandatoryQuestionsDto,
-    } = await getAdvertBySlug(getJwtFromCookies(req), slug);
+    } = await getAdvertBySlug(jwt, contentfulSlug);
 
     if (!isAdvertInDatabase && isAdvertInContentful) {
+      await validateGrantWebpageUrl({ grantWebpageUrl, contentfulSlug, jwt });
       res.redirect(grantWebpageUrl);
     }
 

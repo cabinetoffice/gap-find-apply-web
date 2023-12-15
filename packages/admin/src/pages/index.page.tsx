@@ -2,6 +2,7 @@ import React from 'react';
 import { GetServerSidePropsContext } from 'next';
 import { authenticateUser } from '../services/AuthService';
 import { fetchDataOrGetRedirect } from '../utils/fetchDataOrGetRedirect';
+import { validateRedirectUrl } from '../utils/general';
 
 export const getServerSideProps = async ({
   req,
@@ -10,6 +11,7 @@ export const getServerSideProps = async ({
 }: GetServerSidePropsContext) => {
   const cookieValue = req.cookies[process.env.JWT_COOKIE_NAME!];
   const redirectUrl = query?.redirectUrl as string | undefined;
+  if (redirectUrl) validateRedirectUrl(redirectUrl);
 
   const response = await fetchDataOrGetRedirect(async () =>
     authenticateUser(cookieValue)
