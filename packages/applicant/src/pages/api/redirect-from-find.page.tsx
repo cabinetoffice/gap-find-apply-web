@@ -33,7 +33,7 @@ export default async function handler(
       isAdvertInDatabase,
       mandatoryQuestionsDto,
       isPublished,
-    } = await getAdvertBySlug(jwt, slug);
+    } = await getAdvertBySlug(jwt, contentfulSlug);
 
     if (!isAdvertInDatabase && isAdvertInContentful) {
       await validateGrantWebpageUrl({ grantWebpageUrl, contentfulSlug, jwt });
