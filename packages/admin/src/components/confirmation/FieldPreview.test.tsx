@@ -38,7 +38,7 @@ describe('FieldPreview page render', () => {
   });
 
   it('Shouldnt add link when no linkAttributes are provided', () => {
-    const { linkAttributes, ...componentPropsWithoutLinkAttributes } =
+    const { linkAttributes: _, ...componentPropsWithoutLinkAttributes } =
       componentProps;
     render(<FieldPreview {...componentPropsWithoutLinkAttributes} />);
     const link = screen.queryByRole('link');

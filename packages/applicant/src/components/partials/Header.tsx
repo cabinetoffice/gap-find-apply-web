@@ -5,13 +5,6 @@ import { isIE } from 'react-device-detect';
 import styles from './Header.module.scss';
 import { getLoginUrl } from '../../utils/general';
 import { MobileNavigationBar } from './navigation';
-
-interface NavItemType {
-  pageId: string;
-  link: string;
-  as: string;
-  title: string;
-}
 interface HeaderProps {
   isUserLoggedIn?: boolean;
   oneLoginEnabledInFind?: string;

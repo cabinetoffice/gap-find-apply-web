@@ -1,23 +1,21 @@
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
-import InsetText from '../../../components/inset-text/InsetText';
 import Meta from '../../../components/layout/Meta';
 import { SpotlightMessage } from '../../../components/notification-banner/SpotlightMessage';
-import {
-  completedMandatoryQuestions,
-  hasSpotlightData,
-} from '../../../services/MandatoryQuestionsService';
+import { hasCompletedMandatoryQuestions } from '../../../services/MandatoryQuestionsService';
 import {
   getGrantScheme,
   schemeApplicationIsInternal,
 } from '../../../services/SchemeService';
 import {
-  getSpotlightErrors,
-  getSpotlightLastUpdateDate,
-  getSpotlightSubmissionCount,
+  GetSpotlightSubmissionDataBySchemeIdDto,
+  getSpotlightSubmissionSentData,
 } from '../../../services/SpotlightSubmissionService';
 import InferProps from '../../../types/InferProps';
 import { getSessionIdFromCookies } from '../../../utils/session';
+import { InternalApplication } from './components/InternalApplication';
+import { ExternalApplication } from './components/ExternalApplication';
+import { getSpotlightErrors } from '../../../services/SpotlightBatchService';
 
 export const getServerSideProps = async ({
   params,
@@ -29,47 +27,38 @@ export const getServerSideProps = async ({
   const scheme = await getGrantScheme(schemeId, sessionCookie);
   const isInternal = await schemeApplicationIsInternal(schemeId, sessionCookie);
   const spotlightUrl = process.env.SPOTLIGHT_URL;
-  const hasInfoToDownload = await completedMandatoryQuestions(
+  const hasInfoToDownload = await hasCompletedMandatoryQuestions(
     schemeId,
-    sessionCookie
-  );
-
-  const hasSpotlightDataToDownload = await hasSpotlightData(
-    schemeId,
-    sessionCookie
+    sessionCookie,
+    isInternal
   );
 
   const ggisSchemeRefUrl = `/scheme/edit/ggis-reference?schemeId=${scheme.schemeId}&defaultValue=${scheme.ggisReference}`;
 
-  const spotlightErrors = await getSpotlightErrors(
-    scheme.schemeId,
-    sessionCookie
-  );
+  let spotlightErrors = null;
+  let internalDueDiligenceData: GetSpotlightSubmissionDataBySchemeIdDto = {
+    sentCount: 0,
+    sentLastUpdatedDate: '',
+    hasSpotlightSubmissions: false,
+  };
 
-  let spotlightSubmissionCount = 0;
-  let spotlightLastUpdated = null;
   if (isInternal) {
-    spotlightSubmissionCount = await getSpotlightSubmissionCount(
+    internalDueDiligenceData = await getSpotlightSubmissionSentData(
       schemeId,
       sessionCookie
     );
-    spotlightLastUpdated = await getSpotlightLastUpdateDate(
-      schemeId,
-      sessionCookie
-    );
+    spotlightErrors = await getSpotlightErrors(schemeId, sessionCookie);
   }
 
   return {
     props: {
       scheme,
       hasInfoToDownload,
-      spotlightSubmissionCount,
-      spotlightLastUpdated,
+      internalDueDiligenceData,
       spotlightUrl,
       isInternal,
       ggisSchemeRefUrl,
       spotlightErrors,
-      hasSpotlightDataToDownload,
     },
   };
 };
@@ -77,14 +66,18 @@ export const getServerSideProps = async ({
 const ManageDueDiligenceChecks = ({
   scheme,
   hasInfoToDownload,
-  spotlightSubmissionCount,
-  spotlightLastUpdated,
+  internalDueDiligenceData,
   spotlightUrl,
   isInternal,
   ggisSchemeRefUrl,
   spotlightErrors,
-  hasSpotlightDataToDownload,
 }: InferProps<typeof getServerSideProps>) => {
+  const downloadFullDueDiligenceChecksMessage = isInternal
+    ? 'Download checks from applications'
+    : 'Download due diligence information';
+
+  const downloadFullDueDiligenceChecksUrl = `/api/manage-due-diligence/v2/downloadAllDueDiligenceChecks?schemeId=${scheme.schemeId}&internal=${isInternal}`;
+
   return (
     <>
       <Meta title="Manage due diligence checks - Manage a grant" />
@@ -93,126 +86,41 @@ const ManageDueDiligenceChecks = ({
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-          {spotlightErrors.errorFound && (
+          {isInternal && spotlightErrors!.errorFound && (
             <SpotlightMessage
-              status={spotlightErrors.errorStatus}
-              count={spotlightErrors.errorCount}
+              status={spotlightErrors!.errorStatus}
+              count={spotlightErrors!.errorCount}
               schemeUrl={ggisSchemeRefUrl}
             />
           )}
 
           <h1 className="govuk-heading-l">Manage due diligence checks</h1>
 
-          {!hasInfoToDownload ? (
+          {!hasInfoToDownload && (
             <p className="govuk-body">
               No due diligence information available to download.
             </p>
-          ) : (
+          )}
+
+          {hasInfoToDownload && (
             <>
-              {!isInternal ? (
-                <div>
-                  <p className="govuk-body">
-                    Data is gathered from applicants before they are sent to
-                    your application form.
-                  </p>
-                  <p className="govuk-body">
-                    You may wish to use this data to run due diligence checks.
-                  </p>
-
-                  <p className="govuk-body">
-                    The data includes: <br />
-                    <ul>
-                      <li>name of organisation</li>
-                      <li>address of organisation</li>
-                      <li>Companies House number (if they have one)</li>
-                      <li>Charity Commission number (if they have one)</li>
-                      <li>how much funding an applicant is applying for</li>
-                    </ul>
-                  </p>
-                </div>
+              {isInternal ? (
+                <InternalApplication
+                  spotlightErrors={spotlightErrors!}
+                  internalDueDiligenceData={internalDueDiligenceData}
+                  spotlightUrl={spotlightUrl}
+                  schemeId={scheme.schemeId}
+                />
               ) : (
-                <div>
-                  <p className="govuk-body">
-                    Your application form has been designed to capture all of
-                    the information you need to run due diligence checks in
-                    Spotlight, a government owned due diligence tool.
-                  </p>
-                  <p className="govuk-body">
-                    We automatically send the information to Spotlight. You need
-                    to log in to Spotlight to run your checks.
-                  </p>
-                  <p className="govuk-body">
-                    Spotlight does not run checks on individuals or local
-                    authorities.
-                  </p>
-                  <InsetText>
-                    <p
-                      className="govuk-!-margin-bottom-0"
-                      data-testid="spotlight-count"
-                    >
-                      You have{' '}
-                      <span className="govuk-!-font-weight-bold">
-                        {spotlightSubmissionCount} application
-                        {spotlightSubmissionCount !== 1 && 's'}
-                      </span>{' '}
-                      in Spotlight.
-                    </p>
-                    <p
-                      className="govuk-!-margin-top-0"
-                      data-testid="spotlight-last-updated"
-                    >
-                      {spotlightLastUpdated == '' ? (
-                        <>No records have been sent to Spotlight. </>
-                      ) : (
-                        <>
-                          Spotlight was last updated on{' '}
-                          <span className="govuk-!-font-weight-bold">
-                            {spotlightLastUpdated}
-                          </span>
-                          .{' '}
-                        </>
-                      )}
-                    </p>
-                  </InsetText>
-                  <a href={spotlightUrl} className="govuk-button">
-                    Log in to Spotlight
-                  </a>
-                  {hasSpotlightDataToDownload && (
-                    <p className="govuk-body">
-                      You can{' '}
-                      <CustomLink
-                        href={`/api/downloadSpotlightChecks?schemeId=${scheme.schemeId}`}
-                      >
-                        download the information you need to run checks
-                      </CustomLink>{' '}
-                      to upload it to Spotlight manually.
-                    </p>
-                  )}
-                  {spotlightErrors.errorFound &&
-                    spotlightErrors.errorStatus === 'VALIDATION' && (
-                      <p className="govuk-body">
-                        You can also{' '}
-                        <CustomLink
-                          href={`/api/downloadSpotlightValidationErrorSubmissions?schemeId=${scheme.schemeId}`}
-                        >
-                          download checks that Find a grant cannot send to
-                          Spotlight
-                        </CustomLink>{' '}
-                      </p>
-                    )}
-                  <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible"></hr>
-                </div>
+                <ExternalApplication />
               )}
-
               <p className="govuk-body">
                 If you do not use Spotlight, you can download all of the due
                 diligence information to run checks in another service.
               </p>
               <p className="govuk-body">
-                <CustomLink
-                  href={`/api/downloadDueDiligenceChecks?schemeId=${scheme.schemeId}`}
-                >
-                  Download checks from applications
+                <CustomLink href={downloadFullDueDiligenceChecksUrl}>
+                  {downloadFullDueDiligenceChecksMessage}
                 </CustomLink>
               </p>
             </>

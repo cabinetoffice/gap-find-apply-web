@@ -33,15 +33,7 @@ export default function OrganisationType({
         >
           <Radio
             questionTitle="What is your organisation type? (optional)"
-            questionHintText={
-              <>
-                <Details
-                  title="Why do we need this information?"
-                  text="It helps us to identify you or your organisation. We use this information for due diligence checks and to prevent fraud."
-                />
-                <p className="govuk-body">Choose one:</p>
-              </>
-            }
+            questionHintText="Choose the option that best describes you or your organisation"
             fieldName="type"
             fieldErrors={fieldErrors}
             radioOptions={[
@@ -61,6 +53,10 @@ export default function OrganisationType({
               { label: MQ_ORG_TYPES.OTHER, value: MQ_ORG_TYPES.OTHER },
             ]}
             defaultChecked={defaultFields.type}
+          />
+          <Details
+            title="Why do we need this information?"
+            text="It helps us to identify you or your organisation. We use this information for due diligence checks and to prevent fraud."
           />
 
           <input type="hidden" value={organisationId} name="id" />

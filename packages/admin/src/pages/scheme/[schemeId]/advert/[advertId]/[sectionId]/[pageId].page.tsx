@@ -13,6 +13,7 @@ import CustomLink from '../../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../../components/layout/Meta';
 import InferProps from '../../../../../../types/InferProps';
 import { getServerSideProps } from './[pageId].getServerSideProps';
+import { useRouter } from 'next/router';
 
 export { getServerSideProps };
 
@@ -27,7 +28,6 @@ const Page = ({
   questions,
   previousValues,
   pageId,
-  tinyMceApiKey,
 }: InferProps<typeof getServerSideProps>) => {
   //will create { <questionId>: <inputValue> } so we can use it in the RichText component,
   // to avoid the bug that doesn't persist the single line of text in case of errors
@@ -46,6 +46,8 @@ const Page = ({
     },
     {}
   );
+
+  const router = useRouter();
 
   //this use state is needed only for the RichText component
   const [richTextQuestionsValues, setRichTextQuestionsValues] =
@@ -158,8 +160,8 @@ const Page = ({
                         [question.questionId]: text,
                       }))
                     }
-                    apiKey={tinyMceApiKey!}
                     isJsEnabled={jsEnabled}
+                    applicationHost={router.basePath}
                   />
                 );
               case 'LONG_TEXT':

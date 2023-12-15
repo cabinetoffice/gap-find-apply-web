@@ -145,7 +145,8 @@ describe('QuestionPageGetServerSideProps', () => {
         {
           '1': 'testNewResponse',
         },
-        'testSessionId'
+        'testSessionId',
+        { '1': 'testResponse' }
       );
     });
 

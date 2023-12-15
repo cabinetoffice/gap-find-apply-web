@@ -26,7 +26,7 @@ const spiedGrantMandatoryQuestionServiceUpdateMandatoryQuestion = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
   'updateMandatoryQuestion'
 );
-const spiedGrantApplicantOrganisationProfileService = jest.spyOn(
+const _spiedGrantApplicantOrganisationProfileService = jest.spyOn(
   GrantApplicantOrganisationProfileService.prototype,
   'isOrgProfileComplete'
 );

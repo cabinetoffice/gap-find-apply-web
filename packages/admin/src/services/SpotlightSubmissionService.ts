@@ -1,63 +1,31 @@
 import axios from 'axios';
 import getConfig from 'next/config';
-import { SpotlightError } from '../types/SpotlightError';
 import { axiosSessionConfig } from '../utils/session';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
-const BASE_SPOTLIGHT_BATCH_URL = BACKEND_HOST + '/spotlight-batch';
 const BASE_SPOTLIGHT_SUBMISSION_URL = BACKEND_HOST + '/spotlight-submissions';
 
-export const getSpotlightSubmissionCount = async (
+export const getSpotlightSubmissionSentData = async (
   schemeId: string,
   sessionId: string
-) => {
-  const response = await axios.get(
-    `${BASE_SPOTLIGHT_SUBMISSION_URL}/count/${schemeId}`,
+): Promise<GetSpotlightSubmissionDataBySchemeIdDto> => {
+  const { data } = await axios.get(
+    `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${schemeId}/due-diligence-data`,
     {
       ...axiosSessionConfig(sessionId),
     }
   );
-
-  return response.data;
+  return data;
 };
 
-export const getSpotlightLastUpdateDate = async (
-  schemeId: string,
-  sessionId: string
-) => {
-  const response = await axios.get(
-    `${BASE_SPOTLIGHT_SUBMISSION_URL}/last-updated/${schemeId}`,
-    {
-      ...axiosSessionConfig(sessionId),
-    }
-  );
-
-  return response.data;
-};
-
-export const getSpotlightErrors = async (
-  schemeId: string,
-  sessionId: string
-) => {
-  console.log(
-    `Making request for url: ${BASE_SPOTLIGHT_BATCH_URL}/get-spotlight-scheme-errors/${schemeId}`
-  );
-
-  const response = await axios.get(
-    `${BASE_SPOTLIGHT_BATCH_URL}/get-spotlight-scheme-errors/${schemeId}`,
-    axiosSessionConfig(sessionId)
-  );
-
-  return response.data as SpotlightError;
-};
-
-export const getSpotlightValidationErrorSubmissions = async (
+export const downloadSpotlightSubmissionsDueDiligenceData = async (
   sessionCookie: string,
-  schemeId: string
+  schemeId: string,
+  onlyValidationErrors: string
 ) => {
   const response = await axios.get(
-    `${BASE_SPOTLIGHT_BATCH_URL}/get-validation-error-files/${schemeId}`,
+    `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${schemeId}/download?onlyValidationErrors=${onlyValidationErrors}`,
     {
       withCredentials: true,
       responseType: 'arraybuffer',
@@ -68,3 +36,9 @@ export const getSpotlightValidationErrorSubmissions = async (
   );
   return response;
 };
+
+export interface GetSpotlightSubmissionDataBySchemeIdDto {
+  sentCount: number;
+  sentLastUpdatedDate: string;
+  hasSpotlightSubmissions: boolean;
+}

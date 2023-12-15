@@ -1,6 +1,5 @@
 import { ValidationError } from '../../types';
 import CallServiceMethod from './CallServiceMethod';
-import { Redirect } from 'next';
 
 import {
   QuestionPageGetServerSidePropsType,

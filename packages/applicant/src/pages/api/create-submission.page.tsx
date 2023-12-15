@@ -1,15 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { GrantApplicantOrganisationProfile } from '../../../../types/models/GrantApplicantOrganisationProfile';
-import { GrantApplicantOrganisationProfileService } from '../../../../services/GrantApplicantOrganisationProfileService';
-import { GrantApplicantService } from '../../../../services/GrantApplicantService';
+import { GrantApplicantOrganisationProfile } from '../../types/models/GrantApplicantOrganisationProfile';
+import { GrantApplicantOrganisationProfileService } from '../../services/GrantApplicantOrganisationProfileService';
+import { GrantApplicantService } from '../../services/GrantApplicantService';
 import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
-} from '../../../../services/GrantMandatoryQuestionService';
-import { createSubmission } from '../../../../services/SubmissionService';
-import { getJwtFromCookies } from '../../../../utils/jwt';
-import { routes } from '../../../../utils/routes';
-import { GrantSchemeService } from '../../../../services/GrantSchemeService';
+} from '../../services/GrantMandatoryQuestionService';
+import { createSubmission } from '../../services/SubmissionService';
+import { getJwtFromCookies } from '../../utils/jwt';
+import { routes } from '../../utils/routes';
+import { GrantSchemeService } from '../../services/GrantSchemeService';
 
 export default async function handler(
   req: NextApiRequest,

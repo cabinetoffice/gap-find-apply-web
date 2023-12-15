@@ -2,7 +2,7 @@ import getConfig from 'next/config';
 import { FC, ReactNode, useEffect } from 'react';
 import Footer from './Footer';
 import Header from './Header';
-import { MobileNavigationBar, NavigationBar } from './navigation';
+import { NavigationBar } from './navigation';
 import { useAuth } from '../../pages/_app.page';
 
 const { publicRuntimeConfig } = getConfig();

@@ -47,6 +47,7 @@ export default async function QuestionPageGetServerSideProps<
   const postResponse = await postPagesResult({
     ...props,
     ...context,
+    pageData,
   });
 
   if (postResponse && 'redirect' in postResponse) {
@@ -86,7 +87,11 @@ async function fetchAndHandlePageData<K extends FetchPageData>(
   }
 }
 
-async function postPagesResult<T extends PageBodyResponse, V>({
+async function postPagesResult<
+  T extends PageBodyResponse,
+  K extends FetchPageData,
+  V
+>({
   req,
   res,
   handleRequest,
@@ -94,11 +99,12 @@ async function postPagesResult<T extends PageBodyResponse, V>({
   onSuccessRedirectHref,
   onErrorMessage,
   resolvedUrl,
-}: PostPageResultProps<T, V>) {
+  pageData,
+}: PostPageResultProps<T, K, V>) {
   return CallServiceMethod<T, V>(
     req,
     res,
-    (body) => handleRequest(body, jwt),
+    (body) => handleRequest(body, jwt, pageData),
     onSuccessRedirectHref,
     generateServiceErrorProps(onErrorMessage, resolvedUrl)
   );

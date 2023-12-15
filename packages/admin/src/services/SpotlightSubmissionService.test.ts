@@ -1,88 +1,83 @@
 import axios from 'axios';
 import getConfig from 'next/config';
 import {
-  getSpotlightErrors,
-  getSpotlightLastUpdateDate,
-  getSpotlightSubmissionCount,
-  getSpotlightValidationErrorSubmissions,
+  GetSpotlightSubmissionDataBySchemeIdDto,
+  downloadSpotlightSubmissionsDueDiligenceData,
+  getSpotlightSubmissionSentData,
 } from './SpotlightSubmissionService';
-import { SpotlightError } from '../types/SpotlightError';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
 const BASE_SPOTLIGHT_SUBMISSION_URL = BACKEND_HOST + '/spotlight-submissions';
-const BASE_SPOTLIGHT_BATCH_URL = BACKEND_HOST + '/spotlight-batch';
 const SCHEME_ID = 'schemeId';
 const SESSION_ID = 'SessionId';
-const spotlightErrors = {
-  errorCount: 0,
-  errorStatus: 'API',
-  errorFound: false,
-} as SpotlightError;
+const spotlightSubmissionSentData: GetSpotlightSubmissionDataBySchemeIdDto = {
+  sentCount: 2,
+  sentLastUpdatedDate: '2 September 2023',
+  hasSpotlightSubmissions: true,
+};
+
+beforeEach(() => {
+  jest.resetAllMocks();
+});
 
 describe('SpotlightSubmissionService', () => {
-  describe('getSpotlightSubmissionCount', () => {
-    it('Should get Spotlight submission count', async () => {
-      mockedAxios.get.mockResolvedValue({ data: '2' });
+  describe('getSpotlightSubmissionSentData', () => {
+    it('Should get Spotlight submission sent data', async () => {
+      mockedAxios.get.mockResolvedValue({ data: spotlightSubmissionSentData });
 
-      const response = await getSpotlightSubmissionCount(SCHEME_ID, SESSION_ID);
+      const response = await getSpotlightSubmissionSentData(
+        SCHEME_ID,
+        SESSION_ID
+      );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SPOTLIGHT_SUBMISSION_URL}/count/${SCHEME_ID}`,
+        `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/${SCHEME_ID}/due-diligence-data`,
         { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
       );
-      expect(response).toEqual('2');
+      expect(response).toEqual(spotlightSubmissionSentData);
     });
   });
 
-  describe('getSpotlightLastUpdateDate', () => {
-    it('Should get Spotlight last updated date', async () => {
-      mockedAxios.get.mockResolvedValue({ data: '2 September 2023' });
+  describe('downloadDueDiligenceData function', () => {
+    it('Should return spotlight binary data when a valid schemeId is provided and onlyValidationErrors is false', async () => {
+      mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
 
-      const response = await getSpotlightLastUpdateDate(SCHEME_ID, SESSION_ID);
-
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SPOTLIGHT_SUBMISSION_URL}/last-updated/${SCHEME_ID}`,
-        { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
-      );
-      expect(response).toEqual('2 September 2023');
-    });
-  });
-
-  describe('getSpotlightErrors', () => {
-    it('Should get Spotlight errors', async () => {
-      mockedAxios.get.mockResolvedValue({ data: spotlightErrors });
-
-      const response = await getSpotlightErrors(SCHEME_ID, SESSION_ID);
-
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SPOTLIGHT_BATCH_URL}/get-spotlight-scheme-errors/${SCHEME_ID}`,
-        { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
-      );
-      expect(response).toEqual(spotlightErrors);
-    });
-  });
-
-  describe('getSpotlightValidationErrorSubmissions', () => {
-    it('Should get Spotlight submissions with validation errors', async () => {
-      mockedAxios.get.mockResolvedValue({ data: 'some binary data' });
-
-      const response = await getSpotlightValidationErrorSubmissions(
-        SESSION_ID,
-        SCHEME_ID
+      await downloadSpotlightSubmissionsDueDiligenceData(
+        'testSessionCookie',
+        'testSchemeId',
+        'false'
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_SPOTLIGHT_BATCH_URL}/get-validation-error-files/${SCHEME_ID}`,
+        `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/testSchemeId/download?onlyValidationErrors=false`,
         {
-          headers: { Cookie: 'SESSION=SessionId;' },
+          headers: { Cookie: 'SESSION=testSessionCookie;' },
           responseType: 'arraybuffer',
           withCredentials: true,
         }
       );
-      expect(response).toEqual({ data: 'some binary data' });
+    });
+
+    it('Should return spotlight binary data when a valid schemeId is provided and onlyValidationErrors is true', async () => {
+      mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
+
+      await downloadSpotlightSubmissionsDueDiligenceData(
+        'testSessionCookie',
+        'testSchemeId',
+        'true'
+      );
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_SPOTLIGHT_SUBMISSION_URL}/scheme/testSchemeId/download?onlyValidationErrors=true`,
+        {
+          headers: { Cookie: 'SESSION=testSessionCookie;' },
+          responseType: 'arraybuffer',
+          withCredentials: true,
+        }
+      );
     });
   });
 });

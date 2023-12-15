@@ -218,14 +218,14 @@ export const getOrganisationData = (
 
     {
       id: 'organisationCompaniesHouseNumber',
-      label: 'Companies house number',
+      label: 'Companies House number',
       value: organisationData?.companiesHouseNumber,
       url: routes.organisation.companiesHouseNumber,
       status: organisationData?.companiesHouseNumber ? 'Change' : 'Add',
     },
     {
       id: 'organisationCharity',
-      label: 'Charity commission number',
+      label: 'Charity Commission number',
       value: organisationData?.charityCommissionNumber,
       url: routes.organisation.charityComissionNumber,
       status: organisationData?.charityCommissionNumber ? 'Change' : 'Add',

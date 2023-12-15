@@ -1,11 +1,10 @@
 import { merge } from 'lodash';
-import { spotlightExport } from '../../services/SubmissionsService';
-import downloadRequiredChecks from './downloadRequiredChecks.page';
+import { downloadSpotlightSubmissionsDueDiligenceData } from '../../../../../services/SpotlightSubmissionService';
+import downloadSpotlightChecks from './downloadSpotlightSubmissionsChecks.page';
 
-jest.mock('../../services/SubmissionsService');
+jest.mock('../../../../../services/SpotlightSubmissionService');
 
 const SCHEME_ID = 'testSchemeId';
-const APPLICATION_ID = 'testApplicationId';
 
 const mockedRedirect = jest.fn();
 const mockedSetHeader = jest.fn();
@@ -15,11 +14,10 @@ const req = (overrides: any = {}) =>
   merge(
     {
       query: {
-        applicationId: APPLICATION_ID,
         schemeId: SCHEME_ID,
       },
       headers: {
-        referer: `/scheme/${SCHEME_ID}`,
+        referer: `/scheme/${SCHEME_ID}/manage-due-diligence-checks`,
       },
       cookies: { sessionCookieName: 'testSessionId' },
     },
@@ -43,28 +41,34 @@ describe('spotlightExportHandler', () => {
   });
 
   it('Should redirect to service error page when trying to retrieve spotlight export csv file throws an error', async () => {
-    (spotlightExport as jest.Mock).mockRejectedValue({});
+    (
+      downloadSpotlightSubmissionsDueDiligenceData as jest.Mock
+    ).mockRejectedValue({});
 
-    await downloadRequiredChecks(req(), res());
+    await downloadSpotlightChecks(req(), res());
 
     expect(mockedRedirect).toHaveBeenNthCalledWith(
       1,
-      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download required checks.","linkAttributes":{"href":"/scheme/testSchemeId","linkText":"Please return","linkInformation":" and try again."}}`
+      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download the information for Spotlight checks.","linkAttributes":{"href":"/scheme/testSchemeId/manage-due-diligence-checks","linkText":"Please return","linkInformation":" and try again."}}`
     );
   });
 
-  it('Should redirect to service error page when result for spotlightExport is undefined', async () => {
-    (spotlightExport as jest.Mock).mockResolvedValue(undefined);
+  it('Should redirect to service error page when result for downloadDueDiligenceData is undefined', async () => {
+    (
+      downloadSpotlightSubmissionsDueDiligenceData as jest.Mock
+    ).mockResolvedValue(undefined);
 
-    await downloadRequiredChecks(req(), res());
+    await downloadSpotlightChecks(req(), res());
     expect(mockedRedirect).toHaveBeenNthCalledWith(
       1,
-      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download required checks.","linkAttributes":{"href":"/scheme/testSchemeId","linkText":"Please return","linkInformation":" and try again."}}`
+      `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download the information for Spotlight checks.","linkAttributes":{"href":"/scheme/testSchemeId/manage-due-diligence-checks","linkText":"Please return","linkInformation":" and try again."}}`
     );
   });
 
-  it('Should set the correct headers and send the data back to client when spotlightExport data is retrieved successfully', async () => {
-    (spotlightExport as jest.Mock).mockResolvedValue({
+  it('Should set the correct headers and send the data back to client when downloadDueDiligenceData data is retrieved successfully', async () => {
+    (
+      downloadSpotlightSubmissionsDueDiligenceData as jest.Mock
+    ).mockResolvedValue({
       headers: {
         'content-disposition': 'Test content disposition',
         'content-type': 'Test content type',
@@ -73,7 +77,7 @@ describe('spotlightExportHandler', () => {
       data: 'Some csv data',
     });
 
-    await downloadRequiredChecks(req(), res());
+    await downloadSpotlightChecks(req(), res());
     expect(mockedSetHeader).toHaveBeenCalledTimes(3);
     expect(mockedSetHeader).toHaveBeenCalledWith(
       'Content-Disposition',

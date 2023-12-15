@@ -4,6 +4,7 @@ import { DescriptionListProps } from '../../components/description-list/Descript
 import { routes } from '../../utils/routes';
 import { ApplicantDashBoardProps, ApplicantDashboard } from './Dashboard';
 import { getProps } from 'gap-web-ui';
+import { MQ_ORG_TYPES } from '../../utils/constants';
 
 const descriptionList: DescriptionListProps = {
   data: [
@@ -20,6 +21,7 @@ function getDefaultProps(): ApplicantDashBoardProps {
     hasApplications: true,
     bannerProps: null,
     oneLoginEnabled: true,
+    organisationType: MQ_ORG_TYPES.LIMITED_COMPANY,
   };
 }
 

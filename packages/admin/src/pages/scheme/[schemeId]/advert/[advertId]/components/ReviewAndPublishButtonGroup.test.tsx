@@ -2,11 +2,6 @@ import '@testing-library/jest-dom';
 import { merge } from 'lodash';
 import { render, screen } from '@testing-library/react';
 import { ReviewAndPublishButtonGroup } from './ReviewAndPublishButtonGroup';
-const props = {
-  schemeId: 'schemeId',
-  advertId: 'advertId',
-  isPublishDisabled: false,
-};
 
 const getProps = (overrides: any = {}) =>
   merge(

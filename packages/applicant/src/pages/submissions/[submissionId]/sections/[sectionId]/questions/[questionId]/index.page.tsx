@@ -340,7 +340,7 @@ export default function QuestionPage({
       encType = 'multipart/form-data';
       formAction =
         publicRuntimeConfig.subPath +
-        '/api' +
+        '/api/routes' +
         routes.submissions.question(grantSubmissionId, sectionId, questionId) +
         '/upload-file';
       break;

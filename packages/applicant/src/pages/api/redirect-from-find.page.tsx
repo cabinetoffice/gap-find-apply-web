@@ -32,7 +32,8 @@ export default async function handler(
       grantSchemeId,
       isAdvertInDatabase,
       mandatoryQuestionsDto,
-    } = await getAdvertBySlug(jwt, contentfulSlug);
+      isPublished,
+    } = await getAdvertBySlug(jwt, slug);
 
     if (!isAdvertInDatabase && isAdvertInContentful) {
       await validateGrantWebpageUrl({ grantWebpageUrl, contentfulSlug, jwt });
@@ -47,6 +48,10 @@ export default async function handler(
     }
 
     if (version === 2) {
+      if (!isPublished) {
+        redirectToServiceError();
+      }
+
       const mqAreCompleted =
         mandatoryQuestionsDto !== null &&
         mandatoryQuestionsDto.status === 'COMPLETED';
@@ -69,6 +74,11 @@ export default async function handler(
       );
     }
   } catch (e) {
+    console.log(e);
+    redirectToServiceError();
+  }
+
+  function redirectToServiceError() {
     const serviceErrorProps = {
       errorInformation: 'There was an error in the service',
       linkAttributes: {
@@ -77,7 +87,6 @@ export default async function handler(
         linkInformation: '',
       },
     };
-    console.log(e);
     res.redirect(
       `${process.env.HOST}${routes.serviceError(serviceErrorProps)}`
     );

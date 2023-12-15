@@ -166,7 +166,7 @@ const SchemeApplications = ({
                   </CustomLink>
                 </p>
                 <CustomLink
-                  href={`/api/downloadRequiredChecks?applicationId=${applicationForm.grantApplicationId}&schemeId=${applicationForm.grantSchemeId}`}
+                  href={`/api/manage-due-diligence/v1/downloadRequiredChecks?applicationId=${applicationForm.grantApplicationId}&schemeId=${applicationForm.grantSchemeId}`}
                   isSecondaryButton
                   disabled={applicationFormStats.submissionCount === 0}
                   dataCy="cy_Scheme-details-page-button-Download required checks"
