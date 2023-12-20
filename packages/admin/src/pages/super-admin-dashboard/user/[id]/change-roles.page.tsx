@@ -49,10 +49,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     newUserRoles,
     userId,
   }: Awaited<ReturnType<typeof handleRequest>>) {
-    const ADMIN_ROLES = '3' || '4' || '5';
+    const ADMIN_ROLES = ['3', '4', '5'];
 
     const userHasDepartment = userDepartment !== null;
-    const userBecomingApplicant = !newUserRoles.includes(ADMIN_ROLES);
+    const userBecomingApplicant = !newUserRoles.some((role) =>
+      ADMIN_ROLES.includes(role)
+    );
 
     return userHasDepartment || userBecomingApplicant
       ? `/super-admin-dashboard/user/${userId}`
