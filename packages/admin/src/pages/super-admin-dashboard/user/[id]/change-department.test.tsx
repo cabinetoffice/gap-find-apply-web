@@ -1,9 +1,19 @@
 import '@testing-library/jest-dom';
-import { deprecationHandler } from 'moment';
+import { parseBody } from 'next/dist/server/api-utils/node';
 import UserPage from './change-department.page';
 import { Department } from '../../types';
 import { render, screen } from '@testing-library/react';
 import { User } from '../../types';
+import {
+  getUserById,
+  updateDepartment,
+} from '../../../../services/SuperAdminService';
+
+jest.mock('../../../../services/SuperAdminService', () => ({
+  getUserById: jest.fn(),
+  updateDepartment: jest.fn(),
+  getAllDepartments: async () => getMockDepartment(),
+}));
 
 const getMockRoles = () => [
   {
@@ -42,34 +52,60 @@ const getMockUser = (): User => ({
   sub: 'sub',
   emailAddress: 'test.superadmin@gmail.com',
   roles: [getMockRoles()[0], getMockRoles()[3]],
-  department: getMockDepartment(),
+  department: null,
   created: 'NULL',
 });
 
-const component = (
-  <UserPage
-    csrfToken="csrf"
-    pageData={{
-      user: getMockUser(),
-      departments: [getMockDepartment()],
-    }}
-    formAction="."
-    fieldErrors={[]}
-    previousValues={{ department: '1' }}
-  />
-);
-
 describe('Change department page', () => {
   test('Should render the correct content', () => {
+    const component = (
+      <UserPage
+        csrfToken="csrf"
+        pageData={{
+          user: getMockUser(),
+          departments: [getMockDepartment()],
+        }}
+        formAction="."
+        fieldErrors={[]}
+        previousValues={{ department: '1' }}
+      />
+    );
     render(component);
     expect(
       screen.getByRole('heading', { name: "Change the user's department" })
     ).toBeVisible();
     expect(screen.getByText('Test Department')).toBeVisible();
     expect(screen.getByText('Test Department').previousSibling).toHaveAttribute(
-      'checked'
+      'type',
+      'radio'
     );
     expect(screen.getByText('Change department')).toBeVisible();
     expect(screen.getByText('Manage departments')).toBeVisible();
+  });
+
+  test('Should throw an error if no department is selected', async () => {
+    const component = (
+      <UserPage
+        csrfToken="csrf"
+        pageData={{
+          user: getMockUser(),
+          departments: [getMockDepartment()],
+        }}
+        formAction="."
+        fieldErrors={[
+          { fieldName: 'department', errorMessage: 'Select a department' },
+        ]}
+        previousValues={{ department: '1' }}
+      />
+    );
+    render(component);
+    expect(screen.getByText('There is a problem')).toBeVisible();
+    expect(
+      screen.getByText('There is a problem').nextSibling
+    ).toHaveTextContent('Select a department');
+  });
+
+  test('Should redirect to user page if department is selected', async () => {
+    // TODO: Implement this unit test (involves mocking similar to that seen in change-roles.test.tsx)
   });
 });
