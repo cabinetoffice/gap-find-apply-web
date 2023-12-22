@@ -4,6 +4,10 @@ export type Department = {
   name: string;
 };
 
+export type ChangeDepartmentDto = {
+  departmentId: string;
+};
+
 export type Role = {
   id: string;
   name: string;
