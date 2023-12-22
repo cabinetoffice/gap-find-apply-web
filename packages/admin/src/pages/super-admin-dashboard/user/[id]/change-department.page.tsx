@@ -1,9 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import {
-  FlexibleQuestionPageLayout,
-  QuestionPageGetServerSideProps,
-  Radio,
-} from 'gap-web-ui';
+import { FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import {
   getChangeDepartmentPage,
@@ -12,6 +8,7 @@ import {
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
+import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
 
 type PageBodyResponse = {
   department: string;
