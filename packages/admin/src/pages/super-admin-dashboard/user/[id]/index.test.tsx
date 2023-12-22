@@ -76,11 +76,11 @@ describe('Super admin - Edit user page', () => {
       const changeLinks = screen.getAllByRole('link', { name: 'Change' });
       expect(changeLinks[0]).toHaveAttribute(
         'href',
-        '/super-admin-dashboard/user/1/change-department'
+        '/super-admin-dashboard/user/1/change-roles'
       );
       expect(changeLinks[1]).toHaveAttribute(
         'href',
-        '/super-admin-dashboard/user/1/change-roles'
+        '/super-admin-dashboard/user/1/change-department'
       );
     });
 

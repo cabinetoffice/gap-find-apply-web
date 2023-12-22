@@ -4,6 +4,7 @@ import {
   GrantExistsInContentfulDto,
   checkIfGrantExistsInContentful,
   getAdvertBySlug,
+  validateGrantWebpageUrl,
 } from '../../services/GrantAdvertService';
 import { GrantMandatoryQuestionDto } from '../../services/GrantMandatoryQuestionService';
 import { Overrides } from '../../testUtils/unitTestHelpers';
@@ -74,6 +75,7 @@ describe('API Handler Tests', () => {
     );
 
     await handler(req(), res());
+    expect(validateGrantWebpageUrl).toHaveBeenCalled();
 
     expect(mockedRedirect).toHaveBeenCalledWith('grantWebpageUrl');
   });
