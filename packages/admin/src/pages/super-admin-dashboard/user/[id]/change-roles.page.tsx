@@ -19,11 +19,7 @@ type PageBodyResponse = {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
 
-  async function handleRequest(
-    body: PageBodyResponse,
-    jwt: string,
-    _pageData: Awaited<ReturnType<typeof fetchPageData>>
-  ) {
+  async function handleRequest(body: PageBodyResponse, jwt: string) {
     const findAndApplicantRoles = ['1', '2'];
     const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
     const userDepartment = (await getUserById(userId, jwt)).department;
@@ -49,11 +45,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     newUserRoles,
     userId,
   }: Awaited<ReturnType<typeof handleRequest>>) {
-    const ADMIN_ROLES = ['3', '4', '5'];
+    const ADMIN_ROLES_IDS = ['3', '4', '5'];
 
     const userHasDepartment = userDepartment !== null;
     const userBecomingApplicant = !newUserRoles.some((role) =>
-      ADMIN_ROLES.includes(role)
+      ADMIN_ROLES_IDS.includes(role)
     );
 
     return userHasDepartment || userBecomingApplicant

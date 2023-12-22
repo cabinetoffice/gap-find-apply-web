@@ -13,9 +13,9 @@ jest.mock('../../../../services/SuperAdminService', () => ({
   updateUserRoles: jest.fn(),
 }));
 
-jest.mock('next/dist/server/api-utils/node', () => {
-  return { parseBody: jest.fn() };
-});
+jest.mock('next/dist/server/api-utils/node', () => ({
+  parseBody: jest.fn(),
+}));
 
 const mockGetUserById = jest.mocked(getUserById);
 const mockParseBody = jest.mocked(parseBody);
@@ -143,12 +143,7 @@ describe('Edit role page', () => {
       lastName: 'm',
       organisationName: 'tco',
       emailAddress: 'superAdmin@and.digital',
-      roles: [
-        getMockRoles()[0],
-        getMockRoles()[1],
-        getMockRoles()[2],
-        getMockRoles()[3],
-      ],
+      roles: getMockRoles(),
       department: { id: '1', name: 'Cabinet Office' },
       created: 'NULL',
     });

@@ -119,13 +119,11 @@ describe('Change department page', () => {
     const mockGetChangeDepartmentPage = jest.mocked(getChangeDepartmentPage);
     const mockParseBody = jest.mocked(parseBody);
     test('Should redirect to user page if department is selected', async () => {
-      mockGetChangeDepartmentPage.mockReturnValueOnce(
-        Promise.resolve({
-          user: getMockUser(),
-          departments: [{ id: '4', name: 'hello world' }],
-        })
-      );
-      mockParseBody.mockResolvedValue({ department: 'fake department' });
+      mockGetChangeDepartmentPage.mockResolvedValueOnce({
+        user: getMockUser(),
+        departments: [{ id: '4', name: 'hello world' }],
+      });
+      mockParseBody.mockResolvedValueOnce({ department: 'fake department' });
       const getDepartmentSelectedContext = () => ({
         req: { method: 'POST' },
         params: { id: 'someId' },
