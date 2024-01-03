@@ -33,6 +33,10 @@ const downloadSpotlightChecks = async (
       onlyValidationErrors
     );
   } catch (error) {
+    console.error(
+      'Error downloading due diligence data from spotlight: ',
+      error
+    );
     errorRedirect();
     return;
   }
