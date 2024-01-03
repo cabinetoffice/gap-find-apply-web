@@ -2769,7 +2769,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/transform@npm:^28.1.2":
+"@jest/transform@npm:^28.1.3":
   version: 28.1.3
   resolution: "@jest/transform@npm:28.1.3"
   dependencies:
@@ -6936,20 +6936,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-jest@npm:28.1.2":
-  version: 28.1.2
-  resolution: "babel-jest@npm:28.1.2"
+"babel-jest@npm:^28.1.2":
+  version: 28.1.3
+  resolution: "babel-jest@npm:28.1.3"
   dependencies:
-    "@jest/transform": ^28.1.2
+    "@jest/transform": ^28.1.3
     "@types/babel__core": ^7.1.14
     babel-plugin-istanbul: ^6.1.1
-    babel-preset-jest: ^28.1.1
+    babel-preset-jest: ^28.1.3
     chalk: ^4.0.0
     graceful-fs: ^4.2.9
     slash: ^3.0.0
   peerDependencies:
     "@babel/core": ^7.8.0
-  checksum: 1aa605ef4dfae3a557fbed8b9d1ba1c2678ba910d0ff3931fad8dc2a150a8ef220a456a86f3b441f5cd4f97f973c2f721fc74ea6a26432766c5ab501a967f8c8
+  checksum: 57ccd2296e1839687b5df2fd138c3d00717e0369e385254b012ccd4ee70e75f5d5c8e6cfcdf92d155015b468cfebb847b38e69bb5805d8aaf730e20575127cc6
   languageName: node
   linkType: hard
 
@@ -7103,7 +7103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-preset-jest@npm:^28.1.1":
+"babel-preset-jest@npm:^28.1.3":
   version: 28.1.3
   resolution: "babel-preset-jest@npm:28.1.3"
   dependencies:
@@ -10564,7 +10564,7 @@ __metadata:
     "@types/turndown": ^5.0.1
     "@typescript-eslint/eslint-plugin": ^5.30.5
     "@typescript-eslint/parser": ^5.30.5
-    babel-jest: 28.1.2
+    babel-jest: ^28.1.2
     css-loader: ^6.7.1
     eslint: 8.44.0
     eslint-config-prettier: ^8.5.0
