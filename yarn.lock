@@ -6258,6 +6258,7 @@ __metadata:
     csurf: ^1.11.0
     cypress: ^9.5.0
     cypress-axe: ^0.14.0
+    cypress-recurse: 1.18.0
     fs-extra: 11.2.0
     gap-web-ui: "*"
     govuk-frontend: 4.7.0
@@ -8289,6 +8290,13 @@ __metadata:
   dependencies:
     pg-promise: 10.5.8
   checksum: aefa2d52b26734bbbbfe1c85c5889268dd1f32629668b969ca4b8ae16c6dade8e0064f0a337fdcc9101b6fd42be82099fcb5be5931799e56cb23e13012a4f91d
+  languageName: node
+  linkType: hard
+
+"cypress-recurse@npm:1.18.0":
+  version: 1.18.0
+  resolution: "cypress-recurse@npm:1.18.0"
+  checksum: f090db4f212ae822b092b9f0ce92841e26c2a18023cf6fc57d1a1fca4512c36f1c3f022b78a612317c2db9399ef4439a0837ac2ee93aac2d175ec9fd1439a6d7
   languageName: node
   linkType: hard
 
