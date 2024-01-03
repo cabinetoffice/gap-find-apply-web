@@ -21,7 +21,7 @@
     "axios": "^0.27.2",
     "cookie-parser": "^1.4.6",
     "csurf": "^1.11.0",
-    "cypress-recurse": "1.18.0",
+    "cypress-recurse": "^1.18.0",
     "fs-extra": "11.2.0",
     "gap-web-ui": "*",
     "govuk-frontend": "4.7.0",
