@@ -86,6 +86,19 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                   value: pageData.emailAddress,
                   action: <></>,
                 },
+                {
+                  key: 'Roles',
+                  value: pageData.role?.label || 'Blocked',
+                  action: pageData.role?.label ? (
+                    <Link
+                      href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-roles`}
+                    >
+                      <a className="govuk-link">Change</a>
+                    </Link>
+                  ) : (
+                    <></>
+                  ),
+                },
                 ...(pageData.role?.label !== 'Applicant'
                   ? [
                       {
@@ -101,19 +114,6 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                       },
                     ]
                   : []),
-                {
-                  key: 'Roles',
-                  value: pageData.role?.label || 'Blocked',
-                  action: pageData.role?.label ? (
-                    <Link
-                      href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-roles`}
-                    >
-                      <a className="govuk-link">Change</a>
-                    </Link>
-                  ) : (
-                    <></>
-                  ),
-                },
               ]}
             />
 

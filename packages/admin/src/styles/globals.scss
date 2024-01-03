@@ -8,6 +8,10 @@ $govuk-assets-path: $sub_path + '/assets/';
 @import 'components/moj-pagination';
 @import 'components/date-picker';
 
+.root-background{
+  background-color: #f3f2f1,
+  }
+
 .hr-blue-border {
   border: 1px solid govuk-colour('blue');
 }
