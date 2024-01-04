@@ -85,11 +85,14 @@ export const updateDepartment = async (
   departmentId: string,
   userToken: string
 ) => {
+  const changeDepartmentDto = {
+    departmentId: departmentId,
+  };
+
   await axios.patch(
     `${serverRuntimeConfig.userServiceHost}/user/${userId}/department`,
-    {},
+    changeDepartmentDto,
     {
-      params: { departmentId },
       ...axiosUserServiceConfig(userToken),
     }
   );
