@@ -1,5 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
-import { ValidationError, expectObjectEquals } from 'gap-web-ui';
+import { ValidationError } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 import { parseBody } from 'next/dist/server/api-utils/node';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
@@ -411,7 +411,7 @@ describe('getServerSideProps', () => {
 
     const response = await getServerSideProps(context);
 
-    expectObjectEquals(response, {
+    expect(response).toEqual({
       redirect: {
         permanent: false,
         destination: '/submissions/12345678/sections',
