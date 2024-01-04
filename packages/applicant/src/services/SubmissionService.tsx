@@ -175,6 +175,17 @@ export async function getNextNavigation(
   return data;
 }
 
+export async function isApplicantEligible(
+  submissionId: string,
+  jwt: string
+): Promise<boolean> {
+  const { data } = await axios.get<boolean>(
+    `${BACKEND_HOST}/submissions/${submissionId}/isApplicantEligible`,
+    axiosConfig(jwt)
+  );
+  return data;
+}
+
 export interface SectionReviewBody {
   isComplete: boolean;
 }
