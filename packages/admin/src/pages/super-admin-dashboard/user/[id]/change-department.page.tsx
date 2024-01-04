@@ -75,7 +75,7 @@ const UserPage = ({
               value: department.id,
             }))}
             fieldErrors={fieldErrors}
-            defaultChecked={user.department?.name ?? departments[0].name}
+            defaultChecked={user.department?.name}
           />
 
           <div className="govuk-button-group">

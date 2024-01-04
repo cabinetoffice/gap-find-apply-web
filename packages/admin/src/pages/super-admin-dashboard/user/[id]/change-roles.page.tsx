@@ -19,11 +19,7 @@ type PageBodyResponse = {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
 
-  async function handleRequest(
-    body: PageBodyResponse,
-    jwt: string,
-    pageData: Awaited<ReturnType<typeof fetchPageData>>
-  ) {
+  async function handleRequest(body: PageBodyResponse, jwt: string) {
     const findAndApplicantRoles = ['1', '2'];
     const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
     const userDepartment = (await getUserById(userId, jwt)).department;
