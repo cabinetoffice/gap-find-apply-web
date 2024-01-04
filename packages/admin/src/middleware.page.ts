@@ -21,7 +21,6 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.rewrite(rewriteUrl);
   const auth_cookie = req.cookies.get('session_id');
   const user_service_cookie = req.cookies.get('user-service-token');
-  console.log('user_service_cookie', user_service_cookie);
   //Feature flag redirects
   const advertBuilderPath = /\/scheme\/\d*\/advert/;
 
@@ -56,7 +55,6 @@ export async function middleware(req: NextRequest) {
 
     return res;
   } else if (user_service_cookie !== undefined) {
-    console.log('triggered');
     return NextResponse.redirect(getLoginUrl({ redirectToApplicant: true }), {
       status: 302,
     });
