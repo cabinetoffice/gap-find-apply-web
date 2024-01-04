@@ -17,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = (req) => {
   }
   return Promise.resolve({
     props: {
-      loginUrl: loginUrl,
+      loginUrl,
       registerUrl: `${process.env.USER_SERVICE_URL}/register`,
       oneLoginEnabled: process.env.ONE_LOGIN_ENABLED,
     },

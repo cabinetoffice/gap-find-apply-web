@@ -13,9 +13,12 @@ jest.mock('../../../../services/SuperAdminService', () => ({
   updateUserRoles: jest.fn(),
 }));
 
-jest.mock('next/dist/server/api-utils/node', () => {
-  return { parseBody: jest.fn() };
-});
+jest.mock('next/dist/server/api-utils/node', () => ({
+  parseBody: jest.fn(),
+}));
+
+const mockGetUserById = jest.mocked(getUserById);
+const mockParseBody = jest.mocked(parseBody);
 
 const getMockRoles = () => [
   {
@@ -85,13 +88,14 @@ describe('Edit role page', () => {
   });
 
   test('Should redirect to change department page if new Admin user', async () => {
-    (parseBody as jest.Mock).mockReturnValue({ newUserRoles: ['3', '4'] });
-    (getUserById as jest.Mock).mockReturnValue({
+    mockParseBody.mockResolvedValue({ newUserRoles: ['3', '4'] });
+    mockGetUserById.mockReturnValue({
       firstName: 'john',
       lastName: 'm',
       organisationName: 'tco',
       emailAddress: 'superAdmin@and.digital',
       roles: [getMockRoles()[0], getMockRoles()[1]],
+      department: null,
       created: 'NULL',
     });
 
@@ -109,13 +113,14 @@ describe('Edit role page', () => {
   });
 
   test('Should redirect to account page as User who is an Applicant', async () => {
-    (parseBody as jest.Mock).mockReturnValue({ newUserRoles: ['1', '2'] });
-    (getUserById as jest.Mock).mockReturnValue({
+    mockParseBody.mockResolvedValue({ newUserRoles: ['1', '2'] });
+    mockGetUserById.mockResolvedValue({
       firstName: 'john',
       lastName: 'm',
       organisationName: 'tco',
       emailAddress: 'superAdmin@and.digital',
       roles: [getMockRoles()[0], getMockRoles()[1]],
+      department: null,
       created: 'NULL',
     });
     const getDefaultContext = () => ({
@@ -131,14 +136,15 @@ describe('Edit role page', () => {
     });
   });
 
-  test('Should redirect to account page as User who is already Admin', async () => {
-    (parseBody as jest.Mock).mockReturnValue({ newUserRoles: ['1', '2', '3'] });
-    (getUserById as jest.Mock).mockReturnValue({
+  test('Should redirect to account page as User who is already Admin (with a Department)', async () => {
+    mockParseBody.mockResolvedValue({ newUserRoles: ['1', '2', '3'] });
+    mockGetUserById.mockResolvedValue({
       firstName: 'john',
       lastName: 'm',
       organisationName: 'tco',
       emailAddress: 'superAdmin@and.digital',
-      roles: [getMockRoles()[2], getMockRoles()[3]],
+      roles: getMockRoles(),
+      department: { id: '1', name: 'Cabinet Office' },
       created: 'NULL',
     });
     const getDefaultContext = () => ({

@@ -1,4 +1,7 @@
-import { SuperAdminDashboardResponse } from './../pages/super-admin-dashboard/types';
+import {
+  ChangeDepartmentDto,
+  SuperAdminDashboardResponse,
+} from './../pages/super-admin-dashboard/types';
 import getConfig from 'next/config';
 import axios from 'axios';
 import { axiosUserServiceConfig } from '../utils/session';
@@ -85,10 +88,9 @@ export const updateDepartment = async (
   departmentId: string,
   userToken: string
 ) => {
-  const changeDepartmentDto = {
+  const changeDepartmentDto: ChangeDepartmentDto = {
     departmentId: departmentId,
   };
-
   await axios.patch(
     `${serverRuntimeConfig.userServiceHost}/user/${userId}/department`,
     changeDepartmentDto,

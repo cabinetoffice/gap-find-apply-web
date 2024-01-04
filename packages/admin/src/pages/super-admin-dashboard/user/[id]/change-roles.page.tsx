@@ -26,9 +26,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   ) {
     const findAndApplicantRoles = ['1', '2'];
     const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
-    const oldUserRoles = pageData.user.roles;
+    const userDepartment = (await getUserById(userId, jwt)).department;
     await updateUserRoles(userId, newUserRoles, jwt);
-    return { oldUserRoles, newUserRoles, userId };
+    return { userDepartment, newUserRoles, userId };
   }
 
   async function fetchPageData(jwt: string) {
@@ -45,23 +45,20 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 
   function onSuccessRedirectHref({
-    oldUserRoles,
+    userDepartment,
     newUserRoles,
     userId,
   }: Awaited<ReturnType<typeof handleRequest>>) {
-    const adminRoles = [`ADMIN`, `SUPER_ADMIN`, `TECHNICAL_SUPPORT`];
-    const adminIds = ['3', '4', '5'];
+    const ADMIN_ROLES_IDS = ['3', '4', '5'];
 
-    const wasPreviouslyAdmin = oldUserRoles.some(({ name }) =>
-      adminRoles.includes(name)
-    );
-    const isBeingPromotedToAdmin = newUserRoles.some((id) =>
-      adminIds.includes(id)
+    const userHasDepartment = userDepartment !== null;
+    const userBecomingApplicant = !newUserRoles.some((role) =>
+      ADMIN_ROLES_IDS.includes(role)
     );
 
-    return !wasPreviouslyAdmin && isBeingPromotedToAdmin
-      ? `/super-admin-dashboard/user/${userId}/change-department`
-      : `/super-admin-dashboard/user/${userId}`;
+    return userHasDepartment || userBecomingApplicant
+      ? `/super-admin-dashboard/user/${userId}`
+      : `/super-admin-dashboard/user/${userId}/change-department`;
   }
 
   return QuestionPageGetServerSideProps<
