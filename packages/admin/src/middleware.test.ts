@@ -7,7 +7,9 @@ import { middleware } from './middleware.page';
 // eslint-disable-next-line  @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdminSessionValid } from './services/UserService';
+import { getLoginUrl } from './utils/general';
 
+jest.mock('./utils/general');
 jest.mock('./services/UserService', () => ({
   isAdminSessionValid: jest.fn(),
 }));
@@ -25,27 +27,39 @@ describe('middleware', () => {
   });
 
   it('Should redirect to the logout page when the user is not authorized', async () => {
+    const expectedUrl = 'http://localhost:8082/login';
+    (getLoginUrl as jest.Mock).mockReturnValue(expectedUrl);
     const result = await middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
 
     // basePath from nextjs config does not apply to jest tests, thus no subpaths
-    expect(result.headers.get('Location')).toStrictEqual(
-      'http://localhost:8082/login'
-    );
+    expect(result.headers.get('Location')).toStrictEqual(expectedUrl);
+  });
+
+  it('Should redirect to the applicant dashboard page when the user is not authorized', async () => {
+    const expectedUrl = 'http://localhost:3000/apply/applicant/dashboard';
+    req.cookies.set('user-service-token', 'user-service-token-value');
+    (getLoginUrl as jest.Mock).mockReturnValue(expectedUrl);
+
+    const result = await middleware(req);
+
+    expect(result).toBeInstanceOf(NextResponse);
+    expect(getLoginUrl).toBeCalledWith({ redirectToApplicant: true });
+    expect(result.headers.get('Location')).toStrictEqual(expectedUrl);
   });
 
   it('should redirect to the logout page when the admin session is invalid', async () => {
+    const expectedUrl = 'http://localhost:8082/login';
     req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
     (isAdminSessionValid as jest.Mock).mockImplementation(async () => false);
+    (getLoginUrl as jest.Mock).mockReturnValue(expectedUrl);
 
     const result = await middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
 
-    expect(result.headers.get('Location')).toStrictEqual(
-      'http://localhost:8082/login'
-    );
+    expect(result.headers.get('Location')).toStrictEqual(expectedUrl);
   });
 
   it('Should reset auth cookie correctly when the user is authorised', async () => {
