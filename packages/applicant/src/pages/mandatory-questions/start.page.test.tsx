@@ -16,9 +16,11 @@ import { getJwtFromCookies } from '../../utils/jwt';
 import MandatoryQuestionsBeforeYouStart, {
   getServerSideProps,
 } from './start.page';
+import { getApplicationStatusBySchemeId } from '../../services/ApplicationService';
 
 jest.mock('next/dist/server/api-utils/node');
 jest.mock('../../utils/jwt');
+jest.mock('../../services/ApplicationService');
 
 const spiedExistBySchemeIdAndApplicantId = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
@@ -27,6 +29,9 @@ const spiedExistBySchemeIdAndApplicantId = jest.spyOn(
 const spiedGetMandatoryQuestionBySchemeId = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
   'getMandatoryQuestionBySchemeId'
+);
+const mockedGetApplicationStatusBySchemeId = jest.mocked(
+  getApplicationStatusBySchemeId
 );
 
 const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
@@ -37,6 +42,7 @@ const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
   },
   query: { schemeId: '1' },
 });
+
 const mandatoryQuestionData: GrantMandatoryQuestionDto = {
   schemeId: 1,
   submissionId: null,
@@ -52,6 +58,7 @@ const mandatoryQuestionData: GrantMandatoryQuestionDto = {
   fundingAmount: null,
   fundingLocation: null,
 };
+
 describe('Mandatory Questions Start', () => {
   describe('getServerSideProps', () => {
     it('should return the scheme Id query param when mandatory Question does not exist', async () => {
@@ -72,6 +79,7 @@ describe('Mandatory Questions Start', () => {
         'testJwt'
       );
     });
+
     it('should return the scheme Id query param when mandatory Question does exist but not been completed', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       const existBySchemeIdAndApplicantId =
@@ -139,6 +147,21 @@ describe('Mandatory Questions Start', () => {
       expect(response).toEqual({
         redirect: {
           destination: `/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to retrieve your mandatory questions","linkAttributes":{"href":"/mandatory-questions/start?schemeId=1","linkText":"Please return","linkInformation":" and try again."}}`,
+          permanent: false,
+        },
+      });
+    });
+
+    it('should redirect if the application form status is REMOVED', async () => {
+      (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+      spiedExistBySchemeIdAndApplicantId.mockResolvedValue(false);
+      mockedGetApplicationStatusBySchemeId.mockResolvedValue('REMOVED');
+
+      const response = await getServerSideProps(getContext(getDefaultContext));
+
+      expect(response).toEqual({
+        redirect: {
+          destination: `/service-error?serviceErrorProps={"errorInformation":"This application has been unpublished.","linkAttributes":{"href":"/","linkText":"Go back to the home page","linkInformation":""}}`,
           permanent: false,
         },
       });
