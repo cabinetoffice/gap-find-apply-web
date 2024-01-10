@@ -230,6 +230,7 @@ export interface SectionData {
   sectionId: string;
   sectionTitle: string;
   sectionStatus: string;
+  questionIds: string[];
   questions: QuestionType[];
 }
 

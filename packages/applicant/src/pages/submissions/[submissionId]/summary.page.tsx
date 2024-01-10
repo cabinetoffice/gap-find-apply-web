@@ -1,0 +1,265 @@
+import { GetServerSideProps } from 'next';
+import getConfig from 'next/config';
+import Layout from '../../../components/partials/Layout';
+import Meta from '../../../components/partials/Meta';
+import {
+  getQuestionById,
+  getSubmissionById,
+  hasSubmissionBeenSubmitted,
+  QuestionType,
+  SectionData,
+} from '../../../services/SubmissionService';
+import { initiateCSRFCookie } from '../../../utils/csrf';
+import { getJwtFromCookies } from '../../../utils/jwt';
+import { routes } from '../../../utils/routes';
+import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
+import { ProcessMultiResponse } from './sections/[sectionId]/processMultiResponse';
+import Link from 'next/link';
+import { getQuestionUrl } from './sections/[sectionId]/index.page';
+import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
+
+const { publicRuntimeConfig } = getConfig();
+
+export interface SubmissionSummaryPage {
+  sections: SectionData[];
+  grantSubmissionId: string;
+  mandatoryQuestionId: string;
+  applicationName: string;
+  hasSubmissionBeenSubmitted: boolean;
+  csrfToken: string;
+}
+
+export const getServerSideProps: GetServerSideProps<
+  SubmissionSummaryPage
+> = async ({ req, res, params }) => {
+  const jwt = getJwtFromCookies(req);
+  const submissionId = params.submissionId.toString();
+
+  const { sections, grantSubmissionId, applicationName, grantSchemeId } =
+    await getSubmissionById(submissionId, getJwtFromCookies(req));
+
+  const grantApplicationStatus = await getApplicationStatusBySchemeId(
+    grantSchemeId,
+    jwt
+  );
+
+  if (grantApplicationStatus === 'REMOVED') {
+    return {
+      redirect: {
+        destination: `/grant-is-closed`,
+        permanent: false,
+      },
+    };
+  }
+
+  const hasBeenSubmitted = await hasSubmissionBeenSubmitted(submissionId, jwt);
+
+  await initiateCSRFCookie(req, res);
+
+  const hydratedSections = await Promise.all(
+    sections.map(async (section) => {
+      return {
+        ...section,
+        questions: await Promise.all(
+          section.questionIds.map(async (questionId) => {
+            const questionData = await getQuestionById(
+              submissionId,
+              section.sectionId,
+              questionId,
+              jwt
+            );
+            return questionData.question;
+          })
+        ),
+      };
+    })
+  );
+
+  const mandatoryQuestionService = GrantMandatoryQuestionService.getInstance();
+  const mandatoryQuestionDto =
+    await mandatoryQuestionService.getMandatoryQuestionBySubmissionId(
+      submissionId,
+      jwt
+    );
+  const mandatoryQuestionId = mandatoryQuestionDto.id;
+
+  return {
+    props: {
+      sections: hydratedSections,
+      grantSubmissionId,
+      mandatoryQuestionId,
+      applicationName,
+      hasSubmissionBeenSubmitted: hasBeenSubmitted,
+      csrfToken: (req as any).csrfToken?.() || '',
+    },
+  };
+};
+
+export default function SubmissionSummary({
+  sections,
+  grantSubmissionId,
+  mandatoryQuestionId,
+  applicationName,
+  hasSubmissionBeenSubmitted,
+  csrfToken,
+}) {
+  return (
+    <>
+      <Meta title="My application - Apply for a grant" />
+      <Layout backBtnUrl={routes.applications}>
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-full">
+            <form
+              action={
+                publicRuntimeConfig.subPath +
+                `/submissions/${grantSubmissionId}/submit`
+              }
+              method="POST"
+            >
+              <span
+                className="govuk-caption-m"
+                data-cy={`cy-application-name-${applicationName}`}
+              >
+                {applicationName}
+              </span>
+              <h1 className="govuk-heading-m" data-cy="cy-page-header">
+                {hasSubmissionBeenSubmitted
+                  ? 'Your application'
+                  : 'Check your answers before submitting your application'}
+              </h1>
+
+              {sections.map((section: SectionData) => (
+                <SectionCard
+                  key={`section-card-${section.sectionId}`}
+                  section={section}
+                  submissionId={grantSubmissionId}
+                  mandatoryQuestionId={mandatoryQuestionId}
+                />
+              ))}
+
+              <h1 className="govuk-heading-s" data-cy="cy-download-header">
+                Download a copy of your application
+              </h1>
+              <p className="govuk-body">
+                You can{' '}
+                <a className="govuk-link govuk-link--no-visited-state">
+                  download a copy of your answers (ODT, x.xx kB)
+                </a>{' '}
+                for future reference.
+              </p>
+
+              {hasSubmissionBeenSubmitted ? (
+                <div className="govuk-button-group">
+                  <a
+                    href={`${publicRuntimeConfig.subPath}/applications`}
+                    role="button"
+                    draggable="false"
+                    className="govuk-button"
+                    data-module="govuk-button"
+                    data-cy="cy-return-to-profile-link"
+                  >
+                    Return to your profile
+                  </a>
+                </div>
+              ) : (
+                <>
+                  <h1 className="govuk-heading-s" data-cy="cy-submit-header">
+                    Submit your application
+                  </h1>
+                  <p className="govuk-body">
+                    By submitting your application you are confirming that, to
+                    the best of your knowledge, the details you are providing
+                    are up to date and accurate.
+                  </p>
+
+                  <input type="hidden" name="_csrf" value={csrfToken} />
+
+                  <div className="govuk-button-group">
+                    <a
+                      href={`${publicRuntimeConfig.subPath}/submissions/${grantSubmissionId}/submit`}
+                      role="button"
+                      draggable="false"
+                      className="govuk-button"
+                      data-module="govuk-button"
+                      data-cy="cy-submit-application-link"
+                    >
+                      Submit application
+                    </a>
+                  </div>
+                </>
+              )}
+            </form>
+          </div>
+        </div>
+      </Layout>
+    </>
+  );
+}
+
+const SectionCard = ({ section, submissionId, mandatoryQuestionId }) => {
+  return (
+    <div className="govuk-summary-card">
+      <div className="govuk-summary-card__title-wrapper">
+        <h2 className="govuk-summary-card__title">{section.sectionTitle}</h2>
+      </div>
+      <div className="govuk-summary-card__content">
+        <dl className="govuk-summary-list">
+          {section.questions.map(
+            ({
+              responseType,
+              questionId,
+              fieldTitle,
+              multiResponse,
+              response,
+            }: QuestionType) => {
+              return (
+                <div
+                  className="govuk-summary-list__row"
+                  key={`question-${questionId}`}
+                >
+                  <dt className="govuk-summary-list__key">{fieldTitle}</dt>
+                  {multiResponse ? (
+                    <ProcessMultiResponse
+                      data={multiResponse}
+                      id={questionId}
+                      cyTag={questionId}
+                      questionType={responseType}
+                    />
+                  ) : (
+                    <dd
+                      className="govuk-summary-list__value"
+                      id={response}
+                      data-cy={`cy-section-value-${response}`}
+                    >
+                      {response ? response : '-'}
+                    </dd>
+                  )}
+                  <dd className="govuk-summary-list__actions">
+                    <Link
+                      href={getQuestionUrl(
+                        section.sectionId,
+                        questionId,
+                        mandatoryQuestionId,
+                        submissionId
+                      )}
+                    >
+                      <a
+                        className="govuk-link govuk-link--no-visited-state"
+                        data-cy={`cy-section-details-navigation-${questionId}`}
+                      >
+                        {response || multiResponse ? 'Change' : 'Add'}
+                        <span className="govuk-visually-hidden">
+                          {questionId.replaceAll('_', ' ')}
+                        </span>
+                      </a>
+                    </Link>
+                  </dd>
+                </div>
+              );
+            }
+          )}
+        </dl>
+      </div>
+    </div>
+  );
+};

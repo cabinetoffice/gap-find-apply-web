@@ -129,7 +129,7 @@ export default function SubmissionSections({
             <form
               action={
                 publicRuntimeConfig.subPath +
-                `/submissions/${grantSubmissionId}/submit`
+                `/submissions/${grantSubmissionId}/summary`
               }
               method="POST"
             >
@@ -214,18 +214,18 @@ export default function SubmissionSections({
                     disabled={true}
                     data-cy="cy-submit-application-button"
                   >
-                    Submit application
+                    Review and submit
                   </button>
                 ) : (
                   <a
-                    href={`${publicRuntimeConfig.subPath}/submissions/${grantSubmissionId}/submit`}
+                    href={`${publicRuntimeConfig.subPath}/submissions/${grantSubmissionId}/summary`}
                     role="button"
                     draggable="false"
                     className="govuk-button"
                     data-module="govuk-button"
                     data-cy="cy-submit-application-link"
                   >
-                    Submit application
+                    Review and submit
                   </a>
                 )}
 

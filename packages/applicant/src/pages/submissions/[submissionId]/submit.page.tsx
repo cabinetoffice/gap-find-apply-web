@@ -61,7 +61,7 @@ function SubmitApplication({ submissionId, csrfToken }) {
     <>
       <Meta title="Submit application - Apply for a grant" />
 
-      <Layout backBtnUrl={`/submissions/${submissionId}/sections`}>
+      <Layout backBtnUrl={`/submissions/${submissionId}/summary`}>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <form
