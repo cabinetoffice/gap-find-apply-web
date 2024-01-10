@@ -33,9 +33,10 @@ export const getQuestionUrl = (
   sectionId: string,
   questionId: string,
   mandatoryQuestionId: string,
-  submissionId: string
+  submissionId: string,
+  fromPageType = 'fromSubmissionPage'
 ) => {
-  const queryParam = `?fromSubmissionPage=true&submissionId=${submissionId}&sectionId=${sectionId}`;
+  const queryParam = `?${fromPageType}=true&submissionId=${submissionId}&sectionId=${sectionId}`;
   if (sectionId === 'ORGANISATION_DETAILS') {
     switch (questionId) {
       case 'APPLICANT_TYPE': {

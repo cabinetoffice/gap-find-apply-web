@@ -1,5 +1,6 @@
 import { GetServerSideProps } from 'next';
 import getConfig from 'next/config';
+import Link from 'next/link';
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
 import {
@@ -9,14 +10,13 @@ import {
   QuestionType,
   SectionData,
 } from '../../../services/SubmissionService';
+import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
+import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
 import { initiateCSRFCookie } from '../../../utils/csrf';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
-import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
 import { ProcessMultiResponse } from './sections/[sectionId]/processMultiResponse';
-import Link from 'next/link';
 import { getQuestionUrl } from './sections/[sectionId]/index.page';
-import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -106,7 +106,7 @@ export default function SubmissionSummary({
   return (
     <>
       <Meta title="My application - Apply for a grant" />
-      <Layout backBtnUrl={routes.applications}>
+      <Layout backBtnUrl={routes.submissions.sections(grantSubmissionId)}>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-full">
             <form
@@ -117,12 +117,12 @@ export default function SubmissionSummary({
               method="POST"
             >
               <span
-                className="govuk-caption-m"
+                className="govuk-caption-l"
                 data-cy={`cy-application-name-${applicationName}`}
               >
                 {applicationName}
               </span>
-              <h1 className="govuk-heading-m" data-cy="cy-page-header">
+              <h1 className="govuk-heading-l" data-cy="cy-page-header">
                 {hasSubmissionBeenSubmitted
                   ? 'Your application'
                   : 'Check your answers before submitting your application'}
@@ -176,7 +176,10 @@ export default function SubmissionSummary({
 
                   <div className="govuk-button-group">
                     <a
-                      href={`${publicRuntimeConfig.subPath}/submissions/${grantSubmissionId}/submit`}
+                      href={
+                        publicRuntimeConfig.subPath +
+                        routes.submissions.submit(grantSubmissionId)
+                      }
                       role="button"
                       draggable="false"
                       className="govuk-button"
@@ -240,7 +243,8 @@ const SectionCard = ({ section, submissionId, mandatoryQuestionId }) => {
                         section.sectionId,
                         questionId,
                         mandatoryQuestionId,
-                        submissionId
+                        submissionId,
+                        'fromSubmissionSummaryPage'
                       )}
                     >
                       <a
