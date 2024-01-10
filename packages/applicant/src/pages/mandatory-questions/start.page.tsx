@@ -45,21 +45,14 @@ export async function getServerSideProps({
       },
     };
   }
-  try {
-    const applicationStatus = await getApplicationStatusBySchemeId(
-      schemeId,
-      jwt
-    );
-    if (applicationStatus === 'REMOVED') {
-      return {
-        redirect: {
-          destination: `/service-error?serviceErrorProps={"errorInformation":"This application has been unpublished.","linkAttributes":{"href":"/","linkText":"Go back to the home page","linkInformation":""}}`,
-          permanent: false,
-        },
-      };
-    }
-  } catch (error) {
-    // External application form - do nothing
+  const applicationStatus = await getApplicationStatusBySchemeId(schemeId, jwt);
+  if (applicationStatus === 'REMOVED') {
+    return {
+      redirect: {
+        destination: '/grant-is-closed',
+        permanent: false,
+      },
+    };
   }
   return {
     props: {

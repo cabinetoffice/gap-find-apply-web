@@ -161,7 +161,7 @@ describe('Mandatory Questions Start', () => {
 
       expect(response).toEqual({
         redirect: {
-          destination: `/service-error?serviceErrorProps={"errorInformation":"This application has been unpublished.","linkAttributes":{"href":"/","linkText":"Go back to the home page","linkInformation":""}}`,
+          destination: `/grant-is-closed`,
           permanent: false,
         },
       });
