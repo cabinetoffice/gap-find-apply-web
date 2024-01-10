@@ -89,7 +89,7 @@ export const getServerSideProps: GetServerSideProps<
       grantSubmissionId,
       mandatoryQuestionId,
       applicationName,
-      hasSubmissionBeenSubmitted: hasBeenSubmitted,
+      hasSubmissionBeenSubmitted: !hasBeenSubmitted,
       csrfToken: (req as any).csrfToken?.() || '',
     },
   };
@@ -134,6 +134,7 @@ export default function SubmissionSummary({
                   section={section}
                   submissionId={grantSubmissionId}
                   mandatoryQuestionId={mandatoryQuestionId}
+                  readOnly={hasSubmissionBeenSubmitted}
                 />
               ))}
 
@@ -154,7 +155,7 @@ export default function SubmissionSummary({
                     href={`${publicRuntimeConfig.subPath}/applications`}
                     role="button"
                     draggable="false"
-                    className="govuk-button"
+                    className="govuk-button govuk-button--secondary"
                     data-module="govuk-button"
                     data-cy="cy-return-to-profile-link"
                   >
@@ -199,7 +200,12 @@ export default function SubmissionSummary({
   );
 }
 
-const SectionCard = ({ section, submissionId, mandatoryQuestionId }) => {
+const SectionCard = ({
+  section,
+  submissionId,
+  mandatoryQuestionId,
+  readOnly,
+}) => {
   return (
     <div className="govuk-summary-card">
       <div className="govuk-summary-card__title-wrapper">
@@ -210,7 +216,13 @@ const SectionCard = ({ section, submissionId, mandatoryQuestionId }) => {
           {section.questions.map((question: QuestionType) => (
             <QuestionRow
               key={`question-${question.questionId}`}
-              {...{ question, section, submissionId, mandatoryQuestionId }}
+              {...{
+                question,
+                section,
+                submissionId,
+                mandatoryQuestionId,
+                readOnly,
+              }}
             />
           ))}
         </dl>
@@ -224,6 +236,7 @@ const QuestionRow = ({
   section,
   submissionId,
   mandatoryQuestionId,
+  readOnly,
 }) => {
   const { questionId, fieldTitle, multiResponse, responseType, response } =
     question;
@@ -246,27 +259,29 @@ const QuestionRow = ({
           {response ? response : '-'}
         </dd>
       )}
-      <dd className="govuk-summary-list__actions">
-        <Link
-          href={getQuestionUrl(
-            section.sectionId,
-            questionId,
-            mandatoryQuestionId,
-            submissionId,
-            'fromSubmissionSummaryPage'
-          )}
-        >
-          <a
-            className="govuk-link govuk-link--no-visited-state"
-            data-cy={`cy-section-details-navigation-${questionId}`}
+      {readOnly ? null : (
+        <dd className="govuk-summary-list__actions">
+          <Link
+            href={getQuestionUrl(
+              section.sectionId,
+              questionId,
+              mandatoryQuestionId,
+              submissionId,
+              'fromSubmissionSummaryPage'
+            )}
           >
-            {response || multiResponse ? 'Change' : 'Add'}
-            <span className="govuk-visually-hidden">
-              {questionId.replaceAll('_', ' ')}
-            </span>
-          </a>
-        </Link>
-      </dd>
+            <a
+              className="govuk-link govuk-link--no-visited-state"
+              data-cy={`cy-section-details-navigation-${questionId}`}
+            >
+              {response || multiResponse ? 'Change' : 'Add'}
+              <span className="govuk-visually-hidden">
+                {questionId.replaceAll('_', ' ')}
+              </span>
+            </a>
+          </Link>
+        </dd>
+      )}
     </div>
   );
 };
