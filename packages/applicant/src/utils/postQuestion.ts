@@ -33,7 +33,8 @@ export default async function postQuestion<B, _R>(
   submissionId: string,
   sectionId: string,
   questionId: string,
-  questionType: string
+  questionType: string,
+  fromSummarySubmissionPage: boolean
 ): Promise<
   | {
       body: B;
@@ -65,7 +66,13 @@ export default async function postQuestion<B, _R>(
       Object.keys(body).indexOf('isRefererCheckYourAnswerScreen') !== -1;
 
     const backendResponse = await serviceFunc(
-      createRequestBody(body, questionId, submissionId, questionType)
+      createRequestBody(
+        body,
+        questionId,
+        submissionId,
+        questionType,
+        fromSummarySubmissionPage
+      )
     );
 
     const isResponseAccepted = backendResponse?.responseAccepted;
@@ -79,17 +86,26 @@ export default async function postQuestion<B, _R>(
       Object.keys(body).indexOf('save-and-continue') !== -1;
     const isSaveAndExit = Object.keys(body).indexOf('save-and-exit') !== -1;
 
+    const shouldRedirectToSummary =
+      fromSummarySubmissionPage && body?.ELIGIBILITY !== 'No';
+    const shouldContinueToNextQuestion =
+      nextNavigation &&
+      !nextNavigation?.sectionList &&
+      !isRefererCheckYourAnswerScreen;
+
     if (isResponseAccepted && isSaveAndContinue) {
-      const redirectUrl =
-        nextNavigation &&
-        !nextNavigation?.sectionList &&
-        !isRefererCheckYourAnswerScreen
-          ? routes.submissions.question(
-              submissionId,
-              sectionId,
-              nextNavigation.questionId
-            )
-          : routes.submissions.section(submissionId, sectionId);
+      console.log('am i gonna do it', shouldRedirectToSummary, body);
+      // TODO modify for summary page with check for eligibility
+      let redirectUrl = routes.submissions.section(submissionId, sectionId);
+      if (shouldRedirectToSummary) {
+        redirectUrl = routes.submissions.summary(submissionId);
+      } else if (shouldContinueToNextQuestion) {
+        redirectUrl = routes.submissions.question(
+          submissionId,
+          sectionId,
+          nextNavigation.questionId
+        );
+      }
       return {
         redirect: {
           destination: redirectUrl,
@@ -224,7 +240,8 @@ export const createRequestBody = (
   body,
   questionId: string,
   submissionId: string,
-  questionType: string
+  questionType: string,
+  sectionComplete: boolean
 ): QuestionPostBody => {
   const cleanedBody = body as unknown as CleanedBody;
   const isMultiSelectionQuestion = questionType === 'MultipleSelection';
@@ -250,6 +267,7 @@ export const createRequestBody = (
     submissionId,
     questionId,
     multiResponse: isResponseAnArray ? body[questionId] : multiResponseValues,
+    sectionComplete,
   };
   return requestBody;
 };

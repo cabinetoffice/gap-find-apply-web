@@ -207,63 +207,66 @@ const SectionCard = ({ section, submissionId, mandatoryQuestionId }) => {
       </div>
       <div className="govuk-summary-card__content">
         <dl className="govuk-summary-list">
-          {section.questions.map(
-            ({
-              responseType,
-              questionId,
-              fieldTitle,
-              multiResponse,
-              response,
-            }: QuestionType) => {
-              return (
-                <div
-                  className="govuk-summary-list__row"
-                  key={`question-${questionId}`}
-                >
-                  <dt className="govuk-summary-list__key">{fieldTitle}</dt>
-                  {multiResponse ? (
-                    <ProcessMultiResponse
-                      data={multiResponse}
-                      id={questionId}
-                      cyTag={questionId}
-                      questionType={responseType}
-                    />
-                  ) : (
-                    <dd
-                      className="govuk-summary-list__value"
-                      id={response}
-                      data-cy={`cy-section-value-${response}`}
-                    >
-                      {response ? response : '-'}
-                    </dd>
-                  )}
-                  <dd className="govuk-summary-list__actions">
-                    <Link
-                      href={getQuestionUrl(
-                        section.sectionId,
-                        questionId,
-                        mandatoryQuestionId,
-                        submissionId,
-                        'fromSubmissionSummaryPage'
-                      )}
-                    >
-                      <a
-                        className="govuk-link govuk-link--no-visited-state"
-                        data-cy={`cy-section-details-navigation-${questionId}`}
-                      >
-                        {response || multiResponse ? 'Change' : 'Add'}
-                        <span className="govuk-visually-hidden">
-                          {questionId.replaceAll('_', ' ')}
-                        </span>
-                      </a>
-                    </Link>
-                  </dd>
-                </div>
-              );
-            }
-          )}
+          {section.questions.map((question: QuestionType) => (
+            <QuestionRow
+              key={`question-${question.questionId}`}
+              {...{ question, section, submissionId, mandatoryQuestionId }}
+            />
+          ))}
         </dl>
       </div>
+    </div>
+  );
+};
+
+const QuestionRow = ({
+  question,
+  section,
+  submissionId,
+  mandatoryQuestionId,
+}) => {
+  const { questionId, fieldTitle, multiResponse, responseType, response } =
+    question;
+  return (
+    <div className="govuk-summary-list__row">
+      <dt className="govuk-summary-list__key">{fieldTitle}</dt>
+      {multiResponse ? (
+        <ProcessMultiResponse
+          data={multiResponse}
+          id={questionId}
+          cyTag={questionId}
+          questionType={responseType}
+        />
+      ) : (
+        <dd
+          className="govuk-summary-list__value"
+          id={response}
+          data-cy={`cy-section-value-${response}`}
+        >
+          {response ? response : '-'}
+        </dd>
+      )}
+      <dd className="govuk-summary-list__actions">
+        <Link
+          href={getQuestionUrl(
+            section.sectionId,
+            questionId,
+            mandatoryQuestionId,
+            submissionId,
+            'fromSubmissionSummaryPage'
+          )}
+        >
+          <a
+            className="govuk-link govuk-link--no-visited-state"
+            data-cy={`cy-section-details-navigation-${questionId}`}
+          >
+            {response || multiResponse ? 'Change' : 'Add'}
+            <span className="govuk-visually-hidden">
+              {questionId.replaceAll('_', ' ')}
+            </span>
+          </a>
+        </Link>
+      </dd>
     </div>
   );
 };

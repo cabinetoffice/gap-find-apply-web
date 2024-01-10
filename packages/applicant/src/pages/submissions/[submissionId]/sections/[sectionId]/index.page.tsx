@@ -86,7 +86,10 @@ export const getQuestionUrl = (
       }
     }
   } else {
-    return routes.submissions.question(submissionId, sectionId, questionId);
+    return (
+      routes.submissions.question(submissionId, sectionId, questionId) +
+      queryParam
+    );
   }
 };
 
