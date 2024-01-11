@@ -21,10 +21,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
     const findAndApplicantRoles = ['1', '2'];
+    let departmentPageUrl = `/super-admin-dashboard/user/${userId}/change-department`;
     const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
     const userDepartment = (await getUserById(userId, jwt)).department;
-    await updateUserRoles(userId, newUserRoles, jwt);
-    return { userDepartment, newUserRoles, userId };
+    //check if the new roles are one of the admin ones instead? if so, call the change department page
+    //better conditional below?? have one url with logic to add query params if needed? do we pass in the numbers as query params or can we pass it as a body instead?
+    if (body.newUserRoles.includes('3') || body.newUserRoles.includes('4')) {
+      departmentPageUrl += `?newRoles=${newUserRoles}`;
+    } else {
+      await updateUserRoles(userId, newUserRoles, jwt);
+    }
+    return { userDepartment, newUserRoles, userId, departmentPageUrl };
   }
 
   async function fetchPageData(jwt: string) {
@@ -44,6 +51,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     userDepartment,
     newUserRoles,
     userId,
+    departmentPageUrl,
   }: Awaited<ReturnType<typeof handleRequest>>) {
     const ADMIN_ROLES_IDS = ['3', '4', '5'];
 
@@ -54,7 +62,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
     return userHasDepartment || userBecomingApplicant
       ? `/super-admin-dashboard/user/${userId}`
-      : `/super-admin-dashboard/user/${userId}/change-department`;
+      : departmentPageUrl;
   }
 
   return QuestionPageGetServerSideProps<

@@ -4,6 +4,7 @@ import Meta from '../../../../components/layout/Meta';
 import {
   getChangeDepartmentPage,
   updateDepartment,
+  updateUserRoles,
 } from '../../../../services/SuperAdminService';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
@@ -16,9 +17,14 @@ type PageBodyResponse = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
-
+  const newUserRoles = context.params?.newRoles as string[];
+  //need conditional to check - if there are new roles then update the roles
+  //if the roles contain 3 or 4 then update the roles BEFORE updating the deparmtenr
   async function handleRequest(body: PageBodyResponse, jwt: string) {
-    return await updateDepartment(userId, body.department, jwt);
+    return (
+      await updateDepartment(userId, body.department, jwt),
+      await updateUserRoles(userId, newUserRoles, jwt)
+    );
   }
 
   function fetchPageData(jwt: string) {
