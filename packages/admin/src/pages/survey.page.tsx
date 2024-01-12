@@ -1,26 +1,45 @@
 import Meta from '../components/layout/Meta';
-import { Button, ButtonTypePropertyEnum, Radio, TextArea } from 'gap-web-ui';
+import {
+  Button,
+  ButtonTypePropertyEnum,
+  ErrorBanner,
+  Radio,
+  TextArea,
+  ValidationError,
+} from 'gap-web-ui';
 import { postSurveyResponse } from '../services/satisfactionSurveyService';
 import getConfig from 'next/config';
 import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  const fieldErrors: ValidationError[] = query.fieldErrors
+    ? [JSON.parse(query.fieldErrors as string)]
+    : [];
+
   const backendUrl = `${
     getConfig().serverRuntimeConfig.backendHost
   }/feedback/add`;
+
   return {
     props: {
       backendUrl,
+      fieldErrors,
     },
   };
 };
 
-const Survey = ({ backendUrl }: surveyProps) => {
+const Survey = ({ backendUrl, fieldErrors }: surveyProps) => {
+  const router = useRouter();
+
   return (
     <>
       <Meta
-        title="Satisfaction survey - Manage a grant"
-        description="Satisfaction survey - Manage a grant"
+        title={`${
+          fieldErrors.length > 0
+            ? `Error - ${fieldErrors[0].errorMessage} - `
+            : ''
+        }Satisfaction survey - Manage a grant`}
       />
       <div className="govuk-grid-row">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-top-7">
@@ -30,9 +49,13 @@ const Survey = ({ backendUrl }: surveyProps) => {
           <h2 className="govuk-heading-m" tabIndex={-1}>
             Satisfaction survey
           </h2>
+          <ErrorBanner fieldErrors={fieldErrors} />
           <form
-            onSubmit={(e) => {
-              postSurveyResponse(e, backendUrl);
+            onSubmit={async (e) => {
+              const res: any = await postSurveyResponse(e, backendUrl);
+              router.replace(
+                res?.request?.responseURL ? res.request.responseURL : res
+              );
             }}
           >
             <Radio
@@ -83,6 +106,7 @@ const Survey = ({ backendUrl }: surveyProps) => {
 
 type surveyProps = {
   backendUrl: string;
+  fieldErrors: ValidationError[];
 };
 
 export default Survey;
