@@ -82,11 +82,7 @@ const Dashboard = ({
   applyToApplicationUrl,
 }: DashboardProps) => {
   const { publicRuntimeConfig } = getConfig();
-  const findAGrantLink = (
-    <a href={publicRuntimeConfig.FIND_A_GRANT_URL} className="govuk-link">
-      Find a grant
-    </a>
-  );
+  const findAGrantLink = publicRuntimeConfig.FIND_A_GRANT_URL;
 
   const isPublishDisabled = sections.some((section) => {
     if (
@@ -142,7 +138,15 @@ const Dashboard = ({
         </p>
 
         <p className="govuk-body">
-          Applicants will use this application form to apply on {findAGrantLink}
+          Applicants will use this application form to apply on{' '}
+          <a
+            href={findAGrantLink}
+            className="govuk-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Find a grant (opens in new tab)
+          </a>
           .
         </p>
 

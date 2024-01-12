@@ -34,11 +34,14 @@ export const getServerSideProps = async ({
 
     const sub = user?.sub ? user.sub : user.colaSub;
     const usersSchemes = await getAdminsSchemes(sub, sessionId);
+    const adminRoles = new Set(['ADMIN', 'SUPER_ADMIN']);
+    const isUserAdmin = user.role && adminRoles.has(user.role?.name);
 
     return {
       isViewingOwnAccount,
       ...user,
       schemes: usersSchemes,
+      isUserAdmin,
     };
   };
 
@@ -54,7 +57,6 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
       return '-';
     }
   }
-
   return (
     <>
       <Meta title="Manage User" />
@@ -73,7 +75,6 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
             <span className="govuk-caption-l">{pageData.emailAddress}</span>
             <h1 className="govuk-heading-l">Manage a user</h1>
             <h2 className="govuk-heading-m">User Information</h2>
-
             <SummaryList
               rows={[
                 {
@@ -85,6 +86,19 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                   key: 'Email',
                   value: pageData.emailAddress,
                   action: <></>,
+                },
+                {
+                  key: 'Roles',
+                  value: pageData.role?.label || 'Blocked',
+                  action: pageData.role?.label ? (
+                    <Link
+                      href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-roles`}
+                    >
+                      <a className="govuk-link">Change</a>
+                    </Link>
+                  ) : (
+                    <></>
+                  ),
                 },
                 ...(pageData.role?.label !== 'Applicant'
                   ? [
@@ -101,23 +115,9 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                       },
                     ]
                   : []),
-                {
-                  key: 'Roles',
-                  value: pageData.role?.label || 'Blocked',
-                  action: pageData.role?.label ? (
-                    <Link
-                      href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-roles`}
-                    >
-                      <a className="govuk-link">Change</a>
-                    </Link>
-                  ) : (
-                    <></>
-                  ),
-                },
               ]}
             />
-
-            {
+            {(pageData.schemes.length > 0 || pageData.isUserAdmin) && (
               <>
                 <h2 className="govuk-heading-m">Grants this user owns</h2>
                 {pageData.schemes.length === 0 ? (
@@ -145,7 +145,7 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                   />
                 )}
               </>
-            }
+            )}
 
             {!pageData.isViewingOwnAccount && (
               <div className="govuk-button-group">

@@ -20,7 +20,6 @@ export async function middleware(req: NextRequest) {
   const rewriteUrl = req.url;
   const res = NextResponse.rewrite(rewriteUrl);
   const auth_cookie = req.cookies.get('session_id');
-
   //Feature flag redirects
   const advertBuilderPath = /\/scheme\/\d*\/advert/;
 
