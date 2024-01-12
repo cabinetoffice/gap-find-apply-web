@@ -54,7 +54,8 @@ export const getServerSideProps: GetServerSideProps<
   const submissionId = params.submissionId.toString();
   const sectionId = params.sectionId.toString();
   const questionId = params.questionId.toString();
-  const fromSubmissionSummaryPage = query.fromSubmissionSummaryPage === 'true';
+  const fromSubmissionSummaryPage =
+    query?.fromSubmissionSummaryPage === 'true' || false;
   const questionData = await getQuestionById(
     submissionId,
     sectionId,
@@ -143,6 +144,7 @@ export const getServerSideProps: GetServerSideProps<
       questionData,
       grantName: sections.applicationName,
       csrfToken: (req as any).csrfToken?.() || '',
+      isRefererCheckYourAnswerScreen,
       queryParams: encode(query),
     },
   };
@@ -152,7 +154,7 @@ export default function QuestionPage({
   grantName,
   csrfToken,
   isRefererCheckYourAnswerScreen,
-  queryParams,
+  queryParams = null,
 }: QuestionPageProps) {
   const {
     question,
@@ -176,8 +178,9 @@ export default function QuestionPage({
   let formAction =
     publicRuntimeConfig.subPath +
     routes.submissions.question(grantSubmissionId, sectionId, questionId) +
-    '?' +
-    queryParams;
+    queryParams
+      ? '?' + queryParams
+      : '';
 
   // if question is optional and doesn't already end with ' (optional)', append ' (optional)'
   const displayTitle = `${question.fieldTitle}${

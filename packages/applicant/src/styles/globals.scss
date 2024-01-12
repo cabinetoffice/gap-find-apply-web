@@ -7,6 +7,6 @@ $govuk-assets-path: $sub_path + '/assets/';
 }
 @import 'navigation';
 
-.root-background{
-    background-color: #f3f2f1,
-    }
+html {
+  background-color: #f3f2f1;
+}

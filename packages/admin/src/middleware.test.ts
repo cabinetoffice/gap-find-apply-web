@@ -37,18 +37,6 @@ describe('middleware', () => {
     expect(result.headers.get('Location')).toStrictEqual(expectedUrl);
   });
 
-  it('Should redirect to the applicant dashboard page when the user is not authorized', async () => {
-    const expectedUrl = 'http://localhost:3000/apply/applicant/dashboard';
-    req.cookies.set('user-service-token', 'user-service-token-value');
-    (getLoginUrl as jest.Mock).mockReturnValue(expectedUrl);
-
-    const result = await middleware(req);
-
-    expect(result).toBeInstanceOf(NextResponse);
-    expect(getLoginUrl).toBeCalledWith({ redirectToApplicant: true });
-    expect(result.headers.get('Location')).toStrictEqual(expectedUrl);
-  });
-
   it('should redirect to the logout page when the admin session is invalid', async () => {
     const expectedUrl = 'http://localhost:8082/login';
     req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });

@@ -94,17 +94,15 @@ export default async function postQuestion<B, _R>(
       !isRefererCheckYourAnswerScreen;
 
     if (isResponseAccepted && isSaveAndContinue) {
-      console.log('am i gonna do it', shouldRedirectToSummary, body);
-      // TODO modify for summary page with check for eligibility
       let redirectUrl = routes.submissions.section(submissionId, sectionId);
-      if (shouldRedirectToSummary) {
-        redirectUrl = routes.submissions.summary(submissionId);
-      } else if (shouldContinueToNextQuestion) {
+      if (shouldContinueToNextQuestion) {
         redirectUrl = routes.submissions.question(
           submissionId,
           sectionId,
           nextNavigation.questionId
         );
+      } else if (shouldRedirectToSummary) {
+        redirectUrl = routes.submissions.summary(submissionId);
       }
       return {
         redirect: {

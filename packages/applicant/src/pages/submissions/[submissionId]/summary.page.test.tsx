@@ -1,61 +1,270 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SectionCard } from './summary.page';
+import SubmissionSummary, { QuestionRow, SectionCard } from './summary.page';
+import mock = jest.mock;
+
+jest.mock('./sections/[sectionId]/processMultiResponse', () => {
+  return {
+    ProcessMultiResponse: jest.fn(() => (
+      <div data-testid="mock-process-multi-response">Multi Response</div>
+    )),
+  };
+});
+
+jest.mock(
+  'next/link',
+  () =>
+    ({ children }) =>
+      children
+);
+
+describe('SubmissionSummary', () => {
+  const mockSections = [
+    {
+      sectionId: 'section1',
+      sectionTitle: 'Section 1',
+      questions: [
+        {
+          questionId: 'q1',
+          fieldTitle: 'Question 1',
+          multiResponse: null,
+          responseType: 'text',
+          response: 'Answer 1',
+        },
+      ],
+    },
+    {
+      sectionId: 'section2',
+      sectionTitle: 'Section 2',
+      questions: [
+        {
+          questionId: 'q2',
+          fieldTitle: 'Question 2',
+          multiResponse: null,
+          responseType: 'text',
+          response: 'Answer 2',
+        },
+      ],
+    },
+  ];
+
+  const mockProps = {
+    sections: mockSections,
+    grantSubmissionId: '123',
+    mandatoryQuestionId: '456',
+    applicationName: 'My Mock Application',
+    hasSubmissionBeenSubmitted: false,
+    csrfToken: 'abc123',
+  };
+
+  it('renders SubmissionSummary component correctly', () => {
+    render(<SubmissionSummary {...mockProps} />);
+
+    expect(screen.getByText('My Mock Application')).toBeInTheDocument();
+    expect(
+      screen.getByText('Check your answers before submitting your application')
+    ).toBeInTheDocument();
+  });
+
+  it('renders SubmissionSummary component with submitted application text', () => {
+    const submittedProps = {
+      ...mockProps,
+      hasSubmissionBeenSubmitted: true,
+    };
+
+    render(<SubmissionSummary {...submittedProps} />);
+
+    expect(screen.getByText('Your application')).toBeInTheDocument();
+    expect(screen.getByText('Return to your profile')).toBeInTheDocument();
+  });
+
+  it('renders Download section correctly', () => {
+    render(<SubmissionSummary {...mockProps} />);
+    expect(
+      screen.getByText('Download a copy of your application')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', {
+        name: 'download a copy of your answers (ODT)',
+      })
+    ).toBeInTheDocument();
+  });
+
+  it('renders "Return to your profile" button when application has been submitted', () => {
+    const submittedProps = {
+      ...mockProps,
+      hasSubmissionBeenSubmitted: true,
+    };
+
+    render(<SubmissionSummary {...submittedProps} />);
+
+    expect(screen.getByText('My Mock Application')).toBeInTheDocument();
+    expect(screen.getByText('Your application')).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('button', { name: 'Return to your profile' })
+    ).toHaveProperty('href', `http://localhost/applications`);
+  });
+
+  it('renders "Submit application" button when application has not been submitted', () => {
+    render(<SubmissionSummary {...mockProps} />);
+    expect(screen.getByText('My Mock Application')).toBeInTheDocument();
+    expect(
+      screen.getByText('Check your answers before submitting your application')
+    ).toBeInTheDocument();
+    expect(screen.getByText('Submit your application')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Submit application' })
+    ).toHaveProperty(
+      'href',
+      `http://localhost/submissions/${mockProps.grantSubmissionId}/submit`
+    );
+  });
+});
 
 describe('SectionCard', () => {
   const mockSection = {
     sectionTitle: 'Mock Section',
-    grantSubmissionId: 'mock-submission-id',
-    mandatoryQuestionId: 'mock-mq-id',
-    applicationName: 'Application Name',
-    hasSubmissionBeenSubmitted: false,
-    csrfToken: 'mock-csrf-token',
     questions: [
       {
-        responseType: 'text',
         questionId: 'q1',
         fieldTitle: 'Question 1',
         multiResponse: null,
+        responseType: 'text',
         response: 'Answer 1',
       },
       {
-        responseType: 'checkbox',
         questionId: 'q2',
         fieldTitle: 'Question 2',
-        multiResponse: [
-          { label: 'Option 1', value: 'option1', selected: true },
-        ],
-        response: null,
+        multiResponse: null,
+        responseType: 'text',
+        response: 'Answer 2',
       },
     ],
   };
 
-  const mockProps = {
-    section: mockSection,
-    submissionId: '123',
-    mandatoryQuestionId: '456',
-  };
-
   it('renders SectionCard component correctly', () => {
-    render(<SectionCard {...mockProps} />);
+    render(
+      <SectionCard
+        section={mockSection}
+        submissionId="123"
+        mandatoryQuestionId="456"
+        readOnly={false}
+      />
+    );
+
     expect(screen.getByText('Mock Section')).toBeInTheDocument();
     expect(screen.getByText('Question 1')).toBeInTheDocument();
     expect(screen.getByText('Answer 1')).toBeInTheDocument();
     expect(screen.getByText('Question 2')).toBeInTheDocument();
-    expect(screen.getByText('Option 1')).toBeInTheDocument();
+    expect(screen.getByText('Answer 2')).toBeInTheDocument();
+  });
+
+  it('renders SectionCard with readOnly mode correctly', () => {
+    render(
+      <SectionCard
+        section={mockSection}
+        submissionId="123"
+        mandatoryQuestionId="456"
+        readOnly={true}
+      />
+    );
+
+    // Check that "Change" is not present in readOnly mode
+    expect(screen.queryByText('Change')).toBeNull();
+  });
+});
+
+describe('QuestionRow', () => {
+  const mockQuestion = {
+    questionId: 'q1',
+    fieldTitle: 'Question 1',
+    multiResponse: null,
+    responseType: 'text',
+    response: 'Answer 1',
+  };
+
+  it('renders QuestionRow component correctly', () => {
+    const mockProps = {
+      question: mockQuestion,
+      mandatoryQuestionId: '123',
+      submissionId: '456',
+      section: {
+        sectionId: '789',
+      },
+      readOnly: false,
+    };
+    render(<QuestionRow {...mockProps} />);
+
+    expect(screen.getByText('Question 1')).toBeInTheDocument();
+    expect(screen.getByText('Answer 1')).toBeInTheDocument();
+
+    expect(screen.getByRole('link', { name: 'Change' })).toHaveProperty(
+      'href',
+      'http://localhost/submissions/456/sections/789/questions/q1?fromSubmissionSummaryPage=true&submissionId=456&sectionId=789'
+    );
+    expect(screen.queryByText('Add')).toBeNull();
   });
 
   it('renders default values when response is null', () => {
-    const nullResponseSection = {
-      ...mockSection,
-      questions: [{ ...mockSection.questions[0], response: null }],
+    const nullResponseQuestion = {
+      ...mockQuestion,
+      response: null,
     };
-    render(<SectionCard {...mockProps} section={nullResponseSection} />);
+    const mockProps = {
+      question: nullResponseQuestion,
+      mandatoryQuestionId: '123',
+      submissionId: '456',
+      section: {
+        sectionId: '789',
+      },
+      readOnly: false,
+    };
+
+    render(<QuestionRow {...mockProps} />);
+
     expect(screen.getByText('-')).toBeInTheDocument();
+
+    expect(screen.getByRole('link', { name: 'Add' })).toHaveProperty(
+      'href',
+      'http://localhost/submissions/456/sections/789/questions/q1?fromSubmissionSummaryPage=true&submissionId=456&sectionId=789'
+    );
+
+    expect(screen.queryByText('Change')).toBeNull();
   });
 
-  it('handles link navigation correctly', () => {
-    render(<SectionCard {...mockProps} />);
-    userEvent.click(screen.getByText('Change'));
+  it('does not render actions when in read-only mode', () => {
+    const mockProps = {
+      question: mockQuestion,
+      mandatoryQuestionId: '123',
+      submissionId: '456',
+      section: {
+        sectionId: '789',
+      },
+      readOnly: true,
+    };
+    render(<QuestionRow {...mockProps} />);
+
+    expect(screen.queryByText('Change')).toBeNull();
+  });
+
+  it('calls ProcessMultiResponse when multiResponse is present', () => {
+    const multiResponseQuestion = {
+      ...mockQuestion,
+      multiResponse: [{ label: 'Option 1', value: 'option1', selected: true }],
+    };
+    const mockProps = {
+      question: multiResponseQuestion,
+      mandatoryQuestionId: '123',
+      submissionId: '456',
+      section: {
+        sectionId: '789',
+      },
+      readOnly: false,
+    };
+
+    render(<QuestionRow {...mockProps} />);
+
+    expect(screen.getByText('Multi Response')).toBeInTheDocument();
   });
 });

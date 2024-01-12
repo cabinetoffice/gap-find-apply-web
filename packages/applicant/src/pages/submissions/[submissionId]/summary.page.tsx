@@ -112,7 +112,7 @@ export default function SubmissionSummary({
             <form
               action={
                 publicRuntimeConfig.subPath +
-                `/submissions/${grantSubmissionId}/submit`
+                routes.submissions.submit(grantSubmissionId)
               }
               method="POST"
             >
@@ -143,8 +143,11 @@ export default function SubmissionSummary({
               </h1>
               <p className="govuk-body">
                 You can{' '}
-                <a className="govuk-link govuk-link--no-visited-state">
-                  download a copy of your answers (ODT, x.xx kB)
+                <a
+                  className="govuk-link govuk-link--no-visited-state"
+                  href={''}
+                >
+                  download a copy of your answers (ODT)
                 </a>{' '}
                 for future reference.
               </p>
@@ -200,7 +203,7 @@ export default function SubmissionSummary({
   );
 }
 
-const SectionCard = ({
+export const SectionCard = ({
   section,
   submissionId,
   mandatoryQuestionId,
@@ -231,7 +234,7 @@ const SectionCard = ({
   );
 };
 
-const QuestionRow = ({
+export const QuestionRow = ({
   question,
   section,
   submissionId,
@@ -260,8 +263,11 @@ const QuestionRow = ({
         </dd>
       )}
       {readOnly ? null : (
-        <dd className="govuk-summary-list__actions">
-          <Link
+        <dd
+          className="govuk-summary-list__actions"
+          aria-describedby={`change-button-${questionId}`}
+        >
+          <a
             href={getQuestionUrl(
               section.sectionId,
               questionId,
@@ -269,17 +275,12 @@ const QuestionRow = ({
               submissionId,
               'fromSubmissionSummaryPage'
             )}
+            className="govuk-link govuk-link--no-visited-state"
+            data-cy={`cy-section-details-navigation-${questionId}`}
+            id={`change-button-${questionId}`}
           >
-            <a
-              className="govuk-link govuk-link--no-visited-state"
-              data-cy={`cy-section-details-navigation-${questionId}`}
-            >
-              {response || multiResponse ? 'Change' : 'Add'}
-              <span className="govuk-visually-hidden">
-                {questionId.replaceAll('_', ' ')}
-              </span>
-            </a>
-          </Link>
+            {response || multiResponse ? 'Change' : 'Add'}
+          </a>
         </dd>
       )}
     </div>
