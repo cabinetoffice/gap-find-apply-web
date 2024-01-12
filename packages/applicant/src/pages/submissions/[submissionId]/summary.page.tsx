@@ -17,6 +17,7 @@ import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { ProcessMultiResponse } from './sections/[sectionId]/processMultiResponse';
 import { getQuestionUrl } from './sections/[sectionId]/index.page';
+import { unique } from 'next/dist/build/utils';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -68,6 +69,7 @@ export const getServerSideProps: GetServerSideProps<
               questionId,
               jwt
             );
+            console.log('q', questionData, questionData.question, questionId);
             return questionData.question;
           })
         ),

@@ -1,8 +1,26 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import SubmissionSummary, { QuestionRow, SectionCard } from './summary.page';
-import mock = jest.mock;
-
+import { GetServerSidePropsContext } from 'next';
+import {
+  ApplicationDetailsInterface,
+  getQuestionById,
+  getSubmissionById,
+  hasSubmissionBeenSubmitted,
+  QuestionType,
+} from '../../../services/SubmissionService';
+import { GrantSchemeService } from '../../../services/GrantSchemeService';
+import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
+import SubmissionSummary, {
+  getServerSideProps,
+  QuestionRow,
+  SectionCard,
+} from './summary.page';
+import { getJwtFromCookies } from '../../../utils/jwt';
+import { GrantScheme } from '../../../types/models/GrantScheme';
+import { mockServiceMethod } from '../../../testUtils/unitTestHelpers';
+import {
+  GrantMandatoryQuestionDto,
+  GrantMandatoryQuestionService,
+} from '../../../services/GrantMandatoryQuestionService';
 jest.mock('./sections/[sectionId]/processMultiResponse', () => {
   return {
     ProcessMultiResponse: jest.fn(() => (
@@ -17,6 +35,244 @@ jest.mock(
     ({ children }) =>
       children
 );
+
+jest.mock('../../../services/SubmissionService');
+jest.mock('../../../utils/constants');
+jest.mock('../../../utils/jwt');
+jest.mock('../../../utils/csrf');
+
+jest.mock('../../../services/ApplicationService', () => ({
+  getApplicationStatusBySchemeId: jest.fn(),
+}));
+
+const spiedGetMandatoryQuestionBySubmissionId = jest.spyOn(
+  GrantMandatoryQuestionService.prototype,
+  'getMandatoryQuestionBySubmissionId'
+);
+
+const context = {
+  params: {
+    submissionId: '12345678',
+  },
+  req: { csrfToken: () => 'testCSRFToken' },
+  res: {},
+} as unknown as GetServerSidePropsContext;
+
+const mockMandatoryQuestionDto = (): GrantMandatoryQuestionDto => ({
+  id: '87654321',
+  schemeId: 1,
+  submissionId: '12345678',
+  name: null,
+  addressLine1: null,
+  addressLine2: null,
+  city: null,
+  county: null,
+  postcode: null,
+  charityCommissionNumber: null,
+  companiesHouseNumber: null,
+  orgType: null,
+  fundingAmount: null,
+  fundingLocation: null,
+});
+
+const shortAnswer: QuestionType = {
+  questionId: 'APPLICANT_ORG_NAME',
+  profileField: 'ORG_NAME',
+  fieldTitle: 'Enter the name of your organisation',
+  hintText:
+    'This is the official name of your organisation. It could be the name that is registered with Companies House or the Charities Commission',
+  responseType: 'ShortAnswer',
+  validation: {
+    mandatory: true,
+    minLength: 5,
+    maxLength: 100,
+  },
+};
+
+const contextNoToken = {
+  params: {
+    submissionId: '12345678',
+  },
+  req: { csrfToken: () => '' },
+  res: {},
+} as unknown as GetServerSidePropsContext;
+
+const numeric: QuestionType = {
+  questionId: 'APPLICANT_AMOUNT',
+  profileField: 'ORG_AMOUNT',
+  fieldTitle: 'Enter the amount',
+  hintText:
+    'This is the official name of your organisation. It could be the name that is registered with Companies House or the Charities Commission',
+  responseType: 'MultipleSelection',
+  validation: {
+    mandatory: true,
+    greaterThanZero: true,
+  },
+  multiResponse: ['test', 'test2'],
+};
+const eligibility: QuestionType = {
+  questionId: 'ELIGIBILITY',
+  profileField: 'ORG_AMOUNT',
+  fieldTitle: 'Enter the amount',
+  hintText:
+    'This is the official name of your organisation. It could be the name that is registered with Companies House or the Charities Commission',
+  responseType: 'YesNo',
+  validation: {
+    mandatory: true,
+    greaterThanZero: true,
+  },
+  response: 'Yes',
+};
+const propsWithAllValues: ApplicationDetailsInterface = {
+  grantSchemeId: 'schemeId',
+  grantApplicationId: 'string',
+  grantSubmissionId: 'string',
+  applicationName: 'Name of the grant being applied for',
+  submissionStatus: 'IN_PROGRESS',
+  sections: [
+    {
+      sectionId: 'ELIGIBILITY',
+      sectionTitle: 'Eligibility',
+      sectionStatus: 'COMPLETED',
+      questionIds: [eligibility].map((q) => q.questionId),
+      questions: [eligibility],
+    },
+    {
+      sectionId: 'ORGANISATION_DETAILS',
+      sectionTitle: 'Your Organisation',
+      sectionStatus: 'IN_PROGRESS',
+      questionIds: [shortAnswer].map((q) => q.questionId),
+      questions: [shortAnswer],
+    },
+    {
+      sectionId: 'FUNDING_DETAILS',
+      sectionTitle: 'Funding',
+      sectionStatus: 'IN_PROGRESS',
+      questionIds: [numeric].map((q) => q.questionId),
+      questions: [numeric],
+    },
+    {
+      sectionId: 'ESSENTIAL',
+      sectionTitle: 'Essential Information',
+      sectionStatus: 'COMPLETED',
+      questionIds: [shortAnswer].map((q) => q.questionId),
+      questions: [shortAnswer],
+    },
+    {
+      sectionId: 'NON-ESSENTIAL',
+      sectionTitle: 'Non Essential Information',
+      sectionStatus: 'IN_PROGRESS',
+      questionIds: [shortAnswer, numeric].map((q) => q.questionId),
+      questions: [shortAnswer, numeric],
+    },
+  ],
+};
+
+mockServiceMethod(
+  spiedGetMandatoryQuestionBySubmissionId,
+  mockMandatoryQuestionDto
+);
+(getQuestionById as jest.Mock).mockImplementation(
+  async (_submissionId, _sectionId, questionId, _jwt) => {
+    return {
+      question: [numeric, eligibility, shortAnswer].find(
+        (q) => q.questionId === questionId
+      ),
+    };
+  }
+);
+
+describe('getServerSideProps', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  it('should return a redirect to grant-is-closed when submission is REMOVED ', async () => {
+    (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue('REMOVED');
+    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+
+    const response = await getServerSideProps(context);
+    expect(response).toEqual({
+      redirect: {
+        destination: '/grant-is-closed',
+        permanent: false,
+      },
+    });
+  });
+
+  it('should return sections, submissionId, applicationName', async () => {
+    (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue(
+      'PUBLISHED'
+    );
+    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+
+    const response = await getServerSideProps(context);
+    expect(response).toEqual({
+      props: {
+        sections: propsWithAllValues.sections,
+        grantSubmissionId: propsWithAllValues.grantApplicationId,
+        applicationName: propsWithAllValues.applicationName,
+        csrfToken: 'testCSRFToken',
+        hasSubmissionBeenSubmitted: false,
+        mandatoryQuestionId: '87654321',
+      },
+    });
+    expect(getSubmissionById).toHaveBeenCalled();
+    expect(getSubmissionById).toHaveBeenCalledWith(
+      context.params.submissionId,
+      'testJwt'
+    );
+  });
+
+  it('should return correct object from server side props with no token', async () => {
+    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+
+    const response = await getServerSideProps(contextNoToken);
+    expect(response).toEqual({
+      props: {
+        sections: propsWithAllValues.sections,
+        grantSubmissionId: propsWithAllValues.grantApplicationId,
+        applicationName: propsWithAllValues.applicationName,
+        csrfToken: '',
+        hasSubmissionBeenSubmitted: false,
+        mandatoryQuestionId: '87654321',
+      },
+    });
+    expect(getSubmissionById).toHaveBeenCalled();
+    expect(getSubmissionById).toHaveBeenCalledWith(
+      context.params.submissionId,
+      'testJwt'
+    );
+  });
+
+  it('should redirect if application has been submitted', async () => {
+    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(true);
+
+    const response = await getServerSideProps(context);
+    expect(response).toEqual({
+      props: {
+        sections: propsWithAllValues.sections,
+        grantSubmissionId: propsWithAllValues.grantApplicationId,
+        applicationName: propsWithAllValues.applicationName,
+        csrfToken: 'testCSRFToken',
+        hasSubmissionBeenSubmitted: true,
+        mandatoryQuestionId: '87654321',
+      },
+    });
+    expect(getSubmissionById).toHaveBeenCalled();
+    expect(getSubmissionById).toHaveBeenCalledWith(
+      context.params.submissionId,
+      'testJwt'
+    );
+  });
+});
 
 describe('SubmissionSummary', () => {
   const mockSections = [
