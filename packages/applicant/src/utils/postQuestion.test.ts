@@ -38,7 +38,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
       );
 
       expect(result).toEqual({
@@ -68,7 +69,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
       );
 
       expect(result).toEqual({
@@ -103,7 +105,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
       );
 
       expect(result).toEqual({
@@ -134,7 +137,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
       );
 
       expect(result).toEqual({
@@ -163,7 +167,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
       );
 
       expect(result).toEqual({
@@ -194,7 +199,101 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
+      );
+
+      expect(result).toEqual({
+        redirect: {
+          destination: routes.submissions.sections(submissionId),
+          statusCode: 302,
+        },
+      });
+    });
+
+    it('redirects to the submission summary page when the call was successful, fromSummarySubmissionPage is true and ELIGIBILITY is Yes', async () => {
+      const req = {
+        ELIGIBILITY: 'Yes',
+        'save-and-continue': '',
+      } as any;
+      (parseBody as jest.Mock).mockResolvedValue(req);
+      const serviceFunc = jest.fn(() =>
+        Promise.resolve({
+          responseAccepted: true,
+        })
+      );
+
+      const result = await postQuestion(
+        req,
+        {},
+        serviceFunc,
+        submissionId,
+        sectionId,
+        questionId,
+        questionType,
+        true
+      );
+
+      expect(result).toEqual({
+        redirect: {
+          destination: routes.submissions.summary(submissionId),
+          statusCode: 302,
+        },
+      });
+    });
+
+    it('redirects to the submission summary page when the call was successful, fromSummarySubmissionPage is true and ELIGIBILITY is not present', async () => {
+      const req = {
+        FUNDING: 'Yes please',
+        'save-and-continue': '',
+      } as any;
+      (parseBody as jest.Mock).mockResolvedValue(req);
+      const serviceFunc = jest.fn(() =>
+        Promise.resolve({
+          responseAccepted: true,
+        })
+      );
+
+      const result = await postQuestion(
+        req,
+        {},
+        serviceFunc,
+        submissionId,
+        sectionId,
+        questionId,
+        questionType,
+        true
+      );
+
+      expect(result).toEqual({
+        redirect: {
+          destination: routes.submissions.summary(submissionId),
+          statusCode: 302,
+        },
+      });
+    });
+
+    it('redirects to the section list page when the call was successful and fromSummarySubmissionPage is true but ELIGIBILITY is No', async () => {
+      const req = {
+        ELIGIBILITY: 'No',
+        'save-and-exit': '',
+      } as any;
+      (parseBody as jest.Mock).mockResolvedValue(req);
+      const serviceFunc = jest.fn(() =>
+        Promise.resolve({
+          responseAccepted: true,
+        })
+      );
+
+      const result = await postQuestion(
+        req,
+        {},
+        serviceFunc,
+        submissionId,
+        sectionId,
+        questionId,
+        questionType,
+        true
       );
 
       expect(result).toEqual({
@@ -242,7 +341,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
       );
 
       expect(result).toEqual({
@@ -306,7 +406,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         'CUSTOM_APPLICANT_ORG_ADDRESS',
-        'AddressInput'
+        'AddressInput',
+        false
       );
 
       expect(result).toEqual({
@@ -368,7 +469,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         'CUSTOM_CUSTOM_QUESTION_4',
-        'Date'
+        'Date',
+        false
       );
 
       expect(result).toEqual({
@@ -399,13 +501,15 @@ describe('createRequestBody', () => {
       body,
       questionId,
       submissionId,
-      questionType
+      questionType,
+      false
     );
     const expectedResult: QuestionPostBody = {
       response: 'saddsasda',
       submissionId,
       questionId,
       multiResponse: null,
+      sectionComplete: false,
     };
     expect(result).toStrictEqual(expectedResult);
   });
@@ -426,13 +530,15 @@ describe('createRequestBody', () => {
       body,
       questionId,
       submissionId,
-      questionType
+      questionType,
+      false
     );
     const expectedResult: QuestionPostBody = {
       response: null,
       submissionId,
       questionId,
       multiResponse: ['fsa', '', 'fsa', '', 'fsaasf'],
+      sectionComplete: false,
     };
     expect(result).toStrictEqual(expectedResult);
   });
@@ -448,13 +554,15 @@ describe('createRequestBody', () => {
       body,
       questionId,
       submissionId,
-      questionType
+      questionType,
+      false
     );
     const expectedResult: QuestionPostBody = {
       response: null,
       submissionId,
       questionId,
       multiResponse: ['test1', 'test2'],
+      sectionComplete: false,
     };
     expect(result).toStrictEqual(expectedResult);
   });
@@ -469,13 +577,15 @@ describe('createRequestBody', () => {
       body,
       questionId,
       submissionId,
-      questionType
+      questionType,
+      false
     );
     const expectedResult: QuestionPostBody = {
       response: null,
       submissionId,
       questionId,
       multiResponse: null,
+      sectionComplete: false,
     };
     expect(result).toStrictEqual(expectedResult);
   });

@@ -93,8 +93,15 @@ export default async function postQuestion<B, _R>(
       !nextNavigation?.sectionList &&
       !isRefererCheckYourAnswerScreen;
 
+    console.log(
+      isResponseAccepted,
+      isSaveAndContinue,
+      shouldContinueToNextQuestion,
+      shouldRedirectToSummary
+    );
     if (isResponseAccepted && isSaveAndContinue) {
       let redirectUrl = routes.submissions.section(submissionId, sectionId);
+
       if (shouldContinueToNextQuestion) {
         redirectUrl = routes.submissions.question(
           submissionId,
