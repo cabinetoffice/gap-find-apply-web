@@ -111,7 +111,7 @@ export default function SubmissionSummary({
             <form
               action={
                 publicRuntimeConfig.subPath +
-                `/submissions/${grantSubmissionId}/submit`
+                routes.submissions.submit(grantSubmissionId)
               }
               method="POST"
             >
@@ -142,7 +142,10 @@ export default function SubmissionSummary({
               </h1>
               <p className="govuk-body">
                 You can{' '}
-                <a className="govuk-link govuk-link--no-visited-state">
+                <a
+                  className="govuk-link govuk-link--no-visited-state"
+                  href={''}
+                >
                   download a copy of your answers (ODT)
                 </a>{' '}
                 for future reference.
@@ -253,15 +256,18 @@ export const QuestionRow = ({ question, readOnly }) => {
         </dd>
       )}
       {readOnly ? null : (
-        <dd className="govuk-summary-list__actions">
-          <Link href={''}>
-            <a
-              className="govuk-link govuk-link--no-visited-state"
-              data-cy={`cy-section-details-navigation-${questionId}`}
-            >
-              {response || multiResponse ? 'Change' : 'Add'}
-            </a>
-          </Link>
+        <dd
+          className="govuk-summary-list__actions"
+          aria-describedby={`change-button-${questionId}`}
+        >
+          <a
+            href={''}
+            className="govuk-link govuk-link--no-visited-state"
+            data-cy={`cy-section-details-navigation-${questionId}`}
+            id={`change-button-${questionId}`}
+          >
+            {response || multiResponse ? 'Change' : 'Add'}
+          </a>
         </dd>
       )}
     </div>

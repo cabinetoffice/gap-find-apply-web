@@ -83,7 +83,9 @@ describe('SubmissionSummary', () => {
       screen.getByText('Download a copy of your application')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('download a copy of your answers (ODT)').closest('a')
+      screen.getByRole('link', {
+        name: 'download a copy of your answers (ODT)',
+      })
     ).toBeInTheDocument();
   });
 
@@ -99,7 +101,7 @@ describe('SubmissionSummary', () => {
     expect(screen.getByText('Your application')).toBeInTheDocument();
 
     expect(
-      screen.getByText('Return to your profile').closest('a')
+      screen.getByRole('button', { name: 'Return to your profile' })
     ).toHaveProperty('href', `http://localhost/applications`);
   });
 
@@ -110,7 +112,9 @@ describe('SubmissionSummary', () => {
       screen.getByText('Check your answers before submitting your application')
     ).toBeInTheDocument();
     expect(screen.getByText('Submit your application')).toBeInTheDocument();
-    expect(screen.getByText('Submit application').closest('a')).toHaveProperty(
+    expect(
+      screen.getByRole('button', { name: 'Submit application' })
+    ).toHaveProperty(
       'href',
       `http://localhost/submissions/${mockProps.grantSubmissionId}/submit`
     );
@@ -185,7 +189,10 @@ describe('QuestionRow', () => {
     expect(screen.getByText('Question 1')).toBeInTheDocument();
     expect(screen.getByText('Answer 1')).toBeInTheDocument();
 
-    expect(screen.getByText('Change').closest('a')).toHaveProperty('href', '');
+    expect(screen.getByRole('link', { name: 'Change' })).toHaveProperty(
+      'href',
+      'http://localhost/'
+    );
     expect(screen.queryByText('Add')).toBeNull();
   });
 
@@ -199,7 +206,10 @@ describe('QuestionRow', () => {
 
     expect(screen.getByText('-')).toBeInTheDocument();
 
-    expect(screen.getByText('Add').closest('a')).toHaveProperty('href', '');
+    expect(screen.getByRole('link', { name: 'Add' })).toHaveProperty(
+      'href',
+      'http://localhost/'
+    );
 
     expect(screen.queryByText('Change')).toBeNull();
   });
@@ -208,12 +218,6 @@ describe('QuestionRow', () => {
     render(<QuestionRow question={mockQuestion} readOnly={true} />);
 
     expect(screen.queryByText('Change')).toBeNull();
-  });
-
-  it('handles link navigation correctly', () => {
-    render(<QuestionRow question={mockQuestion} readOnly={false} />);
-    userEvent.click(screen.getByText('Change'));
-    // TODO add more tests when this is implemented
   });
 
   it('calls ProcessMultiResponse when multiResponse is present', () => {
