@@ -89,7 +89,7 @@ export const getServerSideProps: GetServerSideProps<
       grantSubmissionId,
       mandatoryQuestionId,
       applicationName,
-      hasSubmissionBeenSubmitted: !hasBeenSubmitted,
+      hasSubmissionBeenSubmitted: hasBeenSubmitted,
       csrfToken: (req as any).csrfToken?.() || '',
     },
   };

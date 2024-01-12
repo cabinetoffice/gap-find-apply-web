@@ -92,30 +92,35 @@ const propsWithAllValues: ApplicationDetailsInterface = {
       sectionId: 'ELIGIBILITY',
       sectionTitle: 'Eligibility',
       sectionStatus: 'COMPLETED',
+      questionIds: [eligibility].map((q) => q.questionId),
       questions: [eligibility],
     },
     {
       sectionId: 'ORGANISATION_DETAILS',
       sectionTitle: 'Your Organisation',
       sectionStatus: 'IN_PROGRESS',
+      questionIds: [shortAnswer].map((q) => q.questionId),
       questions: [shortAnswer],
     },
     {
       sectionId: 'FUNDING_DETAILS',
       sectionTitle: 'Funding',
       sectionStatus: 'IN_PROGRESS',
+      questionIds: [numeric].map((q) => q.questionId),
       questions: [numeric],
     },
     {
       sectionId: 'ESSENTIAL',
       sectionTitle: 'Essential Information',
       sectionStatus: 'COMPLETED',
+      questionIds: [shortAnswer].map((q) => q.questionId),
       questions: [shortAnswer],
     },
     {
       sectionId: 'NON-ESSENTIAL',
       sectionTitle: 'Non Essential Information',
       sectionStatus: 'IN_PROGRESS',
+      questionIds: [shortAnswer, numeric].map((q) => q.questionId),
       questions: [shortAnswer, numeric],
     },
   ],
@@ -149,18 +154,21 @@ const propsWithInProgressSectionTags: ApplicationDetailsInterface = {
       sectionId: 'ELIGIBILITY',
       sectionTitle: 'Eligibility',
       sectionStatus: 'COMPLETED',
+      questionIds: [eligibility].map((q) => q.questionId),
       questions: [eligibility],
     },
     {
       sectionId: 'ESSENTIAL',
       sectionTitle: 'Essential Information',
       sectionStatus: 'IN_PROGRESS',
+      questionIds: [shortAnswer, numeric].map((q) => q.questionId),
       questions: [shortAnswer, numeric],
     },
     {
       sectionId: 'NON-ESSENTIAL',
       sectionTitle: 'Non Essential Information',
       sectionStatus: 'NOT_STARTED',
+      questionIds: [numeric].map((q) => q.questionId),
       questions: [numeric],
     },
   ],
@@ -178,18 +186,21 @@ const propsWithVariedSectionEligilityCompleteOthersMixedNotStarted: ApplicationD
         sectionId: 'ELIGIBILITY',
         sectionTitle: 'Eligibility',
         sectionStatus: 'COMPLETED',
+        questionIds: [eligibility].map((q) => q.questionId),
         questions: [eligibility],
       },
       {
         sectionId: 'ESSENTIAL',
         sectionTitle: 'Essential Information',
         sectionStatus: 'NOT_STARTED',
+        questionIds: [shortAnswer, numeric].map((q) => q.questionId),
         questions: [shortAnswer, numeric],
       },
       {
         sectionId: 'NON-ESSENTIAL',
         sectionTitle: 'Non Essential Information',
         sectionStatus: 'CANNOT_START_YET',
+        questionIds: [numeric].map((q) => q.questionId),
         questions: [numeric],
       },
     ],
@@ -516,10 +527,10 @@ describe('Submission section page', () => {
 
     it('should render a submit and cancel button', () => {
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toBeDefined();
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).not.toHaveProperty('disabled');
       expect(
         screen.getByRole('link', { name: 'Save and come back later' })
@@ -687,10 +698,10 @@ describe('Submission section page', () => {
       ).toBeDefined();
 
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toBeDefined();
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).not.toHaveProperty('disabled');
       expect(
         screen.getByRole('link', { name: 'Save and come back later' })
@@ -728,10 +739,10 @@ describe('Submission section page', () => {
     });
     it('should disable the submit button', () => {
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toBeDefined();
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toHaveProperty('disabled', true);
     });
   });
@@ -759,10 +770,10 @@ describe('Submission section page', () => {
     });
     it('should disable the submit button', () => {
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toBeDefined();
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toHaveProperty('disabled', true);
     });
   });
