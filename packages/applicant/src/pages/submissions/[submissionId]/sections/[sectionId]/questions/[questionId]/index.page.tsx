@@ -99,7 +99,9 @@ export const getServerSideProps: GetServerSideProps<
 
   if (req.method !== 'POST') {
     await initiateCSRFCookie(req, res);
-  } else {
+  }
+
+  if (req.method === 'POST') {
     const jwt = getJwtFromCookies(req);
     const result = await postQuestion(
       req,
@@ -359,7 +361,9 @@ export default function QuestionPage({
   const fromSubmissionSummaryPage =
     new URLSearchParams(queryParams).get('fromSubmissionSummaryPage') ===
     'true';
-  if (fromSubmissionSummaryPage) {
+  if (isRefererCheckYourAnswerScreen) {
+    backLinkUrl = routes.submissions.section(grantSubmissionId, sectionId);
+  } else if (fromSubmissionSummaryPage) {
     backLinkUrl = routes.submissions.summary(grantSubmissionId);
   } else if (questionData.previousNavigation?.questionId) {
     backLinkUrl = routes.submissions.question(
@@ -367,8 +371,6 @@ export default function QuestionPage({
       sectionId,
       questionData.previousNavigation.questionId
     );
-  } else if (isRefererCheckYourAnswerScreen) {
-    backLinkUrl = routes.submissions.section(grantSubmissionId, sectionId);
   }
 
   return (
