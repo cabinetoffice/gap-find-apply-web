@@ -143,7 +143,7 @@ export default function SubmissionSummary({
               <p className="govuk-body">
                 You can{' '}
                 <a className="govuk-link govuk-link--no-visited-state">
-                  download a copy of your answers (ODT, x.xx kB)
+                  download a copy of your answers (ODT)
                 </a>{' '}
                 for future reference.
               </p>
@@ -199,7 +199,7 @@ export default function SubmissionSummary({
   );
 }
 
-const SectionCard = ({
+export const SectionCard = ({
   section,
   submissionId,
   mandatoryQuestionId,
@@ -230,7 +230,7 @@ const SectionCard = ({
   );
 };
 
-const QuestionRow = ({ question, readOnly }) => {
+export const QuestionRow = ({ question, readOnly }) => {
   const { questionId, fieldTitle, multiResponse, responseType, response } =
     question;
   return (
@@ -260,9 +260,6 @@ const QuestionRow = ({ question, readOnly }) => {
               data-cy={`cy-section-details-navigation-${questionId}`}
             >
               {response || multiResponse ? 'Change' : 'Add'}
-              <span className="govuk-visually-hidden">
-                {questionId.replaceAll('_', ' ')}
-              </span>
             </a>
           </Link>
         </dd>
