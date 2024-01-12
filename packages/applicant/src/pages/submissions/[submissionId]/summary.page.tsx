@@ -69,7 +69,6 @@ export const getServerSideProps: GetServerSideProps<
               questionId,
               jwt
             );
-            console.log('q', questionData, questionData.question, questionId);
             return questionData.question;
           })
         ),
