@@ -1,5 +1,6 @@
 import { GetServerSideProps } from 'next';
 import getConfig from 'next/config';
+import Link from 'next/link';
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
 import {
@@ -9,14 +10,12 @@ import {
   QuestionType,
   SectionData,
 } from '../../../services/SubmissionService';
+import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
+import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
 import { initiateCSRFCookie } from '../../../utils/csrf';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
-import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
 import { ProcessMultiResponse } from './sections/[sectionId]/processMultiResponse';
-import Link from 'next/link';
-import { getQuestionUrl } from './sections/[sectionId]/index.page';
-import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -106,7 +105,7 @@ export default function SubmissionSummary({
   return (
     <>
       <Meta title="My application - Apply for a grant" />
-      <Layout backBtnUrl={routes.applications}>
+      <Layout backBtnUrl={routes.submissions.sections(grantSubmissionId)}>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-full">
             <form
@@ -117,12 +116,12 @@ export default function SubmissionSummary({
               method="POST"
             >
               <span
-                className="govuk-caption-m"
+                className="govuk-caption-l"
                 data-cy={`cy-application-name-${applicationName}`}
               >
                 {applicationName}
               </span>
-              <h1 className="govuk-heading-m" data-cy="cy-page-header">
+              <h1 className="govuk-heading-l" data-cy="cy-page-header">
                 {hasSubmissionBeenSubmitted
                   ? 'Your application'
                   : 'Check your answers before submitting your application'}
@@ -134,6 +133,7 @@ export default function SubmissionSummary({
                   section={section}
                   submissionId={grantSubmissionId}
                   mandatoryQuestionId={mandatoryQuestionId}
+                  readOnly={hasSubmissionBeenSubmitted}
                 />
               ))}
 
@@ -154,7 +154,7 @@ export default function SubmissionSummary({
                     href={`${publicRuntimeConfig.subPath}/applications`}
                     role="button"
                     draggable="false"
-                    className="govuk-button"
+                    className="govuk-button govuk-button--secondary"
                     data-module="govuk-button"
                     data-cy="cy-return-to-profile-link"
                   >
@@ -176,7 +176,10 @@ export default function SubmissionSummary({
 
                   <div className="govuk-button-group">
                     <a
-                      href={`${publicRuntimeConfig.subPath}/submissions/${grantSubmissionId}/submit`}
+                      href={
+                        publicRuntimeConfig.subPath +
+                        routes.submissions.submit(grantSubmissionId)
+                      }
                       role="button"
                       draggable="false"
                       className="govuk-button"
@@ -196,7 +199,12 @@ export default function SubmissionSummary({
   );
 }
 
-const SectionCard = ({ section, submissionId, mandatoryQuestionId }) => {
+const SectionCard = ({
+  section,
+  submissionId,
+  mandatoryQuestionId,
+  readOnly,
+}) => {
   return (
     <div className="govuk-summary-card">
       <div className="govuk-summary-card__title-wrapper">
@@ -204,62 +212,61 @@ const SectionCard = ({ section, submissionId, mandatoryQuestionId }) => {
       </div>
       <div className="govuk-summary-card__content">
         <dl className="govuk-summary-list">
-          {section.questions.map(
-            ({
-              responseType,
-              questionId,
-              fieldTitle,
-              multiResponse,
-              response,
-            }: QuestionType) => {
-              return (
-                <div
-                  className="govuk-summary-list__row"
-                  key={`question-${questionId}`}
-                >
-                  <dt className="govuk-summary-list__key">{fieldTitle}</dt>
-                  {multiResponse ? (
-                    <ProcessMultiResponse
-                      data={multiResponse}
-                      id={questionId}
-                      cyTag={questionId}
-                      questionType={responseType}
-                    />
-                  ) : (
-                    <dd
-                      className="govuk-summary-list__value"
-                      id={response}
-                      data-cy={`cy-section-value-${response}`}
-                    >
-                      {response ? response : '-'}
-                    </dd>
-                  )}
-                  <dd className="govuk-summary-list__actions">
-                    <Link
-                      href={getQuestionUrl(
-                        section.sectionId,
-                        questionId,
-                        mandatoryQuestionId,
-                        submissionId
-                      )}
-                    >
-                      <a
-                        className="govuk-link govuk-link--no-visited-state"
-                        data-cy={`cy-section-details-navigation-${questionId}`}
-                      >
-                        {response || multiResponse ? 'Change' : 'Add'}
-                        <span className="govuk-visually-hidden">
-                          {questionId.replaceAll('_', ' ')}
-                        </span>
-                      </a>
-                    </Link>
-                  </dd>
-                </div>
-              );
-            }
-          )}
+          {section.questions.map((question: QuestionType) => (
+            <QuestionRow
+              key={`question-${question.questionId}`}
+              {...{
+                question,
+                section,
+                submissionId,
+                mandatoryQuestionId,
+                readOnly,
+              }}
+            />
+          ))}
         </dl>
       </div>
+    </div>
+  );
+};
+
+const QuestionRow = ({ question, readOnly }) => {
+  const { questionId, fieldTitle, multiResponse, responseType, response } =
+    question;
+  return (
+    <div className="govuk-summary-list__row">
+      <dt className="govuk-summary-list__key">{fieldTitle}</dt>
+      {multiResponse ? (
+        <ProcessMultiResponse
+          data={multiResponse}
+          id={questionId}
+          cyTag={questionId}
+          questionType={responseType}
+        />
+      ) : (
+        <dd
+          className="govuk-summary-list__value"
+          id={response}
+          data-cy={`cy-section-value-${response}`}
+        >
+          {response ? response : '-'}
+        </dd>
+      )}
+      {readOnly ? null : (
+        <dd className="govuk-summary-list__actions">
+          <Link href={''}>
+            <a
+              className="govuk-link govuk-link--no-visited-state"
+              data-cy={`cy-section-details-navigation-${questionId}`}
+            >
+              {response || multiResponse ? 'Change' : 'Add'}
+              <span className="govuk-visually-hidden">
+                {questionId.replaceAll('_', ' ')}
+              </span>
+            </a>
+          </Link>
+        </dd>
+      )}
     </div>
   );
 };

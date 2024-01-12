@@ -129,7 +129,7 @@ export default function SubmissionSections({
             <form
               action={
                 publicRuntimeConfig.subPath +
-                `/submissions/${grantSubmissionId}/summary`
+                routes.submissions.summary(grantSubmissionId)
               }
               method="POST"
             >
@@ -218,7 +218,10 @@ export default function SubmissionSections({
                   </button>
                 ) : (
                   <a
-                    href={`${publicRuntimeConfig.subPath}/submissions/${grantSubmissionId}/summary`}
+                    href={
+                      publicRuntimeConfig.subPath +
+                      routes.submissions.summary(grantSubmissionId)
+                    }
                     role="button"
                     draggable="false"
                     className="govuk-button"
