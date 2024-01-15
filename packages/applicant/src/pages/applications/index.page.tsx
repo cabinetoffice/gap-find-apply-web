@@ -8,6 +8,8 @@ import {
 } from '../../services/ApplicationService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
+import moment from 'moment';
+import { APPLICATION_STATUS_TAGS } from '../../utils/applicationStatusTags';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
@@ -45,7 +47,7 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
               All of your current and past applications are listed below.
             </p>
 
-            {hasApplicationData && (
+            {hasApplicationData ? (
               <table className="govuk-table">
                 <thead className="govuk-table__head">
                   <tr className="govuk-table__row">
@@ -59,6 +61,20 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                     <th
                       scope="col"
                       className="govuk-table__header"
+                      data-cy="cy-grant-table-header-status"
+                    >
+                      Status
+                    </th>
+                    <th
+                      scope="col"
+                      className="govuk-table__header"
+                      data-cy="cy-grant-table-header-submitted-date"
+                    >
+                      Submitted
+                    </th>
+                    <th
+                      scope="col"
+                      className="govuk-table__header"
                       data-cy="cy-grant-table-header-actions"
                     >
                       Actions
@@ -66,65 +82,10 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                   </tr>
                 </thead>
                 <tbody className="govuk-table__body">
-                  {applicationData.map((application) => {
-                    return (
-                      <tr
-                        key={application.grantSubmissionId}
-                        className="govuk-table__row"
-                      >
-                        <th scope="row" className="govuk-table__cell">
-                          <p
-                            className="govuk-!-margin-0 govuk-!-font-weight-bold"
-                            data-cy={`cy-application-link-${application.applicationName}`}
-                          >
-                            {application.applicationName}
-                          </p>
-                        </th>
-                        <td
-                          scope="row"
-                          className="govuk-table__cell"
-                          aria-describedby={`submission-link-${application.grantSubmissionId}`}
-                        >
-                          {application.submissionStatus === 'SUBMITTED' ? (
-                            <a
-                              href={
-                                '/apply/applicant' +
-                                routes.submissions.summary(
-                                  application.grantSubmissionId
-                                )
-                              }
-                              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-                              data-cy={`cy-application-link-${application.applicationName}`}
-                              id={`submission-link-${application.grantSubmissionId}`}
-                            >
-                              View
-                            </a>
-                          ) : (
-                            <a
-                              href={
-                                '/apply/applicant' +
-                                routes.submissions.sections(
-                                  application.grantSubmissionId
-                                )
-                              }
-                              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-                              data-cy={`cy-application-link-${application.applicationName}`}
-                              id={`submission-link-${application.grantSubmissionId}`}
-                            >
-                              Edit
-                            </a>
-                          )}
-                        </td>
-
-                        {/* Left in to stop AXE accessibility warnings */}
-                        <td className="govuk-table__cell"></td>
-                      </tr>
-                    );
-                  })}
+                  {applicationData.map(ApplicationRow)}
                 </tbody>
               </table>
-            )}
-            {!hasApplicationData && (
+            ) : (
               <>
                 <hr
                   className="govuk-section-break govuk-section-break--visible govuk-section-break--m govuk-!-margin-top-7"
@@ -153,6 +114,69 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
   );
 };
 
+const ApplicationRow = (application) => {
+  const applicationName = application.applicationName;
+  const submissionId = application.grantSubmissionId;
+  const applicationStatusTag =
+    APPLICATION_STATUS_TAGS[application.submissionStatus];
+  const isSubmitted = application.submissionStatus === 'SUBMITTED';
+  const applicationLinkText = isSubmitted ? 'View' : 'Edit';
+  const applicationLink = isSubmitted
+    ? '/apply/applicant' + routes.submissions.summary(submissionId)
+    : '/apply/applicant' + routes.submissions.sections(submissionId);
+  return (
+    <tr key={submissionId} className="govuk-table__row">
+      <th scope="row" className="govuk-table__cell">
+        <p
+          className="govuk-!-margin-0 govuk-!-font-weight-bold"
+          data-cy={`cy-application-link-${applicationName}`}
+        >
+          {applicationName}
+        </p>
+      </th>
+      <td scope="row" className="govuk-table__cell">
+        <strong
+          className={`govuk-tag ${applicationStatusTag.colourClass}`}
+          data-cy={`cy-status-tag-${applicationName}-${applicationStatusTag.displayName}`}
+        >
+          {applicationStatusTag.displayName}
+        </strong>
+      </td>
+      <td scope="row" className="govuk-table__cell">
+        <p
+          className="govuk-!-margin-0 govuk-!-font-weight-normal"
+          data-cy={`cy-application-link-${applicationName}`}
+        >
+          {application.submittedDate
+            ? moment(application.submittedDate).format('D MMMM YYYY')
+            : '-'}
+        </p>
+      </td>
+      <td
+        scope="row"
+        className="govuk-table__cell"
+        aria-describedby={`application-link-${submissionId}`}
+      >
+        {application.submissionStatus === 'GRANT_CLOSED' ? (
+          '-'
+        ) : (
+          <a
+            href={applicationLink}
+            className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+            data-cy={`cy-application-link-${applicationName}`}
+            id={`application-link-${submissionId}`}
+          >
+            {applicationLinkText}
+          </a>
+        )}
+      </td>
+
+      {/* Left in to stop AXE accessibility warnings */}
+      <td className="govuk-table__cell"></td>
+    </tr>
+  );
+};
+
 export interface ApplicationsPage {
   applicationData: ApplicationsList[];
 }
@@ -163,6 +187,7 @@ export interface ApplicationsList {
   applicationName: string;
   grantApplicationId: string;
   submissionStatus: string;
+  submittedDate: string;
   sections: ApplicationSections[];
 }
 
