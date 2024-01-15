@@ -16,8 +16,6 @@ import { initiateCSRFCookie } from '../../../utils/csrf';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { ProcessMultiResponse } from './sections/[sectionId]/processMultiResponse';
-import { getGrantScheme } from 'admin/src/services/SchemeService';
-import { getSessionIdFromCookies } from 'admin/src/utils/session';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -217,7 +215,6 @@ export const SectionCard = ({
   mandatoryQuestionId,
   readOnly,
 }) => {
-  console.log(section);
   return (
     <div className="govuk-summary-card">
       <div className="govuk-summary-card__title-wrapper">
