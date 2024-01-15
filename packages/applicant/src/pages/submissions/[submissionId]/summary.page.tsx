@@ -105,7 +105,13 @@ export default function SubmissionSummary({
   return (
     <>
       <Meta title="My application - Apply for a grant" />
-      <Layout backBtnUrl={routes.submissions.sections(grantSubmissionId)}>
+      <Layout
+        backBtnUrl={
+          hasSubmissionBeenSubmitted
+            ? routes.applications
+            : routes.submissions.sections(grantSubmissionId)
+        }
+      >
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-full">
             <form
@@ -154,7 +160,7 @@ export default function SubmissionSummary({
               {hasSubmissionBeenSubmitted ? (
                 <div className="govuk-button-group">
                   <a
-                    href={`${publicRuntimeConfig.subPath}/applications`}
+                    href={publicRuntimeConfig.subPath + routes.applications}
                     role="button"
                     draggable="false"
                     className="govuk-button govuk-button--secondary"

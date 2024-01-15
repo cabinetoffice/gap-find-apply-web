@@ -52,9 +52,16 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                     <th
                       scope="col"
                       className="govuk-table__header"
-                      data-cy="cy-grant-table-header"
+                      data-cy="cy-grant-table-header-name"
                     >
-                      Name of grant
+                      Grant
+                    </th>
+                    <th
+                      scope="col"
+                      className="govuk-table__header"
+                      data-cy="cy-grant-table-header-actions"
+                    >
+                      Actions
                     </th>
                   </tr>
                 </thead>
@@ -66,13 +73,32 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                         className="govuk-table__row"
                       >
                         <th scope="row" className="govuk-table__cell">
+                          <p
+                            className="govuk-!-margin-0 govuk-!-font-weight-bold"
+                            data-cy={`cy-application-link-${application.applicationName}`}
+                          >
+                            {application.applicationName}
+                          </p>
+                        </th>
+                        <td
+                          scope="row"
+                          className="govuk-table__cell"
+                          aria-describedby={`submission-link-${application.grantSubmissionId}`}
+                        >
                           {application.submissionStatus === 'SUBMITTED' ? (
-                            <p
-                              className="govuk-!-margin-0 govuk-!-font-weight-regular"
+                            <a
+                              href={
+                                '/apply/applicant' +
+                                routes.submissions.summary(
+                                  application.grantSubmissionId
+                                )
+                              }
+                              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
                               data-cy={`cy-application-link-${application.applicationName}`}
+                              id={`submission-link-${application.grantSubmissionId}`}
                             >
-                              {application.applicationName}
-                            </p>
+                              View
+                            </a>
                           ) : (
                             <a
                               href={
@@ -83,11 +109,12 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                               }
                               className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
                               data-cy={`cy-application-link-${application.applicationName}`}
+                              id={`submission-link-${application.grantSubmissionId}`}
                             >
-                              {application.applicationName}
+                              Edit
                             </a>
                           )}
-                        </th>
+                        </td>
 
                         {/* Left in to stop AXE accessibility warnings */}
                         <td className="govuk-table__cell"></td>
