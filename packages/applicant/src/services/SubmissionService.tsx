@@ -178,7 +178,7 @@ export async function getNextNavigation(
 export async function downloadSummary(submissionId, jwt) {
   return await axios.get(
     `${BACKEND_HOST}/submissions/${submissionId}/download-summary`,
-    axiosConfig(jwt)
+    { ...axiosConfig(jwt), responseType: 'arraybuffer' }
   );
 }
 
