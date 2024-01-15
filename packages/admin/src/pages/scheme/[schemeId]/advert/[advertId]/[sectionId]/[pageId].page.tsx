@@ -1,6 +1,6 @@
 import {
   Checkboxes,
-  DateInput,
+  DateTimeInput,
   FlexibleQuestionPageLayout,
   Radio,
   RichText,
@@ -69,6 +69,29 @@ const Page = ({
     return undefined;
   };
 
+  function adjustTimeForMidnight(multiResponse: string[]) {
+    multiResponse[3] = '23';
+    multiResponse[4] = '59';
+
+    const date = new Date(
+      `${multiResponse[1]}/${multiResponse[0]}/${multiResponse[2]} ${multiResponse[3]}:${multiResponse[4]}`
+    );
+    date.setDate(date.getDate() - 1);
+
+    multiResponse[0] = date.getDate().toLocaleString('en-US', {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    });
+    multiResponse[1] = (date.getMonth() + 1).toLocaleString('en-US', {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    });
+    multiResponse[2] = date.getFullYear().toLocaleString('en-US', {
+      minimumIntegerDigits: 4,
+      useGrouping: false,
+    });
+  }
+
   const multipleQuestionPage = questions.length > 1;
 
   return (
@@ -116,6 +139,7 @@ const Page = ({
             switch (question.responseType) {
               case 'DATE': {
                 let dateValues;
+                let timeValues;
 
                 if (previousValues) {
                   dateValues = {
@@ -128,18 +152,30 @@ const Page = ({
                     ] as string,
                   };
                 } else if (question.response) {
+                  if (
+                    question.response.multiResponse[3] === '00' &&
+                    question.response.multiResponse[4] === '00'
+                  ) {
+                    adjustTimeForMidnight(question.response.multiResponse);
+                  }
+
                   dateValues = {
                     day: question.response.multiResponse[0],
                     month: question.response.multiResponse[1],
                     year: question.response.multiResponse[2],
                   };
+                  timeValues = {
+                    hour: question.response.multiResponse[3],
+                    minute: question.response.multiResponse[4],
+                  };
                 }
 
                 return (
-                  <DateInput
+                  <DateTimeInput
                     {...commonResponseProps}
-                    defaultValues={dateValues}
-                  />
+                    dateDefaultValues={dateValues}
+                    timeDefaultValues={`${timeValues?.hour}:${timeValues?.minute}`}
+                  ></DateTimeInput>
                 );
               }
               case 'RICH_TEXT':
