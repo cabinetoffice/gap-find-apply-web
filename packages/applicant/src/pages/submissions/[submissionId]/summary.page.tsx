@@ -255,19 +255,19 @@ export const QuestionRow = ({ question, readOnly }) => {
           {response ? response : '-'}
         </dd>
       )}
-      {readOnly ? null : (
+      {!readOnly && (
         <dd
           className="govuk-summary-list__actions"
           aria-describedby={`change-button-${questionId}`}
         >
-          <a
-            href={''}
-            className="govuk-link govuk-link--no-visited-state"
-            data-cy={`cy-section-details-navigation-${questionId}`}
-            id={`change-button-${questionId}`}
-          >
-            {response || multiResponse ? 'Change' : 'Add'}
-          </a>
+          <Link href={''} id={`change-button-${questionId}`}>
+            <a
+              className="govuk-link govuk-link--no-visited-state"
+              data-cy={`cy-section-details-navigation-${questionId}`}
+            >
+              {response || multiResponse ? 'Change' : 'Add'}
+            </a>
+          </Link>
         </dd>
       )}
     </div>

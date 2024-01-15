@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SubmissionSummary, { QuestionRow, SectionCard } from './summary.page';
@@ -13,8 +14,13 @@ jest.mock('./sections/[sectionId]/processMultiResponse', () => {
 jest.mock(
   'next/link',
   () =>
-    ({ children }) =>
-      children
+    function Link(props: {
+      id: string;
+      href: string;
+      children: ReactElement;
+    }): ReactElement {
+      return <a {...props} />;
+    }
 );
 
 describe('SubmissionSummary', () => {
