@@ -216,7 +216,7 @@ export interface QuestionPostBody {
   response?: string;
   multiResponse?: string[];
   attachment?: File;
-  sectionComplete: boolean;
+  shouldUpdateSectionStatus: boolean;
 }
 export interface ApplicationDetailsInterface {
   grantSchemeId: string;

@@ -509,7 +509,7 @@ describe('createRequestBody', () => {
       submissionId,
       questionId,
       multiResponse: null,
-      sectionComplete: false,
+      shouldUpdateSectionStatus: true,
     };
     expect(result).toStrictEqual(expectedResult);
   });
@@ -538,7 +538,7 @@ describe('createRequestBody', () => {
       submissionId,
       questionId,
       multiResponse: ['fsa', '', 'fsa', '', 'fsaasf'],
-      sectionComplete: false,
+      shouldUpdateSectionStatus: true,
     };
     expect(result).toStrictEqual(expectedResult);
   });
@@ -562,7 +562,7 @@ describe('createRequestBody', () => {
       submissionId,
       questionId,
       multiResponse: ['test1', 'test2'],
-      sectionComplete: false,
+      shouldUpdateSectionStatus: true,
     };
     expect(result).toStrictEqual(expectedResult);
   });
@@ -585,7 +585,7 @@ describe('createRequestBody', () => {
       submissionId,
       questionId,
       multiResponse: null,
-      sectionComplete: false,
+      shouldUpdateSectionStatus: true,
     };
     expect(result).toStrictEqual(expectedResult);
   });

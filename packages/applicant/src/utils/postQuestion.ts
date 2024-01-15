@@ -246,7 +246,7 @@ export const createRequestBody = (
   questionId: string,
   submissionId: string,
   questionType: string,
-  sectionComplete: boolean
+  shouldUpdateSectionStatus: boolean
 ): QuestionPostBody => {
   const cleanedBody = body as unknown as CleanedBody;
   const isMultiSelectionQuestion = questionType === 'MultipleSelection';
@@ -272,7 +272,7 @@ export const createRequestBody = (
     submissionId,
     questionId,
     multiResponse: isResponseAnArray ? body[questionId] : multiResponseValues,
-    sectionComplete,
+    shouldUpdateSectionStatus,
   };
   return requestBody;
 };

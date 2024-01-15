@@ -263,7 +263,7 @@ export const QuestionRow = ({
           {response ? response : '-'}
         </dd>
       )}
-      {readOnly ? null : (
+      {!readOnly && (
         <dd
           className="govuk-summary-list__actions"
           aria-describedby={`change-button-${questionId}`}
