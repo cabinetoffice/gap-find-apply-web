@@ -17,7 +17,6 @@ import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { ProcessMultiResponse } from './sections/[sectionId]/processMultiResponse';
 import { getQuestionUrl } from './sections/[sectionId]/index.page';
-import { unique } from 'next/dist/build/utils';
 
 const { publicRuntimeConfig } = getConfig();
 
