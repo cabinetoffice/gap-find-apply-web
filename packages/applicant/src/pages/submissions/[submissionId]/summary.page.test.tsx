@@ -20,6 +20,7 @@ import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
 } from '../../../services/GrantMandatoryQuestionService';
+
 jest.mock('./sections/[sectionId]/processMultiResponse', () => {
   return {
     ProcessMultiResponse: jest.fn(() => (
