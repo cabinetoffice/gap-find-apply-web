@@ -65,13 +65,16 @@ export default async function postQuestion<B, _R>(
     isRefererCheckYourAnswerScreen =
       Object.keys(body).indexOf('isRefererCheckYourAnswerScreen') !== -1;
 
+    const shouldRedirectToSummary =
+      fromSummarySubmissionPage && body?.ELIGIBILITY !== 'No';
+
     const backendResponse = await serviceFunc(
       createRequestBody(
         body,
         questionId,
         submissionId,
         questionType,
-        fromSummarySubmissionPage
+        shouldRedirectToSummary
       )
     );
 
@@ -86,30 +89,22 @@ export default async function postQuestion<B, _R>(
       Object.keys(body).indexOf('save-and-continue') !== -1;
     const isSaveAndExit = Object.keys(body).indexOf('save-and-exit') !== -1;
 
-    const shouldRedirectToSummary =
-      fromSummarySubmissionPage && body?.ELIGIBILITY !== 'No';
     const shouldContinueToNextQuestion =
       nextNavigation &&
       !nextNavigation?.sectionList &&
       !isRefererCheckYourAnswerScreen;
 
-    console.log(
-      isResponseAccepted,
-      isSaveAndContinue,
-      shouldContinueToNextQuestion,
-      shouldRedirectToSummary
-    );
     if (isResponseAccepted && isSaveAndContinue) {
       let redirectUrl = routes.submissions.section(submissionId, sectionId);
 
-      if (shouldContinueToNextQuestion) {
+      if (shouldRedirectToSummary) {
+        redirectUrl = routes.submissions.summary(submissionId);
+      } else if (shouldContinueToNextQuestion) {
         redirectUrl = routes.submissions.question(
           submissionId,
           sectionId,
           nextNavigation.questionId
         );
-      } else if (shouldRedirectToSummary) {
-        redirectUrl = routes.submissions.summary(submissionId);
       }
       return {
         redirect: {
@@ -246,7 +241,7 @@ export const createRequestBody = (
   questionId: string,
   submissionId: string,
   questionType: string,
-  shouldUpdateSectionStatus: boolean
+  shouldRedirectToSummary: boolean
 ): QuestionPostBody => {
   const cleanedBody = body as unknown as CleanedBody;
   const isMultiSelectionQuestion = questionType === 'MultipleSelection';
@@ -272,7 +267,7 @@ export const createRequestBody = (
     submissionId,
     questionId,
     multiResponse: isResponseAnArray ? body[questionId] : multiResponseValues,
-    shouldUpdateSectionStatus,
+    shouldUpdateSectionStatus: !shouldRedirectToSummary,
   };
   return requestBody;
 };

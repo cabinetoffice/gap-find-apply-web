@@ -268,7 +268,7 @@ export const QuestionRow = ({
           className="govuk-summary-list__actions"
           aria-describedby={`change-button-${questionId}`}
         >
-          <a
+          <Link
             href={getQuestionUrl(
               section.sectionId,
               questionId,
@@ -276,12 +276,15 @@ export const QuestionRow = ({
               submissionId,
               'fromSubmissionSummaryPage'
             )}
-            className="govuk-link govuk-link--no-visited-state"
-            data-cy={`cy-section-details-navigation-${questionId}`}
             id={`change-button-${questionId}`}
           >
-            {response || multiResponse ? 'Change' : 'Add'}
-          </a>
+            <a
+              className="govuk-link govuk-link--no-visited-state"
+              data-cy={`cy-section-details-navigation-${questionId}`}
+            >
+              {response || multiResponse ? 'Change' : 'Add'}
+            </a>
+          </Link>
         </dd>
       )}
     </div>

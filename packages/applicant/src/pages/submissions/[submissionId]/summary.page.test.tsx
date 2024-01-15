@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
 import {
@@ -7,7 +8,6 @@ import {
   hasSubmissionBeenSubmitted,
   QuestionType,
 } from '../../../services/SubmissionService';
-import { GrantSchemeService } from '../../../services/GrantSchemeService';
 import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
 import SubmissionSummary, {
   getServerSideProps,
@@ -15,7 +15,6 @@ import SubmissionSummary, {
   SectionCard,
 } from './summary.page';
 import { getJwtFromCookies } from '../../../utils/jwt';
-import { GrantScheme } from '../../../types/models/GrantScheme';
 import { mockServiceMethod } from '../../../testUtils/unitTestHelpers';
 import {
   GrantMandatoryQuestionDto,
@@ -32,8 +31,13 @@ jest.mock('./sections/[sectionId]/processMultiResponse', () => {
 jest.mock(
   'next/link',
   () =>
-    ({ children }) =>
-      children
+    function Link(props: {
+      id: string;
+      href: string;
+      children: ReactElement;
+    }): ReactElement {
+      return <a {...props} />;
+    }
 );
 
 jest.mock('../../../services/SubmissionService');
