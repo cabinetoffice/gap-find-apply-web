@@ -10,6 +10,7 @@ import {
   SectionData,
   SectionReviewBody,
   getSectionById,
+  isApplicantEligible,
   postHasSectionBeenCompleted,
 } from '../../../../../services/SubmissionService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
@@ -97,6 +98,18 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
   const backButtonUrl = `/submissions/${submissionId}/sections`;
   const sectionId = params.sectionId.toString();
   const jwt = getJwtFromCookies(req);
+
+  if (sectionId != 'ELIGIBILITY') {
+    const isEligible = await isApplicantEligible(submissionId, jwt);
+    if (!isEligible) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: `/submissions/${submissionId}/sections`,
+        },
+      };
+    }
+  }
 
   const isOrganisationDetailsOrFunding =
     sectionId === 'ORGANISATION_DETAILS' || sectionId === 'FUNDING_DETAILS';

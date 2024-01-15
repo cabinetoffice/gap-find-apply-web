@@ -3,6 +3,13 @@ import MockAdapter from 'axios-mock-adapter';
 import getConfig from 'next/config';
 import { axiosConfig } from '../utils/jwt';
 import {
+  NextNavigation,
+  PostQuestionResponse,
+  QuestionData,
+  QuestionPostBody,
+  QuestionType,
+  SectionData,
+  SectionReviewBody,
   createSubmission,
   deleteAttachmentByQuestionId,
   getNextNavigation,
@@ -10,17 +17,11 @@ import {
   getSectionById,
   getSubmissionById,
   hasSubmissionBeenSubmitted,
+  isApplicantEligible,
   isSubmissionReady,
-  NextNavigation,
   postDocumentResponse,
   postHasSectionBeenCompleted,
   postQuestionResponse,
-  PostQuestionResponse,
-  QuestionData,
-  QuestionPostBody,
-  QuestionType,
-  SectionData,
-  SectionReviewBody,
   submit,
 } from './SubmissionService';
 
@@ -46,6 +47,7 @@ const MockCreateSubmissionData = [
     message: 'string',
   },
 ];
+const getIsApplicantEligibleUrl = `${BACKEND_HOST}/submissions/${submissionId}/isApplicantEligible`;
 const getIsApplicationReadyByUrl = `${BACKEND_HOST}/submissions/${submissionId}/ready`;
 const getHasSubmissionBeenSubmittedUrl = `${BACKEND_HOST}/submissions/${submissionId}/isSubmitted`;
 const postSubmitUrl = `${BACKEND_HOST}/submissions/submit`;
@@ -675,5 +677,45 @@ describe('postHasSectionBeenCompleted', () => {
         },
       }
     );
+  });
+});
+
+describe('isApplicantEligible', () => {
+  test('should return true is applicant has selected yes for eligibility section', async () => {
+    const spy = jest.spyOn(axios, 'get');
+    const mock = new MockAdapter(axios);
+    const expectedResult = true;
+    (axiosConfig as jest.Mock).mockReturnValue(mockAxiosConfig);
+
+    mock.onGet(getIsApplicantEligibleUrl).reply(200, expectedResult);
+
+    const result = await isApplicantEligible(submissionId, 'testJwt');
+
+    expect(result).toEqual(expectedResult);
+    expect(spy).toBeCalledWith(getIsApplicantEligibleUrl, {
+      headers: {
+        Authorization: `Bearer testJwt`,
+        Accept: 'application/json',
+      },
+    });
+  });
+
+  test('should return false is applicant has selected yes for eligibility section', async () => {
+    const spy = jest.spyOn(axios, 'get');
+    const mock = new MockAdapter(axios);
+    const expectedResult = false;
+    (axiosConfig as jest.Mock).mockReturnValue(mockAxiosConfig);
+
+    mock.onGet(getIsApplicantEligibleUrl).reply(200, expectedResult);
+
+    const result = await isApplicantEligible(submissionId, 'testJwt');
+
+    expect(result).toEqual(expectedResult);
+    expect(spy).toBeCalledWith(getIsApplicantEligibleUrl, {
+      headers: {
+        Authorization: `Bearer testJwt`,
+        Accept: 'application/json',
+      },
+    });
   });
 });
