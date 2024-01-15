@@ -134,18 +134,28 @@ const ApplicationRow = (application) => {
           {applicationName}
         </p>
       </th>
-      <td scope="row" className="govuk-table__cell">
+      <td
+        scope="row"
+        className="govuk-table__cell"
+        aria-describedby={`status-tag-${submissionId}`}
+      >
         <strong
           className={`govuk-tag ${applicationStatusTag.colourClass}`}
           data-cy={`cy-status-tag-${applicationName}-${applicationStatusTag.displayName}`}
+          id={`status-tag-${submissionId}`}
         >
           {applicationStatusTag.displayName}
         </strong>
       </td>
-      <td scope="row" className="govuk-table__cell">
+      <td
+        scope="row"
+        className="govuk-table__cell"
+        aria-describedby={`submitted-date-${submissionId}`}
+      >
         <p
           className="govuk-!-margin-0 govuk-!-font-weight-normal"
-          data-cy={`cy-application-link-${applicationName}`}
+          data-cy={`cy-application-submitted-date-${applicationName}`}
+          id={`submitted-date-${submissionId}`}
         >
           {application.submittedDate
             ? moment(application.submittedDate).format('D MMMM YYYY')
