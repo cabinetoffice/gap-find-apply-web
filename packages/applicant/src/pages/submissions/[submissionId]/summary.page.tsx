@@ -146,7 +146,7 @@ export default function SubmissionSummary({
                   className="govuk-link govuk-link--no-visited-state"
                   href={`/apply/applicant/api/routes/submissions/${grantSubmissionId}/download-summary`}
                 >
-                  download a copy of your answers (Zip)
+                  download a copy of your answers (Odt)
                 </a>{' '}
                 for future reference.
               </p>
