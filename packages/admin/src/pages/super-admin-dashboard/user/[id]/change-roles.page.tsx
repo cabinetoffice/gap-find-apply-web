@@ -18,15 +18,18 @@ type PageBodyResponse = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
+  const findAndApplicantRoles = ['1', '2'];
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
-    const findAndApplicantRoles = ['1', '2'];
     let departmentPageUrl = `/super-admin-dashboard/user/${userId}/change-department`;
+    const oldUserRoles = (await getUserById(userId, jwt)).roles.map(
+      (role) => role.id
+    );
     const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
     const userDepartment = (await getUserById(userId, jwt)).department;
-    //check if the new roles are one of the admin ones instead? if so, call the change department page
-    //better conditional below?? have one url with logic to add query params if needed? do we pass in the numbers as query params or can we pass it as a body instead?
-    if (body.newUserRoles.includes('3') || body.newUserRoles.includes('4')) {
+
+    if (newRolesAreAdminRoles(newUserRoles) && !isAlreadyAdmin(oldUserRoles)) {
+      //if the user is not already an admin and the new roles are admin roles
       departmentPageUrl += `?newRoles=${newUserRoles}`;
     } else {
       await updateUserRoles(userId, newUserRoles, jwt);
@@ -53,16 +56,23 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     userId,
     departmentPageUrl,
   }: Awaited<ReturnType<typeof handleRequest>>) {
-    const ADMIN_ROLES_IDS = ['3', '4', '5'];
-
     const userHasDepartment = userDepartment !== null;
-    const userBecomingApplicant = !newUserRoles.some((role) =>
-      ADMIN_ROLES_IDS.includes(role)
-    );
+    const userBecomingApplicant = !newRolesAreAdminRoles(newUserRoles);
 
     return userHasDepartment || userBecomingApplicant
       ? `/super-admin-dashboard/user/${userId}`
       : departmentPageUrl;
+  }
+
+  function newRolesAreAdminRoles(newRoles: string[]) {
+    const ADMIN_ROLES_IDS = ['3', '4', '5'];
+    return newRoles.some((role) => ADMIN_ROLES_IDS.includes(role));
+  }
+
+  function isAlreadyAdmin(oldRoles: string[]) {
+    if (oldRoles == findAndApplicantRoles) {
+      return false;
+    } else return true;
   }
 
   return QuestionPageGetServerSideProps<

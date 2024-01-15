@@ -3,6 +3,8 @@ import { FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import {
   getChangeDepartmentPage,
+  getUserFromJwt,
+  getUserRoles,
   updateDepartment,
   updateUserRoles,
 } from '../../../../services/SuperAdminService';
@@ -17,18 +19,24 @@ type PageBodyResponse = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
-  const newUserRoles = context.params?.newRoles as string[];
-  //need conditional to check - if there are new roles then update the roles
-  //if the roles contain 3 or 4 then update the roles BEFORE updating the deparmtenr
+  const newUserRolesParam = context.query.newRoles as string;
+
   async function handleRequest(body: PageBodyResponse, jwt: string) {
-    return (
-      await updateDepartment(userId, body.department, jwt),
-      await updateUserRoles(userId, newUserRoles, jwt)
-    );
+    const newUserRoles = newUserRolesParam.split(',');
+
+    if (newRolesAreAdminRoles(newUserRoles)) {
+      await updateUserRoles(userId, newUserRoles, jwt);
+    }
+    return await updateDepartment(userId, body.department, jwt);
   }
 
   function fetchPageData(jwt: string) {
     return getChangeDepartmentPage(userId, jwt);
+  }
+
+  function newRolesAreAdminRoles(newRoles: string[]) {
+    const ADMIN_ROLES_IDS = ['3', '4', '5'];
+    return newRoles.some((role) => ADMIN_ROLES_IDS.includes(role));
   }
 
   return QuestionPageGetServerSideProps<
