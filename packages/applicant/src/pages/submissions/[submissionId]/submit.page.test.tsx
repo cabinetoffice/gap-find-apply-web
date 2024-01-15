@@ -200,7 +200,7 @@ describe('Submit application', () => {
   it('should render cancel link', () => {
     expect(screen.getByRole('link', { name: 'Cancel' })).toHaveProperty(
       'href',
-      `http://localhost/submissions/${submissionId}/sections`
+      `http://localhost/submissions/${submissionId}/summary`
     );
   });
 });
