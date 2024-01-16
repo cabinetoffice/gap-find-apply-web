@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { getQueriesForElement, render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { getApplicationsListById } from '../../services/ApplicationService';
@@ -17,6 +17,7 @@ const MockApplicationData = [
     grantSubmissionId: 'subId1',
     applicationName: 'Application 1',
     submissionStatus: 'IN_PROGRESS',
+    submittedDate: null,
     sections: [
       {
         sectionId: 'string',
@@ -31,6 +32,7 @@ const MockApplicationData = [
     grantSubmissionId: 'subId2',
     applicationName: 'Application 2',
     submissionStatus: 'IN_PROGRESS',
+    submittedDate: null,
     sections: [
       {
         sectionId: 'string',
@@ -45,6 +47,7 @@ const MockApplicationData = [
     grantSubmissionId: 'subId3',
     applicationName: 'Application 3',
     submissionStatus: 'IN_PROGRESS',
+    submittedDate: null,
     sections: [
       {
         sectionId: 'string',
@@ -62,6 +65,25 @@ const MockApplicationDataSubmitted = [
     grantSubmissionId: 'subId1',
     applicationName: 'Application 1',
     submissionStatus: 'SUBMITTED',
+    submittedDate: '2024-01-15T13:36:06.861109Z',
+    sections: [
+      {
+        sectionId: 'string',
+        sectionTitle: 'string',
+        sectionStatus: 'string',
+      },
+    ],
+  },
+];
+
+const MockApplicationDataGrantClosed = [
+  {
+    grantSchemeId: 'string',
+    grantApplicationId: 'string',
+    grantSubmissionId: 'subId1',
+    applicationName: 'Application 1',
+    submissionStatus: 'GRANT_CLOSED',
+    submittedDate: null,
     sections: [
       {
         sectionId: 'string',
@@ -77,6 +99,20 @@ const context = {
 } as unknown as GetServerSidePropsContext;
 const props = {
   applicationData: MockApplicationData,
+};
+
+const getRow = (name: string) =>
+  screen.getByRole('rowheader', { name }).closest('tr');
+const getActionForRow = (row: HTMLElement, name: string) =>
+  getQueriesForElement(row).getByRole('link', { name });
+const getTextForRow = (row: HTMLElement, text: string) =>
+  getQueriesForElement(row).getByText(text);
+
+const assertHasAllHeaders = () => {
+  expect(screen.getByRole('columnheader', { name: 'Grant' })).toBeDefined();
+  expect(screen.getByRole('columnheader', { name: 'Status' })).toBeDefined();
+  expect(screen.getByRole('columnheader', { name: 'Submitted' })).toBeDefined();
+  expect(screen.getByRole('columnheader', { name: 'Actions' })).toBeDefined();
 };
 
 describe('getServerSideProps', () => {
@@ -125,29 +161,26 @@ describe('View existing applications', () => {
     ).toBeDefined();
   });
 
-  it('should render the table if values are provided', () => {
+  it('should render in progress applications correctly', () => {
+    // 1 header + 3 rows
     expect(screen.getAllByRole('row')).toHaveLength(4);
-    expect(screen.getAllByRole('rowheader')).toHaveLength(3);
+    // 3 rows * 4 columns
+    expect(screen.getAllByRole('cell')).toHaveLength(12);
 
-    expect(screen.getByRole('row', { name: 'Name of grant' })).toBeDefined();
+    assertHasAllHeaders();
 
-    expect(screen.getByRole('link', { name: 'Application 1' })).toHaveProperty(
-      'href',
-      'http://localhost/apply/applicant/submissions/subId1/sections'
-    );
-    expect(screen.getByRole('link', { name: 'Application 2' })).toHaveProperty(
-      'href',
-      'http://localhost/apply/applicant/submissions/subId2/sections'
-    );
-    expect(screen.getByRole('link', { name: 'Application 3' })).toHaveProperty(
-      'href',
-      'http://localhost/apply/applicant/submissions/subId3/sections'
-    );
+    MockApplicationData.forEach((submission) => {
+      const row = getRow(submission.applicationName);
+      const sectionLink = `http://localhost/apply/applicant/submissions/${submission.grantSubmissionId}/sections`;
+      expect(getActionForRow(row, 'Edit')).toHaveProperty('href', sectionLink);
+      expect(getTextForRow(row, 'In Progress')).toBeInTheDocument();
+      expect(getTextForRow(row, '-')).toBeInTheDocument();
+    });
   });
 });
 
-describe('Renders conditional links', () => {
-  it('should render the application link as text if the application has been submitted', () => {
+describe('Submitted applications', () => {
+  it('should render submitted applications correctly', () => {
     render(
       <RouterContext.Provider
         value={createMockRouter({
@@ -157,17 +190,49 @@ describe('Renders conditional links', () => {
         <ExistingApplications applicationData={MockApplicationDataSubmitted} />
       </RouterContext.Provider>
     );
+    // 1 header + 1 row
     expect(screen.getAllByRole('row')).toHaveLength(2);
-    expect(screen.getAllByRole('rowheader')).toHaveLength(1);
+    // 1 row * 4 columns
+    expect(screen.getAllByRole('cell')).toHaveLength(4);
 
-    expect(screen.getByRole('row', { name: 'Name of grant' })).toBeDefined();
+    assertHasAllHeaders();
 
-    expect(
-      screen.getByRole('rowheader', { name: 'Application 1' })
-    ).not.toHaveProperty(
+    const row = getRow('Application 1');
+    expect(getActionForRow(row, 'View')).toHaveProperty(
       'href',
-      'http://localhost/submissions/subId1/sections'
+      'http://localhost/apply/applicant/submissions/subId1/summary'
     );
+    expect(getTextForRow(row, 'Submitted')).toBeInTheDocument();
+    expect(getTextForRow(row, '15 January 2024')).toBeInTheDocument();
+  });
+});
+
+describe('Closed applications', () => {
+  it('should render closed applications correctly', () => {
+    render(
+      <RouterContext.Provider
+        value={createMockRouter({
+          pathname: `/applications`,
+        })}
+      >
+        <ExistingApplications
+          applicationData={MockApplicationDataGrantClosed}
+        />
+      </RouterContext.Provider>
+    );
+    // 1 header + 1 row
+    expect(screen.getAllByRole('row')).toHaveLength(2);
+    // 1 row * 4 columns
+    expect(screen.getAllByRole('cell')).toHaveLength(4);
+
+    assertHasAllHeaders();
+
+    const row = getRow('Application 1');
+    expect(getTextForRow(row, 'Grant Closed')).toBeInTheDocument();
+    expect(getQueriesForElement(row).getAllByText('-')).toHaveLength(2);
+    expect(
+      getQueriesForElement(row).queryByRole('link')
+    ).not.toBeInTheDocument();
   });
 });
 
