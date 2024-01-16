@@ -1,4 +1,4 @@
-import Meta from '../components/layout/Meta';
+import Meta from '../../components/layout/Meta';
 import {
   Button,
   ButtonTypePropertyEnum,
@@ -7,15 +7,26 @@ import {
   TextArea,
   ValidationError,
 } from 'gap-web-ui';
-import { postSurveyResponse } from '../services/satisfactionSurveyService';
+import { postSurveyResponse } from '../../services/SatisfactionSurveyService';
 import getConfig from 'next/config';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import { getSessionIdFromCookies } from '../../utils/session';
+// import { AxiosError } from 'axios';
+// import { generateErrorPageRedirectV2 } from '../../utils/serviceErrorHelpers';
+// import CustomError from '../../types/CustomError';
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+  query,
+  req,
+}) => {
   const fieldErrors: ValidationError[] = query.fieldErrors
     ? [JSON.parse(query.fieldErrors as string)]
     : [];
+
+  const sessionId = getSessionIdFromCookies(req);
+
+  const schemeId = 1;
 
   const backendUrl = `${
     getConfig().serverRuntimeConfig.backendHost
@@ -25,11 +36,18 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     props: {
       backendUrl,
       fieldErrors,
+      schemeId,
+      sessionId,
     },
   };
 };
 
-const Survey = ({ backendUrl, fieldErrors }: surveyProps) => {
+const Survey = ({
+  backendUrl,
+  fieldErrors,
+  schemeId,
+  sessionId,
+}: surveyProps) => {
   const router = useRouter();
 
   return (
@@ -52,10 +70,19 @@ const Survey = ({ backendUrl, fieldErrors }: surveyProps) => {
           <ErrorBanner fieldErrors={fieldErrors} />
           <form
             onSubmit={async (e) => {
-              const res: any = await postSurveyResponse(e, backendUrl);
-              router.replace(
-                res?.request?.responseURL ? res.request.responseURL : res
-              );
+              try {
+                await postSurveyResponse(e, sessionId, backendUrl);
+              } catch (e) {
+                // TODO: Getting a 200 OK error when submitting - why? All works fine.
+                // const error = e as AxiosError;
+                // const errorMessageObject = error.response?.data as CustomError;
+                // return generateErrorPageRedirectV2(
+                //   errorMessageObject.code,
+                //   `/scheme/${schemeId}`
+                // );
+                router.replace(`/scheme/` + schemeId);
+              }
+              router.replace(`/scheme/` + schemeId);
             }}
           >
             <Radio
@@ -107,6 +134,8 @@ const Survey = ({ backendUrl, fieldErrors }: surveyProps) => {
 type surveyProps = {
   backendUrl: string;
   fieldErrors: ValidationError[];
+  schemeId: string;
+  sessionId: string;
 };
 
 export default Survey;
