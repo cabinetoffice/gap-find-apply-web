@@ -1,6 +1,5 @@
 import { ReactElement } from 'react';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import SubmissionSummary, { QuestionRow, SectionCard } from './summary.page';
 
 jest.mock('./sections/[sectionId]/processMultiResponse', () => {

@@ -74,13 +74,19 @@ export const getServerSideProps: GetServerSideProps<
     })
   );
 
-  const mandatoryQuestionService = GrantMandatoryQuestionService.getInstance();
-  const mandatoryQuestionDto =
-    await mandatoryQuestionService.getMandatoryQuestionBySubmissionId(
-      submissionId,
-      jwt
-    );
-  const mandatoryQuestionId = mandatoryQuestionDto.id;
+  let mandatoryQuestionId = null;
+  try {
+    const mandatoryQuestionService =
+      GrantMandatoryQuestionService.getInstance();
+    const mandatoryQuestionDto =
+      await mandatoryQuestionService.getMandatoryQuestionBySubmissionId(
+        submissionId,
+        jwt
+      );
+    mandatoryQuestionId = mandatoryQuestionDto?.id || null;
+  } catch (e) {
+    // do nothing
+  }
 
   return {
     props: {
@@ -145,6 +151,7 @@ export default function SubmissionSummary({
                 <a
                   className="govuk-link govuk-link--no-visited-state"
                   href={''}
+                  style={{ pointerEvents: 'none' }}
                 >
                   download a copy of your answers (ODT)
                 </a>{' '}
@@ -260,10 +267,15 @@ export const QuestionRow = ({ question, readOnly }) => {
           className="govuk-summary-list__actions"
           aria-describedby={`change-button-${questionId}`}
         >
-          <Link href={''} id={`change-button-${questionId}`}>
+          <Link
+            href={''}
+            id={`change-button-${questionId}`}
+            style={{ pointerEvents: 'none' }}
+          >
             <a
               className="govuk-link govuk-link--no-visited-state"
               data-cy={`cy-section-details-navigation-${questionId}`}
+              style={{ pointerEvents: 'none' }}
             >
               {response || multiResponse ? 'Change' : 'Add'}
             </a>
