@@ -8,6 +8,7 @@ import {
 } from '../../services/ApplicationService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
+import Link from 'next/link';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
@@ -86,33 +87,39 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                           aria-describedby={`submission-link-${application.grantSubmissionId}`}
                         >
                           {application.submissionStatus === 'SUBMITTED' ? (
-                            <a
+                            <Link
                               href={
                                 '/apply/applicant' +
                                 routes.submissions.summary(
                                   application.grantSubmissionId
                                 )
                               }
-                              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-                              data-cy={`cy-application-link-${application.applicationName}`}
-                              id={`submission-link-${application.grantSubmissionId}`}
                             >
-                              View
-                            </a>
+                              <a
+                                className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+                                data-cy={`cy-application-link-${application.applicationName}`}
+                                id={`submission-link-${application.grantSubmissionId}`}
+                              >
+                                View
+                              </a>
+                            </Link>
                           ) : (
-                            <a
+                            <Link
                               href={
                                 '/apply/applicant' +
                                 routes.submissions.sections(
                                   application.grantSubmissionId
                                 )
                               }
-                              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-                              data-cy={`cy-application-link-${application.applicationName}`}
-                              id={`submission-link-${application.grantSubmissionId}`}
                             >
-                              Edit
-                            </a>
+                              <a
+                                className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+                                data-cy={`cy-application-link-${application.applicationName}`}
+                                id={`submission-link-${application.grantSubmissionId}`}
+                              >
+                                Edit
+                              </a>
+                            </Link>
                           )}
                         </td>
 
