@@ -1,6 +1,6 @@
 import {
   Checkboxes,
-  DateInput,
+  DateTimeInput,
   FlexibleQuestionPageLayout,
   Radio,
   RichText,
@@ -14,6 +14,7 @@ import Meta from '../../../../../../components/layout/Meta';
 import InferProps from '../../../../../../types/InferProps';
 import { getServerSideProps } from './[pageId].getServerSideProps';
 import { useRouter } from 'next/router';
+import moment from 'moment';
 
 export { getServerSideProps };
 
@@ -69,6 +70,22 @@ const Page = ({
     return undefined;
   };
 
+  const adjustTimeForMidnight = (multiResponse: string[]) => {
+    const date = moment(
+      `${multiResponse[2]}-${multiResponse[1]}-${multiResponse[0]} 23:59`,
+      'YYYY-MM-DD HH:mm'
+    );
+    date.subtract(1, 'days');
+
+    return [
+      date.format('DD'),
+      date.format('MM'),
+      date.format('YYYY'),
+      '23',
+      '59',
+    ];
+  };
+
   const multipleQuestionPage = questions.length > 1;
 
   return (
@@ -116,7 +133,7 @@ const Page = ({
             switch (question.responseType) {
               case 'DATE': {
                 let dateValues;
-
+                let timeValues;
                 if (previousValues) {
                   dateValues = {
                     day: previousValues[`${question.questionId}-day`] as string,
@@ -127,19 +144,60 @@ const Page = ({
                       `${question.questionId}-year`
                     ] as string,
                   };
-                } else if (question.response) {
-                  dateValues = {
-                    day: question.response.multiResponse[0],
-                    month: question.response.multiResponse[1],
-                    year: question.response.multiResponse[2],
+
+                  const timeString =
+                    previousValues[`${question.questionId}-time`];
+
+                  const [hour, minute] =
+                    typeof timeString === 'string'
+                      ? timeString.split(':')
+                      : [undefined, undefined];
+
+                  timeValues = {
+                    hour,
+                    minute,
                   };
+                } else if (question.response) {
+                  if (
+                    question.questionId === 'grantApplicationCloseDate' &&
+                    question.response.multiResponse[3] === '00' &&
+                    question.response.multiResponse[4] === '00'
+                  ) {
+                    const adjustedResponse = adjustTimeForMidnight(
+                      question.response.multiResponse
+                    );
+                    dateValues = {
+                      day: adjustedResponse[0],
+                      month: adjustedResponse[1],
+                      year: adjustedResponse[2],
+                    };
+                    timeValues = {
+                      hour: adjustedResponse[3],
+                      minute: adjustedResponse[4],
+                    };
+                  } else {
+                    dateValues = {
+                      day: question.response.multiResponse[0],
+                      month: question.response.multiResponse[1],
+                      year: question.response.multiResponse[2],
+                    };
+                    timeValues = {
+                      hour: question.response.multiResponse[3],
+                      minute: question.response.multiResponse[4],
+                    };
+                  }
                 }
 
                 return (
-                  <DateInput
+                  <DateTimeInput
                     {...commonResponseProps}
-                    defaultValues={dateValues}
-                  />
+                    dateDefaultValues={dateValues}
+                    timeDefaultValues={
+                      timeValues
+                        ? `${timeValues.hour}:${timeValues.minute}`
+                        : undefined
+                    }
+                  ></DateTimeInput>
                 );
               }
               case 'RICH_TEXT':
