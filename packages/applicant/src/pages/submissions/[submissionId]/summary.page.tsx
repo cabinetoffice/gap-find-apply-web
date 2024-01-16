@@ -75,13 +75,19 @@ export const getServerSideProps: GetServerSideProps<
     })
   );
 
-  const mandatoryQuestionService = GrantMandatoryQuestionService.getInstance();
-  const mandatoryQuestionDto =
-    await mandatoryQuestionService.getMandatoryQuestionBySubmissionId(
-      submissionId,
-      jwt
-    );
-  const mandatoryQuestionId = mandatoryQuestionDto.id;
+  let mandatoryQuestionId = null;
+  try {
+    const mandatoryQuestionService =
+      GrantMandatoryQuestionService.getInstance();
+    const mandatoryQuestionDto =
+      await mandatoryQuestionService.getMandatoryQuestionBySubmissionId(
+        submissionId,
+        jwt
+      );
+    mandatoryQuestionId = mandatoryQuestionDto?.id || null;
+  } catch (e) {
+    // do nothing
+  }
 
   return {
     props: {
