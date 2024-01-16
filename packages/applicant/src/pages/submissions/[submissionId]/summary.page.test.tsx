@@ -1,6 +1,5 @@
 import { ReactElement } from 'react';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import SubmissionSummary, { QuestionRow, SectionCard } from './summary.page';
 
 jest.mock('./sections/[sectionId]/processMultiResponse', () => {
@@ -106,6 +105,11 @@ describe('SubmissionSummary', () => {
     expect(screen.getByText('My Mock Application')).toBeInTheDocument();
     expect(screen.getByText('Your application')).toBeInTheDocument();
 
+    expect(screen.getByRole('link', { name: 'Back' })).toHaveProperty(
+      'href',
+      `http://localhost/applications`
+    );
+
     expect(
       screen.getByRole('button', { name: 'Return to your profile' })
     ).toHaveProperty('href', `http://localhost/applications`);
@@ -114,6 +118,10 @@ describe('SubmissionSummary', () => {
   it('renders "Submit application" button when application has not been submitted', () => {
     render(<SubmissionSummary {...mockProps} />);
     expect(screen.getByText('My Mock Application')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Back' })).toHaveProperty(
+      'href',
+      `http://localhost/submissions/${mockProps.grantSubmissionId}/sections`
+    );
     expect(
       screen.getByText('Check your answers before submitting your application')
     ).toBeInTheDocument();
