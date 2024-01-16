@@ -153,7 +153,7 @@ export default function SubmissionSummary({
                   style={{ pointerEvents: 'none' }}
                   href={`/apply/applicant/api/routes/submissions/${grantSubmissionId}/download-summary`}
                 >
-                  download a copy of your answers (Odt)
+                  download a copy of your answers (ODT)
                 </a>{' '}
                 for future reference.
               </p>
