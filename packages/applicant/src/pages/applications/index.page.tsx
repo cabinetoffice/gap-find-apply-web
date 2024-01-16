@@ -5,6 +5,7 @@ import Meta from '../../components/partials/Meta';
 import {
   ApplicationSections,
   getApplicationsListById,
+  getApplicationStatusBySchemeId,
 } from '../../services/ApplicationService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
@@ -15,7 +16,19 @@ import Link from 'next/link';
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
 }) => {
-  const applicationData = await getApplicationsListById(getJwtFromCookies(req));
+  const jwt = getJwtFromCookies(req);
+  let applicationData = await getApplicationsListById(jwt);
+  applicationData = await Promise.all(
+    applicationData.map(async (application) => {
+      return {
+        ...application,
+        grantApplicationStatus: await getApplicationStatusBySchemeId(
+          application.grantSchemeId,
+          jwt
+        ),
+      };
+    })
+  );
   return {
     props: {
       applicationData,
@@ -118,9 +131,12 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
 const ApplicationRow = (application) => {
   const applicationName = application.applicationName;
   const submissionId = application.grantSubmissionId;
-  const applicationStatusTag =
-    APPLICATION_STATUS_TAGS[application.submissionStatus];
-  const isSubmitted = application.submissionStatus === 'SUBMITTED';
+  const submissionStatus =
+    application.grantApplicationStatus === 'REMOVED'
+      ? 'GRANT_CLOSED'
+      : application.submissionStatus;
+  const applicationStatusTag = APPLICATION_STATUS_TAGS[submissionStatus];
+  const isSubmitted = submissionStatus === 'SUBMITTED';
   const applicationLinkText = isSubmitted ? 'View' : 'Edit';
   const applicationLink = isSubmitted
     ? '/apply/applicant' + routes.submissions.summary(submissionId)
@@ -168,18 +184,17 @@ const ApplicationRow = (application) => {
         className="govuk-table__cell"
         aria-describedby={`application-link-${submissionId}`}
       >
-        {application.submissionStatus === 'GRANT_CLOSED' ? (
+        {submissionStatus === 'GRANT_CLOSED' ? (
           '-'
         ) : (
-          <Link href={applicationLink}>
-            <a
-              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-              data-cy={`cy-application-link-${applicationName}`}
-              id={`application-link-${submissionId}`}
-            >
-              {applicationLinkText}
-            </a>
-          </Link>
+          <a
+            href={applicationLink}
+            className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+            data-cy={`cy-application-link-${applicationName}`}
+            id={`application-link-${submissionId}`}
+          >
+            {applicationLinkText}
+          </a>
         )}
       </td>
 
@@ -198,6 +213,7 @@ export interface ApplicationsList {
   grantSchemeId: string;
   applicationName: string;
   grantApplicationId: string;
+  grantApplicationStatus: string;
   submissionStatus: string;
   submittedDate: string;
   sections: ApplicationSections[];
