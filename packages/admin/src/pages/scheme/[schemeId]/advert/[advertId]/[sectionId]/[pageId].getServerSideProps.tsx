@@ -144,6 +144,7 @@ function createQuestionsBody(
           body[`${question.questionId}-day`] as string,
           body[`${question.questionId}-month`] as string,
           body[`${question.questionId}-year`] as string,
+          body[`${question.questionId}-time`] as string,
         ];
         return {
           multiResponse: dateFields,
