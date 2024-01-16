@@ -14,6 +14,7 @@ import Meta from '../../../../../../components/layout/Meta';
 import InferProps from '../../../../../../types/InferProps';
 import { getServerSideProps } from './[pageId].getServerSideProps';
 import { useRouter } from 'next/router';
+import moment from 'moment';
 
 export { getServerSideProps };
 
@@ -73,23 +74,15 @@ const Page = ({
     multiResponse[3] = '23';
     multiResponse[4] = '59';
 
-    const date = new Date(
-      `${multiResponse[1]}/${multiResponse[0]}/${multiResponse[2]} ${multiResponse[3]}:${multiResponse[4]}`
+    const date = moment(
+      `${multiResponse[2]}-${multiResponse[1]}-${multiResponse[0]} ${multiResponse[3]}:${multiResponse[4]}`,
+      'YYYY-MM-DD HH:mm'
     );
-    date.setDate(date.getDate() - 1);
+    date.subtract(1, 'days');
 
-    multiResponse[0] = date.getDate().toLocaleString('en-US', {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
-    });
-    multiResponse[1] = (date.getMonth() + 1).toLocaleString('en-US', {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
-    });
-    multiResponse[2] = date.getFullYear().toLocaleString('en-US', {
-      minimumIntegerDigits: 4,
-      useGrouping: false,
-    });
+    multiResponse[0] = date.format('DD');
+    multiResponse[1] = date.format('MM');
+    multiResponse[2] = date.format('YYYY');
   }
 
   const multipleQuestionPage = questions.length > 1;
