@@ -40,7 +40,7 @@ const DateTimeInput = ({
 
   if (fieldName.includes('Open')) {
     selectOptions = [
-      { label: 'Midnight (0:01 AM)', value: '00:01' },
+      { label: 'Midnight (0:01 AM)', value: '00:00' },
       ...selectOptions,
     ];
     timeDefaultValue = !timeDefaultValue
