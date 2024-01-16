@@ -10,6 +10,7 @@ import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import moment from 'moment';
 import { APPLICATION_STATUS_TAGS } from '../../utils/applicationStatusTags';
+import Link from 'next/link';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
@@ -170,14 +171,15 @@ const ApplicationRow = (application) => {
         {application.submissionStatus === 'GRANT_CLOSED' ? (
           '-'
         ) : (
-          <a
-            href={applicationLink}
-            className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-            data-cy={`cy-application-link-${applicationName}`}
-            id={`application-link-${submissionId}`}
-          >
-            {applicationLinkText}
-          </a>
+          <Link href={applicationLink}>
+            <a
+              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+              data-cy={`cy-application-link-${applicationName}`}
+              id={`application-link-${submissionId}`}
+            >
+              {applicationLinkText}
+            </a>
+          </Link>
         )}
       </td>
 
