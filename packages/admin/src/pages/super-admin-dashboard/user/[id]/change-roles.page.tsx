@@ -23,21 +23,25 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
     let departmentPageUrl = `/super-admin-dashboard/user/${userId}/change-department`;
-    const oldUserRoles = (await getUserById(userId, jwt)).roles.map(
-      (role) => role.id
+    const oldUserRoles = (await getUserById(userId, jwt)).roles.map((role) =>
+      String(role.id)
     );
+    console.log('oldUserRoles', oldUserRoles);
     const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
+    console.log('newUserRoles', newUserRoles);
     const userDepartment = (await getUserById(userId, jwt)).department;
 
     if (newRolesAreAdminRoles(newUserRoles) && !isAlreadyAdmin(oldUserRoles)) {
-      console.log(
-        'IT DOES NOT MAKE IT TO THE CALL TO UPDAET ROLES, INSTEAD IT APPENDS TO THE DEPARTMENT URL'
-      );
       departmentPageUrl += `?newRoles=${newUserRoles}`;
+    } else if (
+      newRolesAreAdminRoles(newUserRoles) &&
+      isAlreadyAdmin(oldUserRoles)
+    ) {
+      await updateUserRoles(userId, newUserRoles, jwt);
     } else {
-      console.log('IT DOES MAKE IT TO THE CALL TO UPDAET ROLES');
       await updateUserRoles(userId, newUserRoles, jwt);
     }
+
     return { userDepartment, newUserRoles, userId, departmentPageUrl };
   }
 
