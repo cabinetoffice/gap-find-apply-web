@@ -21,7 +21,7 @@ describe('DateTimeInput component', () => {
   it('Should render default time input options if no overriding options are provided', () => {
     render(component);
     const times = [
-      { label: '12:01am', value: '00:01' },
+      { label: 'Midnight (0:01 AM)', value: '00:00' },
       { label: '1am', value: '01:00' },
       { label: '2am', value: '02:00' },
       { label: '3am', value: '03:00' },
@@ -33,7 +33,7 @@ describe('DateTimeInput component', () => {
       { label: '9am', value: '09:00' },
       { label: '10am', value: '10:00' },
       { label: '11am', value: '11:00' },
-      { label: '12pm', value: '12:00' },
+      { label: 'Midday (12:00 PM)', value: '12:00' },
       { label: '1pm', value: '13:00' },
       { label: '2pm', value: '14:00' },
       { label: '3pm', value: '15:00' },
@@ -45,7 +45,6 @@ describe('DateTimeInput component', () => {
       { label: '9pm', value: '21:00' },
       { label: '10pm', value: '22:00' },
       { label: '11pm', value: '23:00' },
-      { label: '11:59pm', value: '23:59' },
     ];
 
     times.forEach((time) => {
