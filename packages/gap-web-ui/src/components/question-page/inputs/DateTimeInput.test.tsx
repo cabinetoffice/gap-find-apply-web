@@ -21,7 +21,7 @@ describe('DateTimeInput component', () => {
   it('Should render default time input options if no overriding options are provided', () => {
     render(component);
     const times = [
-      { label: 'Midnight (0:01 AM)', value: '00:01' },
+      { label: 'Midnight (0:01 AM)', value: '00:00' },
       { label: '1am', value: '01:00' },
       { label: '2am', value: '02:00' },
       { label: '3am', value: '03:00' },
