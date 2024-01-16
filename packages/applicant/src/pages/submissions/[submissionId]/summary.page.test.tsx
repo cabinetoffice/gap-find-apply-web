@@ -528,4 +528,48 @@ describe('QuestionRow', () => {
 
     expect(screen.getByText('Multi Response')).toBeInTheDocument();
   });
+
+  it('does not call ProcessMultiResponse when multiResponse is empty array', () => {
+    const multiResponseQuestion = {
+      ...mockQuestion,
+      multiResponse: [],
+      response: null,
+    };
+    const mockProps = {
+      question: multiResponseQuestion,
+      mandatoryQuestionId: '123',
+      submissionId: '456',
+      section: {
+        sectionId: '789',
+      },
+      readOnly: false,
+    };
+
+    render(<QuestionRow {...mockProps} />);
+
+    expect(screen.queryByText('Multi Response')).not.toBeInTheDocument();
+    expect(screen.getByText('-')).toBeInTheDocument();
+  });
+
+  it('does not call ProcessMultiResponse when multiResponse is array with empty strings', () => {
+    const multiResponseQuestion = {
+      ...mockQuestion,
+      multiResponse: ['', '', ''],
+      response: null,
+    };
+    const mockProps = {
+      question: multiResponseQuestion,
+      mandatoryQuestionId: '123',
+      submissionId: '456',
+      section: {
+        sectionId: '789',
+      },
+      readOnly: false,
+    };
+
+    render(<QuestionRow {...mockProps} />);
+
+    expect(screen.queryByText('Multi Response')).not.toBeInTheDocument();
+    expect(screen.getByText('-')).toBeInTheDocument();
+  });
 });

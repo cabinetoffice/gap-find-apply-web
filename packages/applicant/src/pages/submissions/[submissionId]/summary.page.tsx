@@ -249,10 +249,12 @@ export const QuestionRow = ({
 }) => {
   const { questionId, fieldTitle, multiResponse, responseType, response } =
     question;
+  const hasMultiResponse =
+    multiResponse?.length > 0 && multiResponse.some(Boolean);
   return (
     <div className="govuk-summary-list__row">
       <dt className="govuk-summary-list__key">{fieldTitle}</dt>
-      {multiResponse ? (
+      {hasMultiResponse ? (
         <ProcessMultiResponse
           data={multiResponse}
           id={questionId}
@@ -287,7 +289,7 @@ export const QuestionRow = ({
               className="govuk-link govuk-link--no-visited-state"
               data-cy={`cy-section-details-navigation-${questionId}`}
             >
-              {response || multiResponse ? 'Change' : 'Add'}
+              {response || hasMultiResponse ? 'Change' : 'Add'}
             </a>
           </Link>
         </dd>
