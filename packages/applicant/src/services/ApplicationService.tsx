@@ -41,6 +41,7 @@ export interface ApplicationsList {
   grantSubmissionId: string;
   applicationName: string;
   submissionStatus: string;
+  submittedDate: string;
   sections: ApplicationSections[];
 }
 
