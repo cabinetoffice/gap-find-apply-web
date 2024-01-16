@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { getQueriesForElement, render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { getApplicationsListById } from '../../services/ApplicationService';
@@ -79,6 +79,11 @@ const props = {
   applicationData: MockApplicationData,
 };
 
+const getRow = (name: string) =>
+  screen.getByRole('rowheader', { name }).closest('tr');
+const getAction = (row: HTMLElement, name: string) =>
+  getQueriesForElement(row).getByRole('link', { name });
+
 describe('getServerSideProps', () => {
   it('should return the correct props', async () => {
     (getApplicationsListById as jest.Mock).mockReturnValue(MockApplicationData);
@@ -126,23 +131,19 @@ describe('View existing applications', () => {
   });
 
   it('should render the table if values are provided', () => {
+    // 1 header + 3 rows
     expect(screen.getAllByRole('row')).toHaveLength(4);
-    expect(screen.getAllByRole('rowheader')).toHaveLength(3);
+    // 3 rows * 2 columns
+    expect(screen.getAllByRole('cell')).toHaveLength(6);
 
-    expect(screen.getByRole('row', { name: 'Name of grant' })).toBeDefined();
+    expect(screen.getByRole('columnheader', { name: 'Grant' })).toBeDefined();
+    expect(screen.getByRole('columnheader', { name: 'Actions' })).toBeDefined();
 
-    expect(screen.getByRole('link', { name: 'Application 1' })).toHaveProperty(
-      'href',
-      'http://localhost/apply/applicant/submissions/subId1/sections'
-    );
-    expect(screen.getByRole('link', { name: 'Application 2' })).toHaveProperty(
-      'href',
-      'http://localhost/apply/applicant/submissions/subId2/sections'
-    );
-    expect(screen.getByRole('link', { name: 'Application 3' })).toHaveProperty(
-      'href',
-      'http://localhost/apply/applicant/submissions/subId3/sections'
-    );
+    MockApplicationData.forEach((submission) => {
+      const row = getRow(submission.applicationName);
+      const sectionLink = `http://localhost/apply/applicant/submissions/${submission.grantSubmissionId}/sections`;
+      expect(getAction(row, 'Edit')).toHaveProperty('href', sectionLink);
+    });
   });
 });
 
@@ -157,16 +158,17 @@ describe('Renders conditional links', () => {
         <ExistingApplications applicationData={MockApplicationDataSubmitted} />
       </RouterContext.Provider>
     );
+    // 1 header + 1 row
     expect(screen.getAllByRole('row')).toHaveLength(2);
-    expect(screen.getAllByRole('rowheader')).toHaveLength(1);
+    // 1 row * 2 columns
+    expect(screen.getAllByRole('cell')).toHaveLength(2);
 
-    expect(screen.getByRole('row', { name: 'Name of grant' })).toBeDefined();
+    expect(screen.getByRole('columnheader', { name: 'Grant' })).toBeDefined();
+    expect(screen.getByRole('columnheader', { name: 'Actions' })).toBeDefined();
 
-    expect(
-      screen.getByRole('rowheader', { name: 'Application 1' })
-    ).not.toHaveProperty(
+    expect(getAction(getRow('Application 1'), 'View')).toHaveProperty(
       'href',
-      'http://localhost/submissions/subId1/sections'
+      'http://localhost/apply/applicant/submissions/subId1/summary'
     );
   });
 });
