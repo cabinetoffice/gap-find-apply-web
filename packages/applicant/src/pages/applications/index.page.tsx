@@ -11,7 +11,6 @@ import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import moment from 'moment';
 import { APPLICATION_STATUS_TAGS } from '../../utils/applicationStatusTags';
-import Link from 'next/link';
 
 export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
   req,
@@ -131,6 +130,7 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
 const ApplicationRow = (application) => {
   const applicationName = application.applicationName;
   const submissionId = application.grantSubmissionId;
+  // TODO This should be done on the backend https://technologyprogramme.atlassian.net/browse/GAP-2390
   const submissionStatus =
     application.grantApplicationStatus === 'REMOVED'
       ? 'GRANT_CLOSED'
@@ -213,7 +213,6 @@ export interface ApplicationsList {
   grantSchemeId: string;
   applicationName: string;
   grantApplicationId: string;
-  grantApplicationStatus: string;
   submissionStatus: string;
   submittedDate: string;
   sections: ApplicationSections[];
