@@ -6,3 +6,7 @@ $govuk-assets-path: $sub_path + '/assets/';
 @include govuk-exports('govuk/core/links') {
 }
 @import 'navigation';
+
+html {
+  background-color: #f3f2f1;
+}

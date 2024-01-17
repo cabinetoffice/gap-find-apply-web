@@ -1,5 +1,5 @@
 import { startCase, toLower } from 'lodash';
-import React, { ElementType, FC } from 'react';
+import React, { FC } from 'react';
 import { RadioOption } from '../../../types/InputType';
 import { ErrorMessage } from '../../display-errors';
 import { InputComponentProps } from './InputComponentProps';

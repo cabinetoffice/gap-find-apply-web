@@ -65,13 +65,13 @@ export const routes = {
   api: {
     submissions: {
       section: (grantSubmissionId: string, sectionId: string) =>
-        `/api/submissions/${grantSubmissionId}/sections/${sectionId}`,
+        `/api/routes/submissions/${grantSubmissionId}/sections/${sectionId}`,
       question: (
         grantSubmissionId: string,
         sectionId: string,
         questionId: string
       ) =>
-        `/api/submissions/${grantSubmissionId}/sections/${sectionId}/questions/${questionId}`,
+        `/api/routes/submissions/${grantSubmissionId}/sections/${sectionId}/questions/${questionId}`,
     },
     isNewApplicant: {
       index: (status?: MigrationStatus) =>
@@ -81,10 +81,6 @@ export const routes = {
     },
     createMandatoryQuestion: (schemeId: string) =>
       `/api/create-mandatory-question?schemeId=${schemeId}`,
-    mandatoryQuestions: {
-      createSubmission: (mandatoryQuestionId: string, schemeId: string) =>
-        `/api/mandatory-questions/${mandatoryQuestionId}/create-submission?schemeId=${schemeId}`,
-    },
   },
 };
 

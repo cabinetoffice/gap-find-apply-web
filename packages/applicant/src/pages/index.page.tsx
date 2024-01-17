@@ -4,8 +4,6 @@ import Layout from '../components/partials/Layout';
 import Meta from '../components/partials/Meta';
 import { getLoginUrl } from '../utils/general';
 import getConfig from 'next/config';
-import { AuthContext } from './_app.page';
-import { useContext } from 'react';
 
 export const getServerSideProps: GetServerSideProps = (req) => {
   let loginUrl = getLoginUrl();
@@ -19,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = (req) => {
   }
   return Promise.resolve({
     props: {
-      loginUrl: loginUrl,
+      loginUrl,
       registerUrl: `${process.env.USER_SERVICE_URL}/register`,
       oneLoginEnabled: process.env.ONE_LOGIN_ENABLED,
     },

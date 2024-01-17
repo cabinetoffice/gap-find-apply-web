@@ -44,7 +44,7 @@ describe('api', () => {
           'sectionId'
         );
         expect(url).toBe(
-          `/api/submissions/grantSubmissionId/sections/sectionId`
+          `/api/routes/submissions/grantSubmissionId/sections/sectionId`
         );
       });
     });
@@ -56,7 +56,7 @@ describe('api', () => {
           'questionId'
         );
         expect(url).toBe(
-          `/api/submissions/grantSubmissionId/sections/sectionId/questions/questionId`
+          `/api/routes/submissions/grantSubmissionId/sections/sectionId/questions/questionId`
         );
       });
     });
@@ -66,21 +66,6 @@ describe('api', () => {
       const schemeId = 'schemeId';
       const expectedURL = `/api/create-mandatory-question?schemeId=${schemeId}`;
       expect(routes.api.createMandatoryQuestion(schemeId)).toBe(expectedURL);
-    });
-  });
-  describe('api.mandatoryQuestions', () => {
-    describe('Api.mandatoryQuestions.createSubmission', () => {
-      it('should generate the correct URL', () => {
-        const schemeId = 'schemeId';
-        const mandatoryQuestionId = 'exampleMandatoryQuestionId';
-        const expectedURL = `/api/mandatory-questions/${mandatoryQuestionId}/create-submission?schemeId=${schemeId}`;
-        expect(
-          routes.api.mandatoryQuestions.createSubmission(
-            mandatoryQuestionId,
-            schemeId
-          )
-        ).toBe(expectedURL);
-      });
     });
   });
   describe('isNewApplicant', () => {

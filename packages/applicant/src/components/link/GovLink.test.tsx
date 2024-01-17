@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { GovLink, LinkType } from '../link/GovLink';
+import { GovLink } from '../link/GovLink';
 
 const component = <GovLink text="Cancel" url="/applicant/organisation" />;
 describe('Gov link component', () => {

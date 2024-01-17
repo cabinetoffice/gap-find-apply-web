@@ -4,6 +4,10 @@ export type Department = {
   name: string;
 };
 
+export type ChangeDepartmentDto = {
+  departmentId: string;
+};
+
 export type Role = {
   id: string;
   name: string;
@@ -12,6 +16,7 @@ export type Role = {
 };
 
 export type User = {
+  colaSub: string;
   gapUserId: string;
   emailAddress: string;
   sub: string;

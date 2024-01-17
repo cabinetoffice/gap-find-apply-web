@@ -4,6 +4,10 @@ import InferProps from '../../../../../../types/InferProps';
 import { getPageProps } from '../../../../../../testUtils/unitTestHelpers';
 import Page, { getServerSideProps, removePTag } from './[pageId].page';
 
+jest.mock('next/router', () => ({
+  useRouter: () => ({ basePath: '/apply/admin' }),
+}));
+
 const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
   advertId: 'testAdvertId',
   csrfToken: 'testCSRFToken',
@@ -32,7 +36,6 @@ const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
   status: 'NOT_STARTED',
   previousValues: null,
   pageId: 'testPageId',
-  tinyMceApiKey: 'testApiKey',
 });
 
 describe('The advert question page', () => {

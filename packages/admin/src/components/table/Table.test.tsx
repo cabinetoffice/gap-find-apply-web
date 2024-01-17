@@ -201,14 +201,14 @@ describe('Table component', () => {
   });
 
   it('table tag should have no tableClassName if not passed', () => {
-    const { tableClassName, ...otherProps } = customProps;
+    const { tableClassName: _, ...otherProps } = customProps;
     render(<Table {...otherProps} />);
     const table = screen.getByRole('table');
     expect(table).toHaveAttribute('class', 'govuk-table ');
   });
 
   it('table tag should have no tableCaptionClassName if not passed', () => {
-    const { tableCaptionClassName, ...otherProps } = customProps;
+    const { tableCaptionClassName: _, ...otherProps } = customProps;
     render(<Table {...otherProps} />);
     const caption = screen.getByTestId('table-caption');
     expect(caption).toHaveAttribute('class', 'govuk-table__caption ');

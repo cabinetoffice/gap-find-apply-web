@@ -483,17 +483,19 @@ describe('Submission section page', () => {
     });
 
     it('should render the summary list keys with the correct href', () => {
-      const sectionData = propsWithAllValues.sections;
       expect(screen.getByText('Non Essential Information')).toBeDefined();
       expect(screen.getByText('Essential Information')).toBeDefined();
       expect(
         screen.getByRole('link', { name: 'Essential Information' })
-      ).toHaveAttribute('href', '/api/submissions/string/sections/ESSENTIAL');
+      ).toHaveAttribute(
+        'href',
+        '/api/routes/submissions/string/sections/ESSENTIAL'
+      );
       expect(
         screen.getByRole('link', { name: 'Non Essential Information' })
       ).toHaveAttribute(
         'href',
-        '/api/submissions/string/sections/NON-ESSENTIAL'
+        '/api/routes/submissions/string/sections/NON-ESSENTIAL'
       );
     });
 
@@ -583,15 +585,15 @@ describe('Submission section page', () => {
       expect(screen.getByText('Essential Information')).toBeDefined();
       expect(screen.getByRole('link', { name: 'Eligibility' })).toHaveAttribute(
         'href',
-        `/api/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[0].sectionId}`
+        `/api/routes/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[0].sectionId}`
       );
       expect(screen.getByText('Essential Information')).not.toHaveAttribute(
         'href',
-        `/api/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[1].sectionId}`
+        `/api/routes/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[1].sectionId}`
       );
       expect(screen.getByText('Non Essential Information')).not.toHaveAttribute(
         'href',
-        `/api/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[2].sectionId}`
+        `/api/routes/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[2].sectionId}`
       );
     });
   });

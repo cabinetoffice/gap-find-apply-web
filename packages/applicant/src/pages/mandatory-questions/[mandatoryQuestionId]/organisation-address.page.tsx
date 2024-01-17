@@ -3,9 +3,8 @@ import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
 import InferProps from '../../../types/InferProps';
-import { routes } from '../../../utils/routes';
-import getServerSideProps from './getServerSideProps';
 import { MQ_ORG_TYPES } from '../../../utils/constants';
+import getServerSideProps from './getServerSideProps';
 
 export { getServerSideProps };
 

@@ -8,6 +8,7 @@ import {
   SectionData,
   SectionReviewBody,
   getSectionById,
+  isApplicantEligible,
   postHasSectionBeenCompleted,
 } from '../../../../../services/SubmissionService';
 import { createMockRouter } from '../../../../../testUtils/createMockRouter';
@@ -157,6 +158,7 @@ describe('getServerSideProps', () => {
   it('should return sections and expected props', async () => {
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
       spiedGetMandatoryQuestionBySubmissionId,
       mockMandatoryQuestionDto
@@ -185,6 +187,7 @@ describe('getServerSideProps', () => {
   it('should return sections and expected props with no csrf Token', async () => {
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
       spiedGetMandatoryQuestionBySubmissionId,
       mockMandatoryQuestionDto
@@ -233,6 +236,7 @@ describe('getServerSideProps', () => {
 
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
       spiedGetMandatoryQuestionBySubmissionId,
       mockMandatoryQuestionDto
@@ -281,6 +285,7 @@ describe('getServerSideProps', () => {
 
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
       spiedGetMandatoryQuestionBySubmissionId,
       mockMandatoryQuestionDto
@@ -342,6 +347,7 @@ describe('getServerSideProps', () => {
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (parseBody as jest.Mock).mockResolvedValue(requestBody);
     (postHasSectionBeenCompleted as jest.Mock).mockReturnValue(acceptedValue);
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     const response = (await getServerSideProps(
       ctx as any
     )) as NextGetServerSidePropsResponse;
@@ -392,10 +398,25 @@ describe('getServerSideProps', () => {
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (parseBody as jest.Mock).mockResolvedValue(requestBody);
     (postHasSectionBeenCompleted as jest.Mock).mockRejectedValue(rejectedValue);
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     const response = (await getServerSideProps(
       ctx as any
     )) as NextGetServerSidePropsResponse;
     expect(response).toEqual(expectedProps);
+  });
+
+  it('Should redirect to sections if eligibility response is set to No', async () => {
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (isApplicantEligible as jest.Mock).mockReturnValue(false);
+
+    const response = await getServerSideProps(context);
+
+    expect(response).toEqual({
+      redirect: {
+        permanent: false,
+        destination: '/submissions/12345678/sections',
+      },
+    });
   });
 });
 

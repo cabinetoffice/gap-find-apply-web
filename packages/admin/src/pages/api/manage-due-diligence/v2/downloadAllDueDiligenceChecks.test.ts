@@ -1,8 +1,8 @@
 import { merge } from 'lodash';
-import { downloadDueDiligenceData } from '../../services/MandatoryQuestionsService';
-import downloadDueDiligenceChecks from './downloadDueDiligenceChecks.page';
+import { downloadMandatoryQuestionsDueDiligenceData } from '../../../../services/MandatoryQuestionsService';
+import downloadAllDueDiligenceChecks from './downloadAllDueDiligenceChecks.page';
 
-jest.mock('../../services/MandatoryQuestionsService');
+jest.mock('../../../../services/MandatoryQuestionsService');
 
 const SCHEME_ID = 'testSchemeId';
 
@@ -15,6 +15,7 @@ const req = (overrides: any = {}) =>
     {
       query: {
         schemeId: SCHEME_ID,
+        internal: 'true',
       },
       headers: {
         referer: `/scheme/${SCHEME_ID}/manage-due-diligence-checks`,
@@ -41,9 +42,11 @@ describe('spotlightExportHandler', () => {
   });
 
   it('Should redirect to service error page when trying to retrieve due diligence export csv file throws an error', async () => {
-    (downloadDueDiligenceData as jest.Mock).mockRejectedValue({});
+    (downloadMandatoryQuestionsDueDiligenceData as jest.Mock).mockRejectedValue(
+      {}
+    );
 
-    await downloadDueDiligenceChecks(req(), res());
+    await downloadAllDueDiligenceChecks(req(), res());
 
     expect(mockedRedirect).toHaveBeenNthCalledWith(
       1,
@@ -52,26 +55,30 @@ describe('spotlightExportHandler', () => {
   });
 
   it('Should redirect to service error page when result for downloadDueDiligenceData is undefined', async () => {
-    (downloadDueDiligenceData as jest.Mock).mockResolvedValue(undefined);
+    (downloadMandatoryQuestionsDueDiligenceData as jest.Mock).mockResolvedValue(
+      undefined
+    );
 
-    await downloadDueDiligenceChecks(req(), res());
+    await downloadAllDueDiligenceChecks(req(), res());
     expect(mockedRedirect).toHaveBeenNthCalledWith(
       1,
       `/apply/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to download due diligence information.","linkAttributes":{"href":"/scheme/testSchemeId/manage-due-diligence-checks","linkText":"Please return","linkInformation":" and try again."}}`
     );
   });
 
-  it('Should set the correct headers and send the data back to client when downloadDueDiligenceData data is retrieved successfully', async () => {
-    (downloadDueDiligenceData as jest.Mock).mockResolvedValue({
-      headers: {
-        'content-disposition': 'Test content disposition',
-        'content-type': 'Test content type',
-        'content-length': 'Test content length',
-      },
-      data: 'Some csv data',
-    });
+  it('Should set the correct headers and send the data back to client when downloadMandatoryQuestionsDueDiligenceData data is retrieved successfully', async () => {
+    (downloadMandatoryQuestionsDueDiligenceData as jest.Mock).mockResolvedValue(
+      {
+        headers: {
+          'content-disposition': 'Test content disposition',
+          'content-type': 'Test content type',
+          'content-length': 'Test content length',
+        },
+        data: 'Some csv data',
+      }
+    );
 
-    await downloadDueDiligenceChecks(req(), res());
+    await downloadAllDueDiligenceChecks(req(), res());
     expect(mockedSetHeader).toHaveBeenCalledTimes(3);
     expect(mockedSetHeader).toHaveBeenCalledWith(
       'Content-Disposition',
@@ -86,5 +93,10 @@ describe('spotlightExportHandler', () => {
       'Test content length'
     );
     expect(mockedSend).toHaveBeenNthCalledWith(1, 'Some csv data');
+    expect(downloadMandatoryQuestionsDueDiligenceData).toHaveBeenCalledWith(
+      'testSessionId',
+      'testSchemeId',
+      'true'
+    );
   });
 });

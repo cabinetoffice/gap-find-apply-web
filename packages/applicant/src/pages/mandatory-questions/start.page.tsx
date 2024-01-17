@@ -6,6 +6,7 @@ import { GrantMandatoryQuestionService } from '../../services/GrantMandatoryQues
 import InferProps from '../../types/InferProps';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
+import { getApplicationStatusBySchemeId } from '../../services/ApplicationService';
 
 export async function getServerSideProps({
   req,
@@ -44,6 +45,15 @@ export async function getServerSideProps({
       },
     };
   }
+  const applicationStatus = await getApplicationStatusBySchemeId(schemeId, jwt);
+  if (applicationStatus === 'REMOVED') {
+    return {
+      redirect: {
+        destination: '/grant-is-closed',
+        permanent: false,
+      },
+    };
+  }
   return {
     props: {
       schemeId,
@@ -53,10 +63,11 @@ export async function getServerSideProps({
 
 export default function MandatoryQuestionsBeforeYouStart({
   schemeId,
-}: InferProps<typeof getServerSideProps>) {
+}: Readonly<InferProps<typeof getServerSideProps>>) {
   return (
     <>
       <Meta title="Before you start" />
+
       <Layout>
         <h1 className="govuk-heading-l">Before you start</h1>
         <p className="govuk-body">

@@ -17,6 +17,7 @@ declare global {
       V2_LOGOUT_URL: string;
       VALIDATE_USER_ROLES_IN_MIDDLEWARE: string;
       ONE_LOGIN_ENABLED: string;
+      FIND_A_GRANT_URL: string;
     }
   }
 }

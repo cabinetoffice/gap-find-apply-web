@@ -128,7 +128,7 @@ describe('Organisation summary page', () => {
     expect(button).toBeInTheDocument();
     expect(button).toHaveAttribute(
       'href',
-      `/api/mandatory-questions/mandatoryQuestionId/create-submission?schemeId=1`
+      `/api/create-submission?schemeId=1&mandatoryQuestionId=mandatoryQuestionId`
     );
   });
 });

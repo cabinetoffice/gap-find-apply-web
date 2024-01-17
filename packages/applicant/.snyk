@@ -47,4 +47,10 @@ ignore:
         dependency - no upgrade currently available
       expires: 2023-12-15T14:10:46.319Z
       created: 2023-11-30T14:10:46.321Z
+  SNYK-JS-AXIOS-6124857:
+    - '*':
+      reason: >-
+        dependency - no upgrade currently available
+      expires: 2024-03-01T14:10:46.319Z
+      created: 2023-12-14T12:14:46.321Z
 patch: {}

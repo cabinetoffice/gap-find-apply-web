@@ -23,11 +23,11 @@ export const getUserSchemes = async (
 };
 
 export const getAdminsSchemes = async (
-  grandAdminId: string,
+  grantAdminId: string,
   sessionId: string
 ) => {
   const response = await axios.get<Scheme[]>(
-    `${BASE_SCHEME_URL}/admin/${grandAdminId}`,
+    `${BASE_SCHEME_URL}/admin/${grantAdminId}`,
     axiosSessionConfig(sessionId)
   );
 

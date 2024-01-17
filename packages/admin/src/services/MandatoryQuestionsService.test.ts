@@ -1,9 +1,7 @@
 import axios from 'axios';
 import {
-  completedMandatoryQuestions,
-  downloadDueDiligenceData,
-  hasSpotlightData,
-  spotlightExport,
+  downloadMandatoryQuestionsDueDiligenceData,
+  hasCompletedMandatoryQuestions,
 } from './MandatoryQuestionsService';
 
 jest.mock('axios');
@@ -13,14 +11,18 @@ describe('MandatoryQuestionsService', () => {
   const BASE_MANDATORY_QUESTIONS_URL =
     process.env.BACKEND_HOST + '/mandatory-questions';
 
-  describe('downloadDueDiligenceData function', () => {
+  describe('downloadMandatoryQuestionsDueDiligenceData function', () => {
     it('Should return due diligence data when a valid schemeId is provided', async () => {
       mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
 
-      await downloadDueDiligenceData('testSessionCookie', 'testSchemeId');
+      await downloadMandatoryQuestionsDueDiligenceData(
+        'testSessionCookie',
+        'testSchemeId',
+        'true'
+      );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/due-diligence/testSchemeId`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/due-diligence/?isInternal=true`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           responseType: 'arraybuffer',
@@ -30,34 +32,18 @@ describe('MandatoryQuestionsService', () => {
     });
   });
 
-  describe('spotlightExport function', () => {
-    it('Should return spotlight binary data when a valid schemeId is provided', async () => {
-      mockedAxios.get.mockResolvedValue({ data: 'Some binary data' });
-
-      await spotlightExport('testSessionCookie', 'testSchemeId');
-
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/spotlight-export/testSchemeId`,
-        {
-          headers: { Cookie: 'SESSION=testSessionCookie;' },
-          responseType: 'arraybuffer',
-          withCredentials: true,
-        }
-      );
-    });
-  });
-
-  describe('completedMandatoryQuestions function', () => {
+  describe('hasCompletedMandatoryQuestions function', () => {
     it('Should return true if a scheme has completed mandatory questions', async () => {
       mockedAxios.get.mockResolvedValue({ data: true });
 
-      const response = await completedMandatoryQuestions(
+      const response = await hasCompletedMandatoryQuestions(
         'testSchemeId',
-        'testSessionCookie'
+        'testSessionCookie',
+        true
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/complete`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/is-completed?isInternal=true`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           withCredentials: true,
@@ -69,51 +55,14 @@ describe('MandatoryQuestionsService', () => {
     it('Should return false if a scheme has no completed mandatory questions', async () => {
       mockedAxios.get.mockResolvedValue({ data: false });
 
-      const response = await completedMandatoryQuestions(
+      const response = await hasCompletedMandatoryQuestions(
         'testSchemeId',
-        'testSessionCookie'
+        'testSessionCookie',
+        true
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/complete`,
-        {
-          headers: { Cookie: 'SESSION=testSessionCookie;' },
-          withCredentials: true,
-        }
-      );
-      expect(response).toBeFalsy();
-    });
-  });
-
-  describe('hasSpotlightData function', () => {
-    it('Should return true if a scheme has completed mandatory questions for spotlight', async () => {
-      mockedAxios.get.mockResolvedValue({ data: true });
-
-      const response = await hasSpotlightData(
-        'testSchemeId',
-        'testSessionCookie'
-      );
-
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/spotlight-complete`,
-        {
-          headers: { Cookie: 'SESSION=testSessionCookie;' },
-          withCredentials: true,
-        }
-      );
-      expect(response).toBeTruthy();
-    });
-
-    it('Should return false if a scheme has no completed mandatory questions for spotlight', async () => {
-      mockedAxios.get.mockResolvedValue({ data: false });
-
-      const response = await hasSpotlightData(
-        'testSchemeId',
-        'testSessionCookie'
-      );
-
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/spotlight-complete`,
+        `${BASE_MANDATORY_QUESTIONS_URL}/scheme/testSchemeId/is-completed?isInternal=true`,
         {
           headers: { Cookie: 'SESSION=testSessionCookie;' },
           withCredentials: true,
