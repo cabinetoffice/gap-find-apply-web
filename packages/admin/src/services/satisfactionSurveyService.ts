@@ -1,24 +1,20 @@
 import axios from 'axios';
-import { FormEvent } from 'react';
 import getConfig from 'next/config';
 import { axiosSessionConfig } from '../utils/session';
 
 // TODO: Why is this not populating?
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
-const BASE_APPLICATION_URL = BACKEND_HOST + '/feedback';
+const BASE_FEEDBACK_URL = BACKEND_HOST + '/feedback';
 
 const postSurveyResponse = async (
-  e: FormEvent<HTMLFormElement>,
+  satisfaction: string,
+  comment: string,
   sessionId: string,
   backendUrl: string,
   userJourney: string
 ) => {
-  e.preventDefault();
-
-  const formData = new FormData(e.currentTarget);
-
-  if (!formData.get('satisfaction') && formData.get('comment') === '') {
+  if (!satisfaction && comment === '') {
     return await axios.post('#', null, {
       params: {
         fieldErrors: {
@@ -30,12 +26,12 @@ const postSurveyResponse = async (
     });
   } else {
     const surveyResponse = {
-      satisfaction: formData.get('satisfaction'),
-      comment: formData.get('comment'),
+      satisfaction: satisfaction,
+      comment: comment,
       journey: userJourney,
     };
 
-    // `${BASE_APPLICATION_URL}/add`
+    // `${BASE_FEEDBACK_URL}/add`
     await axios.post(backendUrl, null, {
       params: surveyResponse,
       ...axiosSessionConfig(sessionId),

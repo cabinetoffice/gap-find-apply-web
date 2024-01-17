@@ -86,20 +86,16 @@ const Survey = ({
           <form
             onSubmit={async (e) => {
               try {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
                 await postSurveyResponse(
-                  e,
+                  formData.get('satisfaction') as string,
+                  formData.get('comment') as string,
                   sessionId,
                   backendUrl,
                   'application'
                 );
               } catch (e) {
-                // TODO: Getting a 200 OK error when submitting - why? All works fine.
-                // const error = e as AxiosError;
-                // const errorMessageObject = error.response?.data as CustomError;
-                // return generateErrorPageRedirectV2(
-                //   errorMessageObject.code,
-                //   `/scheme/${schemeId}`
-                // );
                 router.replace(`/scheme/` + schemeId);
               }
               router.replace(`/scheme/` + schemeId);
