@@ -124,7 +124,7 @@ const checkIfOpeningDateIsInFuture = (
       hour,
       minute,
     ]);
-    return openingDate.isAfter(moment().hour(23).minute(59));
+    return openingDate.isAfter(moment());
   } else {
     return false;
   }
