@@ -11,7 +11,7 @@ import {
 import getConfig from 'next/config';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { postSurveyResponse } from '../../../../../services/satisfactionSurveyService';
+import { postSurveyResponse } from '../../../../../services/SatisfactionSurveyService';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 
 export const getServerSideProps: GetServerSideProps = async ({
@@ -69,12 +69,7 @@ const Survey = ({
           <form
             onSubmit={async (e) => {
               try {
-                await postSurveyResponse(
-                  e,
-                  sessionId,
-                  backendUrl,
-                  'application'
-                );
+                await postSurveyResponse(e, sessionId, backendUrl, 'advert');
               } catch (e) {
                 // TODO: Getting a 200 OK error when submitting - why? All works fine.
                 // const error = e as AxiosError;

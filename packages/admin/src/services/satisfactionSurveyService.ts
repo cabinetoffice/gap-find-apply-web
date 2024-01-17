@@ -32,7 +32,7 @@ const postSurveyResponse = async (
     const surveyResponse = {
       satisfaction: formData.get('satisfaction'),
       comment: formData.get('comment'),
-      journey: { userJourney },
+      journey: userJourney,
     };
 
     // `${BASE_APPLICATION_URL}/add`
