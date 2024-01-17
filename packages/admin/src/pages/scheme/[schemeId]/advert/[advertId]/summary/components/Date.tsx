@@ -61,7 +61,7 @@ export function Date({
         formattedDateTime = date.format('D MMMM YYYY, hh:mm A');
       }
     } else {
-      formattedDateTime = date.format('D MMMM YYYY');
+      formattedDateTime = date.format('D MMMM YYYY, HH:mma');
     }
   } else {
     actionText = 'Add';
