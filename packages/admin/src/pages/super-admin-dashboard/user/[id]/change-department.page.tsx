@@ -21,10 +21,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
-    const newUserRolesParam = context.query.newRoles as string;
-    const newUserRoles = newUserRolesParam.split(',');
+    const newUserRolesParam = context.query?.newRoles as string;
+    const newUserRoles = newUserRolesParam?.split?.(',');
 
-    if (newRolesAreAdminRoles(newUserRoles)) {
+    if (newUserRoles && newRolesAreAdminRoles(newUserRoles)) {
       await updateUserRoles(userId, newUserRoles, jwt);
     }
     return await updateDepartment(userId, body.department, jwt);

@@ -112,10 +112,10 @@ describe('Edit role page', () => {
     });
   });
 
-  test('Should redirect to account overview page as User who is being promoted to APPLICANT', async () => {
+  test('Should redirect to account overview page as User who is being demoted from ADMIN to APPLICANT', async () => {
     mockParseBody.mockResolvedValue({ newUserRoles: ['1', '2'] });
     mockGetUserById.mockResolvedValue(
-      getMockUser([getMockRoles()[0], getMockRoles()[1]])
+      getMockUser([getMockRoles()[0], getMockRoles()[1], getMockRoles()[2]])
     );
     const getDefaultContext = () => ({
       params: { id: '1' },

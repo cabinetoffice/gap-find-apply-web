@@ -26,22 +26,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const oldUserRoles = (await getUserById(userId, jwt)).roles.map((role) =>
       String(role.id)
     );
-    console.log('oldUserRoles', oldUserRoles);
     const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
-    console.log('newUserRoles', newUserRoles);
     const userDepartment = (await getUserById(userId, jwt)).department;
 
     if (newRolesAreAdminRoles(newUserRoles) && !isAlreadyAdmin(oldUserRoles)) {
       departmentPageUrl += `?newRoles=${newUserRoles}`;
-    } else if (
-      newRolesAreAdminRoles(newUserRoles) &&
-      isAlreadyAdmin(oldUserRoles)
-    ) {
-      await updateUserRoles(userId, newUserRoles, jwt);
-    } else {
-      await updateUserRoles(userId, newUserRoles, jwt);
+      return { userDepartment, newUserRoles, userId, departmentPageUrl };
     }
-
+    await updateUserRoles(userId, newUserRoles, jwt);
     return { userDepartment, newUserRoles, userId, departmentPageUrl };
   }
 
