@@ -55,7 +55,7 @@ export default async function getServerSideProps({
     props: {
       organisationType: organisation.type,
       organisationId: organisation.id,
-      csrfToken: res.getHeader('x-csrf-token'),
+      csrfToken: res.getHeader('x-csrf-token') as string,
       formAction: publicRuntimeConfig.subPath + resolvedUrl,
       fieldErrors,
       defaultFields,
