@@ -22,7 +22,7 @@ export type User = {
   sub: string;
   roles: Role[];
   role?: Role;
-  department?: Department;
+  department: Department | null;
   created: string;
 };
 
