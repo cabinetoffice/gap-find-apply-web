@@ -18,7 +18,7 @@ type PageBodyResponse = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
-  const findAndApplicantRoles = ['1', '2'];
+  const APPLICANT_ROLES_IDS = ['1', '2'];
   const ADMIN_ROLES_IDS = ['3', '4', '5'];
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
@@ -26,7 +26,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const oldUserRoles = (await getUserById(userId, jwt)).roles.map((role) =>
       String(role.id)
     );
-    const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
+    const newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
     const userDepartment = (await getUserById(userId, jwt)).department;
 
     if (newRolesAreAdminRoles(newUserRoles) && !isAlreadyAdmin(oldUserRoles)) {
