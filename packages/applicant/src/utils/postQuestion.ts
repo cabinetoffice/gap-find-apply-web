@@ -44,7 +44,7 @@ export default async function postQuestion<B, _R>(
     }
   | { redirect: { destination: string; statusCode: 302 } }
 > {
-  let body: B;
+  let body: any;
   let isRefererCheckYourAnswerScreen: boolean;
   try {
     body = await parseBody(req, '1mb');
