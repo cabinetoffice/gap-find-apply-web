@@ -77,6 +77,7 @@ describe('Edit role page', () => {
   beforeEach(jest.clearAllMocks);
 
   test('Should only check input roles which the queried user has', () => {
+    //user has all roles (see component)
     render(component);
     expect(
       screen.getByText('Find').parentElement?.previousSibling
@@ -86,10 +87,10 @@ describe('Edit role page', () => {
     ).toBeChecked();
     expect(
       screen.getByText('Administrator').parentElement?.previousSibling
-    ).not.toBeChecked();
+    ).toBeChecked();
     expect(
       screen.getByText('Applicant').parentElement?.previousSibling
-    ).not.toBeChecked();
+    ).toBeChecked();
   });
 
   test('Should redirect to change department page as User who is being newly promoted to ADMIN', async () => {
