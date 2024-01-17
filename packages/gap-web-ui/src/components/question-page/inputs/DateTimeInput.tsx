@@ -12,6 +12,8 @@ const DateTimeInput = ({
   ...props
 }: DateTimeProps) => {
   let timeDefaultValue = timeDefaultValues;
+  console.log('timeDefaultValue ', timeDefaultValue);
+  console.log('timeDefaultValues ', timeDefaultValues);
   let selectOptions = [
     { label: '1am', value: '01:00' },
     { label: '2am', value: '02:00' },
@@ -43,17 +45,13 @@ const DateTimeInput = ({
       { label: 'Midnight (0:01 AM)', value: '00:00' },
       ...selectOptions,
     ];
-    timeDefaultValue = !timeDefaultValue
-      ? 'Select an opening time'
-      : timeDefaultValue;
+    timeDefaultValue = !timeDefaultValue ? '00:00' : timeDefaultValue;
   } else if (fieldName.includes('Close')) {
     selectOptions = [
       ...selectOptions,
       { label: 'Midnight (11:59 PM)', value: '23:59' },
     ];
-    timeDefaultValue = !timeDefaultValue
-      ? 'Select a closing time'
-      : timeDefaultValue;
+    timeDefaultValue = !timeDefaultValue ? '23:59' : timeDefaultValue;
   }
 
   return (
