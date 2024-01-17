@@ -23,7 +23,6 @@ import {
   QuestionData,
   QuestionPostBody,
 } from '../../../../../../../services/SubmissionService';
-import { initiateCSRFCookie } from '../../../../../../../utils/csrf';
 import { getJwtFromCookies } from '../../../../../../../utils/jwt';
 import postQuestion from '../../../../../../../utils/postQuestion';
 import { routes } from '../../../../../../../utils/routes';
@@ -93,10 +92,6 @@ export const getServerSideProps: GetServerSideProps<
     fieldErrors = getValidationErrorsFromQuery(query['errors[]']);
   }
 
-  if (req.method !== 'POST') {
-    await initiateCSRFCookie(req, res);
-  }
-
   if (req.method === 'POST') {
     const jwt = getJwtFromCookies(req);
     const result = await postQuestion(
@@ -130,7 +125,7 @@ export const getServerSideProps: GetServerSideProps<
       props: {
         questionData: questionDataWithError,
         grantName: sections.applicationName,
-        csrfToken: (req as any).csrfToken?.() || '',
+        csrfToken: res.getHeader('x-csrf-token') as string,
         isRefererCheckYourAnswerScreen,
       },
     };
@@ -139,7 +134,7 @@ export const getServerSideProps: GetServerSideProps<
     props: {
       questionData,
       grantName: sections.applicationName,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
       isRefererCheckYourAnswerScreen,
     },
   };

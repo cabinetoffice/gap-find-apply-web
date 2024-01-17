@@ -14,8 +14,8 @@ const GovLinkMobile = ({ btn, index }: { btn: LinkContent; index: number }) => {
       id={`${btn.pageId}MobileLink`}
       data-cy={`cy${btn.pageId}PageMobileLink`}
     >
-      <Link href={btn.as} as={btn.link}>
-        <a data-topnav={btn.title}>{btn.title}</a>
+      <Link href={btn.as} as={btn.link} data-topnav={btn.title}>
+        {btn.title}
       </Link>
     </li>
   );

@@ -21,10 +21,8 @@ function BreadCrumbs({ routes = [] }) {
         {Array.isArray(routes) &&
           routes.map(({ label, path }) => (
             <li key={path} className="govuk-breadcrumbs__list-item">
-              <Link href={path}>
-                <a className="govuk-breadcrumbs__link" href="#">
-                  {label}
-                </a>
+              <Link href={path} className="govuk-breadcrumbs__link">
+                {label}
               </Link>
             </li>
           ))}

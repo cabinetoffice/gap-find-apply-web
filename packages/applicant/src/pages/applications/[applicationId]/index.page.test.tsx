@@ -16,7 +16,7 @@ import { routes } from '../../../utils/routes';
 import { getServerSideProps } from './index.page';
 import { GrantApplication } from '../../../types/models/GrantApplication';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../utils/parseBody');
 jest.mock('../../../services/SubmissionService');
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../utils/jwt');

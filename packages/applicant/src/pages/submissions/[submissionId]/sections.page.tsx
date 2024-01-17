@@ -11,7 +11,6 @@ import {
   isSubmissionReady,
   SectionData,
 } from '../../../services/SubmissionService';
-import { initiateCSRFCookie } from '../../../utils/csrf';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { SUBMISSION_STATUS_TAGS } from '../../../utils/sectionStatusTags';
@@ -32,7 +31,7 @@ export interface SubmissionSectionPage {
 
 export const getServerSideProps: GetServerSideProps<
   SubmissionSectionPage
-> = async ({ req, res, params }) => {
+> = async ({ req, params }) => {
   const submissionId = params.submissionId.toString();
 
   const { sections, grantSubmissionId, applicationName, grantSchemeId } =
@@ -65,8 +64,6 @@ export const getServerSideProps: GetServerSideProps<
     grantSchemeId,
     getJwtFromCookies(req)
   );
-
-  await initiateCSRFCookie(req, res);
 
   if (hasBeenSubmitted) {
     return {
@@ -165,13 +162,12 @@ export default function SubmissionSections({
                         <dt className="govuk-summary-list__key">
                           {section.sectionId === 'ELIGIBILITY' ||
                           eligibilityCheckPassed ? (
-                            <Link href={getSectionUrl(section.sectionId)}>
-                              <a
-                                className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-                                data-cy={`cy-section-title-link-${section.sectionTitle}`}
-                              >
-                                {section.sectionTitle}
-                              </a>
+                            <Link
+                              href={getSectionUrl(section.sectionId)}
+                              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+                              data-cy={`cy-section-title-link-${section.sectionTitle}`}
+                            >
+                              {section.sectionTitle}
                             </Link>
                           ) : (
                             <p
@@ -232,13 +228,12 @@ export default function SubmissionSections({
                   </a>
                 )}
 
-                <Link href="/applications">
-                  <a
-                    className="govuk-link govuk-link--no-visited-state"
-                    data-cy="cy-save-and-come-back-later"
-                  >
-                    Save and come back later
-                  </a>
+                <Link
+                  href="/applications"
+                  className="govuk-link govuk-link--no-visited-state"
+                  data-cy="cy-save-and-come-back-later"
+                >
+                  Save and come back later
                 </Link>
               </div>
             </form>

@@ -171,14 +171,13 @@ const ApplicationRow = (application) => {
         {application.submissionStatus === 'GRANT_CLOSED' ? (
           '-'
         ) : (
-          <Link href={applicationLink}>
-            <a
-              className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-              data-cy={`cy-application-link-${applicationName}`}
-              id={`application-link-${submissionId}`}
-            >
-              {applicationLinkText}
-            </a>
+          <Link
+            href={applicationLink}
+            className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+            data-cy={`cy-application-link-${applicationName}`}
+            id={`application-link-${submissionId}`}
+          >
+            {applicationLinkText}
           </Link>
         )}
       </td>

@@ -18,13 +18,10 @@ const Footer = () => {
                   href={
                     RelatedContentLinks.get(RelatedLinksNames.ABOUT_US).href
                   }
+                  className="govuk-footer__link"
+                  data-cy="cyAboutUsLinkFooter"
                 >
-                  <a
-                    className="govuk-footer__link"
-                    data-cy="cyAboutUsLinkFooter"
-                  >
-                    {RelatedContentLinks.get(RelatedLinksNames.ABOUT_US).title}
-                  </a>
+                  {RelatedContentLinks.get(RelatedLinksNames.ABOUT_US).title}
                 </Link>
               </li>
               <li className="govuk-footer__inline-list-item">
@@ -33,16 +30,13 @@ const Footer = () => {
                     RelatedContentLinks.get(RelatedLinksNames.ACCESSIBILITY)
                       .href
                   }
+                  className="govuk-footer__link"
+                  data-cy="cyAccessibilityLinkFooter"
                 >
-                  <a
-                    className="govuk-footer__link"
-                    data-cy="cyAccessibilityLinkFooter"
-                  >
-                    {
-                      RelatedContentLinks.get(RelatedLinksNames.ACCESSIBILITY)
-                        .title
-                    }
-                  </a>
+                  {
+                    RelatedContentLinks.get(RelatedLinksNames.ACCESSIBILITY)
+                      .title
+                  }
                 </Link>
               </li>
               <li className="govuk-footer__inline-list-item">
@@ -52,14 +46,14 @@ const Footer = () => {
                       RelatedLinksNames.TERMS_AND_CONDITIONS
                     ).href
                   }
+                  className="govuk-footer__link"
+                  data-cy="cyTCLinkFooter"
                 >
-                  <a className="govuk-footer__link" data-cy="cyTCLinkFooter">
-                    {
-                      RelatedContentLinks.get(
-                        RelatedLinksNames.TERMS_AND_CONDITIONS
-                      ).title
-                    }
-                  </a>
+                  {
+                    RelatedContentLinks.get(
+                      RelatedLinksNames.TERMS_AND_CONDITIONS
+                    ).title
+                  }
                 </Link>
               </li>
               <li className="govuk-footer__inline-list-item">
@@ -68,28 +62,22 @@ const Footer = () => {
                     RelatedContentLinks.get(RelatedLinksNames.PRIVACY_NOTICE)
                       .href
                   }
+                  className="govuk-footer__link"
+                  data-cy="cyPrivacyLinkFooter"
                 >
-                  <a
-                    className="govuk-footer__link"
-                    data-cy="cyPrivacyLinkFooter"
-                  >
-                    {
-                      RelatedContentLinks.get(RelatedLinksNames.PRIVACY_NOTICE)
-                        .title
-                    }
-                  </a>
+                  {
+                    RelatedContentLinks.get(RelatedLinksNames.PRIVACY_NOTICE)
+                      .title
+                  }
                 </Link>
               </li>
               <li className="govuk-footer__inline-list-item">
                 <Link
                   href={RelatedContentLinks.get(RelatedLinksNames.COOKIES).href}
+                  className="govuk-footer__link"
+                  data-cy="cyCookieLinkFooter"
                 >
-                  <a
-                    className="govuk-footer__link"
-                    data-cy="cyCookieLinkFooter"
-                  >
-                    {RelatedContentLinks.get(RelatedLinksNames.COOKIES).title}
-                  </a>
+                  {RelatedContentLinks.get(RelatedLinksNames.COOKIES).title}
                 </Link>
               </li>
             </ul>
@@ -111,20 +99,23 @@ const Footer = () => {
 
             <span className="govuk-footer__licence-description">
               All content is available under the{' '}
-              <Link href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">
-                <a className="govuk-footer__link" rel="license">
-                  Open Government Licence v3.0
-                </a>
+              <Link
+                href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+                className="govuk-footer__link"
+                rel="license"
+              >
+                Open Government Licence v3.0
               </Link>
               , except where otherwise stated
             </span>
           </div>
 
           <div className="govuk-footer__meta-item">
-            <Link href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/">
-              <a className="govuk-footer__link govuk-footer__copyright-logo">
-                © Crown copyright
-              </a>
+            <Link
+              href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+              className="govuk-footer__link govuk-footer__copyright-logo"
+            >
+              © Crown copyright
             </Link>
           </div>
         </div>

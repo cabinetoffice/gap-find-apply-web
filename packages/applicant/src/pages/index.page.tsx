@@ -61,30 +61,29 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
                   information if you register for GOV.UK One Login using the
                   same email address.
                 </p>
-                <Link href={loginUrl}>
-                  <a
-                    role="button"
-                    draggable="false"
-                    className="govuk-button govuk-button--start govuk-heading-m govuk-!-margin-bottom-4"
-                    data-module="govuk-button"
-                    data-cy="cy-apply-register-button"
+                <Link
+                  href={loginUrl}
+                  role="button"
+                  draggable="false"
+                  className="govuk-button govuk-button--start govuk-heading-m govuk-!-margin-bottom-4"
+                  data-module="govuk-button"
+                  data-cy="cy-apply-register-button"
+                >
+                  Sign in with GOV.UK One Login
+                  <svg
+                    className="govuk-button__start-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="17.5"
+                    height="19"
+                    viewBox="0 0 33 40"
+                    aria-hidden="true"
+                    focusable="false"
                   >
-                    Sign in with GOV.UK One Login
-                    <svg
-                      className="govuk-button__start-icon"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="17.5"
-                      height="19"
-                      viewBox="0 0 33 40"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M0 0h13l20 20-20 20H0l20-20z"
-                      />
-                    </svg>
-                  </a>
+                    <path
+                      fill="currentColor"
+                      d="M0 0h13l20 20-20 20H0l20-20z"
+                    />
+                  </svg>
                 </Link>
               </>
             ) : (
@@ -93,30 +92,29 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
                   If you have an account you can sign in. If you do not have an
                   account you can register for one.
                 </p>
-                <Link href={registerUrl}>
-                  <a
-                    role="button"
-                    draggable="false"
-                    className="govuk-button govuk-button--start govuk-heading-m govuk-!-margin-bottom-4"
-                    data-module="govuk-button"
-                    data-cy="cy-apply-register-button"
+                <Link
+                  href={registerUrl}
+                  role="button"
+                  draggable="false"
+                  className="govuk-button govuk-button--start govuk-heading-m govuk-!-margin-bottom-4"
+                  data-module="govuk-button"
+                  data-cy="cy-apply-register-button"
+                >
+                  Register
+                  <svg
+                    className="govuk-button__start-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="17.5"
+                    height="19"
+                    viewBox="0 0 33 40"
+                    aria-hidden="true"
+                    focusable="false"
                   >
-                    Register
-                    <svg
-                      className="govuk-button__start-icon"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="17.5"
-                      height="19"
-                      viewBox="0 0 33 40"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M0 0h13l20 20-20 20H0l20-20z"
-                      />
-                    </svg>
-                  </a>
+                    <path
+                      fill="currentColor"
+                      d="M0 0h13l20 20-20 20H0l20-20z"
+                    />
+                  </svg>
                 </Link>
                 <hr className="govuk-section-break"></hr>
                 <a

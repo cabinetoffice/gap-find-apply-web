@@ -1,4 +1,4 @@
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from './parseBody';
 import { QuestionPostBody } from '../services/SubmissionService';
 import postQuestion, {
   CleanedBody,
@@ -8,9 +8,10 @@ import postQuestion, {
   fieldsStartingWithQuestionIdInBody,
 } from './postQuestion';
 import { routes } from './routes';
-jest.mock('next/dist/server/api-utils/node', () => ({
-  parseBody: jest.fn(),
-}));
+
+jest.mock('./parseBody');
+
+const mockParseBody = jest.mocked(parseBody);
 
 const submissionId = 'submissionId';
 const sectionId = 'sectionId';
@@ -23,7 +24,7 @@ describe('callServiceMethod', () => {
         test: 'commission',
         cancel: '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,
@@ -53,7 +54,7 @@ describe('callServiceMethod', () => {
         test: 'commission',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,
@@ -88,7 +89,7 @@ describe('callServiceMethod', () => {
         test: 'commission',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,
@@ -119,7 +120,7 @@ describe('callServiceMethod', () => {
         'save-and-continue': '',
         isRefererCheckYourAnswerScreen: '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,
@@ -149,7 +150,7 @@ describe('callServiceMethod', () => {
         test: 'commission',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,
@@ -179,7 +180,7 @@ describe('callServiceMethod', () => {
         test: 'commission',
         'save-and-exit': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,
@@ -211,7 +212,7 @@ describe('callServiceMethod', () => {
         test: 'commission',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.reject({
           response: {
@@ -267,7 +268,7 @@ describe('callServiceMethod', () => {
         'CUSTOM_APPLICANT_ORG_ADDRESS-postcode': '',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.reject({
           response: {
@@ -337,7 +338,7 @@ describe('callServiceMethod', () => {
         'CUSTOM_CUSTOM_QUESTION_4-year': '',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.reject({
           response: {

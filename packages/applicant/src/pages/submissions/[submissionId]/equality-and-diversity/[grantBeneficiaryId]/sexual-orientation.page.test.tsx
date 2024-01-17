@@ -2,8 +2,8 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext, Redirect } from 'next';
-import { parseBody } from 'next/dist/server/api-utils/node';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { parseBody } from '../../../../../utils/parseBody';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import React from 'react';
 import {
   getGrantBeneficiary,
@@ -17,9 +17,11 @@ import EqualityAndDiversityPage, {
   SexualOrientationPageProps,
 } from './sexual-orientation.page';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/GrantBeneficiaryService');
 jest.mock('../../../../../utils/jwt');
+
+const mockParseBody = jest.mocked(parseBody);
 
 const renderWithRouter = (ui: React.ReactNode) => {
   render(
@@ -104,8 +106,11 @@ describe('Sexual orientation page', () => {
           req: {
             method: 'GET',
           },
+          res: {
+            getHeader: () => 'testCSRFToken',
+          },
           resolvedUrl: '/testResolvedURL',
-        } as GetServerSidePropsContext,
+        } as unknown as GetServerSidePropsContext,
         overrides
       );
 
@@ -252,7 +257,7 @@ describe('Sexual orientation page', () => {
     describe('when handling a POST request', () => {
       beforeEach(() => {
         jest.resetAllMocks();
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedSexualOrientation: [
             'Heterosexual or straight',
             'Bisexual',
@@ -293,7 +298,7 @@ describe('Sexual orientation page', () => {
       });
 
       it('Should call postGrantBeneficiaryResponse when the response contains "supportedSexualOrientation", CASE: ALL', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedSexualOrientation: [
             'No, we support people of any sexual orientation',
           ],
@@ -321,7 +326,7 @@ describe('Sexual orientation page', () => {
       });
 
       it('Should call postGrantBeneficiaryResponse when the response contains "supportedSexualOrientation", CASE: ALL', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedSexualOrientation: [
             'Heterosexual or straight',
             'Gay or lesbian',
@@ -352,7 +357,7 @@ describe('Sexual orientation page', () => {
       });
 
       it('Should NOT call postGrantBeneficiaryResponse when the response does NOT contain "supportedSexualOrientation"', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({});
+        mockParseBody.mockResolvedValue({});
 
         await getServerSideProps(getPostContext());
 
@@ -412,7 +417,7 @@ describe('Sexual orientation page', () => {
       });
 
       it('Should return the previously entered response prop as the default value when a validation error is thrown', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedSexualOrientation: 'Bisexual',
         });
 

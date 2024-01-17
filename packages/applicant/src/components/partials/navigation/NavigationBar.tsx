@@ -24,13 +24,13 @@ const GovLink = ({ btn, index }: { index: number; btn: LinkContent }) => {
       id={`${btn.pageId}DesktopLink`}
       data-cy={`cy${btn.pageId}PageLink`}
     >
-      <Link href={btn.as} as={btn.link}>
-        <a
-          className="govuk-link govuk-link--no-visited-state app-navigation__link"
-          data-topnav={btn.title}
-        >
-          {btn.title}
-        </a>
+      <Link
+        href={btn.as}
+        as={btn.link}
+        className="govuk-link govuk-link--no-visited-state app-navigation__link"
+        data-topnav={btn.title}
+      >
+        {btn.title}
       </Link>
     </li>
   );

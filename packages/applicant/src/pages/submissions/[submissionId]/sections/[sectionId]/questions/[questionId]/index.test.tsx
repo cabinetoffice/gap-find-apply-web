@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext } from 'next';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import {
   ApplicationDetailsInterface,
   getQuestionById,
@@ -22,13 +22,15 @@ import QuestionPage, {
 jest.mock('../../../../../../../services/SubmissionService');
 jest.mock('../../../../../../../utils/postQuestion');
 jest.mock('../../../../../../../utils/jwt');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../../../utils/parseBody');
 
 const context = {
   req: {
     method: 'GET',
-    csrfToken: () => 'testCSRFToken',
     headers: { referer: '/test' },
+  },
+  res: {
+    getHeader: () => 'testCSRFToken',
   },
   params: {
     submissionId: '12345678',
@@ -251,7 +253,10 @@ describe('getServerSideProps', () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       (getSubmissionById as jest.Mock).mockReturnValue(submission);
       const context = {
-        req: { method: 'GET', csrfToken: () => 'testCSRFToken' },
+        req: { method: 'GET' },
+        res: {
+          getHeader: () => 'testCSRFToken',
+        },
         params: {
           submissionId: '12345678',
           sectionId: '87654321',
@@ -323,8 +328,10 @@ describe('getServerSideProps', () => {
       const postContext = {
         req: {
           method: 'POST',
-          csrfToken: () => 'testCSRFToken',
           headers: { referer: '/test' },
+        },
+        res: {
+          getHeader: () => 'testCSRFToken',
         },
         params: {
           submissionId: '12345678',
