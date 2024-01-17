@@ -12,8 +12,6 @@ const DateTimeInput = ({
   ...props
 }: DateTimeProps) => {
   let timeDefaultValue = timeDefaultValues;
-  console.log('timeDefaultValue ', timeDefaultValue);
-  console.log('timeDefaultValues ', timeDefaultValues);
   let selectOptions = [
     { label: '1am', value: '01:00' },
     { label: '2am', value: '02:00' },
