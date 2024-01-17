@@ -44,7 +44,7 @@ const SummaryList = ({
                }
             `}
             >
-              {row.key}
+              <div>{row.key}</div>
             </dt>
             <dd
               className={`govuk-summary-list__value${
@@ -52,7 +52,7 @@ const SummaryList = ({
               }`}
               data-cy={`cy_summaryListValue_${row.key}`}
             >
-              {row.value}
+              <div>{row.value}</div>
             </dd>
             {row.action && (
               <dd
