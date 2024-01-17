@@ -5229,15 +5229,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/csurf@npm:^1.11.2":
-  version: 1.11.2
-  resolution: "@types/csurf@npm:1.11.2"
-  dependencies:
-    "@types/express-serve-static-core": "*"
-  checksum: 1827f6760d43ae12390f0308289f2c40537bbcb19ec854d0c654e3129074edf6108ddab99a06986813b6cf31d4fc9fa34eaa3d418f647edf607d8af4c69d62e7
-  languageName: node
-  linkType: hard
-
 "@types/detect-port@npm:^1.3.0":
   version: 1.3.3
   resolution: "@types/detect-port@npm:1.3.3"
@@ -5323,7 +5314,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-serve-static-core@npm:*, @types/express-serve-static-core@npm:^4.17.33":
+"@types/express-serve-static-core@npm:^4.17.33":
   version: 4.17.35
   resolution: "@types/express-serve-static-core@npm:4.17.35"
   dependencies:
@@ -6304,12 +6295,10 @@ __metadata:
     "@tinymce/tinymce-react": 4.3.2
     "@types/cookie": ^0.5.1
     "@types/cookie-parser": ^1.4.3
-    "@types/csurf": ^1.11.2
     "@types/number-to-words": ^1.2.1
     axios: ^0.27.2
     contentful-typescript-codegen: ^3.2.3
     cookie-parser: ^1.4.6
-    csurf: ^1.11.0
     cypress: ^9.5.0
     cypress-axe: ^0.14.0
     cypress-recurse: ^1.18.0
