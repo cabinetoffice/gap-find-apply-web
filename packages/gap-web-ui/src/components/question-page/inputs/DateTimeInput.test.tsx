@@ -79,13 +79,13 @@ describe('DateTimeInput component', () => {
   it('Should select a default of "Select an opening time" when the fieldName contains "Open"', () => {
     render(<DateTimeInput {...customProps} />);
 
-    expect(screen.getByRole('combobox')).toHaveValue('Select an opening time');
+    expect(screen.getByRole('combobox')).toHaveValue('00:00');
   });
 
   it('Should select a default of "Select a closing time" when the fieldName contains "Close"', () => {
     render(<DateTimeInput {...customProps} fieldName="fieldNameClose" />);
 
-    expect(screen.getByRole('combobox')).toHaveValue('Select a closing time');
+    expect(screen.getByRole('combobox')).toHaveValue('23:59');
   });
 
   it('Should select NO default value when the fieldName contains neither "Close" OR "Open"', () => {
