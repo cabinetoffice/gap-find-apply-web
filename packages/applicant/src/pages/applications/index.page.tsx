@@ -136,11 +136,11 @@ const ApplicationRow = (application) => {
       ? 'GRANT_CLOSED'
       : application.submissionStatus;
   const applicationStatusTag = APPLICATION_STATUS_TAGS[submissionStatus];
-  const isSubmitted = submissionStatus === 'SUBMITTED';
-  const applicationLinkText = isSubmitted ? 'View' : 'Edit';
-  const applicationLink = isSubmitted
-    ? '/apply/applicant' + routes.submissions.summary(submissionId)
-    : '/apply/applicant' + routes.submissions.sections(submissionId);
+  const isInProgress = submissionStatus === 'IN_PROGRESS';
+  const applicationLinkText = isInProgress ? 'Edit' : 'View';
+  const applicationLink = isInProgress
+    ? '/apply/applicant' + routes.submissions.sections(submissionId)
+    : '/apply/applicant' + routes.submissions.summary(submissionId);
   return (
     <tr key={submissionId} className="govuk-table__row">
       <th scope="row" className="govuk-table__cell">

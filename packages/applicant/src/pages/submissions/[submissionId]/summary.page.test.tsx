@@ -46,6 +46,13 @@ jest.mock('../../../utils/constants');
 jest.mock('../../../utils/jwt');
 jest.mock('../../../utils/csrf');
 
+const mockGetApplicationStatusBySchemeId = jest.mocked(
+  getApplicationStatusBySchemeId
+);
+const mockGetSubmissionById = jest.mocked(getSubmissionById);
+const mockGetJwtFromCookies = jest.mocked(getJwtFromCookies);
+const mockHasSubmissionBeenSubmitted = jest.mocked(hasSubmissionBeenSubmitted);
+
 jest.mock('../../../services/ApplicationService', () => ({
   getApplicationStatusBySchemeId: jest.fn(),
 }));
@@ -192,10 +199,10 @@ describe('getServerSideProps', () => {
     jest.clearAllMocks();
   });
   it('should return a redirect to grant-is-closed when submission is REMOVED ', async () => {
-    (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue('REMOVED');
-    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
-    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
-    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+    mockGetApplicationStatusBySchemeId.mockResolvedValue('REMOVED');
+    mockGetSubmissionById.mockResolvedValue(propsWithAllValues);
+    mockGetJwtFromCookies.mockReturnValue('testJwt');
+    mockHasSubmissionBeenSubmitted.mockResolvedValue(false);
 
     const response = await getServerSideProps(context);
     expect(response).toEqual({
@@ -207,12 +214,10 @@ describe('getServerSideProps', () => {
   });
 
   it('should return sections, submissionId, applicationName', async () => {
-    (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue(
-      'PUBLISHED'
-    );
-    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
-    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
-    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+    mockGetApplicationStatusBySchemeId.mockResolvedValue('PUBLISHED');
+    mockGetSubmissionById.mockResolvedValue(propsWithAllValues);
+    mockGetJwtFromCookies.mockReturnValue('testJwt');
+    mockHasSubmissionBeenSubmitted.mockResolvedValue(false);
 
     const response = await getServerSideProps(context);
     expect(response).toEqual({
@@ -233,9 +238,9 @@ describe('getServerSideProps', () => {
   });
 
   it('should return correct object from server side props with no token', async () => {
-    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
-    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
-    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+    mockGetSubmissionById.mockResolvedValue(propsWithAllValues);
+    mockGetJwtFromCookies.mockReturnValue('testJwt');
+    mockHasSubmissionBeenSubmitted.mockResolvedValue(false);
 
     const response = await getServerSideProps(contextNoToken);
     expect(response).toEqual({
@@ -256,9 +261,9 @@ describe('getServerSideProps', () => {
   });
 
   it('should redirect if application has been submitted', async () => {
-    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
-    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
-    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(true);
+    mockGetSubmissionById.mockResolvedValue(propsWithAllValues);
+    mockGetJwtFromCookies.mockReturnValue('testJwt');
+    mockHasSubmissionBeenSubmitted.mockResolvedValue(true);
 
     const response = await getServerSideProps(context);
     expect(response).toEqual({
