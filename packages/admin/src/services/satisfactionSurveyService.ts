@@ -21,8 +21,8 @@ const postSurveyResponse = async (
           fieldName: 'satisfaction',
           errorMessage: 'Please complete at least one field',
         },
-        ...axiosSessionConfig(sessionId),
       },
+      ...axiosSessionConfig(sessionId),
     });
   } else {
     const surveyResponse = {
