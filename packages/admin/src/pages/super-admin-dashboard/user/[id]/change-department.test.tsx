@@ -61,6 +61,7 @@ const getMockUser = (): User => ({
   colaSub: 'colaSub',
   emailAddress: 'test.superadmin@gmail.com',
   roles: [getMockRoles()[0], getMockRoles()[3]],
+  department: getMockDepartment(),
   created: 'NULL',
 });
 
