@@ -20,10 +20,10 @@ import {
 import UnscheduleConfirmationPage, {
   getServerSideProps,
 } from './unschedule-confirmation.page';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../../utils/parseBody';
 import AdvertStatusEnum from '../../../../../enums/AdvertStatus';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/AdvertPageService');
 
 const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
@@ -125,6 +125,7 @@ describe('Unschedule confirmation page', () => {
         advertId: 'testAdvertId',
       },
       query: {},
+      res: { getHeader: () => 'testCSRFToken' },
     });
 
     describe('When handling GET request', () => {
@@ -190,6 +191,7 @@ describe('Unschedule confirmation page', () => {
         req: {
           method: 'POST',
         },
+        res: { getHeader: () => 'testCSRFToken' },
       });
 
       it('Should redirect to "Section overview" page when advert is successfully unscheduled', async () => {

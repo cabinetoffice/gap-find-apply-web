@@ -7,7 +7,7 @@ import {
 } from '../../services/SessionService';
 import NextGetServerSidePropsResponse from '../../types/NextGetServerSidePropsResponse';
 import { merge } from 'lodash';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../utils/parseBody';
 
 jest.mock('next/config', () => () => {
   return {
@@ -20,7 +20,7 @@ jest.mock('next/config', () => () => {
     },
   };
 });
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../utils/parseBody');
 jest.mock('../../services/SessionService');
 
 const mockedGetValueFromSession = getValueFromSession as jest.MockedFn<
@@ -47,6 +47,7 @@ describe('Scheme name page', () => {
       merge(
         {
           req: { cookies: { session_id: 'someId' } },
+          res: { getHeader: jest.fn() },
           method: 'GET',
           query: {},
         },

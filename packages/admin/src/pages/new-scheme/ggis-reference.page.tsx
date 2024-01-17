@@ -81,7 +81,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       formAction: `${publicRuntimeConfig.SUB_PATH}/new-scheme/ggis-reference?backButtonHref=${backButtonHref}&successRedirect=${successRedirect}`,
       backButtonHref: backButtonHref,
       defaultValue: defaultValue,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

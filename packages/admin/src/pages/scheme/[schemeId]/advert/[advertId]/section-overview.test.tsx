@@ -19,10 +19,11 @@ import {
   mockServiceMethod,
 } from '../../../../../testUtils/unitTestHelpers';
 import SectionOverview, { getServerSideProps } from './section-overview.page';
+import { GetServerSidePropsContext } from 'next';
 
 jest.mock('../../../../../services/AdvertPageService');
 
-const getContext = (overrides: any = {}) =>
+const getContext = (overrides = {}) =>
   merge(
     {
       params: {
@@ -35,7 +36,7 @@ const getContext = (overrides: any = {}) =>
       },
     },
     overrides
-  );
+  ) as unknown as GetServerSidePropsContext;
 
 const mockedPage1: AdvertPage = {
   id: 'pageId1',
@@ -91,7 +92,7 @@ const expectedGetServerSideRedirectionToSummaryPage = {
   },
 };
 
-const getProps = (overrides: any = {}) =>
+const getProps = (overrides = {}) =>
   merge(
     {
       isPublishDisabled: true,
@@ -147,7 +148,7 @@ describe('section-overview', () => {
       );
 
       const result = (await getServerSideProps(
-        getContext()
+        getContext({ res: { getHeader: () => '' } })
       )) as NextGetServerSidePropsResponse;
 
       expect(result.props).toStrictEqual(getProps());
@@ -163,7 +164,8 @@ describe('section-overview', () => {
 
       const result = (await getServerSideProps(
         getContext({
-          req: { csrfToken: () => 'testCSRFToken' },
+          req: {},
+          res: { getHeader: () => 'testCSRFToken' },
           query: { recentlyUnpublished: 'true' },
         })
       )) as NextGetServerSidePropsResponse;

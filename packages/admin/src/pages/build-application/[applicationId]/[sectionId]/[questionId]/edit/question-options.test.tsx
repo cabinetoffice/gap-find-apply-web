@@ -13,7 +13,7 @@ import {
   patchQuestion,
 } from '../../../../../../services/QuestionService';
 import NextGetServerSidePropsResponse from '../../../../../../types/NextGetServerSidePropsResponse';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../../../utils/parseBody';
 import { ValidationError } from 'gap-web-ui';
 import ResponseTypeEnum from '../../../../../../enums/ResponseType';
 
@@ -31,9 +31,7 @@ jest.mock('next/config', () => () => {
 jest.mock('../../../../../../services/ApplicationService');
 jest.mock('../../../../../../services/QuestionService');
 jest.mock('../../../../../../services/SessionService');
-jest.mock('next/dist/server/api-utils/node', () => ({
-  parseBody: jest.fn(),
-}));
+jest.mock('../../../../../../utils/parseBody');
 
 describe('Question Options', () => {
   const parsedValidationErrors = [
@@ -54,7 +52,7 @@ describe('Question Options', () => {
       optional: 'no',
     };
 
-    const getProps = (overrides: any = {}) =>
+    const getProps = (overrides = {}) =>
       merge(
         {
           sectionName: 'Test Section Name',
@@ -163,7 +161,7 @@ describe('Question Options', () => {
       } as Redirect,
     };
 
-    const getContext = (overrides: any = {}) =>
+    const getContext = (overrides = {}) =>
       merge(
         {
           params: {
@@ -175,6 +173,7 @@ describe('Question Options', () => {
             method: 'GET',
             cookies: { session_id: '', 'gap-test': 'testSessionId' },
           },
+          res: { getHeader: () => 'testCSRFToken' },
         },
         overrides
       );

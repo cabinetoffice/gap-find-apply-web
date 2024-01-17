@@ -1,20 +1,13 @@
 import '@testing-library/jest-dom';
-import { parseBody } from 'next/dist/server/api-utils/node';
 import { getContext } from 'gap-web-ui';
 import UserPage, { getServerSideProps } from './change-department.page';
 import { Department } from '../../types';
 import { render, screen } from '@testing-library/react';
 import { User } from '../../types';
-import {
-  getUserById,
-  getChangeDepartmentPage,
-  updateDepartment,
-} from '../../../../services/SuperAdminService';
+import { getChangeDepartmentPage } from '../../../../services/SuperAdminService';
+import { parseBody } from '../../../../utils/parseBody';
 
-jest.mock('next/dist/server/api-utils/node', () => ({
-  ...jest.requireActual('next/dist/server/api-utils/node'),
-  parseBody: jest.fn(),
-}));
+jest.mock('../../../../utils/parseBody');
 
 jest.mock('../../../../services/SuperAdminService', () => ({
   getUserById: jest.fn(),

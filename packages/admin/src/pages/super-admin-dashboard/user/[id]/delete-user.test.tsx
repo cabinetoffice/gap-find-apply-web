@@ -7,7 +7,7 @@ import { deleteUserInformation } from '../../../../services/SuperAdminService';
 import DeleteUserPage, { getServerSideProps } from './delete-user.page';
 import { renderWithRouter } from '../../../../testUtils/unitTestHelpers';
 
-jest.mock('next/dist/server/api-utils/node', () => ({
+jest.mock('../../../../utils/parseBody', () => ({
   parseBody: () => ({}),
 }));
 

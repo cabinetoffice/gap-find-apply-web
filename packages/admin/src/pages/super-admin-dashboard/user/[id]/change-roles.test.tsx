@@ -1,11 +1,10 @@
 import '@testing-library/jest-dom';
-import { parseBody } from 'next/dist/server/api-utils/node';
 import { render, screen } from '@testing-library/react';
 import EditRoleWithId, { getServerSideProps } from './change-roles.page';
-import UserDetails from '../../../../types/UserDetails';
 import { getContext } from 'gap-web-ui';
 import { getUserById } from '../../../../services/SuperAdminService';
 import { User } from '../../types';
+import { parseBody } from '../../../../utils/parseBody';
 
 jest.mock('../../../../services/SuperAdminService', () => ({
   getUserById: jest.fn(),
@@ -13,7 +12,7 @@ jest.mock('../../../../services/SuperAdminService', () => ({
   updateUserRoles: jest.fn(),
 }));
 
-jest.mock('next/dist/server/api-utils/node', () => ({
+jest.mock('../../../../utils/parseBody', () => ({
   parseBody: jest.fn(),
 }));
 

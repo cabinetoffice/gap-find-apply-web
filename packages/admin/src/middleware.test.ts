@@ -1,14 +1,15 @@
-/**
- * @jest-environment node
- */
-// The above was added so that jest know it's not web. Throws a type error otherwise.
 import '@testing-library/jest-dom';
 import { middleware } from './middleware.page';
 // eslint-disable-next-line  @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdminSessionValid } from './services/UserService';
 import { getLoginUrl } from './utils/general';
+import {
+  RequestCookie,
+  ResponseCookie,
+} from 'next/dist/compiled/@edge-runtime/cookies';
 
+jest.mock('./utils/csrfMiddleware');
 jest.mock('./utils/general');
 jest.mock('./services/UserService', () => ({
   isAdminSessionValid: jest.fn(),
@@ -39,7 +40,7 @@ describe('middleware', () => {
 
   it('should redirect to the logout page when the admin session is invalid', async () => {
     const expectedUrl = 'http://localhost:8082/login';
-    req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
+    req.cookies.set('session_id', 'session_id_value');
     (isAdminSessionValid as jest.Mock).mockImplementation(async () => false);
     (getLoginUrl as jest.Mock).mockReturnValue(expectedUrl);
 
@@ -52,23 +53,22 @@ describe('middleware', () => {
 
   it('Should reset auth cookie correctly when the user is authorised', async () => {
     (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
-    // Just set any expiry. If response expiry is different, cookie was updated
-    req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
-    const reqCookie = req.cookies.getWithOptions('session_id');
+
+    req.cookies.set('session_id', 'session_id_value');
 
     const result = await middleware(req);
 
-    const cookieOptions = result.cookies.getWithOptions('session_id').options;
-    expect(result.cookies.get('session_id')).toStrictEqual('session_id_value');
-    expect(cookieOptions.Path).toStrictEqual('/');
-    expect(cookieOptions.SameSite).toStrictEqual('Lax');
-    expect(cookieOptions['Max-Age']).toStrictEqual('21600');
-    expect(cookieOptions.Expires).not.toStrictEqual(reqCookie.options.Expires);
+    const resCookie = result.cookies.get('session_id') as ResponseCookie;
+
+    expect(resCookie.value).toStrictEqual('session_id_value');
+    expect(resCookie.path).toStrictEqual('/');
+    expect(resCookie.sameSite).toStrictEqual('lax');
+    expect(resCookie.maxAge).toStrictEqual(21600);
   });
 
   it('Should redirect to the original requests URL when we are authorised', async () => {
     (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
-    req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
+    req.cookies.set('session_id', 'session_id_value');
     const result = await middleware(req);
 
     expect(result.headers.get('x-middleware-rewrite')).toStrictEqual(
@@ -84,7 +84,7 @@ describe('middleware', () => {
 
   it('Should allow the user to access the advert builder pages if the feature is enabled', async () => {
     (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
-    req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
+    req.cookies.set('session_id', 'session_id_value');
     process.env.FEATURE_ADVERT_BUILDER = 'enabled';
     const result = await middleware(req);
 
@@ -96,7 +96,7 @@ describe('middleware', () => {
 
   it('Should not allow the user to access the advert builder pages if the feature is enabled', async () => {
     (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
-    req.cookies.set('session_id', 'session_id_value', { maxAge: 60 });
+    req.cookies.set('session_id', 'session_id_value');
     process.env.FEATURE_ADVERT_BUILDER = 'disabled';
     const result = await middleware(req);
 

@@ -66,9 +66,9 @@ export const getServerSideProps = async ({
     props: {
       fieldErrors,
       backButtonHref: `/scheme/${schemeId}`,
-      formAction: resolvedUrl,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       defaultValue,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };
