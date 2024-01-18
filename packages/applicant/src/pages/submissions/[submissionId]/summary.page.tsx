@@ -160,7 +160,7 @@ export default function SubmissionSummary({
                   )}
                 >
                   <a className="govuk-link govuk-link--no-visited-state">
-                    download a copy of your answers (ODT)
+                    download a copy of your answers (ZIP)
                   </a>
                 </Link>{' '}
                 for future reference.
