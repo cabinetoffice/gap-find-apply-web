@@ -153,7 +153,7 @@ export default function SubmissionSummary({
               <h1 className="govuk-heading-s" data-cy="cy-download-header">
                 Download a copy of your application
               </h1>
-              <p className="govuk-body">
+              <p className="govuk-body govuk-!-margin-bottom-7">
                 You can{' '}
                 <a
                   className="govuk-link govuk-link--no-visited-state"

@@ -44,7 +44,7 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
       <Meta title="View my applications - Apply for a grant" />
       <Layout backBtnUrl={routes.dashboard}>
         <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
+          <div className="govuk-!-width-full">
             <h1
               className="govuk-heading-l"
               id="main-content-focus"
@@ -61,33 +61,33 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
             </p>
 
             {hasApplicationData ? (
-              <table className="govuk-table">
+              <table className="govuk-table table">
                 <thead className="govuk-table__head">
                   <tr className="govuk-table__row">
                     <th
                       scope="col"
-                      className="govuk-table__header"
+                      className="govuk-table__header govuk-!-width-one-quarter"
                       data-cy="cy-grant-table-header-name"
                     >
                       Grant
                     </th>
                     <th
                       scope="col"
-                      className="govuk-table__header"
+                      className="govuk-table__header govuk-!-width-one-quarter"
                       data-cy="cy-grant-table-header-status"
                     >
                       Status
                     </th>
                     <th
                       scope="col"
-                      className="govuk-table__header"
+                      className="govuk-table__header govuk-!-width-one-quarter"
                       data-cy="cy-grant-table-header-submitted-date"
                     >
                       Submitted
                     </th>
                     <th
                       scope="col"
-                      className="govuk-table__header"
+                      className="govuk-table__header govuk-!-width-one-quarter"
                       data-cy="cy-grant-table-header-actions"
                     >
                       Actions
