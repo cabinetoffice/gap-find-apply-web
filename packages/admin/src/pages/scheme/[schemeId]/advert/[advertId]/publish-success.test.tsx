@@ -63,7 +63,9 @@ describe('Advert - Publish Success Page', () => {
         getContext(getDefaultContext)
       )) as NextGetServerSidePropsResponse;
 
-      expect(result.props.backToAccountLink).toStrictEqual('/scheme/schemeId');
+      expect(result.props.backToAccountLink).toStrictEqual(
+        '/scheme/schemeId/advert/advertId/survey'
+      );
       expect(result.props.linkToAdvertInFindAGrant).toStrictEqual(
         `https://some-url.com/grants/contentful-slug`
       );
