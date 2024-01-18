@@ -3,7 +3,10 @@ import { FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import {
   getChangeDepartmentPage,
+  getUserFromJwt,
+  getUserRoles,
   updateDepartment,
+  updateUserRoles,
 } from '../../../../services/SuperAdminService';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
@@ -18,11 +21,22 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
+    const newUserRolesParam = context.query?.newRoles as string | undefined;
+    const newUserRoles = newUserRolesParam?.split?.(',');
+
+    if (newUserRoles && newRolesAreAdminRoles(newUserRoles)) {
+      await updateUserRoles(userId, newUserRoles, jwt);
+    }
     return await updateDepartment(userId, body.department, jwt);
   }
 
   function fetchPageData(jwt: string) {
     return getChangeDepartmentPage(userId, jwt);
+  }
+
+  function newRolesAreAdminRoles(newRoles: string[]) {
+    const ADMIN_ROLES_IDS = ['3', '4', '5'];
+    return newRoles.some((role) => ADMIN_ROLES_IDS.includes(role));
   }
 
   return QuestionPageGetServerSideProps<
