@@ -44,9 +44,8 @@ const mockFieldErrors = [
 
 const component = <Survey {...mockSchemeParams} />;
 
-// TODO - Finish tests
 describe('Survey page', () => {
-  it('Renders the survey page output', () => {
+  it('Renders the survey page', () => {
     render(component);
 
     // Check title & headings
@@ -72,7 +71,7 @@ describe('Survey page', () => {
     expect(submitButton).toHaveAttribute('type', 'submit');
   });
 
-  it('Renders the error banner when there are field errors', () => {
+  it('Renders error message when there are field errors', () => {
     render(<Survey {...mockSchemeParams} fieldErrors={mockFieldErrors} />);
 
     // Check title
@@ -91,7 +90,7 @@ describe('Survey page', () => {
         {
           query: {},
           params: '',
-          req: { cookies: { session_id: 'someId' } },
+          req: { cookies: { session_id: 'SESSION_ID' } },
         },
         overrides
       );
