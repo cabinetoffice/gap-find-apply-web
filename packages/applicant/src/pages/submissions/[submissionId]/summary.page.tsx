@@ -155,12 +155,15 @@ export default function SubmissionSummary({
               </h1>
               <p className="govuk-body govuk-!-margin-bottom-7">
                 You can{' '}
-                <a
-                  className="govuk-link govuk-link--no-visited-state"
-                  href={''}
+                <Link
+                  href={routes.api.submissions.downloadSummary(
+                    grantSubmissionId
+                  )}
                 >
-                  download a copy of your answers (ODT)
-                </a>{' '}
+                  <a className="govuk-link govuk-link--no-visited-state">
+                    download a copy of your answers (ODT)
+                  </a>
+                </Link>{' '}
                 for future reference.
               </p>
 
