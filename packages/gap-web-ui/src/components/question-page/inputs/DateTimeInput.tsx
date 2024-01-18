@@ -43,17 +43,13 @@ const DateTimeInput = ({
       { label: 'Midnight (0:01 AM)', value: '00:00' },
       ...selectOptions,
     ];
-    timeDefaultValue = !timeDefaultValue
-      ? 'Select an opening time'
-      : timeDefaultValue;
+    timeDefaultValue = !timeDefaultValue ? '00:00' : timeDefaultValue;
   } else if (fieldName.includes('Close')) {
     selectOptions = [
       ...selectOptions,
       { label: 'Midnight (11:59 PM)', value: '23:59' },
     ];
-    timeDefaultValue = !timeDefaultValue
-      ? 'Select a closing time'
-      : timeDefaultValue;
+    timeDefaultValue = !timeDefaultValue ? '23:59' : timeDefaultValue;
   }
 
   return (
