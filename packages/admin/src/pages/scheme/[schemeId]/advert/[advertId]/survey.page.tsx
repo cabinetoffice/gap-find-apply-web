@@ -78,10 +78,10 @@ const Survey = ({
                   backendUrl,
                   'advert'
                 );
+                router.replace(`/scheme/${schemeId}`);
               } catch (e) {
-                router.replace(`/scheme/` + schemeId);
+                router.replace(`/scheme/${schemeId}`);
               }
-              router.replace(`/scheme/` + schemeId);
             }}
           >
             <Radio

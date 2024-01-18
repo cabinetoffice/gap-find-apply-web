@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import Survey, { getServerSideProps } from './survey.page';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
 import { merge } from 'lodash';
-import { postSurveyResponse } from '../../../../../services/satisfactionSurveyService';
+import { postSurveyResponse } from '../../../../../services/SatisfactionSurveyService';
 
 jest.mock('next/config', () => () => {
   return {
@@ -19,6 +19,14 @@ jest.mock('next/config', () => () => {
 jest.mock('next/dist/server/api-utils/node');
 jest.mock('../../../../../services/SessionService');
 jest.mock('../../../../../services/SatisfactionSurveyService');
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      pathname: '',
+      replace: jest.fn(),
+    };
+  },
+}));
 
 const mockSchemeParams = {
   backendUrl: 'BACKEND_URL',
@@ -97,7 +105,6 @@ describe('Survey page', () => {
     });
   });
 
-  // TODO - fix
   describe('When handling submission', () => {
     it('Should call postSurveyResponse when submitted', () => {
       render(component);
@@ -111,9 +118,12 @@ describe('Survey page', () => {
         target: { value: 'Very satisfied!' },
       });
 
+      fireEvent.click(screen.getByText('Send feedback'));
+
       expect(postSurveyResponse).toHaveBeenCalledTimes(1);
       expect(postSurveyResponse).toHaveBeenCalledWith(
-        expect.any(FormData),
+        '5',
+        'Very satisfied!',
         'SESSION_ID',
         'BACKEND_URL',
         'advert'
