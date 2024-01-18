@@ -61,7 +61,7 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
             </p>
 
             {hasApplicationData ? (
-              <table className="govuk-table table">
+              <table className="govuk-table">
                 <thead className="govuk-table__head">
                   <tr className="govuk-table__row">
                     <th
