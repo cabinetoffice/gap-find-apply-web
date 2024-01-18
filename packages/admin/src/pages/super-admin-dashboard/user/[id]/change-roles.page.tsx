@@ -29,7 +29,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
     const userDepartment = (await getUserById(userId, jwt)).department;
 
-    if (newRolesAreAdminRoles(newUserRoles) && !isAlreadyAdmin(oldUserRoles)) {
+    if (hasAdminRole(newUserRoles) && !hasAdminRole(oldUserRoles)) {
       departmentPageUrl += `?newRoles=${newUserRoles}`;
       return { userDepartment, newUserRoles, userId, departmentPageUrl };
     }
@@ -57,19 +57,15 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     departmentPageUrl,
   }: Awaited<ReturnType<typeof handleRequest>>) {
     const userHasDepartment = userDepartment !== null;
-    const userBecomingApplicant = !newRolesAreAdminRoles(newUserRoles);
+    const userBecomingApplicant = !hasAdminRole(newUserRoles);
 
     return userHasDepartment || userBecomingApplicant
       ? `/super-admin-dashboard/user/${userId}`
       : departmentPageUrl;
   }
 
-  function newRolesAreAdminRoles(newRoles: string[]) {
-    return newRoles.some((role) => ADMIN_ROLES_IDS.includes(role));
-  }
-
-  function isAlreadyAdmin(oldRoles: string[]) {
-    return oldRoles.some((role) => ADMIN_ROLES_IDS.includes(role));
+  function hasAdminRole(roles: string[]) {
+    return roles.some((role) => ADMIN_ROLES_IDS.includes(role));
   }
 
   return QuestionPageGetServerSideProps<

@@ -95,9 +95,7 @@ describe('Edit role page', () => {
 
   test('Should redirect to change department page as User who is being newly promoted to ADMIN', async () => {
     mockParseBody.mockResolvedValue({ newUserRoles: ['3', '4'] });
-    mockGetUserById.mockResolvedValue(
-      getMockUser([getMockRoles()[0], getMockRoles()[1]])
-    );
+    mockGetUserById.mockResolvedValue(getMockUser(getMockRoles().slice(0, 1)));
     const getDefaultContext = () => ({
       params: { id: '1' },
       req: { method: 'POST' },
@@ -114,9 +112,7 @@ describe('Edit role page', () => {
 
   test('Should redirect to account overview page as User who is being demoted from ADMIN to APPLICANT', async () => {
     mockParseBody.mockResolvedValue({ newUserRoles: ['1', '2'] });
-    mockGetUserById.mockResolvedValue(
-      getMockUser([getMockRoles()[0], getMockRoles()[1], getMockRoles()[2]])
-    );
+    mockGetUserById.mockResolvedValue(getMockUser(getMockRoles().slice(0, 3)));
     const getDefaultContext = () => ({
       params: { id: '1' },
       req: { method: 'POST' },
@@ -133,7 +129,7 @@ describe('Edit role page', () => {
   test('Should redirect to account page as ADMIN user (with a department) being promoted to SUPER ADMIN', async () => {
     mockParseBody.mockResolvedValue({ newUserRoles: ['4'] });
     mockGetUserById.mockResolvedValue(
-      getMockUser([getMockRoles()[0], getMockRoles()[1], getMockRoles()[2]], {
+      getMockUser(getMockRoles().slice(0, 3), {
         id: '1',
         name: 'Test Department',
       })
