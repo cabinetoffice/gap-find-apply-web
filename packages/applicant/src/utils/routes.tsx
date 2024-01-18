@@ -68,6 +68,8 @@ export const routes = {
     `/service-error?serviceErrorProps=${JSON.stringify(serviceErrorProps)}`,
   api: {
     submissions: {
+      downloadSummary: (submissionId: string) =>
+        `/api/routes/submissions/${submissionId}/download-summary`,
       section: (grantSubmissionId: string, sectionId: string) =>
         `/api/routes/submissions/${grantSubmissionId}/sections/${sectionId}`,
       question: (
