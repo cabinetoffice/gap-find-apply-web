@@ -223,6 +223,7 @@ export interface QuestionPostBody {
   response?: string;
   multiResponse?: string[];
   attachment?: File;
+  shouldUpdateSectionStatus: boolean;
 }
 export interface ApplicationDetailsInterface {
   grantSchemeId: string;

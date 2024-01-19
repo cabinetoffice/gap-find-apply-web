@@ -44,7 +44,7 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
       <Meta title="View my applications - Apply for a grant" />
       <Layout backBtnUrl={routes.dashboard}>
         <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
+          <div className="govuk-!-width-full">
             <h1
               className="govuk-heading-l"
               id="main-content-focus"
@@ -66,28 +66,28 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                   <tr className="govuk-table__row">
                     <th
                       scope="col"
-                      className="govuk-table__header"
+                      className="govuk-table__header govuk-!-width-one-quarter"
                       data-cy="cy-grant-table-header-name"
                     >
                       Grant
                     </th>
                     <th
                       scope="col"
-                      className="govuk-table__header"
+                      className="govuk-table__header govuk-!-width-one-quarter"
                       data-cy="cy-grant-table-header-status"
                     >
                       Status
                     </th>
                     <th
                       scope="col"
-                      className="govuk-table__header"
+                      className="govuk-table__header govuk-!-width-one-quarter"
                       data-cy="cy-grant-table-header-submitted-date"
                     >
                       Submitted
                     </th>
                     <th
                       scope="col"
-                      className="govuk-table__header"
+                      className="govuk-table__header govuk-!-width-one-quarter"
                       data-cy="cy-grant-table-header-actions"
                     >
                       Actions
@@ -130,17 +130,18 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
 const ApplicationRow = (application) => {
   const applicationName = application.applicationName;
   const submissionId = application.grantSubmissionId;
-  // TODO This should be done on the backend https://technologyprogramme.atlassian.net/browse/GAP-2390
-  const submissionStatus =
-    application.grantApplicationStatus === 'REMOVED'
-      ? 'GRANT_CLOSED'
-      : application.submissionStatus;
+  const isRemovedAndNotSubmitted =
+    application.grantApplicationStatus === 'REMOVED' &&
+    application.submissionStatus !== 'SUBMITTED';
+  const submissionStatus = isRemovedAndNotSubmitted
+    ? 'GRANT_CLOSED'
+    : application.submissionStatus;
   const applicationStatusTag = APPLICATION_STATUS_TAGS[submissionStatus];
-  const isSubmitted = submissionStatus === 'SUBMITTED';
-  const applicationLinkText = isSubmitted ? 'View' : 'Edit';
-  const applicationLink = isSubmitted
-    ? '/apply/applicant' + routes.submissions.summary(submissionId)
-    : '/apply/applicant' + routes.submissions.sections(submissionId);
+  const isInProgress = submissionStatus === 'IN_PROGRESS';
+  const applicationLinkText = isInProgress ? 'Edit' : 'View';
+  const applicationLink = isInProgress
+    ? '/apply/applicant' + routes.submissions.sections(submissionId)
+    : '/apply/applicant' + routes.submissions.summary(submissionId);
   return (
     <tr key={submissionId} className="govuk-table__row">
       <th scope="row" className="govuk-table__cell">
