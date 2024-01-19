@@ -167,8 +167,6 @@ async function getApplicationStatusBySubmissionId(
 async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
   const { pathname } = req.nextUrl;
   const submissionId = pathname.split('/')[2];
-  console.log('submissionId', submissionId ? submissionId : 'no submissionId');
-  console.log('pathname', pathname);
 
   if (submissionId) {
     const applicationStatus = await getApplicationStatusBySubmissionId(
@@ -176,7 +174,6 @@ async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
       jwt
     );
     if (applicationStatus === 'REMOVED') {
-      console.log('middleware redirected');
       return NextResponse.redirect(process.env.HOST + GRANT_CLOSED_REDIRECT);
     }
   }

@@ -347,4 +347,23 @@ describe('API Handler Tests', () => {
       )}`
     );
   });
+
+  it('should redirect to the grant-is-closed paged when the slug is null and the grantwebpageurl is grant-is-closed', async () => {
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    const req = (overrides?: Overrides<jest.Mock>) =>
+      merge(
+        {
+          query: {
+            slug: undefined,
+            grantWebpageUrl: 'grant-is-closed',
+          },
+        },
+        overrides || {}
+      ) as unknown as NextApiRequest;
+    await handler(req(), res());
+
+    expect(mockedRedirect).toHaveBeenCalledWith(
+      `http://localhost/grant-is-closed`
+    );
+  });
 });

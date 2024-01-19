@@ -42,15 +42,6 @@ export const getServerSideProps: GetServerSideProps<
     jwt
   );
 
-  if (grantApplicationStatus === 'REMOVED') {
-    return {
-      redirect: {
-        destination: `/grant-is-closed`,
-        permanent: false,
-      },
-    };
-  }
-
   const hasBeenSubmitted = await hasSubmissionBeenSubmitted(submissionId, jwt);
 
   await initiateCSRFCookie(req, res);
