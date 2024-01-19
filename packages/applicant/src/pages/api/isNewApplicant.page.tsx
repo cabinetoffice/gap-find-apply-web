@@ -1,9 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { getJwtFromCookies } from '../../utils/jwt';
-import { APIGlobalHandler } from '../../utils/api-middleware';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const grantApplicantService = GrantApplicantService.getInstance();
   const doesApplicantExist = await grantApplicantService.doesApplicantExist(
     getJwtFromCookies(req)
@@ -18,6 +20,3 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       )
     : res.redirect(process.env.APPLICANT_FRONTEND_URL);
 }
-
-export default (req: NextApiRequest, res: NextApiResponse) =>
-  APIGlobalHandler(req, res, handler);
