@@ -33,7 +33,8 @@ export default async function postQuestion<B, _R>(
   submissionId: string,
   sectionId: string,
   questionId: string,
-  questionType: string
+  questionType: string,
+  fromSummarySubmissionPage: boolean
 ): Promise<
   | {
       body: B;
@@ -43,7 +44,7 @@ export default async function postQuestion<B, _R>(
     }
   | { redirect: { destination: string; statusCode: 302 } }
 > {
-  let body: B;
+  let body: any;
   let isRefererCheckYourAnswerScreen: boolean;
   try {
     body = await parseBody(req, '1mb');
@@ -64,8 +65,17 @@ export default async function postQuestion<B, _R>(
     isRefererCheckYourAnswerScreen =
       Object.keys(body).indexOf('isRefererCheckYourAnswerScreen') !== -1;
 
+    const shouldRedirectToSummary =
+      fromSummarySubmissionPage && body?.ELIGIBILITY !== 'No';
+
     const backendResponse = await serviceFunc(
-      createRequestBody(body, questionId, submissionId, questionType)
+      createRequestBody(
+        body,
+        questionId,
+        submissionId,
+        questionType,
+        shouldRedirectToSummary
+      )
     );
 
     const isResponseAccepted = backendResponse?.responseAccepted;
@@ -79,17 +89,23 @@ export default async function postQuestion<B, _R>(
       Object.keys(body).indexOf('save-and-continue') !== -1;
     const isSaveAndExit = Object.keys(body).indexOf('save-and-exit') !== -1;
 
+    const shouldContinueToNextQuestion =
+      nextNavigation &&
+      !nextNavigation?.sectionList &&
+      !isRefererCheckYourAnswerScreen;
+
     if (isResponseAccepted && isSaveAndContinue) {
-      const redirectUrl =
-        nextNavigation &&
-        !nextNavigation?.sectionList &&
-        !isRefererCheckYourAnswerScreen
-          ? routes.submissions.question(
-              submissionId,
-              sectionId,
-              nextNavigation.questionId
-            )
-          : routes.submissions.section(submissionId, sectionId);
+      let redirectUrl = routes.submissions.section(submissionId, sectionId);
+
+      if (shouldRedirectToSummary) {
+        redirectUrl = routes.submissions.summary(submissionId);
+      } else if (shouldContinueToNextQuestion) {
+        redirectUrl = routes.submissions.question(
+          submissionId,
+          sectionId,
+          nextNavigation.questionId
+        );
+      }
       return {
         redirect: {
           destination: redirectUrl,
@@ -224,7 +240,8 @@ export const createRequestBody = (
   body,
   questionId: string,
   submissionId: string,
-  questionType: string
+  questionType: string,
+  shouldRedirectToSummary: boolean
 ): QuestionPostBody => {
   const cleanedBody = body as unknown as CleanedBody;
   const isMultiSelectionQuestion = questionType === 'MultipleSelection';
@@ -250,6 +267,7 @@ export const createRequestBody = (
     submissionId,
     questionId,
     multiResponse: isResponseAnArray ? body[questionId] : multiResponseValues,
+    shouldUpdateSectionStatus: !shouldRedirectToSummary,
   };
   return requestBody;
 };
