@@ -98,7 +98,7 @@ describe('getServerSideProps', () => {
       getContext()
     )) as NextGetServerSidePropsResponse;
 
-    expect(response.props.grantSchemeId).toStrictEqual('testSchemeId');
+    expect(response.props.applicationId).toStrictEqual('testApplicationId');
     expect(response.props.applyToApplicationUrl).toStrictEqual(
       '/applications/testApplicationId'
     );
@@ -113,7 +113,7 @@ describe('getServerSideProps', () => {
       getContext()
     )) as NextGetServerSidePropsResponse;
 
-    expect(response.props.grantSchemeId).toStrictEqual('testSchemeId');
+    expect(response.props.applicationId).toStrictEqual('testApplicationId');
     expect(response.props.applyToApplicationUrl).toStrictEqual(
       '/mandatory-questions/start?schemeId=testSchemeId'
     );
