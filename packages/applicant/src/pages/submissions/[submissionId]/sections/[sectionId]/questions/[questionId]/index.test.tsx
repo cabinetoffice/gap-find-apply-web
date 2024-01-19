@@ -217,6 +217,7 @@ describe('getServerSideProps', () => {
           questionData: props,
           grantName: grantName,
           isRefererCheckYourAnswerScreen: false,
+          queryParams: '',
         },
       });
       expect(getQuestionById).toHaveBeenCalled();
@@ -257,6 +258,8 @@ describe('getServerSideProps', () => {
           sectionId: '87654321',
           questionId: '00000000',
           grantName: 'Test Grant Application',
+          queryParams:
+            'errors%5B%5D=%7B%22fieldName%22%3A%22questionId%22%2C%20%22errorMessage%22%3A%22error%22%7D',
         },
         query: {
           'errors[]': '{"fieldName":"questionId", "errorMessage":"error"}',
@@ -273,6 +276,8 @@ describe('getServerSideProps', () => {
           },
           grantName: grantName,
           isRefererCheckYourAnswerScreen: false,
+          queryParams:
+            'errors%5B%5D=%7B%22fieldName%22%3A%22questionId%22%2C%20%22errorMessage%22%3A%22error%22%7D',
         },
       });
       expect(getQuestionById).toHaveBeenCalled();
@@ -331,6 +336,7 @@ describe('getServerSideProps', () => {
           sectionId: '87654321',
           questionId: 'questionIdTest',
           grantName: grantName,
+          queryParams: '',
         },
       } as unknown as GetServerSidePropsContext;
       const fieldErrors = [
@@ -355,6 +361,7 @@ describe('getServerSideProps', () => {
           },
           grantName,
           isRefererCheckYourAnswerScreen: false,
+          queryParams: '',
         },
       });
       expect(getQuestionById).toHaveBeenCalled();
@@ -382,6 +389,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -405,6 +413,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={true}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -426,6 +435,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -445,6 +455,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -471,6 +482,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={true}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -494,6 +506,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -520,6 +533,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -543,6 +557,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -573,6 +588,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -597,6 +613,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -621,6 +638,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -645,6 +663,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -665,6 +684,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -692,6 +712,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -714,6 +735,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -751,6 +773,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -790,6 +813,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -824,6 +848,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -849,6 +874,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -880,6 +906,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -906,6 +933,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -928,6 +956,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -953,6 +982,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -974,6 +1004,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -1000,6 +1031,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -1032,6 +1064,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -1060,6 +1093,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -1097,6 +1131,7 @@ describe('QuestionPage', () => {
             grantName="grant name"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -1117,6 +1152,7 @@ describe('QuestionPage', () => {
             grantName="grant name"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -1144,6 +1180,7 @@ describe('QuestionPage', () => {
             grantName="grant name"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -1168,6 +1205,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -1188,6 +1226,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
@@ -1227,6 +1266,7 @@ describe('QuestionPage', () => {
             grantName="Test Grant Application"
             csrfToken="testCSRFToken"
             isRefererCheckYourAnswerScreen={false}
+            queryParams={''}
           />
         </RouterContext.Provider>
       );
