@@ -199,6 +199,21 @@ describe('getServerSideProps', () => {
     jest.clearAllMocks();
   });
 
+  it('should return a redirect to grant-is-closed when submission is REMOVED ', async () => {
+    mockGetApplicationStatusBySchemeId.mockResolvedValue('REMOVED');
+    mockGetSubmissionById.mockResolvedValue(propsWithAllValues);
+    mockGetJwtFromCookies.mockReturnValue('testJwt');
+    mockHasSubmissionBeenSubmitted.mockResolvedValue(false);
+
+    const response = await getServerSideProps(context);
+    expect(response).toEqual({
+      redirect: {
+        destination: '/grant-is-closed',
+        permanent: false,
+      },
+    });
+  });
+
   it('should return sections, submissionId, applicationName', async () => {
     mockGetApplicationStatusBySchemeId.mockResolvedValue('PUBLISHED');
     mockGetSubmissionById.mockResolvedValue(propsWithAllValues);
