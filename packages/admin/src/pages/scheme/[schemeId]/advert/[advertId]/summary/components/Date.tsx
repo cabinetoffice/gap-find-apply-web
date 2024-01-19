@@ -41,10 +41,25 @@ export function Date({
 
     // Specific handling for the grant
     if (
-      date.isBefore(moment().hour(23).minute(59)) &&
-      question.id === 'grantApplicationOpenDate'
+      question.id === 'grantApplicationOpenDate' ||
+      question.id === 'grantApplicationCloseDate'
     ) {
-      formattedDateTime = date.format('D MMMM YYYY');
+      if (date.hours() === 0 && date.minutes() === 0) {
+        const midnightString = '(\\M\\i\\d\\n\\i\\g\\h\\t)';
+        if (question.id === 'grantApplicationCloseDate') {
+          date.subtract(1, 'minute');
+          formattedDateTime = date.format(
+            `D MMMM YYYY, ${midnightString} hh:mm A`
+          );
+        } else {
+          date.add(1, 'minute');
+          formattedDateTime = date.format(
+            `D MMMM YYYY, ${midnightString} \\0:mm A`
+          );
+        }
+      } else {
+        formattedDateTime = date.format('D MMMM YYYY, hh:mm A');
+      }
     } else {
       formattedDateTime = date.format('D MMMM YYYY, HH:mma');
     }

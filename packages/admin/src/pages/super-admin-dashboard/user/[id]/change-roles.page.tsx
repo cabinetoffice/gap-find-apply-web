@@ -18,13 +18,23 @@ type PageBodyResponse = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
+  const APPLICANT_ROLES_IDS = ['1', '2'];
+  const ADMIN_ROLES_IDS = ['3', '4', '5'];
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
-    const findAndApplicantRoles = ['1', '2'];
-    const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
+    let departmentPageUrl = `/super-admin-dashboard/user/${userId}/change-department`;
+    const oldUserRoles = (await getUserById(userId, jwt)).roles.map((role) =>
+      String(role.id)
+    );
+    const newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
     const userDepartment = (await getUserById(userId, jwt)).department;
+
+    if (hasAdminRole(newUserRoles) && !hasAdminRole(oldUserRoles)) {
+      departmentPageUrl += `?newRoles=${newUserRoles}`;
+      return { userDepartment, newUserRoles, userId, departmentPageUrl };
+    }
     await updateUserRoles(userId, newUserRoles, jwt);
-    return { userDepartment, newUserRoles, userId };
+    return { userDepartment, newUserRoles, userId, departmentPageUrl };
   }
 
   async function fetchPageData(jwt: string) {
@@ -44,17 +54,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     userDepartment,
     newUserRoles,
     userId,
+    departmentPageUrl,
   }: Awaited<ReturnType<typeof handleRequest>>) {
-    const ADMIN_ROLES_IDS = ['3', '4', '5'];
-
     const userHasDepartment = userDepartment !== null;
-    const userBecomingApplicant = !newUserRoles.some((role) =>
-      ADMIN_ROLES_IDS.includes(role)
-    );
+    const userBecomingApplicant = !hasAdminRole(newUserRoles);
 
     return userHasDepartment || userBecomingApplicant
       ? `/super-admin-dashboard/user/${userId}`
-      : `/super-admin-dashboard/user/${userId}/change-department`;
+      : departmentPageUrl;
+  }
+
+  function hasAdminRole(roles: string[]) {
+    return roles.some((role) => ADMIN_ROLES_IDS.includes(role));
   }
 
   return QuestionPageGetServerSideProps<
