@@ -14,6 +14,12 @@ export default async function handler(
   const contentfulSlug = req.query.slug as string;
   const grantWebpageUrl = req.query.grantWebpageUrl as string;
   const jwt = getJwtFromCookies(req);
+
+  if (contentfulSlug === undefined && grantWebpageUrl == 'grant-is-closed') {
+    const redirectUrl = `${process.env.HOST}/grant-is-closed`;
+    return res.redirect(redirectUrl);
+  }
+
   try {
     const { isAdvertInContentful } = await checkIfGrantExistsInContentful(
       contentfulSlug,
