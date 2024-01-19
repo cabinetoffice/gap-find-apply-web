@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import { GetServerSidePropsContext } from 'next';
 import {
   QuestionSummary,
   QuestionWithOptionsSummary,
@@ -176,7 +177,7 @@ describe('Question Options', () => {
           res: { getHeader: () => 'testCSRFToken' },
         },
         overrides
-      );
+      ) as unknown as GetServerSidePropsContext;
 
     const mockQuestionSummary: QuestionWithOptionsSummary = {
       fieldTitle: 'Test Section Field Title',
