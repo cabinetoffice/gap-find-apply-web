@@ -130,11 +130,12 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
 const ApplicationRow = (application) => {
   const applicationName = application.applicationName;
   const submissionId = application.grantSubmissionId;
-  // TODO This should be done on the backend https://technologyprogramme.atlassian.net/browse/GAP-2390
-  const submissionStatus =
-    application.grantApplicationStatus === 'REMOVED'
-      ? 'GRANT_CLOSED'
-      : application.submissionStatus;
+  const isRemovedAndNotSubmitted =
+    application.grantApplicationStatus === 'REMOVED' &&
+    application.submissionStatus !== 'SUBMITTED';
+  const submissionStatus = isRemovedAndNotSubmitted
+    ? 'GRANT_CLOSED'
+    : application.submissionStatus;
   const applicationStatusTag = APPLICATION_STATUS_TAGS[submissionStatus];
   const isInProgress = submissionStatus === 'IN_PROGRESS';
   const applicationLinkText = isInProgress ? 'Edit' : 'View';

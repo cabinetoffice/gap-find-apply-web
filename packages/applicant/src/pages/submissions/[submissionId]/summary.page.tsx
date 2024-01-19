@@ -153,7 +153,7 @@ export default function SubmissionSummary({
               <h1 className="govuk-heading-s" data-cy="cy-download-header">
                 Download a copy of your application
               </h1>
-              <p className="govuk-body govuk-!-margin-bottom-7">
+              <p className="govuk-body">
                 You can{' '}
                 <Link
                   href={routes.api.submissions.downloadSummary(
@@ -173,7 +173,7 @@ export default function SubmissionSummary({
                     href={publicRuntimeConfig.subPath + routes.applications}
                     role="button"
                     draggable="false"
-                    className="govuk-button govuk-button--secondary"
+                    className="govuk-button govuk-button--secondary govuk-!-margin-top-6"
                     data-module="govuk-button"
                     data-cy="cy-return-to-profile-link"
                   >
@@ -201,7 +201,7 @@ export default function SubmissionSummary({
                       }
                       role="button"
                       draggable="false"
-                      className="govuk-button"
+                      className="govuk-button govuk-!-margin-top-6"
                       data-module="govuk-button"
                       data-cy="cy-submit-application-link"
                     >
