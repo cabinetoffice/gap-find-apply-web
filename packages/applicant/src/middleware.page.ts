@@ -116,8 +116,8 @@ export async function middleware(req: NextRequest) {
   }
 
   if (
-    mandatoryQuestionsJourneyPattern.test({ pathname: req.nextUrl.pathname }) ||
-    submissionJourneyPattern.test({ pathname: req.nextUrl.pathname })
+    submissionJourneyPattern.test({ pathname: req.nextUrl.pathname }) ||
+    mandatoryQuestionsJourneyPattern.test({ pathname: req.nextUrl.pathname })
   ) {
     const shouldRedirect = await shouldRedirectToClosedGrantPage(jwt, req);
     if (shouldRedirect) {
@@ -149,30 +149,32 @@ export async function middleware(req: NextRequest) {
 }
 
 async function getApplicationStatusBySubmissionId(
-  submissionId: string,
-  jwt: string
+  id: string,
+  jwt: string,
+  pathname: string
 ) {
-  const data = await fetch(
-    `${BACKEND_HOST}/submissions/${submissionId}/application/status`,
-    {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-        Accept: 'application/json',
-      },
-    }
-  );
+  const url = pathname.includes('mandatory-questions')
+    ? `${BACKEND_HOST}/grant-mandatory-questions/${id}/application/status`
+    : `${BACKEND_HOST}/submissions/${id}/application/status`;
+  const data = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      Accept: 'application/json',
+    },
+  });
   return await data.text();
 }
 
 async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const submissionId = pathname.split('/')[2];
+  const id = pathname.split('/')[2];
 
-  if (!submissionId) return;
+  if (!id) return;
 
   const applicationStatus = await getApplicationStatusBySubmissionId(
-    submissionId,
-    jwt
+    id,
+    jwt,
+    pathname
   );
 
   if (applicationStatus === 'REMOVED') {
@@ -197,7 +199,7 @@ const mandatoryQuestionsStartPattern = new URLPattern({
 });
 
 const mandatoryQuestionsJourneyPattern = new URLPattern({
-  pathname: '/mandatory-questions/:path*',
+  pathname: '/mandatory-questions/:questionUuid([0-9a-f-]+)/:path*',
 });
 
 const submissionJourneyPattern = new URLPattern({

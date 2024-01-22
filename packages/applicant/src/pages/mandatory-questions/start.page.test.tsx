@@ -151,6 +151,21 @@ describe('Mandatory Questions Start', () => {
         },
       });
     });
+
+    it('should redirect if the application form status is REMOVED', async () => {
+      (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+      spiedExistBySchemeIdAndApplicantId.mockResolvedValue(false);
+      mockedGetApplicationStatusBySchemeId.mockResolvedValue('REMOVED');
+
+      const response = await getServerSideProps(getContext(getDefaultContext));
+
+      expect(response).toEqual({
+        redirect: {
+          destination: `/grant-is-closed`,
+          permanent: false,
+        },
+      });
+    });
   });
 
   describe('UI', () => {
