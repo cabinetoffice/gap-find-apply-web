@@ -123,7 +123,8 @@ export default async function postQuestion<B, _R>(
       };
     }
   } catch (err: any) {
-    if (err.response?.data) {
+    console.log('postQuestion', submissionId, err);
+    if (err.response?.data?.errors) {
       const errorsArray: ValidationError[] = [];
       const { errors } = err.response.data;
       errors.map((error: ValidationError) => {
