@@ -46,14 +46,6 @@ export async function getServerSideProps({
     };
   }
   const applicationStatus = await getApplicationStatusBySchemeId(schemeId, jwt);
-  if (applicationStatus === 'REMOVED') {
-    return {
-      redirect: {
-        destination: '/grant-is-closed',
-        permanent: false,
-      },
-    };
-  }
   return {
     props: {
       schemeId,

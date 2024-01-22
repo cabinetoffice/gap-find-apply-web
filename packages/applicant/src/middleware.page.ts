@@ -4,9 +4,12 @@ import cookieParser from 'cookie-parser';
 import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { verifyToken } from './services/JwtService';
 
+const BACKEND_HOST = process.env.BACKEND_HOST;
+
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
 const HOST = process.env.HOST;
 const ONE_LOGIN_ENABLED = process.env.ONE_LOGIN_ENABLED === 'true';
+const GRANT_CLOSED_REDIRECT = '/grant-is-closed';
 
 // //it will apply the middleware to all those paths
 export const config = {
@@ -112,6 +115,16 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
+  if (
+    mandatoryQuestionsJourneyPattern.test({ pathname: req.nextUrl.pathname }) ||
+    submissionJourneyPattern.test({ pathname: req.nextUrl.pathname })
+  ) {
+    const shouldRedirect = await shouldRedirectToClosedGrantPage(jwt, req);
+    if (shouldRedirect) {
+      return shouldRedirect;
+    }
+  }
+
   try {
     const validJwtResponse = await verifyToken(jwt);
     const expiresAt = new Date(validJwtResponse.expiresAt);
@@ -135,6 +148,38 @@ export async function middleware(req: NextRequest) {
   }
 }
 
+async function getApplicationStatusBySubmissionId(
+  submissionId: string,
+  jwt: string
+) {
+  const data = await fetch(
+    `${BACKEND_HOST}/submissions/${submissionId}/application/status`,
+    {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+        Accept: 'application/json',
+      },
+    }
+  );
+  return await data.text();
+}
+
+async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const submissionId = pathname.split('/')[2];
+
+  if (!submissionId) return;
+
+  const applicationStatus = await getApplicationStatusBySubmissionId(
+    submissionId,
+    jwt
+  );
+
+  if (applicationStatus === 'REMOVED') {
+    return NextResponse.redirect(process.env.HOST + GRANT_CLOSED_REDIRECT);
+  }
+}
+
 const newApplicationPattern = new URLPattern({
   pathname: '/applications/:applicationId([0-9]+)',
 });
@@ -149,4 +194,12 @@ const signInDetailsPage = new URLPattern({
 
 const mandatoryQuestionsStartPattern = new URLPattern({
   pathname: '/mandatory-questions/start',
+});
+
+const mandatoryQuestionsJourneyPattern = new URLPattern({
+  pathname: '/mandatory-questions/:path*',
+});
+
+const submissionJourneyPattern = new URLPattern({
+  pathname: '/submissions/:path*',
 });
