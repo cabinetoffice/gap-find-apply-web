@@ -168,14 +168,15 @@ async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
   const { pathname } = req.nextUrl;
   const submissionId = pathname.split('/')[2];
 
-  if (submissionId) {
-    const applicationStatus = await getApplicationStatusBySubmissionId(
-      submissionId,
-      jwt
-    );
-    if (applicationStatus === 'REMOVED') {
-      return NextResponse.redirect(process.env.HOST + GRANT_CLOSED_REDIRECT);
-    }
+  if (!submissionId) return;
+
+  const applicationStatus = await getApplicationStatusBySubmissionId(
+    submissionId,
+    jwt
+  );
+
+  if (applicationStatus === 'REMOVED') {
+    return NextResponse.redirect(process.env.HOST + GRANT_CLOSED_REDIRECT);
   }
 }
 
