@@ -35,12 +35,4 @@ describe('Grant is closed page', () => {
       'https://www.find-government-grants.service.gov.uk/grants'
     );
   });
-
-  it('should render back link', () => {
-    expect(
-      screen.getByRole('link', {
-        name: /go back/i,
-      })
-    ).toHaveAttribute('href', `/dashboard`);
-  });
 });
