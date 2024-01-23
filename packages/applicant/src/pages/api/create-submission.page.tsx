@@ -10,11 +10,9 @@ import { createSubmission } from '../../services/SubmissionService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import { GrantSchemeService } from '../../services/GrantSchemeService';
+import { APIGlobalHandler } from '../../utils/apiErrorHandler';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   const grantMandatoryQuestionService =
     GrantMandatoryQuestionService.getInstance();
   const grantApplicantService = GrantApplicantService.getInstance();
@@ -120,3 +118,6 @@ function handleError(
   };
   return res.redirect(routes.serviceError(serviceErrorProps));
 }
+
+export default (req: NextApiRequest, res: NextApiResponse) =>
+  APIGlobalHandler(req, res, handler);
