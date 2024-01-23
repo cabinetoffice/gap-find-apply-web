@@ -100,4 +100,49 @@ describe('Middleware', () => {
     );
     process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
   });
+
+  it('redirect to grant-is-closed if it gets a removed response from the API', async () => {
+    const req = new NextRequest(
+      new Request('https://some.website.com/submissions/some-uuid')
+    );
+
+    req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      text: jest.fn().mockResolvedValue('REMOVED'),
+    } as unknown as Response);
+    const res = await middleware(req);
+    expect(res.status).toBe(307);
+    expect(res.headers.get('Location')).toBe(
+      `${process.env.HOST}/grant-is-closed`
+    );
+  });
+
+  it('redirect to grant-is-closed if it gets a removed response from the API for mandatory questions', async () => {
+    const req = new NextRequest(
+      new Request('https://some.website.com/mandatory-questions/000/some-url')
+    );
+
+    req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      text: jest.fn().mockResolvedValue('REMOVED'),
+    } as unknown as Response);
+    const res = await middleware(req);
+    expect(res.status).toBe(307);
+    expect(res.headers.get('Location')).toBe(
+      `${process.env.HOST}/grant-is-closed`
+    );
+  });
+
+  it('does not redirect to grant is closed if mandatory questions start page', async () => {
+    const req = new NextRequest(
+      new Request(
+        'https://some.website.com/mandatory-questions/start?=someuuid'
+      )
+    );
+
+    req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
+    const res = await middleware(req);
+    expect(res.status).toBe(307);
+    expect(res.headers.get('Location')).toBe(`${process.env.HOST}`);
+  });
 });
