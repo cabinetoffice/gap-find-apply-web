@@ -39,7 +39,7 @@ describe('Next API Handler', () => {
     );
     expect(res.setHeader).toHaveBeenCalledWith(
       'Content-Disposition',
-      'attachment; filename=submission.odt'
+      'attachment; filename=submission.zip'
     );
     expect(res.send).toHaveBeenCalledWith(
       Buffer.from('mocked file data', 'binary')

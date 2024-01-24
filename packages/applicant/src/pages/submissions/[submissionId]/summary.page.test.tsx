@@ -337,7 +337,7 @@ describe('SubmissionSummary', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole('link', {
-        name: 'download a copy of your answers (ODT)',
+        name: 'download a copy of your answers (ZIP)',
       })
     ).toBeInTheDocument();
   });
