@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSessionIdFromCookies } from '../../../src/utils/session';
 import axios from 'axios';
+import { APIGlobalHandler } from '../../utils/apiErrorHandler';
 
 const Logout = async (req: NextApiRequest, res: NextApiResponse) => {
   const sessionCookie = getSessionIdFromCookies(req);
@@ -30,4 +31,5 @@ const logoutAdmin = async (sessionCookie: string) =>
     getAxiosSessionConfig(sessionCookie)
   );
 
-export default Logout;
+export default (req: NextApiRequest, res: NextApiResponse) =>
+  APIGlobalHandler(req, res, Logout);

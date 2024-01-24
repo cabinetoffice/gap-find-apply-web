@@ -16,6 +16,7 @@ import { initiateCSRFCookie } from '../../../utils/csrf';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { ProcessMultiResponse } from './sections/[sectionId]/processMultiResponse';
+import { getQuestionUrl } from './sections/[sectionId]/index.page';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -41,15 +42,6 @@ export const getServerSideProps: GetServerSideProps<
     grantSchemeId,
     jwt
   );
-
-  if (grantApplicationStatus === 'REMOVED') {
-    return {
-      redirect: {
-        destination: `/grant-is-closed`,
-        permanent: false,
-      },
-    };
-  }
 
   const hasBeenSubmitted = await hasSubmissionBeenSubmitted(submissionId, jwt);
 
@@ -172,7 +164,7 @@ export default function SubmissionSummary({
                     href={publicRuntimeConfig.subPath + routes.applications}
                     role="button"
                     draggable="false"
-                    className="govuk-button govuk-button--secondary"
+                    className="govuk-button govuk-button--secondary govuk-!-margin-top-6"
                     data-module="govuk-button"
                     data-cy="cy-return-to-profile-link"
                   >
@@ -200,7 +192,7 @@ export default function SubmissionSummary({
                       }
                       role="button"
                       draggable="false"
-                      className="govuk-button"
+                      className="govuk-button govuk-!-margin-top-6"
                       data-module="govuk-button"
                       data-cy="cy-submit-application-link"
                     >
@@ -248,13 +240,21 @@ export const SectionCard = ({
   );
 };
 
-export const QuestionRow = ({ question, readOnly }) => {
+export const QuestionRow = ({
+  question,
+  section,
+  submissionId,
+  mandatoryQuestionId,
+  readOnly,
+}) => {
   const { questionId, fieldTitle, multiResponse, responseType, response } =
     question;
+  const hasMultiResponse =
+    multiResponse?.length > 0 && multiResponse.some(Boolean);
   return (
     <div className="govuk-summary-list__row">
       <dt className="govuk-summary-list__key">{fieldTitle}</dt>
-      {multiResponse ? (
+      {hasMultiResponse ? (
         <ProcessMultiResponse
           data={multiResponse}
           id={questionId}
@@ -276,16 +276,20 @@ export const QuestionRow = ({ question, readOnly }) => {
           aria-describedby={`change-button-${questionId}`}
         >
           <Link
-            href={''}
+            href={getQuestionUrl(
+              section.sectionId,
+              questionId,
+              mandatoryQuestionId,
+              submissionId,
+              'fromSubmissionSummaryPage'
+            )}
             id={`change-button-${questionId}`}
-            style={{ pointerEvents: 'none' }}
           >
             <a
               className="govuk-link govuk-link--no-visited-state"
               data-cy={`cy-section-details-navigation-${questionId}`}
-              style={{ pointerEvents: 'none' }}
             >
-              {response || multiResponse ? 'Change' : 'Add'}
+              {response || hasMultiResponse ? 'Change' : 'Add'}
             </a>
           </Link>
         </dd>

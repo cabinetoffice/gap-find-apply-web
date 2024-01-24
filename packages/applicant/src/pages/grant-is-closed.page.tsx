@@ -26,13 +26,6 @@ export default function GrantIsClosedPage() {
               >
                 Find a grant
               </a>
-
-              <a
-                className="govuk-link govuk-link--no-visited-state"
-                href="/dashboard"
-              >
-                Go back
-              </a>
             </div>
           </div>
         </div>

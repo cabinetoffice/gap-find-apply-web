@@ -192,6 +192,7 @@ describe('Submission service ', () => {
         sectionTitle: 'Essential Information',
         sectionStatus: 'COMPLETED',
         questions: [shortAnswer],
+        questionIds: [shortAnswer].map((q) => q.questionId),
       };
       mock.onGet(getSectionByIdUrl).reply(200, mockSectionData);
       const result = await getSectionById(submissionId, sectionId, 'testJwt');
@@ -215,6 +216,7 @@ describe('Submission service ', () => {
         response: 'mockedResponse',
         submissionId,
         questionId,
+        shouldUpdateSectionStatus: true,
       };
       const mockPostResponse: PostQuestionResponse = {
         responseAccepted: true,
