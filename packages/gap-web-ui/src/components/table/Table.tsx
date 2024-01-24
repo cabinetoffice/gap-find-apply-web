@@ -109,7 +109,7 @@ const Table = ({
                     tHeadColumns[cellIndex].isNumber
                       ? ' govuk-table__cell--numeric'
                       : ''
-                  } ${
+                  } govuk-!-padding-2 ${
                     disableBottomRowBorder && rowIndex === rows.length - 1
                       ? ' ' + styles['disable-bottom-row-border']
                       : ''

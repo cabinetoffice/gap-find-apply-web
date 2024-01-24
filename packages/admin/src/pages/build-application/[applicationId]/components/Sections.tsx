@@ -32,7 +32,7 @@ const Sections = ({
               <hr className="govuk-section-break govuk-!-margin-top-2" />
             )}
 
-            <div className={`${styles['table']} govuk-!-padding-1`}>
+            <div className={`${styles['table']}`}>
               <Table
                 caption={
                   sectionIndex >= 2 ? (
@@ -144,19 +144,6 @@ function tableRows(
                       ? 'Edit'
                       : 'View'}
                   </CustomLink>
-
-                  <hr className="govuk-section-break" />
-
-                  {!isSectionEligibilityOrEssential &&
-                    applicationStatus !== 'PUBLISHED' && (
-                      <CustomLink
-                        href={`/build-application/${applicationId}/${section.sectionId}/${question.questionId}/delete-confirmation`}
-                        ariaLabel={`Delete question: ${question.fieldTitle}`}
-                        dataCy={`cy_deleteQuestion-Section-${section.sectionTitle}-${question.fieldTitle}`}
-                      >
-                        Delete
-                      </CustomLink>
-                    )}
                 </div>
               ),
             },
