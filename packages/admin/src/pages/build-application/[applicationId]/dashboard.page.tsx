@@ -145,9 +145,9 @@ const Dashboard = ({
             target="_blank"
             rel="noopener noreferrer"
           >
-            Find a grant (opens in new tab)
+            Find a grant
           </a>
-          .
+          {'.'}
         </p>
 
         <Sections

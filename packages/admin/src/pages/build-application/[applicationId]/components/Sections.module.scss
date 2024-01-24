@@ -1,3 +1,5 @@
+@import '~govuk-frontend/govuk/helpers/colour';
+
 .sections-delete-section-btn-mrg-left {
     font-size: large;
     margin-left: 20px;
@@ -6,4 +8,12 @@
 
 .sections-cta-margin-bottom {
     margin-bottom: -20px;
+}
+
+.caption {
+    background-color: govuk-colour("light-grey");
+}
+
+.table {
+    border: 1px solid govuk-colour("mid-grey");
 }
