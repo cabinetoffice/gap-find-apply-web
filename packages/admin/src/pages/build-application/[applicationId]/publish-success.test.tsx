@@ -25,6 +25,7 @@ describe('Publish success page', () => {
   const getProps = (overrides: any = {}) =>
     merge(
       {
+        applicationId: 'testApplicationId',
         grantSchemeId: 'testGrantSchemeId',
         applyToApplicationUrl: '/applications/testApplicationId',
       },
@@ -54,7 +55,10 @@ describe('Publish success page', () => {
   it('Should render a "Manage this grant" button', () => {
     expect(
       screen.getByRole('button', { name: 'Manage this grant' })
-    ).toHaveAttribute('href', '/apply/scheme/testGrantSchemeId');
+    ).toHaveAttribute(
+      'href',
+      '/apply/build-application/testApplicationId/survey'
+    );
   });
 
   it('Should render an "Add a new grant" link', () => {
@@ -94,7 +98,7 @@ describe('getServerSideProps', () => {
       getContext()
     )) as NextGetServerSidePropsResponse;
 
-    expect(response.props.grantSchemeId).toStrictEqual('testSchemeId');
+    expect(response.props.applicationId).toStrictEqual('testApplicationId');
     expect(response.props.applyToApplicationUrl).toStrictEqual(
       '/applications/testApplicationId'
     );
@@ -109,7 +113,7 @@ describe('getServerSideProps', () => {
       getContext()
     )) as NextGetServerSidePropsResponse;
 
-    expect(response.props.grantSchemeId).toStrictEqual('testSchemeId');
+    expect(response.props.applicationId).toStrictEqual('testApplicationId');
     expect(response.props.applyToApplicationUrl).toStrictEqual(
       '/mandatory-questions/start?schemeId=testSchemeId'
     );

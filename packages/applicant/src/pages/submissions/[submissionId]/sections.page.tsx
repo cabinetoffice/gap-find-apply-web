@@ -42,15 +42,6 @@ export const getServerSideProps: GetServerSideProps<
     getJwtFromCookies(req)
   );
 
-  if (grantApplicationStatus === 'REMOVED') {
-    return {
-      redirect: {
-        destination: `/grant-is-closed`,
-        permanent: false,
-      },
-    };
-  }
-
   const submissionReady = await isSubmissionReady(
     submissionId,
     getJwtFromCookies(req)
@@ -89,7 +80,7 @@ export const getServerSideProps: GetServerSideProps<
       isSubmissionReady: submissionReady,
       hasSubmissionBeenSubmitted: hasBeenSubmitted,
       supportEmail: grantScheme.email || '',
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
       eligibilityCheckPassed: questionData?.question?.response === 'Yes',
     },
   };

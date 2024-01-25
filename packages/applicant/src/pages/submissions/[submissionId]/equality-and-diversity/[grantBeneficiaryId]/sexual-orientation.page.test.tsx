@@ -13,8 +13,8 @@ import { createMockRouter } from '../../../../../testUtils/createMockRouter';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import EqualityAndDiversityPage, {
-  getServerSideProps,
   SexualOrientationPageProps,
+  getServerSideProps,
 } from './sexual-orientation.page';
 
 jest.mock('../../../../../utils/parseBody');
@@ -356,14 +356,28 @@ describe('Sexual orientation page', () => {
         );
       });
 
-      it('Should NOT call postGrantBeneficiaryResponse when the response does NOT contain "supportedSexualOrientation"', async () => {
+      it('Should call postGrantBeneficiaryResponse when the response does NOT contain "supportedSexualOrientation"', async () => {
         mockParseBody.mockResolvedValue({});
 
         await getServerSideProps(getPostContext());
 
         expect(
           postGrantBeneficiaryResponse as jest.Mock
-        ).not.toHaveBeenCalled();
+        ).toHaveBeenNthCalledWith(
+          1,
+          {
+            submissionId: 'testSubmissionId',
+            hasProvidedAdditionalAnswers: false,
+            sexualOrientationGroup1: false,
+            sexualOrientationGroup2: false,
+            sexualOrientationGroup3: false,
+            sexualOrientationOther: false,
+            sexualOrientationOtherDetails: '',
+            sexualOrientationGroupAll: false,
+          },
+          'testJwt',
+          'testGrantBeneficiaryId'
+        );
       });
 
       it('Should redirect to the summary page', async () => {

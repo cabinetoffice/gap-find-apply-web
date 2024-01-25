@@ -18,6 +18,9 @@ export const ProcessMultiResponse: FC<ProcessMultiResponseProps> = ({
     ? multiResponseData
     : multiResponseData.split(',');
   const isDate = questionType === 'Date';
+  const formatDate = (date: string[] | string) =>
+    Array.isArray(date) && date.some(Boolean) ? date.join('-') : '-';
+
   const displayMultiResponse = (
     <>
       <dd
@@ -25,8 +28,9 @@ export const ProcessMultiResponse: FC<ProcessMultiResponseProps> = ({
         data-cy={`cy-organisation-value-${cyTag}`}
       >
         <>
-          {isDate && multiResponseDetails.join('-')}
-          {!isDate && (
+          {isDate ? (
+            formatDate(multiResponseData)
+          ) : (
             <ul className="govuk-list">
               {multiResponseDetails.map(
                 (line: string, index: number, array: string[]) => {
@@ -46,7 +50,7 @@ export const ProcessMultiResponse: FC<ProcessMultiResponseProps> = ({
     </>
   );
 
-  return data ? (
+  return data.length > 0 ? (
     displayMultiResponse
   ) : (
     <dd

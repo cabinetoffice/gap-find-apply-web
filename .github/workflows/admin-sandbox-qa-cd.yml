@@ -10,6 +10,7 @@ on:
       - "packages/admin/**"
       - "packages/gap-web-ui/**"
       - ".github/workflows/admin-sandbox-qa-cd.yml"
+      - "Dockerfile"
       - "package.json"
       - "yarn.lock"
 

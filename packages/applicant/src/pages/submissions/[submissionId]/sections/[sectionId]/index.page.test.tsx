@@ -551,7 +551,7 @@ describe('getSectionUrl', () => {
     const questionId = 'SOME_QUESTION';
 
     const expectedUrl =
-      '/submissions/456/sections/ELIGIBILITY/questions/SOME_QUESTION';
+      '/submissions/456/sections/ELIGIBILITY/questions/SOME_QUESTION?fromSubmissionPage=true&submissionId=456&sectionId=ELIGIBILITY';
 
     expect(
       getQuestionUrl(
@@ -598,11 +598,11 @@ describe('Section Recap Page', () => {
       });
       expect(changeLink).toHaveAttribute(
         'href',
-        '/submissions/12345678/sections/987654321/questions/APPLICANT_AMOUNT'
+        '/submissions/12345678/sections/987654321/questions/APPLICANT_AMOUNT?fromSubmissionPage=true&submissionId=12345678&sectionId=987654321'
       );
       expect(addLink).toHaveAttribute(
         'href',
-        '/submissions/12345678/sections/987654321/questions/APPLICANT_ORG_NAME'
+        '/submissions/12345678/sections/987654321/questions/APPLICANT_ORG_NAME?fromSubmissionPage=true&submissionId=12345678&sectionId=987654321'
       );
     });
 

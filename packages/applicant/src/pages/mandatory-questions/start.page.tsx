@@ -46,6 +46,7 @@ export async function getServerSideProps({
     };
   }
   const applicationStatus = await getApplicationStatusBySchemeId(schemeId, jwt);
+
   if (applicationStatus === 'REMOVED') {
     return {
       redirect: {
@@ -54,6 +55,7 @@ export async function getServerSideProps({
       },
     };
   }
+
   return {
     props: {
       schemeId,
