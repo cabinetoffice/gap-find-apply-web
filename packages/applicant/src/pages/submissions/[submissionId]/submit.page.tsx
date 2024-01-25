@@ -53,7 +53,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
 
   return {
-    props: { submissionId, csrfToken: res.getHeader('x-csrf-token') },
+    props: { submissionId, csrfToken: res.getHeader('x-csrf-token') as string },
   };
 };
 

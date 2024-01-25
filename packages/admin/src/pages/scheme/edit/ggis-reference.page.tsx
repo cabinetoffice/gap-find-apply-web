@@ -76,9 +76,9 @@ export const getServerSideProps: GetServerSideProps = async ({
     props: {
       fieldErrors: fieldErrors,
       backButtonHref: `/scheme/${schemeId}`,
-      formAction: resolvedUrl,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       defaultValue: defaultValue,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };
@@ -113,11 +113,11 @@ const SchemeGGiSReference = ({
         }Edit GGIS reference - Edit grant scheme - Manage a grant`}
       />
 
-      <Link href={backButtonHref}>
-        <a className="govuk-back-link" data-cy="cy_emailQuestionPageBackButton">
-          Back
-        </a>
-      </Link>
+      <Link
+        href={backButtonHref}
+        data-cy="cy_emailQuestionPageBackButton"
+        isBackButton
+      />
 
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout

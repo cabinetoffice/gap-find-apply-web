@@ -1,5 +1,6 @@
 import { ValidationError } from 'gap-web-ui';
 import { IncomingMessage } from 'http';
+import { GetServerSidePropsContext } from 'next';
 import {
   PostQuestionResponse,
   QuestionPostBody,
@@ -26,8 +27,8 @@ export function removeAllCarriageReturns<T>(obj: T) {
 
 //TODO this function needs a major refactor
 export default async function postQuestion<B, _R>(
-  req: IncomingMessage,
-  res: any,
+  req: GetServerSidePropsContext['req'],
+  res: GetServerSidePropsContext['res'],
   serviceFunc: (body: QuestionPostBody) => Promise<PostQuestionResponse>,
   submissionId: string,
   sectionId: string,

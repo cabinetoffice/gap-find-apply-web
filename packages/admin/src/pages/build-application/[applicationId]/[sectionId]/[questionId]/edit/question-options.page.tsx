@@ -170,7 +170,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       fieldErrors,
       cancelChangesHref: `/build-application/${applicationId}/${sectionId}/${questionId}/preview`,
       options,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

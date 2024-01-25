@@ -13,16 +13,14 @@ import {
   getApplicationExportStatus,
   requestSubmissionsExport,
 } from '../../../services/SubmissionsService';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../utils/parseBody';
 
 jest.mock('../../../services/SchemeService');
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../services/UserService');
 jest.mock('../../../services/SubmissionsService');
 jest.mock('../../../utils/callServiceMethod');
-jest.mock('next/dist/server/api-utils/node', () => ({
-  parseBody: jest.fn(),
-}));
+jest.mock('../../../utils/parseBody');
 
 const mockedFindApplicationFormFromScheme =
   findApplicationFormFromScheme as jest.Mock;
@@ -45,7 +43,7 @@ const customProps = {
 const component = <DownloadSubmissions {...customProps} />;
 const SCHEME_ID = 'testSchemeId';
 
-const getContext = (overrides: any = {}) =>
+const getContext = (overrides = {}) =>
   merge(
     {
       query: {
@@ -55,13 +53,14 @@ const getContext = (overrides: any = {}) =>
         method: 'GET',
         cookies: { 'gap-test': 'testSessionId' },
         headers: { referer: '/testRefererPage' },
-      } as any,
+      },
+      res: { getHeader: () => 'testCSRFToken' },
       resolvedUrl: '/testResolvedURL',
-    } as GetServerSidePropsContext,
+    } as unknown as GetServerSidePropsContext,
     overrides
   );
 
-const getPostContext = (overrides: any = {}) =>
+const getPostContext = (overrides = {}) =>
   merge(getContext({ req: { method: 'POST' } }), overrides);
 
 describe('Download submissions page', () => {

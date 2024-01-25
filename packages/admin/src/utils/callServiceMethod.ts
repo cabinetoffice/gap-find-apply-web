@@ -1,8 +1,7 @@
 import { ValidationError } from 'gap-web-ui';
 import { NextRedirect } from './QuestionPageGetServerSidePropsTypes';
 import ServiceError from '../types/ServiceError';
-import { parseBody } from 'next/dist/server/api-utils/node';
-import csurf from 'csurf';
+import { parseBody } from './parseBody';
 import { generateErrorPageRedirectV2 } from './serviceErrorHelpers';
 import { GetServerSidePropsContext, Redirect } from 'next';
 
@@ -11,11 +10,8 @@ type Body<T> = T & {
 };
 
 /**
- * Abstracts away a couple important things:
- * - Anti CSRF tokens. During a GET request, a CSRF cookie is created. When a POST request is then fired
- *   we validate this cookie against the requests hidden csrf token.
- * - Handles different errors after calling a service method function. This is done by either redirecting to the relevant service error page,
- *   or by returning any validation errors & the request body to the page
+ * Handles different errors after calling a service method function. This is done by either redirecting to the relevant service error page,
+ * or by returning any validation errors & the request body to the page
  *
  * @param req - GetServerSideProps req object
  * @param res - GetServerSideProps res object
@@ -45,19 +41,16 @@ export default async function callServiceMethod<
   | { redirect: Redirect }
   | { nonPost: true }
 > {
-  // When we are NOT posting to the same page, initialise the csrf cookie and immediately return
+  // return early when we are NOT posting to the same page
   if (req.method !== 'POST') {
-    await initialiseCSRFCookie(req, res);
     return { nonPost: true };
   }
 
   // Otherwise, validate the CSRF cookie & call the service method
   let body: Body<B>;
   try {
-    body = await parseBody(req, '1mb');
+    body = await parseBody(req, res);
     body = removeAllCarriageReturns(body);
-
-    await validateCSRFCookie(req, res, body);
 
     const result = await serviceFunc(body);
     return {
@@ -98,42 +91,6 @@ export default async function callServiceMethod<
       },
     };
   }
-}
-
-async function initialiseCSRFCookie(
-  req: GetServerSidePropsContext['req'],
-  res: GetServerSidePropsContext['res']
-) {
-  await new Promise((resolve, reject) =>
-    csurf({ cookie: { secure: true, sameSite: 'strict', httpOnly: true } })(
-      req as any,
-      res as any,
-      (result) => {
-        if (result instanceof Error) {
-          return reject(result);
-        }
-        return resolve(result);
-      }
-    )
-  );
-}
-
-async function validateCSRFCookie<T extends Record<string, string>>(
-  req: GetServerSidePropsContext['req'],
-  res: GetServerSidePropsContext['res'],
-  body: Body<T>
-) {
-  await new Promise((resolve, reject) =>
-    csurf({
-      cookie: { secure: true, sameSite: 'strict', httpOnly: true },
-      value: () => body._csrf,
-    })(req as any, res as any, (result) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-      return resolve(result);
-    })
-  );
 }
 
 function removeAllCarriageReturns<T extends Record<string, string>>(obj: T) {

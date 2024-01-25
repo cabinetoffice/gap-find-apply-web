@@ -28,5 +28,5 @@ export function createMockRouter(
     domainLocales: [],
     isPreview: false,
     ...overrides,
-  };
+  } as NextRouter;
 }

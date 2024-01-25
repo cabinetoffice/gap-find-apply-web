@@ -1,10 +1,8 @@
 import callServiceMethod from './callServiceMethod';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from './parseBody';
 import ServiceError from '../types/ServiceError';
 
-jest.mock('next/dist/server/api-utils/node', () => ({
-  parseBody: jest.fn(),
-}));
+jest.mock('./parseBody');
 
 describe('callServiceMethod', () => {
   it('redirects to the provided url when the call was successful', async () => {
@@ -107,10 +105,7 @@ describe('callServiceMethod', () => {
     );
 
     expect(parseBody).toHaveBeenCalledTimes(1);
-    expect(parseBody).toHaveBeenCalledWith(
-      { testReq: true, method: 'POST' },
-      '1mb'
-    );
+    expect(parseBody).toHaveBeenCalledWith(req, res);
   });
 
   it('removes carriage returns from strings in body', async () => {

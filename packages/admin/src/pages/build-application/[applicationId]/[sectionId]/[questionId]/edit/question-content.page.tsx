@@ -126,10 +126,10 @@ export const getServerSideProps: GetServerSideProps = async ({
     props: {
       fieldErrors,
       backButtonHref: `/build-application/${applicationId}/${sectionId}/${questionId}/preview`,
-      formAction: resolvedUrl,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       pageCaption: sectionTitle,
       ...defaultInputValues,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };
