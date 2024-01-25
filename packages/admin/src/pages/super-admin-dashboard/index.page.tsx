@@ -3,9 +3,9 @@ import {
   ButtonTypePropertyEnum,
   Checkboxes,
   FlexibleQuestionPageLayout,
-  QuestionPageGetServerSideProps,
   Table,
 } from 'gap-web-ui';
+import QuestionPageGetServerSideProps from '../../utils/QuestionPageGetServerSideProps';
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import Meta from '../../components/layout/Meta';

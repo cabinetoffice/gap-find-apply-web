@@ -1,7 +1,8 @@
 import { isArray, merge, mergeWith } from 'lodash';
 import { GetServerSidePropsContext } from 'next';
+import { NextRouter } from 'next/router';
 import { render } from '@testing-library/react';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import React from 'react';
 
 /**
@@ -82,30 +83,32 @@ const toHaveBeenCalledWith = <T extends (...args: any) => any>(
 const renderWithRouter = (ui: React.ReactNode) => {
   render(
     <RouterContext.Provider
-      value={{
-        basePath: '',
-        pathname: '/',
-        route: '',
-        query: {},
-        asPath: '/',
-        back: jest.fn(),
-        beforePopState: jest.fn(),
-        prefetch: jest.fn(),
-        push: jest.fn(),
-        reload: jest.fn(),
-        replace: jest.fn(),
-        events: {
-          on: jest.fn(),
-          off: jest.fn(),
-          emit: jest.fn(),
-        },
-        isFallback: false,
-        isLocaleDomain: false,
-        isReady: true,
-        defaultLocale: 'en',
-        domainLocales: [],
-        isPreview: false,
-      }}
+      value={
+        {
+          basePath: '',
+          pathname: '/',
+          route: '',
+          query: {},
+          asPath: '/',
+          back: jest.fn(),
+          beforePopState: jest.fn(),
+          prefetch: jest.fn(),
+          push: jest.fn(),
+          reload: jest.fn(),
+          replace: jest.fn(),
+          events: {
+            on: jest.fn(),
+            off: jest.fn(),
+            emit: jest.fn(),
+          },
+          isFallback: false,
+          isLocaleDomain: false,
+          isReady: true,
+          defaultLocale: 'en',
+          domainLocales: [],
+          isPreview: false,
+        } as unknown as NextRouter
+      }
     >
       {ui}
     </RouterContext.Provider>

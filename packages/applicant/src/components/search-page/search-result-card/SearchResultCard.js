@@ -12,10 +12,10 @@ export function SearchResultCard({ item }) {
             pathname: '/grants/[pid]',
             query: { pid: item.label },
           }}
+          className="govuk-link"
+          data-cy="cyGrantNameAndLink"
         >
-          <a className="govuk-link" data-cy="cyGrantNameAndLink">
-            {item.grantName}
-          </a>
+          {item.grantName}
         </Link>
       </h2>
       <p

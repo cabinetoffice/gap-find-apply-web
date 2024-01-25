@@ -1,12 +1,9 @@
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
 import { GetServerSideProps } from 'next';
-import { validateCSRF } from '../../../utils/csrf';
 import getConfig from 'next/config';
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  await validateCSRF(req, res);
-
+export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {},
   };

@@ -2,8 +2,8 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext, Redirect } from 'next';
-import { parseBody } from 'next/dist/server/api-utils/node';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { parseBody } from '../../../../../utils/parseBody';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import React from 'react';
 import {
   getGrantBeneficiary,
@@ -17,9 +17,11 @@ import EqualityAndDiversityPage, {
   getServerSideProps,
 } from './ethnicity.page';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/GrantBeneficiaryService');
 jest.mock('../../../../../utils/jwt');
+
+const mockParseBody = jest.mocked(parseBody);
 
 const renderWithRouter = (ui: React.ReactNode) => {
   render(
@@ -104,8 +106,11 @@ describe('Ethnicity page', () => {
           req: {
             method: 'GET',
           },
+          res: {
+            getHeader: () => 'testCSRFToken',
+          },
           resolvedUrl: '/testResolvedURL',
-        } as GetServerSidePropsContext,
+        } as unknown as GetServerSidePropsContext,
         overrides
       );
 
@@ -258,7 +263,7 @@ describe('Ethnicity page', () => {
     describe('when handling a POST request', () => {
       beforeEach(() => {
         jest.resetAllMocks();
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedEthnicity: 'White',
         });
         (postGrantBeneficiaryResponse as jest.Mock).mockResolvedValue(
@@ -272,7 +277,7 @@ describe('Ethnicity page', () => {
         getContext(merge({ req: { method: 'POST' } }, overrides));
 
       it('Should call postGrantBeneficiaryResponse when the response contains "supportedEthnicity", CASE: 1', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedEthnicity: 'White',
         }),
           await getServerSideProps(getPostContext());
@@ -299,7 +304,7 @@ describe('Ethnicity page', () => {
       });
 
       it('Should call postGrantBeneficiaryResponse when the response contains "supportedEthnicity", CASE: ALL', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedEthnicity: 'No, we support all ethnic groups',
         });
 
@@ -327,7 +332,7 @@ describe('Ethnicity page', () => {
       });
 
       it('Should NOT call postGrantBeneficiaryResponse when the response does NOT contain "supportedEthnicity"', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({});
+        mockParseBody.mockResolvedValue({});
 
         await getServerSideProps(getPostContext());
 
@@ -394,7 +399,7 @@ describe('Ethnicity page', () => {
       });
 
       it('Should return the previously entered response prop as the default value when a validation error is thrown', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedEthnicity: 'White',
         });
 

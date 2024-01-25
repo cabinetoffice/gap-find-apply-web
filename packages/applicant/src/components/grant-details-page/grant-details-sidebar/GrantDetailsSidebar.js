@@ -10,10 +10,10 @@ export function GrantDetailsSidebar({ grantLabel }) {
           pathname: '/subscriptions/signup',
           query: { id: grantLabel },
         }}
+        className="govuk-link"
+        data-cy="cySignupUpdatesLink"
       >
-        <a className="govuk-link" data-cy="cySignupUpdatesLink">
-          Sign up for updates
-        </a>
+        Sign up for updates
       </Link>
     </div>
   );

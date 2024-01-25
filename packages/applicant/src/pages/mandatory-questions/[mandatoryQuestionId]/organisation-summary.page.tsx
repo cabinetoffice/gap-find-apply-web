@@ -155,16 +155,13 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                     <dd className="govuk-summary-list__actions">
                       <Link
                         href={`${mandatoryQuestionDetail.url}?fromSummaryPage=true`}
+                        className="govuk-link govuk-link--no-visited-state"
+                        data-cy={`cy-organisation-details-navigation-${mandatoryQuestionDetail.id}`}
                       >
-                        <a
-                          className="govuk-link govuk-link--no-visited-state"
-                          data-cy={`cy-organisation-details-navigation-${mandatoryQuestionDetail.id}`}
-                        >
-                          {mandatoryQuestionDetail.status}
-                          <span className="govuk-visually-hidden">
-                            {mandatoryQuestionDetail.url}?fromSummaryPage=true
-                          </span>
-                        </a>
+                        {mandatoryQuestionDetail.status}
+                        <span className="govuk-visually-hidden">
+                          {mandatoryQuestionDetail.url}?fromSummaryPage=true
+                        </span>
                       </Link>
                     </dd>
                   </div>
@@ -179,14 +176,11 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                   mandatoryQuestionId,
                 },
               }}
+              className="govuk-button"
+              data-module="govuk-button"
+              aria-disabled="false"
             >
-              <a
-                className="govuk-button"
-                data-module="govuk-button"
-                aria-disabled="false"
-              >
-                Confirm and submit
-              </a>
+              Confirm and submit
             </Link>
           </div>
         </div>

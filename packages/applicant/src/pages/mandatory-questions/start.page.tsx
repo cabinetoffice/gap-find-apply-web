@@ -90,15 +90,14 @@ export default function MandatoryQuestionsBeforeYouStart({
           </li>
         </ul>
 
-        <Link href={routes.api.createMandatoryQuestion(schemeId)}>
-          <a
-            className="govuk-button"
-            data-module="govuk-button"
-            aria-disabled="false"
-            role="button"
-          >
-            Continue
-          </a>
+        <Link
+          href={routes.api.createMandatoryQuestion(schemeId)}
+          className="govuk-button"
+          data-module="govuk-button"
+          aria-disabled="false"
+          role="button"
+        >
+          Continue
         </Link>
       </Layout>
     </>
