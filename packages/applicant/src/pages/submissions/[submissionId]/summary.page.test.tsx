@@ -65,8 +65,10 @@ const context = {
   params: {
     submissionId: '12345678',
   },
-  req: { csrfToken: () => 'testCSRFToken' },
-  res: {},
+  req: {},
+  res: {
+    getHeader: () => 'testCSRFToken',
+  },
 } as unknown as GetServerSidePropsContext;
 
 const mockMandatoryQuestionDto = (): GrantMandatoryQuestionDto => ({
@@ -104,8 +106,10 @@ const contextNoToken = {
   params: {
     submissionId: '12345678',
   },
-  req: { csrfToken: () => '' },
-  res: {},
+  req: {},
+  res: {
+    getHeader: () => '',
+  },
 } as unknown as GetServerSidePropsContext;
 
 const numeric: QuestionType = {
