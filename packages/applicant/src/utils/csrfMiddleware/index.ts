@@ -36,6 +36,5 @@ export const csrfMiddleware = async (
   // set new token
   const newToken = await createToken(secret, SALT_BYTE_LENGTH);
   response.headers.set(CSRF_HEADER_NAME, utoa(newToken));
-  console.log(response.headers);
   return response;
 };
