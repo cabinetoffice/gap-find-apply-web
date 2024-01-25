@@ -175,7 +175,7 @@ export const getServerSideProps: GetServerSideProps<
       defaultChecked: defaultChecked,
       defaultSexualOrientationDetails: defaultSexualOrientationDetails,
       fieldErrors: fieldErrors,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

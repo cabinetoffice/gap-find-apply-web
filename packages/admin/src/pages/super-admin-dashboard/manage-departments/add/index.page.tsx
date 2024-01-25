@@ -1,8 +1,5 @@
-import {
-  FlexibleQuestionPageLayout,
-  QuestionPageGetServerSideProps,
-  TextInput,
-} from 'gap-web-ui';
+import { FlexibleQuestionPageLayout, TextInput } from 'gap-web-ui';
+import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';

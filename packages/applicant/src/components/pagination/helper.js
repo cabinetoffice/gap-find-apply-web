@@ -101,14 +101,11 @@ export const buildPaginationListItems = (
               page: currentPage - 1,
             },
           }}
+          className="moj-pagination__link"
+          data-cy="cyPaginationPreviousButton"
+          onClick={skipToMainContent}
         >
-          <a
-            className="moj-pagination__link"
-            data-cy="cyPaginationPreviousButton"
-            onClick={skipToMainContent}
-          >
-            {PAGINATION_PREVIOUS_ELEMENT}
-          </a>
+          {PAGINATION_PREVIOUS_ELEMENT}
         </Link>
       </li>
     ),
@@ -129,14 +126,11 @@ export const buildPaginationListItems = (
               page: currentPage + 1,
             },
           }}
+          className="moj-pagination__link"
+          data-cy="cyPaginationNextButton"
+          onClick={skipToMainContent}
         >
-          <a
-            className="moj-pagination__link"
-            data-cy="cyPaginationNextButton"
-            onClick={skipToMainContent}
-          >
-            {PAGINATION_NEXT_ELEMENT}
-          </a>
+          {PAGINATION_NEXT_ELEMENT}
         </Link>
       </li>
     ),
@@ -176,15 +170,12 @@ export const buildPaginationListItems = (
               page: currentPage,
             },
           }}
+          className="moj-pagination__link"
+          data-cy={`cyPaginationPageNumber${currentPage}`}
+          aria-label={`Goto, Results page ${currentPage}`}
+          onClick={skipToMainContent}
         >
-          <a
-            className="moj-pagination__link"
-            data-cy={`cyPaginationPageNumber${currentPage}`}
-            aria-label={`Goto, Results page ${currentPage}`}
-            onClick={skipToMainContent}
-          >
-            {currentPage}
-          </a>
+          {currentPage}
         </Link>
       </li>
     ),

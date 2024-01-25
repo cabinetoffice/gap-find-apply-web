@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import React from 'react';
 import { createMockRouter } from '../../testUtils/createMockRouter';
 import ServiceErrorPage, { getServerSideProps } from './index.page';

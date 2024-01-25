@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { getQueriesForElement, render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import { getApplicationsListById } from '../../services/ApplicationService';
 import { createMockRouter } from '../../testUtils/createMockRouter';
 import { getJwtFromCookies } from '../../utils/jwt';

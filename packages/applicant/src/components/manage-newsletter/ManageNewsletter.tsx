@@ -24,13 +24,12 @@ const ManageNewsletter = ({
 
         <NewGrantsButton dateParams={newGrantsDateParams} />
 
-        <Link href={`${newsletterRoutes.unsubscribe}/${subscriptionId}`}>
-          <a
-            className={`govuk-link govuk-link--no-visited-state`}
-            data-cy="cyUnsubscribeNewsGrantsLink"
-          >
-            Unsubscribe from updates about new grants
-          </a>
+        <Link
+          href={`${newsletterRoutes.unsubscribe}/${subscriptionId}`}
+          className={`govuk-link govuk-link--no-visited-state`}
+          data-cy="cyUnsubscribeNewsGrantsLink"
+        >
+          Unsubscribe from updates about new grants
         </Link>
         <hr className="govuk-!-margin-top-6 govuk-!-margin-bottom-6" />
       </div>

@@ -1,10 +1,10 @@
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from './parseBody';
 import { ServiceError } from '../pages/service-error/index.page';
 import callServiceMethod from './callServiceMethod';
 
-jest.mock('next/dist/server/api-utils/node', () => ({
-  parseBody: jest.fn(),
-}));
+jest.mock('./parseBody');
+
+const mockParseBody = jest.mocked(parseBody);
 
 describe('callServiceMethod', () => {
   beforeEach(() => {
@@ -12,7 +12,7 @@ describe('callServiceMethod', () => {
   });
 
   it('redirects to the provided url when the call was successful', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({ testBody: true });
+    mockParseBody.mockResolvedValue({ testBody: true });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
     const redirectTo = 'testDestination';
     const req = { testReq: true, method: 'POST' } as any;
@@ -35,7 +35,7 @@ describe('callServiceMethod', () => {
   });
 
   it('redirects to the returned url when a redirectTo method is provided', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({ testBody: true });
+    mockParseBody.mockResolvedValue({ testBody: true });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
     const redirectTo = jest.fn(() => 'testDestination');
     const req = { testReq: true, method: 'POST' } as any;
@@ -58,7 +58,7 @@ describe('callServiceMethod', () => {
   });
 
   it('calls redirectTo method with service method response', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({ testBody: true });
+    mockParseBody.mockResolvedValue({ testBody: true });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
     const redirectTo = jest.fn(() => 'testDestination');
     const req = { testReq: true, method: 'POST' } as any;
@@ -77,7 +77,7 @@ describe('callServiceMethod', () => {
   });
 
   it('calls service method with response from parseBody', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({ testBody: true });
+    mockParseBody.mockResolvedValue({ testBody: true });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
     const redirectTo = jest.fn(() => 'testDestination');
     const req = { testReq: true, method: 'POST' } as any;
@@ -96,7 +96,7 @@ describe('callServiceMethod', () => {
   });
 
   it('handles the special case for mandatoryQuestion funding location__stringToArray', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({ fundingLocation: 'text' });
+    mockParseBody.mockResolvedValue({ fundingLocation: 'text' });
     const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
     const redirectTo = jest.fn(() => 'testDestination');
     const req = {
@@ -119,7 +119,7 @@ describe('callServiceMethod', () => {
   });
 
   it('handles the special case for mandatoryQuestion funding location__arrayStaysArray', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({
+    mockParseBody.mockResolvedValue({
       fundingLocation: ['text', 'second'],
     });
     const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
@@ -146,7 +146,7 @@ describe('callServiceMethod', () => {
   });
 
   it('handles the special case for mandatoryQuestion funding location__urlIsNotMatchingTheConditions', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({
+    mockParseBody.mockResolvedValue({
       fundingLocation: 'not matching the conditions',
     });
     const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
@@ -173,7 +173,7 @@ describe('callServiceMethod', () => {
   });
 
   it('handles the special case for mandatoryQuestion orgType__addEmptyString', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({});
+    mockParseBody.mockResolvedValue({});
     const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
     const redirectTo = jest.fn(() => 'testDestination');
     const req = {
@@ -197,7 +197,7 @@ describe('callServiceMethod', () => {
   });
 
   it('handles the special case for mandatoryQuestion orgType__doNothing', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({
+    mockParseBody.mockResolvedValue({
       orgType: 'not matching the conditions',
     });
     const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
@@ -222,8 +222,8 @@ describe('callServiceMethod', () => {
     });
   });
 
-  it('calls parseBody with provided req object', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({ testBody: true });
+  it('calls parseBody with provided req and res objects', async () => {
+    mockParseBody.mockResolvedValue({ testBody: true });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
     const redirectTo = jest.fn(() => 'testDestination');
     const req = { testReq: true, method: 'POST' } as any;
@@ -240,12 +240,12 @@ describe('callServiceMethod', () => {
     expect(parseBody).toHaveBeenCalledTimes(1);
     expect(parseBody).toHaveBeenCalledWith(
       { testReq: true, method: 'POST' },
-      '1mb'
+      {}
     );
   });
 
   it('removes carriage returns from strings in body', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({
+    mockParseBody.mockResolvedValue({
       testBody: 'first line\r\nsecond line\r\nthird line',
     });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
@@ -268,7 +268,7 @@ describe('callServiceMethod', () => {
   });
 
   it('redirects to an error page if an error is thrown', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({
+    mockParseBody.mockResolvedValue({
       testBody: true,
     });
     const serviceFunc = jest.fn(() => {
@@ -292,7 +292,7 @@ describe('callServiceMethod', () => {
   });
 
   it('returns the request body with validation errors if errors are returned by service method', async () => {
-    (parseBody as jest.Mock).mockResolvedValue({
+    mockParseBody.mockResolvedValue({
       testBody: true,
     });
     const serviceFunc = jest.fn(() => {
