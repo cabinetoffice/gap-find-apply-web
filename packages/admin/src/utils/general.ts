@@ -33,7 +33,9 @@ const getLoginUrl = (options?: GetLoginUrlOptions) => {
   if (options?.redirectToApplicant && oneLoginEnabled) {
     return `${process.env.USER_SERVICE_URL}/v2/login?redirectUrl=${process.env.APPLICANT_DOMAIN}/dashboard`;
   }
-  return oneLoginEnabled ? process.env.V2_LOGIN_URL : process.env.LOGIN_URL;
+  return oneLoginEnabled
+    ? (process.env.V2_LOGIN_URL as string)
+    : (process.env.LOGIN_URL as string);
 };
 
 const validateRedirectUrl = (redirectUrl: string) => {

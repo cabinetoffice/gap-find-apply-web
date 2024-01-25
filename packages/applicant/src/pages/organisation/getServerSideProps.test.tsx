@@ -7,11 +7,13 @@ import {
   Optional,
 } from '../../testUtils/unitTestHelpers';
 import getServerSideProps from './getServerSideProps';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../utils/parseBody';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { GrantApplicantOrganisationProfileService } from '../../services/GrantApplicantOrganisationProfileService';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../utils/parseBody');
+
+const mockParseBody = jest.mocked(parseBody);
 
 const spiedGrantApplicantService = jest.spyOn(
   GrantApplicantService.prototype,
@@ -47,7 +49,11 @@ describe('getServerSideProps', () => {
   });
 
   describe('when handling a GET request', () => {
-    const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({});
+    const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
+      res: {
+        getHeader: () => 'testCSRFToken',
+      },
+    });
 
     it('should return the right props', async () => {
       mockServiceMethod(spiedGrantApplicantService, getDefaultGrantApplicant);
@@ -83,11 +89,14 @@ describe('getServerSideProps', () => {
       req: {
         method: 'POST',
       },
+      res: {
+        getHeader: () => 'testCSRFToken',
+      },
     });
 
     beforeEach(() => {
       mockServiceMethod(spiedGrantApplicantService, getDefaultGrantApplicant);
-      (parseBody as jest.Mock).mockResolvedValue({
+      mockParseBody.mockResolvedValue({
         addressLine1: 'test address line 1',
         addressLine2: 'test address line 2',
         town: 'test town',

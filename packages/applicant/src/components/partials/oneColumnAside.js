@@ -11,10 +11,12 @@ const OneColumnAside = ({ title = '', links = [] }) => {
       </h2>
       {links.map((item, index) => (
         <p key={index}>
-          <Link href={item.link}>
-            <a className="govuk-link govuk-link--no-visited-state" data-cy="ct">
-              {item.label}
-            </a>
+          <Link
+            href={item.link}
+            className="govuk-link govuk-link--no-visited-state"
+            data-cy="ct"
+          >
+            {item.label}
           </Link>
         </p>
       ))}

@@ -2,8 +2,8 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext, Redirect } from 'next';
-import { parseBody } from 'next/dist/server/api-utils/node';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { parseBody } from '../../../../../utils/parseBody';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import React from 'react';
 import {
   getGrantBeneficiary,
@@ -17,9 +17,11 @@ import EqualityAndDiversityPage, {
   getServerSideProps,
 } from './disability.page';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/GrantBeneficiaryService');
 jest.mock('../../../../../utils/jwt');
+
+const mockParseBody = jest.mocked(parseBody);
 
 const renderWithRouter = (ui: React.ReactNode) => {
   render(
@@ -89,8 +91,11 @@ describe('Disability page', () => {
           req: {
             method: 'GET',
           },
+          res: {
+            getHeader: () => 'testCSRFToken',
+          },
           resolvedUrl: '/testResolvedURL',
-        } as GetServerSidePropsContext,
+        } as unknown as GetServerSidePropsContext,
         overrides
       );
 
@@ -211,7 +216,7 @@ describe('Disability page', () => {
     describe('when handling a POST request', () => {
       beforeEach(() => {
         jest.resetAllMocks();
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           disability: 'Yes',
         });
         (postGrantBeneficiaryResponse as jest.Mock).mockResolvedValue(
@@ -225,7 +230,7 @@ describe('Disability page', () => {
         getContext(merge({ req: { method: 'POST' } }, overrides));
 
       it('Should call postGrantBeneficiaryResponse when the response contains "disability", CASE: No', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           disability: 'No',
         });
 

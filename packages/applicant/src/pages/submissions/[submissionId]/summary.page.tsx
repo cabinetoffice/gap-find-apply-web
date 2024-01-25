@@ -12,7 +12,6 @@ import {
 } from '../../../services/SubmissionService';
 import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
 import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
-import { initiateCSRFCookie } from '../../../utils/csrf';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { ProcessMultiResponse } from './sections/[sectionId]/processMultiResponse';
@@ -44,8 +43,6 @@ export const getServerSideProps: GetServerSideProps<
   );
 
   const hasBeenSubmitted = await hasSubmissionBeenSubmitted(submissionId, jwt);
-
-  await initiateCSRFCookie(req, res);
 
   const hydratedSections = await Promise.all(
     sections.map(async (section) => {
@@ -87,7 +84,7 @@ export const getServerSideProps: GetServerSideProps<
       mandatoryQuestionId,
       applicationName,
       hasSubmissionBeenSubmitted: hasBeenSubmitted,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };
@@ -284,13 +281,10 @@ export const QuestionRow = ({
               'fromSubmissionSummaryPage'
             )}
             id={`change-button-${questionId}`}
+            className="govuk-link govuk-link--no-visited-state"
+            data-cy={`cy-section-details-navigation-${questionId}`}
           >
-            <a
-              className="govuk-link govuk-link--no-visited-state"
-              data-cy={`cy-section-details-navigation-${questionId}`}
-            >
-              {response || hasMultiResponse ? 'Change' : 'Add'}
-            </a>
+            {response || multiResponse ? 'Change' : 'Add'}
           </Link>
         </dd>
       )}

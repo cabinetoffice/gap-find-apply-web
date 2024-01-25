@@ -87,7 +87,7 @@ export const getServerSideProps: GetServerSideProps<
         returnToSummaryPage ? 'summary' : 'ethnicity'
       }`,
       defaultChecked: defaultChecked,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

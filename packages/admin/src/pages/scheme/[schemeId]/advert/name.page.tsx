@@ -95,6 +95,7 @@ const AdvertName = ({
       />
 
       <div className="govuk-!-padding-top-7">
+        {/* @ts-expect-error ts seems not to understand async components */}
         <NoSSRWrapper>
           <FlexibleQuestionPageLayout
             formAction={formAction}
