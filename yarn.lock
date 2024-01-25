@@ -6297,7 +6297,7 @@ __metadata:
     "@types/cookie-parser": ^1.4.3
     "@types/number-to-words": ^1.2.1
     axios: ^0.27.2
-    body-parser: ^1.20.2
+    body-parser: 1.20.2
     contentful-typescript-codegen: ^3.2.3
     cookie-parser: ^1.4.6
     cypress: ^9.5.0
@@ -6518,7 +6518,7 @@ __metadata:
     "@types/cookie-parser": ^1.4.3
     axios: ^0.27.2
     axios-mock-adapter: ^1.21.1
-    body-parser: ^1.20.2
+    body-parser: 1.20.2
     contentful-typescript-codegen: ^3.2.3
     cookie: ^0.5.0
     cookie-parser: ^1.4.6
@@ -7219,7 +7219,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"body-parser@npm:^1.20.2":
+"body-parser@npm:1.20.2":
   version: 1.20.2
   resolution: "body-parser@npm:1.20.2"
   dependencies:
