@@ -44,7 +44,6 @@ jest.mock(
 jest.mock('../../../services/SubmissionService');
 jest.mock('../../../utils/constants');
 jest.mock('../../../utils/jwt');
-jest.mock('../../../utils/csrf');
 
 const mockGetApplicationStatusBySchemeId = jest.mocked(
   getApplicationStatusBySchemeId
