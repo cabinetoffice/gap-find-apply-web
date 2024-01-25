@@ -28,8 +28,8 @@ const context = {
   params: {
     submissionId: '12345678',
   },
-  req: { csrfToken: () => 'testCSRFToken' },
-  res: {},
+  req: {},
+  res: { getHeader: () => 'testCSRFToken' },
 } as unknown as GetServerSidePropsContext;
 
 const shortAnswer: QuestionType = {
@@ -50,8 +50,7 @@ const contextNoToken = {
   params: {
     submissionId: '12345678',
   },
-  req: { csrfToken: () => '' },
-  res: {},
+  res: { getHeader: () => '' },
 } as unknown as GetServerSidePropsContext;
 
 const numeric: QuestionType = {
