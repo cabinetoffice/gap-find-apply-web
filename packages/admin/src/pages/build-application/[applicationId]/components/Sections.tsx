@@ -43,12 +43,11 @@ const Sections = ({
                         </div>
                         <div className="govuk-grid-column-one-half">
                           <p className="govuk-!-text-align-right govuk-!-font-size-19 govuk-!-margin-0">
-                            <a
-                              href={`#`}
-                              className="govuk-link govuk-link--no-visited-state"
+                            <CustomLink
+                              href={`/build-application/${applicationId}/${section.sectionId}/edit-section`}
                             >
                               Edit section
-                            </a>
+                            </CustomLink>
                           </p>
                         </div>
                       </div>
