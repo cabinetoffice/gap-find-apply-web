@@ -8,6 +8,7 @@ on:
       - "packages/applicant/**"
       - "packages/gap-web-ui/**"
       - ".github/workflows/applicant-prod-cd.yml"
+      - "Dockerfile"
       - "package.json"
       - "yarn.lock"
 
