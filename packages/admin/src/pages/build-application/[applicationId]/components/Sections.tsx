@@ -44,7 +44,7 @@ const Sections = ({
                         <div className="govuk-grid-column-one-half">
                           <p className="govuk-!-text-align-right govuk-!-font-size-19 govuk-!-margin-0">
                             <CustomLink
-                              href={`/build-application/${applicationId}/${section.sectionId}/edit-section`}
+                              href={`/build-application/${applicationId}/${section.sectionId}`}
                             >
                               Edit section
                             </CustomLink>

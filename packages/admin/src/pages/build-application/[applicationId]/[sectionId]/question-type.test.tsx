@@ -12,17 +12,7 @@ import {
 } from '../../../../services/SessionService';
 import { getApplicationFormSummary } from '../../../../services/ApplicationService';
 import { ValidationError } from 'gap-web-ui';
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
+
 jest.mock('axios');
 jest.mock('next/dist/server/api-utils/node');
 jest.mock('../../../../services/SessionService');
@@ -324,7 +314,7 @@ describe('Question type', () => {
 
         expect(result).toStrictEqual({
           redirect: {
-            destination: '/build-application/applicationId/dashboard',
+            destination: '/build-application/applicationId/sectionId',
             statusCode: 302,
           },
         });

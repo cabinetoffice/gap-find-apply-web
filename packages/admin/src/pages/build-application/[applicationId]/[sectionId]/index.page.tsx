@@ -89,6 +89,7 @@ const EditSectionPage = ({
       />
 
       <Table
+        caption="Questions"
         tHeadColumns={[
           {
             name: 'Question title',
@@ -102,48 +103,7 @@ const EditSectionPage = ({
           },
           { name: 'Actions', isVisuallyHidden: true, width: 'one-half' },
         ]}
-        rows={
-          section.questions?.map((question) => ({
-            cells: [
-              {
-                content: (
-                  <p className="govuk-!-font-weight-bold">
-                    {question.fieldTitle}
-                  </p>
-                ),
-              },
-              {
-                content: <p>{ResponseTypeLabels[question.responseType]}</p>,
-              },
-              {
-                content: (
-                  <div className="govuk-!-text-align-right govuk-width-container govuk-!-padding-top-2">
-                    <div className="govuk-grid-row">
-                      <div className="govuk-grid-column-one-quarter">
-                        <p />
-                      </div>
-                      <div className="govuk-grid-column-one-quarter">
-                        {/* GAP-2111: Uncomment when move question order is implemented */}
-                        {/* <Button text="Up" isSecondary /> */}
-                      </div>
-                      <div className="govuk-grid-column-one-quarter">
-                        {/* GAP-2111: Uncomment when move question order is implemented */}
-                        {/* <Button text="Down" isSecondary /> */}
-                      </div>
-                      <CustomLink
-                        href=""
-                        customStyle="govuk-!-padding-left-6 govuk-!-padding-top-2 govuk-grid-column-one-quarter govuk-!-text-align-left"
-                      >
-                        Edit
-                      </CustomLink>
-                    </div>
-                  </div>
-                ),
-              },
-            ],
-          })) || []
-        }
-        caption="Questions"
+        rows={questionTableRows(section)}
       />
 
       <CustomLink
@@ -182,5 +142,49 @@ const EditSectionPage = ({
     </>
   );
 };
+
+function questionTableRows(
+  section: InferProps<typeof getServerSideProps>['section']
+) {
+  return (
+    section.questions?.map((question) => ({
+      cells: [
+        {
+          content: (
+            <p className="govuk-!-font-weight-bold">{question.fieldTitle}</p>
+          ),
+        },
+        {
+          content: <p>{ResponseTypeLabels[question.responseType]}</p>,
+        },
+        {
+          content: (
+            <div className="govuk-!-text-align-right govuk-width-container govuk-!-padding-top-2">
+              <div className="govuk-grid-row">
+                <div className="govuk-grid-column-one-quarter">
+                  <p />
+                </div>
+                <div className="govuk-grid-column-one-quarter">
+                  {/* GAP-2111: Uncomment when move question order is implemented */}
+                  {/* <Button text="Up" isSecondary /> */}
+                </div>
+                <div className="govuk-grid-column-one-quarter">
+                  {/* GAP-2111: Uncomment when move question order is implemented */}
+                  {/* <Button text="Down" isSecondary /> */}
+                </div>
+                <CustomLink
+                  href=""
+                  customStyle="govuk-!-padding-left-6 govuk-!-padding-top-2 govuk-grid-column-one-quarter govuk-!-text-align-left"
+                >
+                  Edit
+                </CustomLink>
+              </div>
+            </div>
+          ),
+        },
+      ],
+    })) || []
+  );
+}
 
 export default EditSectionPage;
