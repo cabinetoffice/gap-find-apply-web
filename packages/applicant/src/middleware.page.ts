@@ -4,9 +4,12 @@ import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { verifyToken } from './services/JwtService';
 import { csrfMiddleware } from './utils/csrfMiddleware';
 
+const BACKEND_HOST = process.env.BACKEND_HOST;
+
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
 const HOST = process.env.HOST;
 const ONE_LOGIN_ENABLED = process.env.ONE_LOGIN_ENABLED === 'true';
+const GRANT_CLOSED_REDIRECT = '/grant-is-closed';
 
 // it will apply the middleware to all those paths
 export const config = {
@@ -111,6 +114,16 @@ export const middleware = async (req: NextRequest) => {
 
     const jwt = await getJwtFromMiddlewareCookies(req);
 
+    if (
+      submissionJourneyPattern.test({ pathname: req.nextUrl.pathname }) ||
+      mandatoryQuestionsJourneyPattern.test({ pathname: req.nextUrl.pathname })
+    ) {
+      const shouldRedirect = await shouldRedirectToClosedGrantPage(jwt, req);
+      if (shouldRedirect) {
+        return shouldRedirect;
+      }
+    }
+
     const validJwtResponse = await verifyToken(jwt);
     const expiresAt = new Date(validJwtResponse.expiresAt);
 
@@ -134,6 +147,40 @@ export const middleware = async (req: NextRequest) => {
   }
 };
 
+async function getApplicationStatusBySubmissionId(
+  id: string,
+  jwt: string,
+  pathname: string
+) {
+  const url = pathname.includes('mandatory-questions')
+    ? `${BACKEND_HOST}/grant-mandatory-questions/${id}/application/status`
+    : `${BACKEND_HOST}/submissions/${id}/application/status`;
+  const data = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      Accept: 'application/json',
+    },
+  });
+  return await data.text();
+}
+
+async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const id = pathname.split('/')[2];
+
+  if (!id) return;
+
+  const applicationStatus = await getApplicationStatusBySubmissionId(
+    id,
+    jwt,
+    pathname
+  );
+
+  if (applicationStatus === 'REMOVED') {
+    return NextResponse.redirect(process.env.HOST + GRANT_CLOSED_REDIRECT);
+  }
+}
+
 const newApplicationPattern = new URLPattern({
   pathname: '/applications/:applicationId([0-9]+)',
 });
@@ -148,4 +195,12 @@ const signInDetailsPage = new URLPattern({
 
 const mandatoryQuestionsStartPattern = new URLPattern({
   pathname: '/mandatory-questions/start',
+});
+
+const mandatoryQuestionsJourneyPattern = new URLPattern({
+  pathname: '/mandatory-questions/:questionUuid([0-9a-f-]+)/:path*',
+});
+
+const submissionJourneyPattern = new URLPattern({
+  pathname: '/submissions/:path*',
 });

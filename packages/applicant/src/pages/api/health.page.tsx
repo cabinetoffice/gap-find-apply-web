@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { APIGlobalHandler } from '../../utils/apiErrorHandler';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   res.status(200).json('applicant up');
 }
+
+export default (req: NextApiRequest, res: NextApiResponse) =>
+  APIGlobalHandler(req, res, handler);

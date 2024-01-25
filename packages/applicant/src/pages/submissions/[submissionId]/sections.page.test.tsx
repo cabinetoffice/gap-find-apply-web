@@ -249,24 +249,6 @@ const questionDataStandardEligibilityResponseNull = {
 };
 
 describe('getServerSideProps', () => {
-  it('should return a redirect to grant-is-closed when submission is REMOVED ', async () => {
-    (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue('REMOVED');
-    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
-    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
-    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
-    (isSubmissionReady as jest.Mock).mockReturnValue(true);
-    (getQuestionById as jest.Mock).mockReturnValue(
-      questionDataStandardEligibilityResponseNo
-    );
-    const response = await getServerSideProps(context);
-    expect(response).toEqual({
-      redirect: {
-        destination: '/grant-is-closed',
-        permanent: false,
-      },
-    });
-  });
-
   it('should return sections, submissionId, applicationName', async () => {
     (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue(
       'PUBLISHED'

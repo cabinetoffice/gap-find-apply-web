@@ -403,6 +403,7 @@ describe('getServerSideProps', () => {
         },
       });
     });
+
     it('Returns submission page for type page', async () => {
       mockServiceMethod(
         spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
@@ -429,6 +430,36 @@ describe('getServerSideProps', () => {
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestionId: 'mandatoryQuestionId',
           backButtonUrl: '/submissions/submissionId/sections/sectionId',
+        },
+      });
+    });
+
+    it('Returns submission summary page for type page', async () => {
+      mockServiceMethod(
+        spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
+        getDefaultGrantMandatoryQuestion
+      );
+      const getSubmissionContext = (): Optional<GetServerSidePropsContext> => ({
+        req: {},
+        params: { mandatoryQuestionId: 'mandatoryQuestionId' },
+        query: {
+          fromSubmissionSummaryPage: 'true',
+          submissionId: 'submissionId',
+          sectionId: 'sectionId',
+        },
+      });
+      const response = await getServerSideProps(
+        getContext(getSubmissionContext)
+      );
+      expectObjectEquals(response, {
+        props: {
+          fieldErrors: [],
+          csrfToken: 'testCSRFToken',
+          formAction: '/testResolvedURL',
+          defaultFields: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestionId: 'mandatoryQuestionId',
+          backButtonUrl: '/submissions/submissionId/summary',
         },
       });
     });

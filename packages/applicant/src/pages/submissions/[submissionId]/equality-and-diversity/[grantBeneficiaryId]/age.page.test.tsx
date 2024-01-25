@@ -338,14 +338,28 @@ describe('Age page', () => {
         );
       });
 
-      it('Should NOT call postGrantBeneficiaryResponse when the response does NOT contain "ageGroup"', async () => {
+      it('Should call postGrantBeneficiaryResponse when the response does NOT contain "ageGroup"', async () => {
         mockParseBody.mockResolvedValue({});
 
         await getServerSideProps(getPostContext());
 
         expect(
           postGrantBeneficiaryResponse as jest.Mock
-        ).not.toHaveBeenCalled();
+        ).toHaveBeenNthCalledWith(
+          1,
+          {
+            submissionId: 'testSubmissionId',
+            hasProvidedAdditionalAnswers: false,
+            ageGroup1: false,
+            ageGroup2: false,
+            ageGroup3: false,
+            ageGroup4: false,
+            ageGroup5: false,
+            ageGroupAll: false,
+          },
+          'testJwt',
+          'testGrantBeneficiaryId'
+        );
       });
 
       it('Should redirect to the next question when the returnToSummaryPage does NOT exist', async () => {

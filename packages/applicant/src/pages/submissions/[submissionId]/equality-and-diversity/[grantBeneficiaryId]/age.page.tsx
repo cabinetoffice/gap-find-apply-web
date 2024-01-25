@@ -7,8 +7,8 @@ import { GetServerSideProps } from 'next';
 import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
-import { GrantBeneficiary } from '../../../../../types/models/GrantBeneficiary';
 import { postGrantBeneficiaryResponse } from '../../../../../services/GrantBeneficiaryService';
+import { GrantBeneficiary } from '../../../../../types/models/GrantBeneficiary';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import {
@@ -62,6 +62,17 @@ export const getServerSideProps: GetServerSideProps<
     req,
     res,
     async (body: RequestBody) => {
+      const formData = {
+        submissionId: submissionId,
+        hasProvidedAdditionalAnswers: false,
+        ageGroup1: false,
+        ageGroup2: false,
+        ageGroup3: false,
+        ageGroup4: false,
+        ageGroup5: false,
+        ageGroupAll: false,
+      };
+
       if (body.supportedAges) {
         const userHasCheckedAllTheAges =
           body.supportedAges.includes(AgeCheckboxes.ALL) ||
@@ -74,34 +85,30 @@ export const getServerSideProps: GetServerSideProps<
                 )
             ));
 
-        await postGrantBeneficiaryResponse(
-          {
-            submissionId: submissionId,
-            hasProvidedAdditionalAnswers: true,
-            ageGroup1:
-              body.supportedAges.includes(AgeCheckboxes.ZERO_TO_FOURTEEN) &&
-              !userHasCheckedAllTheAges,
-            ageGroup2:
-              body.supportedAges.includes(
-                AgeCheckboxes.FIFTEEN_TO_TWENTY_FOUR
-              ) && !userHasCheckedAllTheAges,
-            ageGroup3:
-              body.supportedAges.includes(
-                AgeCheckboxes.TWENTY_FIVE_TO_FIFTY_FOUR
-              ) && !userHasCheckedAllTheAges,
-            ageGroup4:
-              body.supportedAges.includes(
-                AgeCheckboxes.FIFTY_FIVE_TO_SIXTY_FOUR
-              ) && !userHasCheckedAllTheAges,
-            ageGroup5:
-              body.supportedAges.includes(AgeCheckboxes.SIXTY_FIVE_PLUS) &&
-              !userHasCheckedAllTheAges,
-            ageGroupAll: userHasCheckedAllTheAges,
-          },
-          getJwtFromCookies(req),
-          grantBeneficiaryId
-        );
+        formData.hasProvidedAdditionalAnswers = true;
+        formData.ageGroup1 =
+          body.supportedAges.includes(AgeCheckboxes.ZERO_TO_FOURTEEN) &&
+          !userHasCheckedAllTheAges;
+        formData.ageGroup2 =
+          body.supportedAges.includes(AgeCheckboxes.FIFTEEN_TO_TWENTY_FOUR) &&
+          !userHasCheckedAllTheAges;
+        formData.ageGroup3 =
+          body.supportedAges.includes(
+            AgeCheckboxes.TWENTY_FIVE_TO_FIFTY_FOUR
+          ) && !userHasCheckedAllTheAges;
+        formData.ageGroup4 =
+          body.supportedAges.includes(AgeCheckboxes.FIFTY_FIVE_TO_SIXTY_FOUR) &&
+          !userHasCheckedAllTheAges;
+        formData.ageGroup5 =
+          body.supportedAges.includes(AgeCheckboxes.SIXTY_FIVE_PLUS) &&
+          !userHasCheckedAllTheAges;
+        formData.ageGroupAll = userHasCheckedAllTheAges;
       }
+      await postGrantBeneficiaryResponse(
+        formData,
+        getJwtFromCookies(req),
+        grantBeneficiaryId
+      );
     },
     returnToSummaryPage
       ? `/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/summary`

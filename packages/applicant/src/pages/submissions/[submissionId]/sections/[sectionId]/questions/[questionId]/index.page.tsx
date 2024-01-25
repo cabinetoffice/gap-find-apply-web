@@ -28,12 +28,14 @@ import postQuestion from '../../../../../../../utils/postQuestion';
 import { routes } from '../../../../../../../utils/routes';
 import styles from './index.module.scss';
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
+import { encode } from 'querystring';
 
 interface QuestionPageProps {
   questionData: QuestionData;
   grantName: string;
   csrfToken: string;
   isRefererCheckYourAnswerScreen: boolean;
+  queryParams: string;
 }
 
 export const getValidationErrorsFromQuery = (
@@ -51,6 +53,8 @@ export const getServerSideProps: GetServerSideProps<
   const submissionId = params.submissionId.toString();
   const sectionId = params.sectionId.toString();
   const questionId = params.questionId.toString();
+  const fromSubmissionSummaryPage =
+    query?.fromSubmissionSummaryPage === 'true' || false;
   const questionData = await getQuestionById(
     submissionId,
     sectionId,
@@ -102,7 +106,8 @@ export const getServerSideProps: GetServerSideProps<
       submissionId,
       sectionId,
       questionId,
-      questionData.question.responseType
+      questionData.question.responseType,
+      fromSubmissionSummaryPage
     );
 
     if (!('body' in result)) {
@@ -127,6 +132,7 @@ export const getServerSideProps: GetServerSideProps<
         grantName: sections.applicationName,
         csrfToken: res.getHeader('x-csrf-token') as string,
         isRefererCheckYourAnswerScreen,
+        queryParams: encode(query),
       },
     };
   }
@@ -136,6 +142,7 @@ export const getServerSideProps: GetServerSideProps<
       grantName: sections.applicationName,
       csrfToken: res.getHeader('x-csrf-token') as string,
       isRefererCheckYourAnswerScreen,
+      queryParams: encode(query),
     },
   };
 };
@@ -144,6 +151,7 @@ export default function QuestionPage({
   grantName,
   csrfToken,
   isRefererCheckYourAnswerScreen,
+  queryParams = null,
 }: QuestionPageProps) {
   const {
     question,
@@ -166,7 +174,10 @@ export default function QuestionPage({
   let encType = 'application/x-www-form-urlencoded';
   let formAction =
     publicRuntimeConfig.subPath +
-    routes.submissions.question(grantSubmissionId, sectionId, questionId);
+    routes.submissions.question(grantSubmissionId, sectionId, questionId) +
+    queryParams
+      ? '?' + queryParams
+      : '';
 
   // if question is optional and doesn't already end with ' (optional)', append ' (optional)'
   const displayTitle = `${question.fieldTitle}${
@@ -341,13 +352,21 @@ export default function QuestionPage({
       break;
   }
 
-  const backLinkUrl = questionData.previousNavigation?.questionId
-    ? routes.submissions.question(
-        grantSubmissionId,
-        sectionId,
-        questionData.previousNavigation.questionId
-      )
-    : routes.submissions.sections(grantSubmissionId);
+  let backLinkUrl = routes.submissions.sections(grantSubmissionId);
+  const fromSubmissionSummaryPage =
+    new URLSearchParams(queryParams).get('fromSubmissionSummaryPage') ===
+    'true';
+  if (isRefererCheckYourAnswerScreen) {
+    backLinkUrl = routes.submissions.section(grantSubmissionId, sectionId);
+  } else if (fromSubmissionSummaryPage) {
+    backLinkUrl = routes.submissions.summary(grantSubmissionId);
+  } else if (questionData.previousNavigation?.questionId) {
+    backLinkUrl = routes.submissions.question(
+      grantSubmissionId,
+      sectionId,
+      questionData.previousNavigation.questionId
+    );
+  }
 
   return (
     <>
@@ -356,13 +375,7 @@ export default function QuestionPage({
           error ? 'Error: ' : ''
         }Application question - Apply for a grant`}
       />
-      <Layout
-        backBtnUrl={
-          isRefererCheckYourAnswerScreen
-            ? routes.submissions.section(grantSubmissionId, sectionId)
-            : backLinkUrl
-        }
-      >
+      <Layout backBtnUrl={backLinkUrl}>
         <FlexibleQuestionPageLayout
           formAction={formAction}
           fieldErrors={error || []}

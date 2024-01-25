@@ -5,7 +5,7 @@ import EditRoleWithId, { getServerSideProps } from './change-roles.page';
 import UserDetails from '../../../../types/UserDetails';
 import { getContext } from 'gap-web-ui';
 import { getUserById } from '../../../../services/SuperAdminService';
-import { User } from '../../types';
+import { Department, User, Role } from '../../types';
 
 jest.mock('../../../../services/SuperAdminService', () => ({
   getUserById: jest.fn(),
@@ -47,12 +47,17 @@ const getMockRoles = () => [
   },
 ];
 
-const getMockUser = (): User => ({
-  gapUserId: 'john',
-  sub: 'sub',
-  emailAddress: 'superAdmin@and.digital',
-  roles: [getMockRoles()[0], getMockRoles()[3]],
-  created: 'NULL',
+const getMockUser = (
+  roles: Role[] = getMockRoles(),
+  department: Department | null = null
+): User => ({
+  colaSub: '',
+  gapUserId: '1',
+  emailAddress: 'test@gmail.com',
+  sub: 'testSub',
+  roles: roles,
+  department: department,
+  created: 'now',
 });
 const component = (
   <EditRoleWithId
@@ -72,6 +77,7 @@ describe('Edit role page', () => {
   beforeEach(jest.clearAllMocks);
 
   test('Should only check input roles which the queried user has', () => {
+    //user has all roles (see component)
     render(component);
     expect(
       screen.getByText('Find').parentElement?.previousSibling
@@ -81,24 +87,15 @@ describe('Edit role page', () => {
     ).toBeChecked();
     expect(
       screen.getByText('Administrator').parentElement?.previousSibling
-    ).not.toBeChecked();
+    ).toBeChecked();
     expect(
       screen.getByText('Applicant').parentElement?.previousSibling
-    ).not.toBeChecked();
+    ).toBeChecked();
   });
 
-  test('Should redirect to change department page if new Admin user', async () => {
+  test('Should redirect to change department page as User who is being newly promoted to ADMIN', async () => {
     mockParseBody.mockResolvedValue({ newUserRoles: ['3', '4'] });
-    mockGetUserById.mockReturnValue({
-      firstName: 'john',
-      lastName: 'm',
-      organisationName: 'tco',
-      emailAddress: 'superAdmin@and.digital',
-      roles: [getMockRoles()[0], getMockRoles()[1]],
-      department: null,
-      created: 'NULL',
-    });
-
+    mockGetUserById.mockResolvedValue(getMockUser(getMockRoles().slice(0, 1)));
     const getDefaultContext = () => ({
       params: { id: '1' },
       req: { method: 'POST' },
@@ -106,23 +103,16 @@ describe('Edit role page', () => {
     const result = await getServerSideProps(getContext(getDefaultContext));
     expect(result).toEqual({
       redirect: {
-        destination: '/super-admin-dashboard/user/1/change-department',
+        //new roles query param passed in to be used in change department page
+        destination: `/super-admin-dashboard/user/1/change-department?newRoles=1,2,3,4`,
         statusCode: 302,
       },
     });
   });
 
-  test('Should redirect to account page as User who is an Applicant', async () => {
+  test('Should redirect to account overview page as User who is being demoted from ADMIN to APPLICANT', async () => {
     mockParseBody.mockResolvedValue({ newUserRoles: ['1', '2'] });
-    mockGetUserById.mockResolvedValue({
-      firstName: 'john',
-      lastName: 'm',
-      organisationName: 'tco',
-      emailAddress: 'superAdmin@and.digital',
-      roles: [getMockRoles()[0], getMockRoles()[1]],
-      department: null,
-      created: 'NULL',
-    });
+    mockGetUserById.mockResolvedValue(getMockUser(getMockRoles().slice(0, 3)));
     const getDefaultContext = () => ({
       params: { id: '1' },
       req: { method: 'POST' },
@@ -136,17 +126,14 @@ describe('Edit role page', () => {
     });
   });
 
-  test('Should redirect to account page as User who is already Admin (with a Department)', async () => {
-    mockParseBody.mockResolvedValue({ newUserRoles: ['1', '2', '3'] });
-    mockGetUserById.mockResolvedValue({
-      firstName: 'john',
-      lastName: 'm',
-      organisationName: 'tco',
-      emailAddress: 'superAdmin@and.digital',
-      roles: getMockRoles(),
-      department: { id: '1', name: 'Cabinet Office' },
-      created: 'NULL',
-    });
+  test('Should redirect to account page as ADMIN user (with a department) being promoted to SUPER ADMIN', async () => {
+    mockParseBody.mockResolvedValue({ newUserRoles: ['4'] });
+    mockGetUserById.mockResolvedValue(
+      getMockUser(getMockRoles().slice(0, 3), {
+        id: '1',
+        name: 'Test Department',
+      })
+    );
     const getDefaultContext = () => ({
       params: { id: '1' },
       req: { method: 'POST' },
