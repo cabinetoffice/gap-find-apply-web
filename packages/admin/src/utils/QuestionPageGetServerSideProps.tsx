@@ -59,7 +59,7 @@ export default async function QuestionPageGetServerSideProps<
 
   return {
     props: {
-      csrfToken: res.getHeader('x-csrf-token'),
+      csrfToken: res.getHeader('x-csrf-token') as string,
       formAction: process.env.SUB_PATH + resolvedUrl,
       fieldErrors,
       pageData,

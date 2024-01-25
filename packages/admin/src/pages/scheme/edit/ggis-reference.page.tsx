@@ -115,11 +115,9 @@ const SchemeGGiSReference = ({
 
       <Link
         href={backButtonHref}
-        className="govuk-back-link"
         data-cy="cy_emailQuestionPageBackButton"
-      >
-        Back
-      </Link>
+        isBackButton
+      />
 
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
