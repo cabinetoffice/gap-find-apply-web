@@ -6,23 +6,16 @@ import { merge } from 'lodash';
 import axios from 'axios';
 import { parseBody } from 'next/dist/server/api-utils/node';
 import { getApplicationFormSummary } from '../../../services/ApplicationService';
+import { postSection } from '../../../services/SectionService';
 import { ValidationError } from 'gap-web-ui';
 import SectionNameContent, { getServerSideProps } from './section-name.page';
 
 jest.mock('axios');
 jest.mock('next/dist/server/api-utils/node');
 jest.mock('../../../services/ApplicationService');
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
+jest.mock('../../../services/SectionService');
+
+const mockedPostSection = jest.mocked(postSection);
 
 const APPLICATION_NAME = 'Test Application Name';
 const APPLICATION_ID = 123;
@@ -175,20 +168,22 @@ describe('getServerSideProps', () => {
       );
 
     it('Should redirect to the dashboard when posting succeeds', async () => {
+      mockedPostSection.mockResolvedValue('testSectionId');
+
       const result = (await getServerSideProps(
         getPostContext({})
       )) as NextGetServerSidePropsResponse;
 
       expect(result).toStrictEqual({
         redirect: {
-          destination: `/build-application/${APPLICATION_ID}/dashboard`,
+          destination: `/build-application/${APPLICATION_ID}/testSectionId`,
           statusCode: 302,
         },
       });
     });
 
     it('Should redirect to the error service page when posting fails (and it is not a validation error)', async () => {
-      (axios.post as jest.Mock).mockRejectedValue({});
+      mockedPostSection.mockRejectedValue('');
 
       const result = (await getServerSideProps(
         getPostContext({})
@@ -206,7 +201,7 @@ describe('getServerSideProps', () => {
       ] as ValidationError[];
 
       beforeEach(() => {
-        (axios.post as jest.Mock).mockRejectedValue({
+        mockedPostSection.mockRejectedValue({
           response: { data: { fieldErrors: validationErrors } },
         });
       });

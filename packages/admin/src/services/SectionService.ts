@@ -7,18 +7,19 @@ const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
 const BASE_APPLICATION_URL = BACKEND_HOST + '/application-forms';
 
-const postSection = (
+const postSection = async (
   sessionId: string,
   applicationId: string,
   body: {
     sectionTitle: string;
   }
-): Promise<void> => {
-  return axios.post(
+): Promise<string> => {
+  const response = await axios.post(
     `${BASE_APPLICATION_URL}/${applicationId}/sections`,
     body,
     axiosSessionConfig(sessionId)
   );
+  return response.data.id;
 };
 
 const deleteSection = (
