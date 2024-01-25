@@ -5,7 +5,6 @@ import { verifyToken } from './services/JwtService';
 import { csrfMiddleware } from './utils/csrfMiddleware';
 
 const BACKEND_HOST = process.env.BACKEND_HOST;
-
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
 const HOST = process.env.HOST;
 const ONE_LOGIN_ENABLED = process.env.ONE_LOGIN_ENABLED === 'true';

@@ -16,7 +16,7 @@ jest.mock('next/config', () => () => {
     },
   };
 });
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/SessionService');
 jest.mock('../../../../../services/SatisfactionSurveyService');
 jest.mock('next/router', () => ({

@@ -248,7 +248,7 @@ describe('callServiceMethod', () => {
         FUNDING: 'Yes please',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,

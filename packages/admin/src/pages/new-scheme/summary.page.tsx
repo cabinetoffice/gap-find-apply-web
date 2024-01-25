@@ -83,7 +83,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   return {
     props: {
       summaryData: summaryData,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

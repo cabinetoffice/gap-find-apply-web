@@ -4,13 +4,13 @@ import { GetServerSidePropsContext } from 'next';
 import InferProps from '../../../../../../types/InferProps';
 import { getPageProps } from '../../../../../../testUtils/unitTestHelpers';
 import { changeSchemeOwnership } from '../../../../../../services/SchemeService';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../../../utils/parseBody';
 import ConfirmChangeOwnerPage, {
   getServerSideProps,
 } from './confirm-change-owner.page';
 
 jest.mock('../../../../../../services/SchemeService');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../../utils/parseBody');
 
 describe('Super admin - Confirm change owner page', () => {
   describe('UI', () => {
@@ -92,6 +92,7 @@ describe('Super admin - Confirm change owner page', () => {
           sessionId: 'testSessionId',
         },
       },
+      res: { getHeader: () => 'testCSRFToken' },
     });
 
     const mockedChangeOwnership = jest.mocked(changeSchemeOwnership);

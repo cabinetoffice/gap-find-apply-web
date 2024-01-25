@@ -24,12 +24,3 @@ jest.mock('next/config', () => {
     }),
   };
 });
-
-jest.mock('csurf', () => {
-  return {
-    __esModule: true,
-    default: () => (req, res, callback) => {
-      callback({});
-    },
-  };
-});

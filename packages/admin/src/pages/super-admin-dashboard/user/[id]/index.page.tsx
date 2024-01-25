@@ -93,8 +93,9 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                   action: pageData.role?.label ? (
                     <Link
                       href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-roles`}
+                      className="govuk-link"
                     >
-                      <a className="govuk-link">Change</a>
+                      Change
                     </Link>
                   ) : (
                     <></>
@@ -108,8 +109,9 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                         action: (
                           <Link
                             href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-department`}
+                            className="govuk-link"
                           >
-                            <a className="govuk-link">Change</a>
+                            Change
                           </Link>
                         ),
                       },
@@ -136,8 +138,8 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                       return {
                         key: scheme.name,
                         value: (
-                          <Link href={href}>
-                            <a className="govuk-link">Change owner</a>
+                          <Link href={href} className="govuk-link">
+                            Change owner
                           </Link>
                         ),
                       };

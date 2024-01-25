@@ -32,7 +32,7 @@ export default async function QuestionPageGetServerSideProps<
   V
 >(props: QuestionPageGetServerSidePropsType<T, K, V>) {
   const { context, fetchPageData, jwt, fetchPageDataErrorHandler } = props;
-  const { req, resolvedUrl } = context;
+  const { res, resolvedUrl } = context;
 
   const pageData = await fetchAndHandlePageData(
     fetchPageData,
@@ -59,8 +59,8 @@ export default async function QuestionPageGetServerSideProps<
 
   return {
     props: {
-      csrfToken: (req as any).csrfToken?.() || ('' as string),
-      formAction: resolvedUrl,
+      csrfToken: res.getHeader('x-csrf-token') as string,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       fieldErrors,
       pageData,
       previousValues,

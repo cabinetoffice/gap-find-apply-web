@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getLoginUrl } from './utils/general';
 import { isAdminSessionValid } from './services/UserService';
+import { csrfMiddleware } from './utils/csrfMiddleware';
 
 // It will apply the middleware to all those paths
 // (if new folders at page root are created, they need to be included here)
@@ -19,6 +20,8 @@ export const config = {
 export async function middleware(req: NextRequest) {
   const rewriteUrl = req.url;
   const res = NextResponse.rewrite(rewriteUrl);
+  await csrfMiddleware(req, res);
+
   const auth_cookie = req.cookies.get('session_id');
   //Feature flag redirects
   const advertBuilderPath = /\/scheme\/\d*\/advert/;
@@ -33,7 +36,7 @@ export async function middleware(req: NextRequest) {
 
   if (auth_cookie !== undefined) {
     if (process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE === 'true') {
-      const isValidAdminSession = await isAdminSessionValid(auth_cookie);
+      const isValidAdminSession = await isAdminSessionValid(auth_cookie.value);
       if (!isValidAdminSession) {
         return NextResponse.redirect(
           getLoginUrl({ redirectToApplicant: true }),
@@ -42,7 +45,7 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    res.cookies.set('session_id', auth_cookie, {
+    res.cookies.set('session_id', auth_cookie.value, {
       path: '/',
       secure: true,
       httpOnly: true,

@@ -193,8 +193,11 @@ const convertUserDataToTableRows = (users: User[]) =>
       { content: user.role?.label ?? 'Blocked' },
       {
         content: (
-          <Link href={`/super-admin-dashboard/user/${user.gapUserId}/`}>
-            <a className="govuk-link">Edit</a>
+          <Link
+            href={`/super-admin-dashboard/user/${user.gapUserId}/`}
+            className="govuk-link"
+          >
+            Edit
           </Link>
         ),
       },

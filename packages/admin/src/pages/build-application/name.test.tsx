@@ -80,8 +80,9 @@ describe('Application name page', () => {
       query: {
         grantSchemeId: '12345',
       } as ParsedUrlQuery,
-      req: { method: 'GET', cookies: { 'gap-test': 'testSessionId' } as any },
-    } as GetServerSidePropsContext;
+      req: { method: 'GET', cookies: { 'gap-test': 'testSessionId' } },
+      res: { getHeader: jest.fn() },
+    } as unknown as GetServerSidePropsContext;
 
     it('Returns correct default backButtonHref value', async () => {
       mockedFindApplicationFormFromScheme.mockResolvedValue([]);

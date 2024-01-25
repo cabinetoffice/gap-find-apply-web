@@ -5,11 +5,11 @@ import InferProps from '../../../../../../types/InferProps';
 import ChangeOwnerPage, { getServerSideProps } from './change-owner.page';
 import { getPageProps } from '../../../../../../testUtils/unitTestHelpers';
 import { checkNewAdminEmailIsValid } from '../../../../../../services/UserService';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../../../utils/parseBody';
 
 jest.mock('../../../../../../services/UserService');
 jest.mock('../../../../../../services/SchemeService');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../../utils/parseBody');
 
 describe('Super admin - Change owner page', () => {
   describe('UI', () => {
@@ -137,6 +137,7 @@ describe('Super admin - Change owner page', () => {
           sessionId: 'testSessionId',
         },
       },
+      res: { getHeader: () => 'testCSRFToken' },
     });
 
     const mockedCheckNewAdminEmailIsValid = jest.mocked(

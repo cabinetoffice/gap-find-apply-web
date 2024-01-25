@@ -4,13 +4,14 @@ import axios from 'axios';
 import EligibilityStatement, {
   getServerSideProps,
 } from './eligibility-statement.page';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../../utils/parseBody';
 import { merge } from 'lodash';
 import { updateSectionStatus } from '../../../../../services/SectionService';
 import { getGrantScheme } from '../../../../../services/SchemeService';
+import { GetServerSidePropsContext } from 'next';
 
 jest.mock('axios');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/SectionService');
 jest.mock('../../../../../services/SchemeService');
 
@@ -29,7 +30,7 @@ const getMockSchemeParams = (overrides: any = {}) =>
     overrides
   );
 
-const getCallParams = (overrides: any = {}) =>
+const getCallParams = (overrides = {}) =>
   merge(
     {
       resolvedUrl: '/resolvedUrl',
@@ -40,15 +41,14 @@ const getCallParams = (overrides: any = {}) =>
       },
       req: {
         method: 'POST',
-        csrfToken: () => 'testCsrfToken',
         cookies: { 'gap-test': 'testSessionId' },
-      } as any,
-      res: {} as any,
+      },
+      res: { getHeader: () => 'testCSRFToken' },
     },
     overrides
-  );
+  ) as unknown as GetServerSidePropsContext;
 
-const getGetResponse = (overrides: any = {}) =>
+const getGetResponse = (overrides = {}) =>
   merge(
     {
       data: {
@@ -122,9 +122,9 @@ describe('Eligibility question page page', () => {
             backButtonHref: '/build-application/testAppId/dashboard',
             defaultValue: 'test display text',
             fieldErrors: ['testFieldError'],
-            formAction: '/resolvedUrl',
+            formAction: process.env.SUB_PATH + '/resolvedUrl',
             pageCaption: 'Test App Name',
-            csrfToken: 'testCsrfToken',
+            csrfToken: 'testCSRFToken',
             applicationStatus: 'DRAFT',
           },
         });
@@ -168,9 +168,9 @@ describe('Eligibility question page page', () => {
             backButtonHref: '/build-application/testAppId/dashboard',
             defaultValue: '',
             fieldErrors: ['testFieldError'],
-            formAction: '/resolvedUrl',
+            formAction: process.env.SUB_PATH + '/resolvedUrl',
             pageCaption: 'Test App Name',
-            csrfToken: 'testCsrfToken',
+            csrfToken: 'testCSRFToken',
             applicationStatus: 'DRAFT',
           },
         });
@@ -204,9 +204,9 @@ describe('Eligibility question page page', () => {
             backButtonHref: '/build-application/testAppId/dashboard',
             defaultValue: 'test display text',
             fieldErrors: [],
-            formAction: '/resolvedUrl',
+            formAction: process.env.SUB_PATH + '/resolvedUrl',
             pageCaption: 'Test App Name',
-            csrfToken: 'testCsrfToken',
+            csrfToken: 'testCSRFToken',
             applicationStatus: 'DRAFT',
           },
         });

@@ -10,7 +10,7 @@ import AdvertPreview, { getServerSideProps } from './preview';
 jest.mock('../../../../../../utils/session');
 jest.mock('../../../../../../services/AdvertPageService');
 jest.mock('../../../../../../utils/serviceErrorHelpers');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../../utils/parseBody');
 
 const mockSessionUtils = jest.mocked(sessionUtils);
 const mockAdvertPageService = jest.mocked(AdvertPageService);

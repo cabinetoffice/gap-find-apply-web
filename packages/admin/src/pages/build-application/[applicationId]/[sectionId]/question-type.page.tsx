@@ -140,7 +140,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       backButtonHref: `/build-application/${applicationId}/${sectionId}/question-content`,
       fieldErrors: fieldErrors,
       formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/question-type`,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };
