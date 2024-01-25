@@ -176,7 +176,7 @@ describe('Middleware', () => {
     );
   });
 
-  it.only('does not redirect to grant is closed if mandatory questions start page', async () => {
+  it('does not redirect to grant is closed if mandatory questions start page', async () => {
     const req = getMockRequest(
       'https://some.website.com/mandatory-questions/start?=someuuid'
     );
