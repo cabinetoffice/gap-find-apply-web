@@ -95,6 +95,8 @@ const AdvertName = ({
       />
 
       <div className="govuk-!-padding-top-7">
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore ts seems not to understand async components */}
         <NoSSRWrapper>
           <FlexibleQuestionPageLayout
             formAction={formAction}
