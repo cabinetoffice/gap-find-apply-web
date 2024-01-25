@@ -223,7 +223,7 @@ export default async function getServerSideProps({
 
   return {
     props: {
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
       formAction: publicRuntimeConfig.subPath + resolvedUrl,
       fieldErrors,
       defaultFields,

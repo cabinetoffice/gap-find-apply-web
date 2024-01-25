@@ -61,6 +61,7 @@ describe('getServerSideProps', () => {
   describe('when handling a GET request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
       req: {},
+      res: { getHeader: () => 'testCSRFToken' },
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
       query: {},
     });
