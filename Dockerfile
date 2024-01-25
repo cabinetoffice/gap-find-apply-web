@@ -7,6 +7,8 @@ WORKDIR /usr/src/app
 
 COPY package.json .
 COPY packages ./packages
+COPY .yarnrc.yml .
+COPY .yarn ./.yarn
 
 ENV CI true
 ENV SUB_PATH /apply/${APP_NAME}
