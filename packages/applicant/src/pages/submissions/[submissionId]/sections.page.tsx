@@ -31,7 +31,7 @@ export interface SubmissionSectionPage {
 
 export const getServerSideProps: GetServerSideProps<
   SubmissionSectionPage
-> = async ({ req, params }) => {
+> = async ({ req, res, params }) => {
   const submissionId = params.submissionId.toString();
 
   const { sections, grantSubmissionId, applicationName, grantSchemeId } =
