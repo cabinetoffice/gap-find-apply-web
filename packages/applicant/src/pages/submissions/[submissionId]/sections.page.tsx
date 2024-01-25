@@ -31,7 +31,7 @@ export interface SubmissionSectionPage {
 
 export const getServerSideProps: GetServerSideProps<
   SubmissionSectionPage
-> = async ({ req, params }) => {
+> = async ({ req, res, params }) => {
   const submissionId = params.submissionId.toString();
 
   const { sections, grantSubmissionId, applicationName, grantSchemeId } =
@@ -80,7 +80,7 @@ export const getServerSideProps: GetServerSideProps<
       isSubmissionReady: submissionReady,
       hasSubmissionBeenSubmitted: hasBeenSubmitted,
       supportEmail: grantScheme.email || '',
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
       eligibilityCheckPassed: questionData?.question?.response === 'Yes',
     },
   };
