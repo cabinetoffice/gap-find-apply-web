@@ -27,6 +27,8 @@ jest.mock('../../../../services/QuestionService');
 jest.mock('../../../../services/SessionService');
 jest.mock('../../../../utils/parseBody');
 
+const mockParseBody = jest.mocked(parseBody);
+
 describe('Question Options', () => {
   const parsedValidationErrors = [
     { fieldName: 'options[0]', errorMessage: 'Example error for all options' },
@@ -315,8 +317,8 @@ describe('Question Options', () => {
 
       describe('Add another option', () => {
         it('Should return an array with new empty option when a single option is retrieved from body', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
+          mockParseBody.mockResolvedValue({
+            options: ['option one'],
             'add-another-option': '',
           });
 
@@ -328,10 +330,9 @@ describe('Question Options', () => {
         });
 
         it('Should return options from body if already an array including a new option', async () => {
-          const expectcedOptionsArray = ['option one', 'option two', ''];
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          const expectedOptionsArray = ['option one', 'option two', ''];
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
             'add-another-option': '',
           });
 
@@ -339,15 +340,14 @@ describe('Question Options', () => {
             postContext()
           )) as NextGetServerSidePropsResponse;
 
-          expect(result.props.options).toStrictEqual(expectcedOptionsArray);
+          expect(result.props.options).toStrictEqual(expectedOptionsArray);
         });
       });
 
       describe('Save Question', () => {
         it('Should redirect to dashboard after successfully adding question with options', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
           });
 
           (postQuestion as jest.Mock).mockResolvedValue({});
@@ -372,9 +372,8 @@ describe('Question Options', () => {
         });
 
         it('Should redirect to service error page if saving throws an error', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
           });
 
           (postQuestion as jest.Mock).mockRejectedValue({});
@@ -387,9 +386,8 @@ describe('Question Options', () => {
         });
 
         it('Should return field errors if they are returned from the backend.', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
           });
           (postQuestion as jest.Mock).mockRejectedValue({
             response: { data: { fieldErrors: validationErrors } },
@@ -405,9 +403,8 @@ describe('Question Options', () => {
         });
 
         it('Should parse class level errors into field level errors', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
           });
           (postQuestion as jest.Mock).mockRejectedValue({
             response: { data: { fieldErrors: validationErrors } },
