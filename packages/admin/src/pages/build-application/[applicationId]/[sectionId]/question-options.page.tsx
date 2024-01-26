@@ -60,14 +60,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     req,
     res,
     async (body: any) => {
-      const parsedOptions: string[] = [];
-      Object.keys(body).forEach((key) => {
-        if (key.startsWith('options')) {
-          parsedOptions.push(body[key]);
-        }
-      });
-
-      options = parsedOptions;
+      options = body.options;
 
       if ('add-another-option' in body) {
         options.push('');

@@ -41,7 +41,7 @@ export default async function QuestionPageGetServerSideProps<
     fetchPageDataErrorHandler
   );
 
-  if ('redirect' in pageData) {
+  if (pageData instanceof Object && 'redirect' in pageData) {
     return pageData as NextRedirect;
   }
 
