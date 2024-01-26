@@ -1,12 +1,12 @@
 import { GetServerSidePropsContext } from 'next';
 import { getApplicationFormSummary } from '../../../../services/ApplicationService';
 import { getSessionIdFromCookies } from '../../../../utils/session';
-import { ServiceError } from 'gap-web-ui/dist/cjs/components/question-page/CallServiceMethodTypes';
 import InferProps from '../../../../types/InferProps';
 import Meta from '../../../../components/layout/Meta';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import { Button, SummaryList, Table } from 'gap-web-ui';
 import { ResponseTypeLabels } from '../../../../enums/ResponseType';
+import ServiceError from '../../../../types/ServiceError';
 
 export const getServerSideProps = async ({
   params,
