@@ -4,14 +4,14 @@ import { GetServerSidePropsContext } from 'next';
 import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
 import { merge } from 'lodash';
 import axios from 'axios';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../utils/parseBody';
 import { getApplicationFormSummary } from '../../../services/ApplicationService';
 import { postSection } from '../../../services/SectionService';
 import { ValidationError } from 'gap-web-ui';
 import SectionNameContent, { getServerSideProps } from './section-name.page';
 
 jest.mock('axios');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../utils/parseBody');
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../services/SectionService');
 
@@ -73,7 +73,7 @@ describe('Section name page', () => {
 });
 
 describe('getServerSideProps', () => {
-  const getContext = (overrides: any = {}) =>
+  const getContext = (overrides = {}) =>
     merge(
       {
         params: { applicationId: APPLICATION_ID.toLocaleString() } as Record<
@@ -83,8 +83,9 @@ describe('getServerSideProps', () => {
         req: {
           method: 'GET',
           cookies: { 'gap-test': 'testSessionId' },
-        } as any,
-      } as GetServerSidePropsContext,
+        },
+        res: { getHeader: () => 'testCSRFToken' },
+      } as unknown as GetServerSidePropsContext,
       overrides
     );
 
@@ -238,7 +239,8 @@ describe('getServerSideProps', () => {
         )) as NextGetServerSidePropsResponse;
 
         expect(result.props.formAction).toStrictEqual(
-          `/build-application/${APPLICATION_ID}/section-name`
+          process.env.SUB_PATH +
+            `/build-application/${APPLICATION_ID}/section-name`
         );
       });
     });

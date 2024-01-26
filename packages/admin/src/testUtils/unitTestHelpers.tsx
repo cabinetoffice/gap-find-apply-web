@@ -1,7 +1,7 @@
 import { merge } from 'lodash';
 import { GetServerSidePropsContext } from 'next';
 import { render } from '@testing-library/react';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import { createMockRouter } from './createMockRouter';
 
 /**

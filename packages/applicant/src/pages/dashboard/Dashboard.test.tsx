@@ -6,6 +6,10 @@ import { ApplicantDashBoardProps, ApplicantDashboard } from './Dashboard';
 import { getProps } from 'gap-web-ui';
 import { MQ_ORG_TYPES } from '../../utils/constants';
 
+jest.mock('next/router', () => ({
+  useRouter: jest.fn(),
+}));
+
 const descriptionList: DescriptionListProps = {
   data: [
     { term: 'Name', detail: 'Sarah Philips' },

@@ -1,12 +1,12 @@
 import { ValidationError } from 'gap-web-ui';
 import { IncomingMessage } from 'http';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { GetServerSidePropsContext } from 'next';
 import {
   PostQuestionResponse,
   QuestionPostBody,
 } from '../services/SubmissionService';
-import { validateCSRF } from './csrf';
 import { routes } from './routes';
+import { parseBody } from './parseBody';
 
 export function removeAllCarriageReturns<T>(obj: T) {
   // This needs some explaining... New lines are encoded as CR + LF characters
@@ -27,8 +27,8 @@ export function removeAllCarriageReturns<T>(obj: T) {
 
 //TODO this function needs a major refactor
 export default async function postQuestion<B, _R>(
-  req: IncomingMessage,
-  res: any,
+  req: GetServerSidePropsContext['req'],
+  res: GetServerSidePropsContext['res'],
   serviceFunc: (body: QuestionPostBody) => Promise<PostQuestionResponse>,
   submissionId: string,
   sectionId: string,
@@ -47,9 +47,8 @@ export default async function postQuestion<B, _R>(
   let body: any;
   let isRefererCheckYourAnswerScreen: boolean;
   try {
-    body = await parseBody(req, '1mb');
+    body = await parseBody(req, res);
     body = removeAllCarriageReturns(body);
-    await validateCSRF(req, res, body);
 
     const isCancel = Object.keys(body).indexOf('cancel') !== -1;
     //if i press Cancel, i want to be redirected to the section without saving the response

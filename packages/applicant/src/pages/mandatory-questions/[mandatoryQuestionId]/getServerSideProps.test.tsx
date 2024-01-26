@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../utils/parseBody';
 import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
@@ -15,7 +15,9 @@ import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 import { MQ_ORG_TYPES } from '../../../utils/constants';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../utils/parseBody');
+
+const mockParseBody = jest.mocked(parseBody);
 
 const spiedGrantMandatoryQuestionServiceGetMandatoryQuestion = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
@@ -59,6 +61,7 @@ describe('getServerSideProps', () => {
   describe('when handling a GET request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
       req: {},
+      res: { getHeader: () => 'testCSRFToken' },
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
       query: {},
     });
@@ -130,7 +133,7 @@ describe('getServerSideProps', () => {
         spiedGrantMandatoryQuestionServiceUpdateMandatoryQuestion,
         getDefaultUpdateResponse
       );
-      (parseBody as jest.Mock).mockResolvedValue({
+      mockParseBody.mockResolvedValue({
         name: 'test name',
       });
     });
@@ -348,7 +351,7 @@ describe('getServerSideProps', () => {
           spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
           getGrantMandatoryQuestion
         );
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           name: 'test name',
         });
         const mandatoryQuestionId = 'mandatoryQuestionId';

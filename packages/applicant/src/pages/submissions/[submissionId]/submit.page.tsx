@@ -53,7 +53,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
 
   return {
-    props: { submissionId, csrfToken: (req as any).csrfToken?.() || '' },
+    props: { submissionId, csrfToken: res.getHeader('x-csrf-token') as string },
   };
 };
 
@@ -98,13 +98,12 @@ function SubmitApplication({ submissionId, csrfToken }) {
                 >
                   Yes, submit this application
                 </button>
-                <Link href={routes.submissions.summary(submissionId)}>
-                  <a
-                    className="govuk-link govuk-!-font-size-19 govuk-link--no-visited-state"
-                    data-cy="cy-cancel-submission"
-                  >
-                    Cancel
-                  </a>
+                <Link
+                  href={routes.submissions.summary(submissionId)}
+                  className="govuk-link govuk-!-font-size-19 govuk-link--no-visited-state"
+                  data-cy="cy-cancel-submission"
+                >
+                  Cancel
                 </Link>
               </div>
             </form>

@@ -71,8 +71,8 @@ const convertIntegrationsToTableRows = (integrations: Integration[]) =>
       {
         content:
           status === FAILURE ? (
-            <Link href={`${connectionUrl}`}>
-              <a className="govuk-link">Reconnect</a>
+            <Link href={`${connectionUrl}`} className="govuk-link">
+              Reconnect
             </Link>
           ) : (
             '-'

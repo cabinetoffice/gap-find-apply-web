@@ -91,7 +91,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     props: {
       formAction: `${publicRuntimeConfig.subPath}${resolvedUrl}`,
       defaultChecked: defaultChecked,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
       fieldErrors,
     },
   };

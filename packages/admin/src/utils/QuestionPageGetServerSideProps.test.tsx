@@ -1,23 +1,9 @@
 import { GetServerSidePropsContext } from 'next';
 import { expectObjectEquals, getContext, getProps, Optional } from 'gap-web-ui';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from './parseBody';
 import QuestionPageGetServerSideProps from './QuestionPageGetServerSideProps';
 
-jest.mock('next/dist/server/api-utils/node');
-jest.mock('csurf', () => {
-  return {
-    __esModule: true,
-    default:
-      () =>
-      (
-        req: GetServerSidePropsContext['req'],
-        res: GetServerSidePropsContext['res'],
-        callback: (...args: any) => any
-      ) => {
-        callback({});
-      },
-  };
-});
+jest.mock('./parseBody');
 
 describe('QuestionPageGetServerSideProps', () => {
   const mockGetDataFunction = jest.fn();
@@ -26,7 +12,7 @@ describe('QuestionPageGetServerSideProps', () => {
   const getDefaultProps = (): Parameters<
     typeof QuestionPageGetServerSideProps
   >[0] => ({
-    context: getContext(),
+    context: getContext(() => ({ res: { getHeader: () => 'testCSRFToken' } })),
     fetchPageData: mockGetDataFunction,
     handleRequest: mockUpdateDataFunction,
     jwt: 'testSessionId',
@@ -49,7 +35,7 @@ describe('QuestionPageGetServerSideProps', () => {
         props: {
           csrfToken: 'testCSRFToken',
           fieldErrors: [],
-          formAction: '/testResolvedURL',
+          formAction: process.env.SUB_PATH + '/testResolvedURL',
           previousValues: null,
           pageData: { '1': 'testResponse' },
         },
@@ -121,6 +107,7 @@ describe('QuestionPageGetServerSideProps', () => {
       req: {
         method: 'POST',
       },
+      res: { getHeader: () => 'testCSRFToken' },
     });
     const getDefaultProps = (): Parameters<
       typeof QuestionPageGetServerSideProps
@@ -218,7 +205,7 @@ describe('QuestionPageGetServerSideProps', () => {
             { fieldName: 'type', errorMessage: 'Some validation error' },
           ],
           csrfToken: 'testCSRFToken',
-          formAction: '/testResolvedURL',
+          formAction: process.env.SUB_PATH + '/testResolvedURL',
           previousValues: { '1': 'testNewResponse' },
           pageData: { '1': 'testResponse' },
         },

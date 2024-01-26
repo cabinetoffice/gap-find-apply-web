@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import { GrantScheme } from '../../../types/models/GrantScheme';
 import { GrantSchemeService } from '../../../services/GrantSchemeService';
 import {
@@ -19,7 +19,6 @@ import { getApplicationStatusBySchemeId } from '../../../services/ApplicationSer
 jest.mock('../../../services/SubmissionService');
 jest.mock('../../../utils/constants');
 jest.mock('../../../utils/jwt');
-jest.mock('../../../utils/csrf');
 
 jest.mock('../../../services/ApplicationService', () => ({
   getApplicationStatusBySchemeId: jest.fn(),
@@ -29,8 +28,8 @@ const context = {
   params: {
     submissionId: '12345678',
   },
-  req: { csrfToken: () => 'testCSRFToken' },
-  res: {},
+  req: {},
+  res: { getHeader: () => 'testCSRFToken' },
 } as unknown as GetServerSidePropsContext;
 
 const shortAnswer: QuestionType = {
@@ -51,8 +50,7 @@ const contextNoToken = {
   params: {
     submissionId: '12345678',
   },
-  req: { csrfToken: () => '' },
-  res: {},
+  res: { getHeader: () => '' },
 } as unknown as GetServerSidePropsContext;
 
 const numeric: QuestionType = {

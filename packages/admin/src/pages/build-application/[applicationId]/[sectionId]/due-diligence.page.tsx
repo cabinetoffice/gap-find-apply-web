@@ -101,7 +101,7 @@ export const getServerSideProps = async ({
     props: {
       fieldErrors: fieldErrors,
       backButtonHref: `/build-application/${applicationId}/dashboard`,
-      formAction: resolvedUrl,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       pageCaption: applicationFormSummary.applicationName,
       sectionQuestions: section.questions!,
       defaultCheckboxes:
@@ -109,7 +109,7 @@ export const getServerSideProps = async ({
           ? ['I understand that applicants will be asked for this information']
           : [],
       disabled: section?.sectionStatus === 'COMPLETE',
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
       applicationStatus: applicationFormSummary.applicationStatus,
     },
   };
