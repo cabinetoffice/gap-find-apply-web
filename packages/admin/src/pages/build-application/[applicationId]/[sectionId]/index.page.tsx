@@ -21,30 +21,20 @@ export const getServerSideProps = async ({
       getSessionIdFromCookies(req)
     );
   } catch (err) {
-    const params: ServiceError = {
-      errorInformation: 'Something went wrong while trying to edit a section',
-      linkAttributes: {
-        href: `/scheme-list`,
-        linkText: 'Please find your scheme application form and continue.',
-        linkInformation: 'Your previous progress has been saved.',
-      },
-    };
+    return redirectError;
+  }
 
-    return {
-      redirect: {
-        destination: `/service-error?serviceErrorProps=${JSON.stringify(
-          params
-        )}`,
-        permanent: false,
-      },
-    };
+  const section = applicationFormSummary.sections.find(
+    (section) => section.sectionId === sectionId
+  );
+
+  if (!section) {
+    return redirectError;
   }
 
   return {
     props: {
-      section: applicationFormSummary.sections.find(
-        (section) => section.sectionId === sectionId
-      )!,
+      section,
       grantApplicationName: applicationFormSummary.applicationName,
       applicationId: applicationFormSummary.grantApplicationId,
     },
@@ -109,7 +99,6 @@ const EditSectionPage = ({
       <CustomLink
         href={`/build-application/${applicationId}/${section.sectionId}/question-content`}
         isSecondaryButton
-        ariaLabel={`Add a new question to ${section.sectionTitle}`}
       >
         Add a new question
       </CustomLink>
@@ -173,7 +162,7 @@ function questionTableRows(
                   {/* <Button text="Down" isSecondary /> */}
                 </div>
                 <CustomLink
-                  href=""
+                  href="/#"
                   customStyle="govuk-!-padding-left-6 govuk-!-padding-top-2 govuk-grid-column-one-quarter govuk-!-text-align-left"
                 >
                   Edit
@@ -186,5 +175,23 @@ function questionTableRows(
     })) || []
   );
 }
+
+const errorProps: ServiceError = {
+  errorInformation: 'Something went wrong while trying to edit a section',
+  linkAttributes: {
+    href: `/scheme-list`,
+    linkText: 'Please find your scheme application form and continue.',
+    linkInformation: 'Your previous progress has been saved.',
+  },
+};
+
+const redirectError = {
+  redirect: {
+    destination: `/service-error?serviceErrorProps=${JSON.stringify(
+      errorProps
+    )}`,
+    permanent: false,
+  },
+};
 
 export default EditSectionPage;

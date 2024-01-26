@@ -115,6 +115,15 @@ describe('Sections component', () => {
     it('Should render an "Add a new section" button', () => {
       screen.getByRole('button', { name: 'Add a new section' });
     });
+
+    it('Should render an "Edit section" button', () => {
+      expect(
+        screen.getByRole('link', { name: 'Edit section' })
+      ).toHaveAttribute(
+        'href',
+        '/apply/build-application/87654321/testCustomSectionId'
+      );
+    });
   });
 
   describe('When the application status is "PUBLISHED"', () => {
@@ -164,6 +173,10 @@ describe('Sections component', () => {
       expect(
         screen.queryByRole('link', { name: 'Delete question: Custom question' })
       ).toBeFalsy();
+    });
+
+    it('Should NOT render an "Edit section" button', () => {
+      expect(screen.queryByRole('link', { name: 'Edit section' })).toBeFalsy();
     });
   });
 });

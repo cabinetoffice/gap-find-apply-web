@@ -12,6 +12,7 @@ import { getApplicationFormSummary } from '../../../../services/ApplicationServi
 import EditSectionPage, { getServerSideProps } from './index.page';
 import { GetServerSidePropsContext } from 'next';
 import { getPageProps } from '../../../../testUtils/unitTestHelpers';
+import ResponseTypeEnum from '../../../../enums/ResponseType';
 
 jest.mock('../../../../services/ApplicationService');
 
@@ -48,7 +49,20 @@ const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
     sectionId: 'testSectionId',
     sectionStatus: 'COMPLETE',
     sectionTitle: 'some-section-title',
-    questions: [],
+    questions: [
+      {
+        questionId: 'testQuestionId',
+        fieldTitle: 'some-question-title',
+        responseType: ResponseTypeEnum.LongAnswer,
+        adminSummary: '',
+        displayText: '',
+        fieldPrefix: '',
+        hintText: '',
+        profileField: '',
+        questionSuffix: '',
+        validation: {},
+      },
+    ],
   },
 });
 
@@ -61,12 +75,14 @@ describe('Edit section page', () => {
       },
     });
 
-    it('Should call getApplicationFormSummary with correct params', async () => {
+    beforeEach(() => {
       mockServiceMethod(
         mockedGetApplicationFormSummary,
         getDefaultAppFormSummary
       );
+    });
 
+    it('Should call getApplicationFormSummary with correct params', async () => {
       await getServerSideProps(getContext(getDefaultContext));
 
       expect(mockedGetApplicationFormSummary).toHaveBeenCalledWith(
@@ -76,21 +92,37 @@ describe('Edit section page', () => {
     });
 
     it('Should return props with correct values', async () => {
-      mockServiceMethod(
-        mockedGetApplicationFormSummary,
-        getDefaultAppFormSummary
-      );
-
       const result = await getServerSideProps(getContext(getDefaultContext));
 
-      expectObjectEquals(result.props!, {
-        applicationId: 'testApplicationId',
-        grantApplicationName: 'Some application name',
-        section: {
-          sectionId: 'testSectionId',
-          sectionStatus: 'COMPLETE',
-          sectionTitle: 'some-section-title',
-          questions: [],
+      expectObjectEquals(result, {
+        props: {
+          applicationId: 'testApplicationId',
+          grantApplicationName: 'Some application name',
+          section: {
+            sectionId: 'testSectionId',
+            sectionStatus: 'COMPLETE',
+            sectionTitle: 'some-section-title',
+            questions: [],
+          },
+        },
+      });
+    });
+
+    it('Should redirect to service error page if section is not found', async () => {
+      const result = await getServerSideProps(
+        getContext(() => ({
+          params: {
+            applicationId: 'testApplicationId',
+            sectionId: 'non-existent-section-id',
+          },
+        }))
+      );
+
+      expectObjectEquals(result, {
+        redirect: {
+          destination:
+            '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/scheme-list","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
+          permanent: false,
         },
       });
     });
@@ -102,16 +134,8 @@ describe('Edit section page', () => {
 
       expectObjectEquals(result, {
         redirect: {
-          destination: `/service-error?serviceErrorProps=${JSON.stringify({
-            errorInformation:
-              'Something went wrong while trying to edit a section',
-            linkAttributes: {
-              href: `/scheme-list`,
-              linkText:
-                'Please find your scheme application form and continue.',
-              linkInformation: 'Your previous progress has been saved.',
-            },
-          })}`,
+          destination:
+            '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/scheme-list","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
           permanent: false,
         },
       });
@@ -127,12 +151,52 @@ describe('Edit section page', () => {
       expect(document.title).toBe('Build an application form - Manage a grant');
     });
 
+    it("Should render 'Back' button", () => {
+      expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
+        'href',
+        '/apply/build-application/some-application-id/dashboard'
+      );
+    });
+
     it('Should render title of the page', () => {
       screen.getByText('Edit this section');
     });
 
-    it("Should render 'Back' button", () => {
-      expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
+    it('Should render the section title', () => {
+      screen.getByText('some-section-title');
+    });
+
+    it('Should render a question', () => {
+      screen.getByText('some-question-title');
+      screen.getByText('Long answer');
+      expect(screen.getByRole('link', { name: 'Edit' })).toHaveProperty(
+        'href',
+        'http://localhost/apply/#'
+      );
+    });
+
+    it('Should render a button to add a new question', () => {
+      expect(
+        screen.getByRole('button', { name: 'Add a new question' })
+      ).toHaveAttribute(
+        'href',
+        '/apply/build-application/some-application-id/testSectionId/question-content'
+      );
+    });
+
+    it('Should render a button to delete this section', () => {
+      expect(
+        screen.getByRole('button', { name: 'Delete section' })
+      ).toHaveAttribute(
+        'href',
+        '/apply/build-application/some-application-id/testSectionId/delete-confirmation'
+      );
+    });
+
+    it('Should render a button to save this section', () => {
+      expect(
+        screen.getByRole('button', { name: 'Save and go back' })
+      ).toHaveAttribute(
         'href',
         '/apply/build-application/some-application-id/dashboard'
       );

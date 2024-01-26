@@ -35,7 +35,7 @@ const Sections = ({
             <div className={`${styles['table']}`}>
               <Table
                 caption={
-                  sectionIndex >= 2 ? (
+                  sectionIndex >= 2 && applicationStatus != 'PUBLISHED' ? (
                     <div className="govuk-width-container">
                       <div className="govuk-grid-row">
                         <div className="govuk-grid-column-one-half">
