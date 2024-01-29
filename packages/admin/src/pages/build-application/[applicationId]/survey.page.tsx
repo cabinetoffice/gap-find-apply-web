@@ -118,10 +118,11 @@ const Survey = ({
           >
             <Radio
               TitleTag="h1"
-              fieldErrors={[]}
+              fieldErrors={fieldErrors}
               fieldName="satisfaction"
               questionTitle="Overall, how did you feel about the service you received today?"
               titleSize="s"
+              defaultChecked="Neither satisfied nor dissatisfied"
               radioOptions={[
                 {
                   label: 'Very satisfied',
@@ -147,7 +148,7 @@ const Survey = ({
             />
             <TextArea
               defaultValue=""
-              fieldErrors={[]}
+              fieldErrors={fieldErrors}
               fieldName="comment"
               questionHintText="Do not include personal or financial information, like your National Insurance number or credit card details"
               questionTitle="How could we improve this service?"

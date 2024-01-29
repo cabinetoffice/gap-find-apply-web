@@ -47,7 +47,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       url,
       'advert'
     );
-    return body.satisfaction;
   }
 
   async function fetchPageData() {
@@ -67,7 +66,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     fetchPageData,
     handleRequest,
     jwt: getSessionIdFromCookies(context.req),
-    onErrorMessage: 'Failed to send feedback.',
+    onErrorMessage: 'Did not send feedback.',
     onSuccessRedirectHref: () => {
       return `/scheme/${schemeId}`;
     },
@@ -109,6 +108,7 @@ const Survey = ({
               fieldName="satisfaction"
               questionTitle="Overall, how did you feel about the service you received today?"
               titleSize="s"
+              defaultChecked="Neither satisfied nor dissatisfied"
               radioOptions={[
                 {
                   label: 'Very satisfied',
