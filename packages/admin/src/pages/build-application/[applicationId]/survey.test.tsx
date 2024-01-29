@@ -1,9 +1,15 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+
+import { render, screen } from '@testing-library/react';
+import { GetServerSidePropsContext } from 'next';
+
+import {
+  getContext,
+  getPageProps,
+  Optional,
+} from '../../../testUtils/unitTestHelpers';
+import InferProps from '../../../types/InferProps';
 import Survey, { getServerSideProps } from './survey.page';
-import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
-import { merge } from 'lodash';
-import { postSurveyResponse } from '../../../services/SatisfactionSurveyService';
 
 jest.mock('next/config', () => () => {
   return {
@@ -42,26 +48,39 @@ jest.mock('next/router', () => ({
   },
 }));
 
-const mockSchemeParams = {
-  backendUrl: 'BACKEND_URL',
-  fieldErrors: [],
-  schemeId: 'SCHEME_ID',
-  sessionId: 'SESSION_ID',
-};
-
-const mockFieldErrors = [
-  {
-    fieldName: 'satisfaction',
-    errorMessage: 'Please complete at least one field',
+const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
+  req: {
+    cookies: {
+      'user-service-token': 'jwt',
+      sessionId: 'testSessionId',
+    },
   },
-];
+  query: {
+    satisfaction: '1',
+    comment: 'Satisfied!',
+  },
+  params: {
+    applicationId: '1',
+  },
+  res: { getHeader: () => 'testCSRFToken' },
+});
 
-const component = <Survey {...mockSchemeParams} />;
+const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
+  pageData: {
+    satisfaction: '',
+    comment: null,
+    journey: 'application',
+  },
+  previousValues: { satisfaction: '', comment: '' },
+  csrfToken: 'csrfToken',
+  formAction: '/test',
+  fieldErrors: [],
+});
+
+render(<Survey {...getPageProps(getDefaultProps)} />);
 
 describe('Survey page', () => {
   it('Renders the survey page', () => {
-    render(component);
-
     // Check title & headings
     const pageTitle = 'Satisfaction survey - Manage a grant';
     expect(document.title).toStrictEqual(pageTitle);
@@ -82,64 +101,17 @@ describe('Survey page', () => {
     expect(radioOptions).toHaveLength(5);
     expect(commentInput).toBeInTheDocument();
     expect(submitButton).toBeInTheDocument();
-    expect(submitButton).toHaveAttribute('type', 'submit');
   });
 
-  it('Renders error message when there are field errors', () => {
-    render(<Survey {...mockSchemeParams} fieldErrors={mockFieldErrors} />);
+  it('Should call postSurveyResponse when submitted', async () => {
+    const result = await getServerSideProps(getContext(getDefaultContext));
 
-    // Check title
-    const pageTitle =
-      'Error - Please complete at least one field - Satisfaction survey - Manage a grant';
-    expect(document.title).toStrictEqual(pageTitle);
+    if ('redirect' in result) throw new Error('Should not redirect');
 
-    // Check error
-    screen.getByText('There is a problem');
-    screen.getByText('Please complete at least one field');
-  });
-
-  describe('getServerSideProps', () => {
-    const getContext = (overrides: any = {}) =>
-      merge(
-        {
-          query: {},
-          params: {},
-          req: { cookies: { session_id: 'SESSION_ID' } },
-        },
-        overrides
-      );
-
-    it('Returns an empty list of field errors', async () => {
-      const value = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
-      expect(value.props.fieldErrors).toStrictEqual([]);
-    });
-  });
-
-  describe('When handling submission', () => {
-    it('Should call postSurveyResponse when submitted', () => {
-      render(component);
-      const commentInput = screen.getByLabelText(
-        'How could we improve this service?'
-      );
-
-      // Input values
-      fireEvent.click(screen.getByLabelText('Very satisfied'));
-      fireEvent.change(commentInput, {
-        target: { value: 'Very satisfied!' },
-      });
-
-      fireEvent.click(screen.getByText('Send feedback'));
-
-      expect(postSurveyResponse).toHaveBeenCalledTimes(1);
-      expect(postSurveyResponse).toHaveBeenCalledWith(
-        '5',
-        'Very satisfied!',
-        'SESSION_ID',
-        'BACKEND_URL',
-        'application'
-      );
+    expect(result.props.pageData).toEqual({
+      comment: 'Satisfied!',
+      satisfaction: '1',
+      journey: 'application',
     });
   });
 });

@@ -1,70 +1,97 @@
-import React from 'react';
-import Meta from '../../../components/layout/Meta';
 import {
   Button,
-  ButtonTypePropertyEnum,
   ErrorBanner,
+  FlexibleQuestionPageLayout,
   Radio,
   TextArea,
-  ValidationError,
 } from 'gap-web-ui';
+import { GetServerSidePropsContext } from 'next';
 import getConfig from 'next/config';
-import { GetServerSideProps } from 'next';
-import { useRouter } from 'next/router';
+import React from 'react';
+
+import Meta from '../../..//components/layout/Meta';
+import { getSessionIdFromCookies } from '../../..//utils/session';
 import { postSurveyResponse } from '../../../services/SatisfactionSurveyService';
-import { getSessionIdFromCookies } from '../../../utils/session';
+import InferProps from '../../../types/InferProps';
+import QuestionPageGetServerSideProps from '../../../utils/QuestionPageGetServerSideProps';
 import { getApplicationFormSummary } from '../../../services/ApplicationService';
 import { getGrantScheme } from '../../../services/SchemeService';
 import { errorPageRedirect } from './publish-service-errors';
+import Scheme from '../../../types/Scheme';
 
-export const getServerSideProps: GetServerSideProps = async ({
-  query,
-  params,
-  req,
-}) => {
-  const { applicationId } = params as Record<string, string>;
+type PageBodyResponse = {
+  satisfaction: string;
+  comment: string;
+};
 
-  let grantScheme;
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { applicationId } = context.params as Record<string, string>;
+
+  let grantScheme: Scheme;
   try {
     const applicationFormSummary = await getApplicationFormSummary(
       applicationId,
-      getSessionIdFromCookies(req)
+      getSessionIdFromCookies(context.req)
     );
     grantScheme = await getGrantScheme(
       applicationFormSummary.grantSchemeId,
-      getSessionIdFromCookies(req)
+      getSessionIdFromCookies(context.req)
     );
   } catch (err) {
     return errorPageRedirect(applicationId, true);
   }
-
   const schemeId = grantScheme.schemeId;
-  const sessionId = getSessionIdFromCookies(req);
-  const backendUrl = `${
-    getConfig().serverRuntimeConfig.backendHost
-  }/feedback/add`;
-  const fieldErrors: ValidationError[] = query.fieldErrors
-    ? [JSON.parse(query.fieldErrors as string)]
-    : [];
 
-  return {
-    props: {
-      backendUrl,
-      fieldErrors,
-      schemeId,
-      sessionId,
+  const satisfaction = context.query.satisfaction
+    ? decodeURIComponent(context.query.satisfaction as string)
+    : null;
+
+  const comment = context.query.comment
+    ? decodeURIComponent(context.query.comment as string)
+    : null;
+
+  const url = `${getConfig().serverRuntimeConfig.backendHost}/feedback/add`;
+
+  async function handleRequest(body: PageBodyResponse, jwt: string) {
+    await postSurveyResponse(
+      body.satisfaction,
+      body.comment,
+      jwt,
+      url,
+      'application'
+    );
+    return body.satisfaction;
+  }
+
+  async function fetchPageData() {
+    return {
+      satisfaction: satisfaction,
+      comment: comment,
+      journey: 'application',
+    };
+  }
+
+  return QuestionPageGetServerSideProps<
+    PageBodyResponse,
+    Awaited<ReturnType<typeof fetchPageData>>,
+    Awaited<ReturnType<typeof handleRequest>>
+  >({
+    context,
+    fetchPageData,
+    handleRequest,
+    jwt: getSessionIdFromCookies(context.req),
+    onErrorMessage: 'Failed to send feedback.',
+    onSuccessRedirectHref: () => {
+      return `/scheme/${schemeId}`;
     },
-  };
-};
+  });
+}
 
 const Survey = ({
-  backendUrl,
+  csrfToken,
+  formAction,
   fieldErrors,
-  schemeId,
-  sessionId,
-}: surveyProps) => {
-  const router = useRouter();
-
+}: InferProps<typeof getServerSideProps>) => {
   return (
     <>
       <Meta
@@ -83,30 +110,19 @@ const Survey = ({
             Satisfaction survey
           </h2>
           <ErrorBanner fieldErrors={fieldErrors} />
-          <form
-            onSubmit={async (e) => {
-              try {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                await postSurveyResponse(
-                  formData.get('satisfaction') as string,
-                  formData.get('comment') as string,
-                  sessionId,
-                  backendUrl,
-                  'application'
-                );
-                router.replace(`/scheme/${schemeId}`);
-              } catch (e) {
-                router.replace(`/scheme/${schemeId}`);
-              }
-            }}
+
+          <FlexibleQuestionPageLayout
+            formAction={formAction}
+            fieldErrors={fieldErrors}
+            csrfToken={csrfToken}
           >
             <Radio
               TitleTag="h1"
-              fieldErrors={[]}
+              fieldErrors={fieldErrors}
               fieldName="satisfaction"
               questionTitle="Overall, how did you feel about the service you received today?"
               titleSize="s"
+              defaultChecked="Neither satisfied nor dissatisfied"
               radioOptions={[
                 {
                   label: 'Very satisfied',
@@ -132,26 +148,19 @@ const Survey = ({
             />
             <TextArea
               defaultValue=""
-              fieldErrors={[]}
+              fieldErrors={fieldErrors}
               fieldName="comment"
               questionHintText="Do not include personal or financial information, like your National Insurance number or credit card details"
               questionTitle="How could we improve this service?"
               titleSize="s"
               rows={5}
             />
-            <Button text="Send feedback" type={ButtonTypePropertyEnum.Submit} />
-          </form>
+            <Button text="Send feedback" />
+          </FlexibleQuestionPageLayout>
         </div>
       </div>
     </>
   );
-};
-
-type surveyProps = {
-  backendUrl: string;
-  fieldErrors: ValidationError[];
-  schemeId: string;
-  sessionId: string;
 };
 
 export default Survey;

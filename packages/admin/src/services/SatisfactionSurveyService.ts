@@ -33,8 +33,11 @@ const postSurveyResponse = async (
 
     // `${BASE_FEEDBACK_URL}/add`
     await axios.post(backendUrl, null, {
+      withCredentials: true,
+      headers: {
+        Cookie: `SESSION=${sessionId};`,
+      },
       params: surveyResponse,
-      ...axiosSessionConfig(sessionId),
     });
   }
 };

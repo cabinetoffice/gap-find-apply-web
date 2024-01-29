@@ -1,53 +1,83 @@
-import React from 'react';
-import Meta from '../../../../../components/layout/Meta';
 import {
   Button,
-  ButtonTypePropertyEnum,
   ErrorBanner,
+  FlexibleQuestionPageLayout,
   Radio,
   TextArea,
   ValidationError,
 } from 'gap-web-ui';
+
+import { GetServerSidePropsContext } from 'next';
 import getConfig from 'next/config';
-import { GetServerSideProps } from 'next';
-import { useRouter } from 'next/router';
+import React from 'react';
+
+import Meta from '../../../../../components/layout/Meta';
 import { postSurveyResponse } from '../../../../../services/SatisfactionSurveyService';
+import InferProps from '../../../../../types/InferProps';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
+import QuestionPageGetServerSideProps from '../../../../../utils/QuestionPageGetServerSideProps';
 
-export const getServerSideProps: GetServerSideProps = async ({
-  query,
-  params,
-  req,
-}) => {
-  const { schemeId, _advertId } = params as Record<string, string>;
-
-  const sessionId = getSessionIdFromCookies(req);
-
-  const backendUrl = `${
-    getConfig().serverRuntimeConfig.backendHost
-  }/feedback/add`;
-  const fieldErrors: ValidationError[] = query.fieldErrors
-    ? [JSON.parse(query.fieldErrors as string)]
-    : [];
-
-  return {
-    props: {
-      backendUrl,
-      fieldErrors,
-      schemeId,
-      sessionId,
-    },
-  };
+type PageBodyResponse = {
+  satisfaction: string;
+  comment: string;
 };
 
-const Survey = ({
-  backendUrl,
-  fieldErrors,
-  schemeId,
-  sessionId,
-}: surveyProps) => {
-  const router = useRouter();
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { schemeId } = context.params as Record<string, string>;
 
+  const satisfaction = context.query.satisfaction
+    ? decodeURIComponent(context.query.satisfaction as string)
+    : null;
+
+  const comment = context.query.comment
+    ? decodeURIComponent(context.query.comment as string)
+    : null;
+
+  const url = `${getConfig().serverRuntimeConfig.backendHost}/feedback/add`;
+
+  const fieldErrors: ValidationError[] = context.query.fieldErrors
+    ? [JSON.parse(context.query.fieldErrors as string)]
+    : [];
+
+  async function handleRequest(body: PageBodyResponse, jwt: string) {
+    await postSurveyResponse(
+      body.satisfaction,
+      body.comment,
+      jwt,
+      url,
+      'advert'
+    );
+  }
+
+  async function fetchPageData() {
+    return {
+      satisfaction: satisfaction,
+      comment: comment,
+      journey: 'advert',
+    };
+  }
+
+  return QuestionPageGetServerSideProps<
+    PageBodyResponse,
+    Awaited<ReturnType<typeof fetchPageData>>,
+    Awaited<ReturnType<typeof handleRequest>>
+  >({
+    context,
+    fetchPageData,
+    handleRequest,
+    jwt: getSessionIdFromCookies(context.req),
+    onErrorMessage: 'Did not send feedback.',
+    onSuccessRedirectHref: () => {
+      return `/scheme/${schemeId}`;
+    },
+  });
+}
+
+const Survey = ({
+  csrfToken,
+  formAction,
+  fieldErrors,
+}: InferProps<typeof getServerSideProps>) => {
   return (
     <>
       <Meta
@@ -66,23 +96,11 @@ const Survey = ({
             Satisfaction survey
           </h2>
           <ErrorBanner fieldErrors={fieldErrors} />
-          <form
-            onSubmit={async (e) => {
-              try {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                await postSurveyResponse(
-                  formData.get('satisfaction') as string,
-                  formData.get('comment') as string,
-                  sessionId,
-                  backendUrl,
-                  'advert'
-                );
-                router.replace(`/scheme/${schemeId}`);
-              } catch (e) {
-                router.replace(`/scheme/${schemeId}`);
-              }
-            }}
+
+          <FlexibleQuestionPageLayout
+            formAction={formAction}
+            fieldErrors={fieldErrors}
+            csrfToken={csrfToken}
           >
             <Radio
               TitleTag="h1"
@@ -90,6 +108,7 @@ const Survey = ({
               fieldName="satisfaction"
               questionTitle="Overall, how did you feel about the service you received today?"
               titleSize="s"
+              defaultChecked="Neither satisfied nor dissatisfied"
               radioOptions={[
                 {
                   label: 'Very satisfied',
@@ -122,19 +141,12 @@ const Survey = ({
               titleSize="s"
               rows={5}
             />
-            <Button text="Send feedback" type={ButtonTypePropertyEnum.Submit} />
-          </form>
+            <Button text="Send feedback" />
+          </FlexibleQuestionPageLayout>
         </div>
       </div>
     </>
   );
-};
-
-type surveyProps = {
-  backendUrl: string;
-  fieldErrors: ValidationError[];
-  schemeId: string;
-  sessionId: string;
 };
 
 export default Survey;
