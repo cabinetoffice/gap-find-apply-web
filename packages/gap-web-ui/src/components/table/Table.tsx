@@ -110,7 +110,7 @@ const Table = ({
                     tHeadColumns[cellIndex].isNumber
                       ? ' govuk-table__cell--numeric'
                       : ''
-                  } ${cell.className} ${
+                  } ${cell.className ?? ''} ${
                     disableBottomRowBorder && rowIndex === rows.length - 1
                       ? ' ' + styles['disable-bottom-row-border']
                       : ''
