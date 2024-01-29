@@ -36,6 +36,7 @@ export interface Row {
 interface Cell {
   content: string | number | JSX.Element;
   cellAttributes?: Record<string, unknown>;
+  className?: string;
 }
 
 const Table = ({
@@ -109,7 +110,7 @@ const Table = ({
                     tHeadColumns[cellIndex].isNumber
                       ? ' govuk-table__cell--numeric'
                       : ''
-                  } govuk-!-padding-2 ${
+                  } ${cell.className} ${
                     disableBottomRowBorder && rowIndex === rows.length - 1
                       ? ' ' + styles['disable-bottom-row-border']
                       : ''

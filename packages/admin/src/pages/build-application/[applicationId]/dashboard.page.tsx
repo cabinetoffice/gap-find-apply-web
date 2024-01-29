@@ -153,8 +153,6 @@ const Dashboard = ({
           applicationStatus={applicationStatus}
         />
 
-        <hr className="govuk-section-break govuk-section-break--m" />
-
         {applicationStatus === 'PUBLISHED' ? (
           <UnpublishSummary
             applicationId={applicationId}

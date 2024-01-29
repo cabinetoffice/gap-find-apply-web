@@ -94,7 +94,6 @@ const Sections = ({
           href={`/build-application/${applicationId}/section-name`}
           isSecondaryButton
           dataCy={'cy-button-addNewSection'}
-          customStyle="govuk-!-margin-top-4"
         >
           Add a new section
         </CustomLink>
@@ -118,13 +117,21 @@ function tableRows(
         }
         return {
           cells: [
-            { content: question.fieldTitle },
+            {
+              content: (
+                <div className="govuk-!-font-weight-bold">
+                  {question.fieldTitle}
+                </div>
+              ),
+              className: 'govuk-!-padding-3',
+            },
             {
               content: isSectionEligibilityOrEssential ? (
                 <strong className="govuk-tag">{section.sectionStatus}</strong>
               ) : (
                 ResponseTypeLabels[question.responseType]
               ),
+              className: 'govuk-!-padding-3',
             },
             {
               content: (
@@ -145,6 +152,7 @@ function tableRows(
                   </CustomLink>
                 </div>
               ),
+              className: 'govuk-!-padding-3',
             },
           ],
         };
@@ -155,11 +163,19 @@ function tableRows(
     tableRows = [
       {
         cells: [
-          { content: 'Due-diligence checks' },
+          {
+            content: (
+              <div className="govuk-!-font-weight-bold">
+                Due-diligence checks
+              </div>
+            ),
+            className: 'govuk-!-padding-3',
+          },
           {
             content: (
               <strong className="govuk-tag">{section.sectionStatus}</strong>
             ),
+            className: 'govuk-!-padding-3',
           },
           {
             content: (
@@ -173,6 +189,7 @@ function tableRows(
                 </CustomLink>
               </div>
             ),
+            className: 'govuk-!-padding-3',
           },
         ],
       },

@@ -55,7 +55,10 @@ const EditSectionPage = ({
         isBackButton
       />
 
-      <span className="govuk-caption-l" data-cy="cyApplicationTitle">
+      <span
+        className="govuk-caption-l govuk-!-margin-top-7"
+        data-cy="cyApplicationTitle"
+      >
         {grantApplicationName}
       </span>
 
@@ -65,7 +68,11 @@ const EditSectionPage = ({
         rows={[
           {
             key: 'Section title',
-            value: section.sectionTitle,
+            value: (
+              <div className="govuk-!-padding-left-2">
+                {section.sectionTitle}
+              </div>
+            ),
             // GAP-2103: Uncomment this when the edit section page is implemented
             // action: (
             //   <CustomLink
@@ -84,14 +91,14 @@ const EditSectionPage = ({
           {
             name: 'Question title',
             isVisuallyHidden: true,
-            width: 'one-quarter',
+            width: 'one-third',
           },
           {
             name: 'Question type',
             isVisuallyHidden: true,
-            width: 'one-quarter',
+            width: 'one-third',
           },
-          { name: 'Actions', isVisuallyHidden: true, width: 'one-half' },
+          { name: 'Actions', isVisuallyHidden: true, width: 'one-third' },
         ]}
         rows={questionTableRows(section)}
       />
