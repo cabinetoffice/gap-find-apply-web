@@ -175,30 +175,23 @@ describe('Edit section page', () => {
       );
     });
 
-    it('Should render a button to add a new question', () => {
-      expect(
-        screen.getByRole('button', { name: 'Add a new question' })
-      ).toHaveAttribute(
+    it.each([
+      [
+        'Add a new question',
+        '/apply/build-application/some-application-id/testSectionId/question-content',
+      ],
+      [
+        'Delete section',
+        '/apply/build-application/some-application-id/testSectionId/delete-confirmation',
+      ],
+      [
+        'Save and go back',
+        '/apply/build-application/some-application-id/dashboard',
+      ],
+    ])('button %s should have href %s', (name, href) => {
+      expect(screen.getByRole('button', { name })).toHaveAttribute(
         'href',
-        '/apply/build-application/some-application-id/testSectionId/question-content'
-      );
-    });
-
-    it('Should render a button to delete this section', () => {
-      expect(
-        screen.getByRole('button', { name: 'Delete section' })
-      ).toHaveAttribute(
-        'href',
-        '/apply/build-application/some-application-id/testSectionId/delete-confirmation'
-      );
-    });
-
-    it('Should render a button to save this section', () => {
-      expect(
-        screen.getByRole('button', { name: 'Save and go back' })
-      ).toHaveAttribute(
-        'href',
-        '/apply/build-application/some-application-id/dashboard'
+        href
       );
     });
   });
