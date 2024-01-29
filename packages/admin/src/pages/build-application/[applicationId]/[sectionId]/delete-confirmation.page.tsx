@@ -39,8 +39,9 @@ export const getServerSideProps: GetServerSideProps = async ({
       // if the user has Yes radio selected, run delete service call. else, do nothing
       if (body.deleteBool === 'true') {
         await deleteSection(sessionId, applicationId, sectionId);
+        return true;
       } else if (body.deleteBool === 'false') {
-        // do nothing, redirect back to overview
+        return false;
       } else {
         // imitating a validation error from the backend if the user hasn't selected an option
         return Promise.reject({
@@ -57,7 +58,10 @@ export const getServerSideProps: GetServerSideProps = async ({
         });
       }
     },
-    `/build-application/${applicationId}/dashboard`,
+    (deleted) =>
+      deleted
+        ? `/build-application/${applicationId}/dashboard`
+        : `/build-application/${applicationId}/${sectionId}`,
     errorPageParams
   );
 
@@ -70,7 +74,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   return {
     props: {
       fieldErrors,
-      backButtonHref: `/build-application/${applicationId}/dashboard`,
+      backButtonHref: `/build-application/${applicationId}/${sectionId}`,
       formAction: process.env.SUB_PATH + resolvedUrl,
       csrfToken: res.getHeader('x-csrf-token') as string,
     },
