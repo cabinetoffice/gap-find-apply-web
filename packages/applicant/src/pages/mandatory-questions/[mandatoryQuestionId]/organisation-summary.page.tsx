@@ -4,6 +4,7 @@ import Meta from '../../../components/partials/Meta';
 import InferProps from '../../../types/InferProps';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
+import { MQ_ORG_TYPES } from '../../../utils/constants';
 
 export { getServerSideProps };
 
@@ -14,15 +15,16 @@ export const generateMandatoryQuestionDetails = (
   >['mandatoryQuestionId']
 ) => {
   const shouldDisplayExtraFields = [
-    'Limited company',
-    'Charity',
-    'Other',
+    MQ_ORG_TYPES.LIMITED_COMPANY,
+    MQ_ORG_TYPES.CHARITY,
+    MQ_ORG_TYPES.OTHER,
   ].includes(mandatoryQuestion.orgType);
+  const isIndividual = mandatoryQuestion.orgType === MQ_ORG_TYPES.INDIVIDUAL;
 
   return [
     {
       id: 'organisationType',
-      label: 'Type of organisation',
+      label: isIndividual ? 'Type of application' : 'Type of organisation',
       value: mandatoryQuestion?.orgType,
       url: routes.mandatoryQuestions.typePage(mandatoryQuestionId),
       status: 'Change',
@@ -153,16 +155,13 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                     <dd className="govuk-summary-list__actions">
                       <Link
                         href={`${mandatoryQuestionDetail.url}?fromSummaryPage=true`}
+                        className="govuk-link govuk-link--no-visited-state"
+                        data-cy={`cy-organisation-details-navigation-${mandatoryQuestionDetail.id}`}
                       >
-                        <a
-                          className="govuk-link govuk-link--no-visited-state"
-                          data-cy={`cy-organisation-details-navigation-${mandatoryQuestionDetail.id}`}
-                        >
-                          {mandatoryQuestionDetail.status}
-                          <span className="govuk-visually-hidden">
-                            {mandatoryQuestionDetail.url}?fromSummaryPage=true
-                          </span>
-                        </a>
+                        {mandatoryQuestionDetail.status}
+                        <span className="govuk-visually-hidden">
+                          {mandatoryQuestionDetail.url}?fromSummaryPage=true
+                        </span>
                       </Link>
                     </dd>
                   </div>
@@ -170,19 +169,18 @@ export default function MandatoryQuestionOrganisationSummaryPage({
             </dl>
 
             <Link
-              href={routes.api.mandatoryQuestions.createSubmission(
-                mandatoryQuestionId,
-                mandatoryQuestion.schemeId.toString()
-              )}
+              href={{
+                pathname: `/api/create-submission`,
+                query: {
+                  schemeId: mandatoryQuestion.schemeId.toString(),
+                  mandatoryQuestionId,
+                },
+              }}
+              className="govuk-button"
+              data-module="govuk-button"
+              aria-disabled="false"
             >
-              <a
-                className="govuk-button"
-                data-module="govuk-button"
-                aria-disabled="false"
-                type="button"
-              >
-                Confirm and submit
-              </a>
+              Confirm and submit
             </Link>
           </div>
         </div>

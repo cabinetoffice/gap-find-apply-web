@@ -5,6 +5,7 @@ import ServiceError from './index.page';
 
 const serviceErrorProps = {
   errorInformation: 'There has been a test service error',
+
   linkAttributes: {
     href: '/test/redirect',
     linkText: 'test redirect ',
@@ -12,7 +13,9 @@ const serviceErrorProps = {
   },
 };
 
-const serviceErrorPage = <ServiceError serviceError={serviceErrorProps} />;
+const serviceErrorPage = (
+  <ServiceError serviceError={serviceErrorProps} excludeSubPath={false} />
+);
 
 describe('Service error page render', () => {
   it('Should render correct header', () => {
@@ -40,7 +43,7 @@ describe('Service error page render', () => {
   });
 
   it('Should not include redirect link if no link attributes are provided', () => {
-    const { linkAttributes, ...errorInformation } = serviceErrorProps;
+    const { linkAttributes: _, ...errorInformation } = serviceErrorProps;
     render(<ServiceErrorPage serviceError={errorInformation} />);
     const link = screen.queryByRole('link');
     expect(link).toBeNull();

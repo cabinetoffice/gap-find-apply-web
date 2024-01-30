@@ -4,6 +4,7 @@ import {
   GrantExistsInContentfulDto,
   checkIfGrantExistsInContentful,
   getAdvertBySlug,
+  validateGrantWebpageUrl,
 } from '../../services/GrantAdvertService';
 import { GrantMandatoryQuestionDto } from '../../services/GrantMandatoryQuestionService';
 import { Overrides } from '../../testUtils/unitTestHelpers';
@@ -64,6 +65,7 @@ describe('API Handler Tests', () => {
       externalSubmissionUrl: null,
       isAdvertInDatabase: false,
       mandatoryQuestionsDto: null,
+      isPublished: true,
     };
 
     (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
@@ -73,6 +75,7 @@ describe('API Handler Tests', () => {
     );
 
     await handler(req(), res());
+    expect(validateGrantWebpageUrl).toHaveBeenCalled();
 
     expect(mockedRedirect).toHaveBeenCalledWith('grantWebpageUrl');
   });
@@ -86,6 +89,7 @@ describe('API Handler Tests', () => {
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
       mandatoryQuestionsDto: null,
+      isPublished: true,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -109,6 +113,7 @@ describe('API Handler Tests', () => {
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
       mandatoryQuestionsDto: null,
+      isPublished: true,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -131,6 +136,7 @@ describe('API Handler Tests', () => {
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
       mandatoryQuestionsDto: null,
+      isPublished: true,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -155,6 +161,7 @@ describe('API Handler Tests', () => {
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
       mandatoryQuestionsDto: null,
+      isPublished: true,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -183,6 +190,7 @@ describe('API Handler Tests', () => {
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
       mandatoryQuestionsDto: mandatoryQuestionsDto,
+      isPublished: true,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -212,6 +220,7 @@ describe('API Handler Tests', () => {
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
       mandatoryQuestionsDto: mandatoryQuestionsDto,
+      isPublished: true,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -241,6 +250,7 @@ describe('API Handler Tests', () => {
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
       mandatoryQuestionsDto: mandatoryQuestionsDto,
+      isPublished: true,
     };
 
     (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
@@ -295,6 +305,61 @@ describe('API Handler Tests', () => {
       `http://localhost/service-error?serviceErrorProps=${JSON.stringify(
         serviceErrorProps
       )}`
+    );
+  });
+
+  it('should redirect to the the error page when the advert has not been published', async () => {
+    const mandatoryQuestionsDto: GrantMandatoryQuestionDto = {
+      submissionId: null,
+      status: 'COMPLETED',
+    };
+
+    const advertDTO: GrantAdvert = {
+      id: '123',
+      version: 2,
+      grantApplicationId: 123,
+      isInternal: false,
+      grantSchemeId: 456,
+      externalSubmissionUrl: 'http://example.com',
+      isAdvertInDatabase: true,
+      mandatoryQuestionsDto: mandatoryQuestionsDto,
+      isPublished: false,
+    };
+
+    (checkIfGrantExistsInContentful as jest.Mock).mockResolvedValue(
+      advertIsInContenful
+    );
+    (getAdvertBySlug as jest.Mock).mockResolvedValue(advertDTO);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    await handler(req(), res());
+
+    const serviceErrorProps = {
+      errorInformation: 'There was an error in the service',
+      linkAttributes: {
+        href: '/dashboard',
+        linkText: 'Go back to your dashboard',
+        linkInformation: '',
+      },
+    };
+    expect(mockedRedirect).toHaveBeenCalledWith(
+      `http://localhost/service-error?serviceErrorProps=${JSON.stringify(
+        serviceErrorProps
+      )}`
+    );
+  });
+
+  it('should redirect to the grant-is-closed paged when the slug is null and the grantwebpageurl is grant-is-closed', async () => {
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    const req = {
+      query: {
+        slug: undefined,
+        grantWebpageUrl: 'grant-is-closed',
+      },
+    } as unknown as NextApiRequest;
+    await handler(req, res());
+
+    expect(mockedRedirect).toHaveBeenCalledWith(
+      `http://localhost/grant-is-closed`
     );
   });
 });

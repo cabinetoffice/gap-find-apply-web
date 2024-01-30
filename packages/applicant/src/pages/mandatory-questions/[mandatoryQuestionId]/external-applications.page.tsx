@@ -49,16 +49,15 @@ export default function ExternalApplicationSignpost({
               need to log in or sign up to this website to continue your
               application.
             </p>
-            <Link href={url}>
-              <a
-                role="button"
-                draggable="false"
-                className="govuk-button"
-                data-module="govuk-button"
-                data-cy="cy-apply-external-application-button"
-              >
-                Continue to application form
-              </a>
+            <Link
+              href={url}
+              role="button"
+              draggable="false"
+              className="govuk-button"
+              data-module="govuk-button"
+              data-cy="cy-apply-external-application-button"
+            >
+              Continue to application form
             </Link>
           </div>
         </div>

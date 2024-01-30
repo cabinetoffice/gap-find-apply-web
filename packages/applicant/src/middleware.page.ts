@@ -1,14 +1,16 @@
-import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { verifyToken } from './services/JwtService';
+import { csrfMiddleware } from './utils/csrfMiddleware';
 
+const BACKEND_HOST = process.env.BACKEND_HOST;
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
 const HOST = process.env.HOST;
 const ONE_LOGIN_ENABLED = process.env.ONE_LOGIN_ENABLED === 'true';
+const GRANT_CLOSED_REDIRECT = '/grant-is-closed';
 
-// //it will apply the middleware to all those paths
+// it will apply the middleware to all those paths
 export const config = {
   matcher: [
     '/applications/:path*',
@@ -72,16 +74,17 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
 export const getJwtFromMiddlewareCookies = (req: NextRequest) => {
   const COOKIE_SECRET = process.env.COOKIE_SECRET;
 
-  // Implementation below replicates that of a lambda function
-  // cabinet office have:
-  // https://github.com/cabinetoffice/x-co-login-auth-lambda/blob/22ce5fa104d2a36016a79f914d238f53ddabcee4/src/controllers/http/v1/request/utils.js#L81
-  const cookieValue = req.cookies.get(USER_TOKEN_NAME);
-  const parsedCookie = cookie.parse(`connect.sid=${cookieValue}`)[
-    'connect.sid'
-  ];
+  const userTokenCookie = req.cookies.get(USER_TOKEN_NAME);
+
+  if (!userTokenCookie)
+    throw new Error(
+      `Failed to verify signature for ${USER_TOKEN_NAME} cookie: cookie not found`
+    );
+
+  const cookieValue = userTokenCookie.value;
 
   // If the cookie is not a signed cookie, the parser will return the provided value
-  const unsignedCookie = cookieParser.signedCookie(parsedCookie, COOKIE_SECRET);
+  const unsignedCookie = cookieParser.signedCookie(cookieValue, COOKIE_SECRET);
 
   if (!unsignedCookie || unsignedCookie === 'undefined') {
     throw new Error(
@@ -92,27 +95,34 @@ export const getJwtFromMiddlewareCookies = (req: NextRequest) => {
   return unsignedCookie;
 };
 
-export async function middleware(req: NextRequest) {
-  if (signInDetailsPage.test({ pathname: req.nextUrl.pathname })) {
-    if (!ONE_LOGIN_ENABLED) {
-      const url = req.nextUrl.clone();
-      url.pathname = '/404';
-      return NextResponse.redirect(url);
-    } else {
-      return NextResponse.next();
+export const middleware = async (req: NextRequest) => {
+  try {
+    const res = NextResponse.next();
+
+    await csrfMiddleware(req, res);
+
+    if (signInDetailsPage.test({ pathname: req.nextUrl.pathname })) {
+      if (!ONE_LOGIN_ENABLED) {
+        const url = req.nextUrl.clone();
+        url.pathname = '/404';
+        return NextResponse.redirect(url);
+      } else {
+        return NextResponse.next();
+      }
     }
-  }
 
-  let jwt: string;
-  try {
-    jwt = await getJwtFromMiddlewareCookies(req);
-  } catch (err) {
-    console.error(err);
-    const res = buildMiddlewareResponse(req, HOST);
-    return res;
-  }
+    const jwt = await getJwtFromMiddlewareCookies(req);
 
-  try {
+    if (
+      submissionJourneyPattern.test({ pathname: req.nextUrl.pathname }) ||
+      mandatoryQuestionsJourneyPattern.test({ pathname: req.nextUrl.pathname })
+    ) {
+      const shouldRedirect = await shouldRedirectToClosedGrantPage(jwt, req);
+      if (shouldRedirect) {
+        return shouldRedirect;
+      }
+    }
+
     const validJwtResponse = await verifyToken(jwt);
     const expiresAt = new Date(validJwtResponse.expiresAt);
 
@@ -128,10 +138,45 @@ export async function middleware(req: NextRequest) {
         }?${req.nextUrl.searchParams.toString()}`
       );
     }
+    return res;
   } catch (err) {
-    console.error('middleware error');
     console.error(err);
-    return NextResponse.redirect(HOST);
+    // redirect to homepage on any middleware error
+    return buildMiddlewareResponse(req, HOST);
+  }
+};
+
+async function getApplicationStatusBySubmissionId(
+  id: string,
+  jwt: string,
+  pathname: string
+) {
+  const url = pathname.includes('mandatory-questions')
+    ? `${BACKEND_HOST}/grant-mandatory-questions/${id}/application/status`
+    : `${BACKEND_HOST}/submissions/${id}/application/status`;
+  const data = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      Accept: 'application/json',
+    },
+  });
+  return await data.text();
+}
+
+async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const id = pathname.split('/')[2];
+
+  if (!id) return;
+
+  const applicationStatus = await getApplicationStatusBySubmissionId(
+    id,
+    jwt,
+    pathname
+  );
+
+  if (applicationStatus === 'REMOVED') {
+    return NextResponse.redirect(process.env.HOST + GRANT_CLOSED_REDIRECT);
   }
 }
 
@@ -149,4 +194,12 @@ const signInDetailsPage = new URLPattern({
 
 const mandatoryQuestionsStartPattern = new URLPattern({
   pathname: '/mandatory-questions/start',
+});
+
+const mandatoryQuestionsJourneyPattern = new URLPattern({
+  pathname: '/mandatory-questions/:questionUuid([0-9a-f-]+)/:path*',
+});
+
+const submissionJourneyPattern = new URLPattern({
+  pathname: '/submissions/:path*',
 });

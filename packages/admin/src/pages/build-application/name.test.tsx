@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import ApplicationName, { getServerSideProps } from './name.page';
-import { getValueFromSession } from '../../services/SessionService';
 import { findApplicationFormFromScheme } from '../../services/SchemeService';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSidePropsContext } from 'next';
@@ -81,8 +80,9 @@ describe('Application name page', () => {
       query: {
         grantSchemeId: '12345',
       } as ParsedUrlQuery,
-      req: { method: 'GET', cookies: { 'gap-test': 'testSessionId' } as any },
-    } as GetServerSidePropsContext;
+      req: { method: 'GET', cookies: { 'gap-test': 'testSessionId' } },
+      res: { getHeader: jest.fn() },
+    } as unknown as GetServerSidePropsContext;
 
     it('Returns correct default backButtonHref value', async () => {
       mockedFindApplicationFormFromScheme.mockResolvedValue([]);

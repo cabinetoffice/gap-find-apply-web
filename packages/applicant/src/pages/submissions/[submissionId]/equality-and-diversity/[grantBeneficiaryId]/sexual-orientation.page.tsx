@@ -8,16 +8,16 @@ import { GetServerSideProps } from 'next';
 import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
-import { GrantBeneficiary } from '../../../../../types/models/GrantBeneficiary';
 import { postGrantBeneficiaryResponse } from '../../../../../services/GrantBeneficiaryService';
+import { GrantBeneficiary } from '../../../../../types/models/GrantBeneficiary';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
 import {
   errorPageParams,
   errorPageRedirect,
 } from '../equality-and-diversity-service-errors';
-import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 import { EqualityAndDiversityParams } from '../types';
+import { fetchGrantBeneficiary } from './fetchGrantBeneficiary';
 
 export type SexualOrientationPageProps = {
   formAction: string;
@@ -68,6 +68,16 @@ export const getServerSideProps: GetServerSideProps<
     req,
     res,
     async (body: RequestBody) => {
+      const formData = {
+        submissionId: submissionId,
+        hasProvidedAdditionalAnswers: false,
+        sexualOrientationGroup1: false,
+        sexualOrientationGroup2: false,
+        sexualOrientationGroup3: false,
+        sexualOrientationOther: false,
+        sexualOrientationOtherDetails: '',
+        sexualOrientationGroupAll: false,
+      };
       if (body.supportedSexualOrientation) {
         const userHasCheckedAllOrientations =
           body.supportedSexualOrientation.includes(
@@ -82,38 +92,36 @@ export const getServerSideProps: GetServerSideProps<
                 ).some((orientation) => orientation === option)
             ));
 
-        await postGrantBeneficiaryResponse(
-          {
-            submissionId: submissionId,
-            hasProvidedAdditionalAnswers: true,
-            sexualOrientationGroup1:
-              body.supportedSexualOrientation.includes(
-                SexualOrientationCheckboxes.STRAIGHT
-              ) && !userHasCheckedAllOrientations,
-            sexualOrientationGroup2:
-              body.supportedSexualOrientation.includes(
-                SexualOrientationCheckboxes.GAY
-              ) && !userHasCheckedAllOrientations,
-            sexualOrientationGroup3:
-              body.supportedSexualOrientation.includes(
-                SexualOrientationCheckboxes.BISEXUAL
-              ) && !userHasCheckedAllOrientations,
-            sexualOrientationOther:
-              body.supportedSexualOrientation.includes(
-                SexualOrientationCheckboxes.OTHER
-              ) && !userHasCheckedAllOrientations,
-            sexualOrientationOtherDetails:
-              body.supportedSexualOrientation.includes(
-                SexualOrientationCheckboxes.OTHER
-              )
-                ? body.sexualOrientationOtherDetails
-                : '',
-            sexualOrientationGroupAll: userHasCheckedAllOrientations,
-          },
-          getJwtFromCookies(req),
-          grantBeneficiaryId
-        );
+        formData.hasProvidedAdditionalAnswers = true;
+        formData.sexualOrientationGroup1 =
+          body.supportedSexualOrientation.includes(
+            SexualOrientationCheckboxes.STRAIGHT
+          ) && !userHasCheckedAllOrientations;
+        formData.sexualOrientationGroup2 =
+          body.supportedSexualOrientation.includes(
+            SexualOrientationCheckboxes.GAY
+          ) && !userHasCheckedAllOrientations;
+        formData.sexualOrientationGroup3 =
+          body.supportedSexualOrientation.includes(
+            SexualOrientationCheckboxes.BISEXUAL
+          ) && !userHasCheckedAllOrientations;
+        formData.sexualOrientationOther =
+          body.supportedSexualOrientation.includes(
+            SexualOrientationCheckboxes.OTHER
+          ) && !userHasCheckedAllOrientations;
+        formData.sexualOrientationOtherDetails =
+          body.supportedSexualOrientation.includes(
+            SexualOrientationCheckboxes.OTHER
+          )
+            ? body.sexualOrientationOtherDetails
+            : '';
+        formData.sexualOrientationGroupAll = userHasCheckedAllOrientations;
       }
+      await postGrantBeneficiaryResponse(
+        formData,
+        getJwtFromCookies(req),
+        grantBeneficiaryId
+      );
     },
     `/submissions/${submissionId}/equality-and-diversity/${grantBeneficiaryId}/summary`,
     errorPageParams(submissionId)
@@ -167,7 +175,7 @@ export const getServerSideProps: GetServerSideProps<
       defaultChecked: defaultChecked,
       defaultSexualOrientationDetails: defaultSexualOrientationDetails,
       fieldErrors: fieldErrors,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

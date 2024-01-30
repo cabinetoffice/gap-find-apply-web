@@ -24,7 +24,7 @@ const Navigation = () => {
     },
     {
       pageId: 'applicantDash',
-      href: publicRuntimeConfig.APPLICANT_DOMAIN + '/api/isNewApplicant',
+      href: publicRuntimeConfig.APPLICANT_DOMAIN + '/dashboard',
       title: 'Applicant dashboard',
     },
     {
@@ -57,13 +57,13 @@ const Navigation = () => {
             id={`${pageId}DesktopLink`}
             data-cy={`cy${pageId}PageLink`}
           >
-            <Link href={href} as={href}>
-              <a
-                className="govuk-link govuk-link--no-visited-state app-navigation__link"
-                data-topnav={title}
-              >
-                {title}
-              </a>
+            <Link
+              href={href}
+              as={href}
+              className="govuk-link govuk-link--no-visited-state app-navigation__link"
+              data-topnav={title}
+            >
+              {title}
             </Link>
           </li>
         ))}

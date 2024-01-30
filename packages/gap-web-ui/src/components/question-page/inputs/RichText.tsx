@@ -15,9 +15,9 @@ const RichText = ({
   defaultValue = '',
   value,
   setValue,
-  apiKey,
   isJsEnabled,
   multipleQuestionPage = true,
+  applicationHost,
 }: RichTextProps) => {
   if (!isJsEnabled) {
     return (
@@ -79,7 +79,7 @@ const RichText = ({
       <ErrorMessage fieldErrors={fieldErrors} fieldName={fieldName} />
 
       <Editor
-        apiKey={apiKey}
+        tinymceScriptSrc={applicationHost + '/tinymce/tinymce.min.js'}
         init={{
           menubar: false,
           statusbar: false,
@@ -119,8 +119,8 @@ const RichText = ({
 export interface RichTextProps extends TextAreaProps {
   value: string;
   setValue: (text: string) => void;
-  apiKey: string;
   isJsEnabled: boolean;
+  applicationHost: string;
 }
 
 export default RichText;

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import { createMockRouter } from '../testUtils/createMockRouter';
 import GrantIsClosedPage from './grant-is-closed.page';
 
@@ -34,13 +34,5 @@ describe('Grant is closed page', () => {
       'href',
       'https://www.find-government-grants.service.gov.uk/grants'
     );
-  });
-
-  it('should render back link', () => {
-    expect(
-      screen.getByRole('link', {
-        name: /go back/i,
-      })
-    ).toHaveAttribute('href', `/dashboard`);
   });
 });

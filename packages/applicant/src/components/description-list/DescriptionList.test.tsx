@@ -1,8 +1,12 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import { createMockRouter } from '../../testUtils/createMockRouter';
 import { DescriptionList } from './DescriptionList';
+
+jest.mock('next/router', () => ({
+  useRouter: jest.fn(() => ({ pathname: '/test' })),
+}));
 
 const data = [
   { term: 'Name', detail: 'Sarah Philips' },

@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
-import { parseBody } from 'next/dist/server/api-utils/node';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { parseBody } from '../../../utils/parseBody';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import {
   hasSubmissionBeenSubmitted,
   isSubmissionReady,
@@ -12,10 +12,9 @@ import { createMockRouter } from '../../../testUtils/createMockRouter';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import SubmitApplication, { getServerSideProps } from './submit.page';
 
-jest.mock('next/dist/server/api-utils/node');
 jest.mock('../../../services/SubmissionService');
 jest.mock('../../../utils/jwt');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../utils/parseBody');
 jest.mock('next/config', () => () => {
   return {
     serverRuntimeConfig: {
@@ -28,6 +27,8 @@ jest.mock('next/config', () => () => {
   };
 });
 
+const mockedParseBody = jest.mocked(parseBody);
+
 const submissionId = '12345678';
 const getContext = (overrides: any = {}) =>
   merge(
@@ -37,7 +38,9 @@ const getContext = (overrides: any = {}) =>
       },
       req: {
         method: 'GET',
-        csrfToken: () => 'testCSRFToken',
+      },
+      res: {
+        getHeader: () => 'testCSRFToken',
       },
     },
     overrides
@@ -51,7 +54,9 @@ const getContextNoToken = (overrides: any = {}) =>
       },
       req: {
         method: 'GET',
-        csrfToken: () => '',
+      },
+      res: {
+        getHeader: () => '',
       },
     },
     overrides
@@ -125,7 +130,7 @@ describe('getServerSideProps', () => {
 
     beforeEach(() => {
       (submit as jest.Mock).mockResolvedValue('');
-      (parseBody as jest.Mock).mockResolvedValue({});
+      mockedParseBody.mockResolvedValue({});
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     });
 
@@ -200,7 +205,7 @@ describe('Submit application', () => {
   it('should render cancel link', () => {
     expect(screen.getByRole('link', { name: 'Cancel' })).toHaveProperty(
       'href',
-      `http://localhost/submissions/${submissionId}/sections`
+      `http://localhost/submissions/${submissionId}/summary`
     );
   });
 });

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import { GrantScheme } from '../../../types/models/GrantScheme';
 import { GrantSchemeService } from '../../../services/GrantSchemeService';
 import {
@@ -19,7 +19,6 @@ import { getApplicationStatusBySchemeId } from '../../../services/ApplicationSer
 jest.mock('../../../services/SubmissionService');
 jest.mock('../../../utils/constants');
 jest.mock('../../../utils/jwt');
-jest.mock('../../../utils/csrf');
 
 jest.mock('../../../services/ApplicationService', () => ({
   getApplicationStatusBySchemeId: jest.fn(),
@@ -29,8 +28,8 @@ const context = {
   params: {
     submissionId: '12345678',
   },
-  req: { csrfToken: () => 'testCSRFToken' },
-  res: {},
+  req: {},
+  res: { getHeader: () => 'testCSRFToken' },
 } as unknown as GetServerSidePropsContext;
 
 const shortAnswer: QuestionType = {
@@ -51,8 +50,7 @@ const contextNoToken = {
   params: {
     submissionId: '12345678',
   },
-  req: { csrfToken: () => '' },
-  res: {},
+  res: { getHeader: () => '' },
 } as unknown as GetServerSidePropsContext;
 
 const numeric: QuestionType = {
@@ -92,30 +90,35 @@ const propsWithAllValues: ApplicationDetailsInterface = {
       sectionId: 'ELIGIBILITY',
       sectionTitle: 'Eligibility',
       sectionStatus: 'COMPLETED',
+      questionIds: [eligibility].map((q) => q.questionId),
       questions: [eligibility],
     },
     {
       sectionId: 'ORGANISATION_DETAILS',
       sectionTitle: 'Your Organisation',
       sectionStatus: 'IN_PROGRESS',
+      questionIds: [shortAnswer].map((q) => q.questionId),
       questions: [shortAnswer],
     },
     {
       sectionId: 'FUNDING_DETAILS',
       sectionTitle: 'Funding',
       sectionStatus: 'IN_PROGRESS',
+      questionIds: [numeric].map((q) => q.questionId),
       questions: [numeric],
     },
     {
       sectionId: 'ESSENTIAL',
       sectionTitle: 'Essential Information',
       sectionStatus: 'COMPLETED',
+      questionIds: [shortAnswer].map((q) => q.questionId),
       questions: [shortAnswer],
     },
     {
       sectionId: 'NON-ESSENTIAL',
       sectionTitle: 'Non Essential Information',
       sectionStatus: 'IN_PROGRESS',
+      questionIds: [shortAnswer, numeric].map((q) => q.questionId),
       questions: [shortAnswer, numeric],
     },
   ],
@@ -149,18 +152,21 @@ const propsWithInProgressSectionTags: ApplicationDetailsInterface = {
       sectionId: 'ELIGIBILITY',
       sectionTitle: 'Eligibility',
       sectionStatus: 'COMPLETED',
+      questionIds: [eligibility].map((q) => q.questionId),
       questions: [eligibility],
     },
     {
       sectionId: 'ESSENTIAL',
       sectionTitle: 'Essential Information',
       sectionStatus: 'IN_PROGRESS',
+      questionIds: [shortAnswer, numeric].map((q) => q.questionId),
       questions: [shortAnswer, numeric],
     },
     {
       sectionId: 'NON-ESSENTIAL',
       sectionTitle: 'Non Essential Information',
       sectionStatus: 'NOT_STARTED',
+      questionIds: [numeric].map((q) => q.questionId),
       questions: [numeric],
     },
   ],
@@ -178,18 +184,21 @@ const propsWithVariedSectionEligilityCompleteOthersMixedNotStarted: ApplicationD
         sectionId: 'ELIGIBILITY',
         sectionTitle: 'Eligibility',
         sectionStatus: 'COMPLETED',
+        questionIds: [eligibility].map((q) => q.questionId),
         questions: [eligibility],
       },
       {
         sectionId: 'ESSENTIAL',
         sectionTitle: 'Essential Information',
         sectionStatus: 'NOT_STARTED',
+        questionIds: [shortAnswer, numeric].map((q) => q.questionId),
         questions: [shortAnswer, numeric],
       },
       {
         sectionId: 'NON-ESSENTIAL',
         sectionTitle: 'Non Essential Information',
         sectionStatus: 'CANNOT_START_YET',
+        questionIds: [numeric].map((q) => q.questionId),
         questions: [numeric],
       },
     ],
@@ -239,24 +248,6 @@ const questionDataStandardEligibilityResponseNull = {
 };
 
 describe('getServerSideProps', () => {
-  it('should return a redirect to grant-is-closed when submission is REMOVED ', async () => {
-    (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue('REMOVED');
-    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
-    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
-    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
-    (isSubmissionReady as jest.Mock).mockReturnValue(true);
-    (getQuestionById as jest.Mock).mockReturnValue(
-      questionDataStandardEligibilityResponseNo
-    );
-    const response = await getServerSideProps(context);
-    expect(response).toEqual({
-      redirect: {
-        destination: '/grant-is-closed',
-        permanent: false,
-      },
-    });
-  });
-
   it('should return sections, submissionId, applicationName', async () => {
     (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue(
       'PUBLISHED'
@@ -483,17 +474,19 @@ describe('Submission section page', () => {
     });
 
     it('should render the summary list keys with the correct href', () => {
-      const sectionData = propsWithAllValues.sections;
       expect(screen.getByText('Non Essential Information')).toBeDefined();
       expect(screen.getByText('Essential Information')).toBeDefined();
       expect(
         screen.getByRole('link', { name: 'Essential Information' })
-      ).toHaveAttribute('href', '/api/submissions/string/sections/ESSENTIAL');
+      ).toHaveAttribute(
+        'href',
+        '/api/routes/submissions/string/sections/ESSENTIAL'
+      );
       expect(
         screen.getByRole('link', { name: 'Non Essential Information' })
       ).toHaveAttribute(
         'href',
-        '/api/submissions/string/sections/NON-ESSENTIAL'
+        '/api/routes/submissions/string/sections/NON-ESSENTIAL'
       );
     });
 
@@ -514,10 +507,10 @@ describe('Submission section page', () => {
 
     it('should render a submit and cancel button', () => {
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toBeDefined();
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).not.toHaveProperty('disabled');
       expect(
         screen.getByRole('link', { name: 'Save and come back later' })
@@ -583,15 +576,15 @@ describe('Submission section page', () => {
       expect(screen.getByText('Essential Information')).toBeDefined();
       expect(screen.getByRole('link', { name: 'Eligibility' })).toHaveAttribute(
         'href',
-        `/api/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[0].sectionId}`
+        `/api/routes/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[0].sectionId}`
       );
       expect(screen.getByText('Essential Information')).not.toHaveAttribute(
         'href',
-        `/api/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[1].sectionId}`
+        `/api/routes/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[1].sectionId}`
       );
       expect(screen.getByText('Non Essential Information')).not.toHaveAttribute(
         'href',
-        `/api/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[2].sectionId}`
+        `/api/routes/submissions/${propsWithAllValues.grantSubmissionId}/sections/${sectionData[2].sectionId}`
       );
     });
   });
@@ -685,10 +678,10 @@ describe('Submission section page', () => {
       ).toBeDefined();
 
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toBeDefined();
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).not.toHaveProperty('disabled');
       expect(
         screen.getByRole('link', { name: 'Save and come back later' })
@@ -726,10 +719,10 @@ describe('Submission section page', () => {
     });
     it('should disable the submit button', () => {
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toBeDefined();
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toHaveProperty('disabled', true);
     });
   });
@@ -757,10 +750,10 @@ describe('Submission section page', () => {
     });
     it('should disable the submit button', () => {
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toBeDefined();
       expect(
-        screen.getByRole('button', { name: 'Submit application' })
+        screen.getByRole('button', { name: 'Review and submit' })
       ).toHaveProperty('disabled', true);
     });
   });

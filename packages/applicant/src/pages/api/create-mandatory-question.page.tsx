@@ -3,11 +3,9 @@ import { GrantMandatoryQuestionService } from '../../services/GrantMandatoryQues
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import { GrantApplicantOrganisationProfileService } from '../../services/GrantApplicantOrganisationProfileService';
+import { APIGlobalHandler } from '../../utils/apiErrorHandler';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   const grantMandatoryQuestionService =
     GrantMandatoryQuestionService.getInstance();
   const grantApplicantOrganisationProfileService =
@@ -55,3 +53,6 @@ function handleError(e: any, res: NextApiResponse) {
   };
   return res.redirect(routes.serviceError(serviceErrorProps));
 }
+
+export default (req: NextApiRequest, res: NextApiResponse) =>
+  APIGlobalHandler(req, res, handler);

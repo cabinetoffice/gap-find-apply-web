@@ -60,11 +60,12 @@ export const DescriptionList: FC<DescriptionListProps> = ({
                       className="govuk-summary-list__actions"
                       aria-label={`${!detail ? 'Add' : 'Change'} ${term}`}
                     >
-                      <Link href={`${pathname}/${term.toLowerCase()}`}>
-                        <a className="govuk-link--no-visited-state">
-                          {!detail ? 'Add' : 'Change'}
-                          <span className="govuk-visually-hidden"> {term}</span>
-                        </a>
+                      <Link
+                        href={`${pathname}/${term.toLowerCase()}`}
+                        className="govuk-link--no-visited-state"
+                      >
+                        {!detail ? 'Add' : 'Change'}
+                        <span className="govuk-visually-hidden"> {term}</span>
                       </Link>
                     </dd>
                   )}

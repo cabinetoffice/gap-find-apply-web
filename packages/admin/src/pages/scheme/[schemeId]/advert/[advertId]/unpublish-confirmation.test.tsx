@@ -19,10 +19,10 @@ import {
 import UnpublishConfirmationPage, {
   getServerSideProps,
 } from './unpublish-confirmation.page';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../../utils/parseBody';
 import AdvertStatusEnum from '../../../../../enums/AdvertStatus';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/AdvertPageService');
 
 const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
@@ -124,6 +124,7 @@ describe('Unpublish confirmation page', () => {
         advertId: 'testAdvertId',
       },
       query: {},
+      res: { getHeader: () => 'testCSRFToken' },
     });
 
     describe('When handling GET request', () => {
@@ -189,6 +190,7 @@ describe('Unpublish confirmation page', () => {
         req: {
           method: 'POST',
         },
+        res: { getHeader: () => 'testCSRFToken' },
       });
 
       it('Should redirect to "Section overview" page with "recentlyUnpublished" tag when advert is successfully unpublished', async () => {

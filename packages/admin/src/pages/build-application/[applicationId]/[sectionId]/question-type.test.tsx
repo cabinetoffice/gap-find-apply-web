@@ -4,7 +4,7 @@ import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSideP
 import QuestionType, { getServerSideProps } from './question-type.page';
 import { merge } from 'lodash';
 import axios from 'axios';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../utils/parseBody';
 import {
   getSummaryFromSession,
   addFieldsToSession,
@@ -12,19 +12,10 @@ import {
 } from '../../../../services/SessionService';
 import { getApplicationFormSummary } from '../../../../services/ApplicationService';
 import { ValidationError } from 'gap-web-ui';
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
+import { GetServerSidePropsContext } from 'next';
+
 jest.mock('axios');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../utils/parseBody');
 jest.mock('../../../../services/SessionService');
 jest.mock('../../../../services/ApplicationService');
 
@@ -147,7 +138,7 @@ describe('Question type', () => {
   });
 
   describe('getServerSideProps', () => {
-    const getContext = (overrides: any = {}) =>
+    const getContext = (overrides = {}) =>
       merge(
         {
           params: {
@@ -158,9 +149,10 @@ describe('Question type', () => {
             method: 'GET',
             cookies: { session_id: 'test-session-id' },
           },
+          res: { getHeader: () => 'testCSRFToken' },
         },
         overrides
-      );
+      ) as unknown as GetServerSidePropsContext;
 
     const serviceErrorRedirect = {
       redirect: {
@@ -324,7 +316,7 @@ describe('Question type', () => {
 
         expect(result).toStrictEqual({
           redirect: {
-            destination: '/build-application/applicationId/dashboard',
+            destination: '/build-application/applicationId/sectionId',
             statusCode: 302,
           },
         });
@@ -352,9 +344,7 @@ describe('Question type', () => {
         });
 
         it('Should add responseType to session if options are needed', async () => {
-          const result = (await getServerSideProps(
-            getPostContext({})
-          )) as NextGetServerSidePropsResponse;
+          await getServerSideProps(getPostContext({}));
 
           expect(addFieldsToSession).toBeCalled();
         });

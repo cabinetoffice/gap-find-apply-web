@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../utils/parseBody';
 import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
@@ -15,7 +15,9 @@ import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 import { MQ_ORG_TYPES } from '../../../utils/constants';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../utils/parseBody');
+
+const mockParseBody = jest.mocked(parseBody);
 
 const spiedGrantMandatoryQuestionServiceGetMandatoryQuestion = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
@@ -26,7 +28,7 @@ const spiedGrantMandatoryQuestionServiceUpdateMandatoryQuestion = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
   'updateMandatoryQuestion'
 );
-const spiedGrantApplicantOrganisationProfileService = jest.spyOn(
+const _spiedGrantApplicantOrganisationProfileService = jest.spyOn(
   GrantApplicantOrganisationProfileService.prototype,
   'isOrgProfileComplete'
 );
@@ -59,6 +61,7 @@ describe('getServerSideProps', () => {
   describe('when handling a GET request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
       req: {},
+      res: { getHeader: () => 'testCSRFToken' },
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
       query: {},
     });
@@ -130,7 +133,7 @@ describe('getServerSideProps', () => {
         spiedGrantMandatoryQuestionServiceUpdateMandatoryQuestion,
         getDefaultUpdateResponse
       );
-      (parseBody as jest.Mock).mockResolvedValue({
+      mockParseBody.mockResolvedValue({
         name: 'test name',
       });
     });
@@ -348,7 +351,7 @@ describe('getServerSideProps', () => {
           spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
           getGrantMandatoryQuestion
         );
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           name: 'test name',
         });
         const mandatoryQuestionId = 'mandatoryQuestionId';
@@ -401,6 +404,7 @@ describe('getServerSideProps', () => {
         },
       });
     });
+
     it('Returns submission page for type page', async () => {
       mockServiceMethod(
         spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
@@ -427,6 +431,36 @@ describe('getServerSideProps', () => {
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestionId: 'mandatoryQuestionId',
           backButtonUrl: '/submissions/submissionId/sections/sectionId',
+        },
+      });
+    });
+
+    it('Returns submission summary page for type page', async () => {
+      mockServiceMethod(
+        spiedGrantMandatoryQuestionServiceGetMandatoryQuestion,
+        getDefaultGrantMandatoryQuestion
+      );
+      const getSubmissionContext = (): Optional<GetServerSidePropsContext> => ({
+        req: {},
+        params: { mandatoryQuestionId: 'mandatoryQuestionId' },
+        query: {
+          fromSubmissionSummaryPage: 'true',
+          submissionId: 'submissionId',
+          sectionId: 'sectionId',
+        },
+      });
+      const response = await getServerSideProps(
+        getContext(getSubmissionContext)
+      );
+      expectObjectEquals(response, {
+        props: {
+          fieldErrors: [],
+          csrfToken: 'testCSRFToken',
+          formAction: '/testResolvedURL',
+          defaultFields: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
+          mandatoryQuestionId: 'mandatoryQuestionId',
+          backButtonUrl: '/submissions/submissionId/summary',
         },
       });
     });

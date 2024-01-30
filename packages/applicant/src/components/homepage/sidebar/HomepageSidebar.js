@@ -9,26 +9,24 @@ export function HomepageSidebar({ header }) {
         here too.
       </p>
       <p>
-        <Link href="/notifications/check-email">
-          <a
-            className="govuk-link govuk-body"
-            data-cy="cyManageNotificationsHomeLink"
-          >
-            Manage notifications
-          </a>
+        <Link
+          href="/notifications/check-email"
+          className="govuk-link govuk-body"
+          data-cy="cyManageNotificationsHomeLink"
+        >
+          Manage notifications
         </Link>
       </p>
       <hr className="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-2 govuk-border-colour" />
       <p className="govuk-body">
         Tell us how you think our service can improve{' '}
-        <Link href="https://docs.google.com/forms/d/e/1FAIpQLSe6H5atE1WQzf8Fzjti_OehNmTfY0Bv_poMSO-w8BPzkOqr-A/viewform?usp=sf_link">
-          <a
-            className="govuk-link"
-            target="_blank"
-            data-cy="cyBetaFeedbackLinkHomePage"
-          >
-            through our feedback form
-          </a>
+        <Link
+          href="https://docs.google.com/forms/d/e/1FAIpQLSe6H5atE1WQzf8Fzjti_OehNmTfY0Bv_poMSO-w8BPzkOqr-A/viewform?usp=sf_link"
+          className="govuk-link"
+          target="_blank"
+          data-cy="cyBetaFeedbackLinkHomePage"
+        >
+          through our feedback form
         </Link>
         .
       </p>

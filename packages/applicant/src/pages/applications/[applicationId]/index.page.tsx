@@ -3,7 +3,6 @@ import { getApplicationById } from '../../../services/ApplicationService';
 import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
 import { GrantSchemeService } from '../../../services/GrantSchemeService';
 import { createSubmission } from '../../../services/SubmissionService';
-import { validateCSRF } from '../../../utils/csrf';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { GrantApplication } from '../../../types/models/GrantApplication';
@@ -11,11 +10,8 @@ import { GrantApplication } from '../../../types/models/GrantApplication';
 //TODO: we could make this an API endpoint since it doesn't actually render anything
 export const getServerSideProps: GetServerSideProps = async ({
   req,
-  res,
   params,
 }) => {
-  await validateCSRF(req, res);
-
   const applicationId = params.applicationId.toString();
 
   try {

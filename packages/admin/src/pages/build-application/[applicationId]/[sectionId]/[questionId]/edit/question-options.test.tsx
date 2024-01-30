@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import { GetServerSidePropsContext } from 'next';
 import {
   QuestionSummary,
   QuestionWithOptionsSummary,
@@ -13,7 +14,7 @@ import {
   patchQuestion,
 } from '../../../../../../services/QuestionService';
 import NextGetServerSidePropsResponse from '../../../../../../types/NextGetServerSidePropsResponse';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../../../utils/parseBody';
 import { ValidationError } from 'gap-web-ui';
 import ResponseTypeEnum from '../../../../../../enums/ResponseType';
 
@@ -31,9 +32,9 @@ jest.mock('next/config', () => () => {
 jest.mock('../../../../../../services/ApplicationService');
 jest.mock('../../../../../../services/QuestionService');
 jest.mock('../../../../../../services/SessionService');
-jest.mock('next/dist/server/api-utils/node', () => ({
-  parseBody: jest.fn(),
-}));
+jest.mock('../../../../../../utils/parseBody');
+
+const mockParseBody = jest.mocked(parseBody);
 
 describe('Question Options', () => {
   const parsedValidationErrors = [
@@ -54,7 +55,7 @@ describe('Question Options', () => {
       optional: 'no',
     };
 
-    const getProps = (overrides: any = {}) =>
+    const getProps = (overrides = {}) =>
       merge(
         {
           sectionName: 'Test Section Name',
@@ -163,7 +164,7 @@ describe('Question Options', () => {
       } as Redirect,
     };
 
-    const getContext = (overrides: any = {}) =>
+    const getContext = (overrides = {}) =>
       merge(
         {
           params: {
@@ -175,9 +176,10 @@ describe('Question Options', () => {
             method: 'GET',
             cookies: { session_id: '', 'gap-test': 'testSessionId' },
           },
+          res: { getHeader: () => 'testCSRFToken' },
         },
         overrides
-      );
+      ) as unknown as GetServerSidePropsContext;
 
     const mockQuestionSummary: QuestionWithOptionsSummary = {
       fieldTitle: 'Test Section Field Title',
@@ -320,7 +322,7 @@ describe('Question Options', () => {
       describe('Add another option', () => {
         it('Should return an array with current options and a new empty option when a "Add another option" is clicked', async () => {
           (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
+            options: ['option one'],
             'add-another-option': '',
           });
 
@@ -329,31 +331,15 @@ describe('Question Options', () => {
           )) as NextGetServerSidePropsResponse;
 
           expect(result.props.options).toStrictEqual(['option one', '']);
-        });
-
-        it('Should NOT try to update the question options when "Add another option" button is clicked', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
-            'options[2]': 'option three',
-            'delete_options[0]': '',
-          });
-
-          const result = (await getServerSideProps(
-            postContext()
-          )) as NextGetServerSidePropsResponse;
-
           expect(patchQuestion).not.toHaveBeenCalled();
         });
       });
 
       describe('Delete an option', () => {
         it('Should return an array of current options minus one option when "Delete" button for the option is clicked', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
-            'options[2]': 'option three',
-            'delete_options[0]': '',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two', 'option three'],
+            delete_0: '',
           });
 
           const result = (await getServerSideProps(
@@ -368,15 +354,11 @@ describe('Question Options', () => {
 
         it('Should NOT try to update the question options when "Delete" button is clicked', async () => {
           (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
-            'options[2]': 'option three',
-            'delete_options[0]': '',
+            options: ['option one', 'option two', 'option three'],
+            delete_0: '',
           });
 
-          const result = (await getServerSideProps(
-            postContext()
-          )) as NextGetServerSidePropsResponse;
+          await getServerSideProps(postContext());
 
           expect(patchQuestion).not.toHaveBeenCalled();
         });
@@ -384,9 +366,8 @@ describe('Question Options', () => {
 
       describe('Save Question', () => {
         it('Should redirect to dashboard after successfully saving the options', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
             'save-and-continue': '',
           });
 
@@ -413,9 +394,8 @@ describe('Question Options', () => {
         });
 
         it('Should redirect to service error page if saving the options throws an error', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
             'save-and-continue': '',
           });
 
@@ -429,9 +409,8 @@ describe('Question Options', () => {
         });
 
         it('Should return field errors if they are returned from the backend.', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
             'save-and-continue': '',
           });
 
@@ -449,9 +428,8 @@ describe('Question Options', () => {
         });
 
         it('Should parse class level errors into field level errors', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
             'save-and-continue': '',
           });
           (patchQuestion as jest.Mock).mockRejectedValue({

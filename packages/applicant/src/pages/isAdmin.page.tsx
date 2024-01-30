@@ -1,7 +1,6 @@
 import { GetServerSideProps } from 'next';
 import { isAdmin } from '../services/IsAdminService';
 import { getUserRoles, UserRolesResponse } from '../services/UserRolesService';
-import { initiateCSRFCookie } from '../utils/csrf';
 import { getJwtFromCookies } from '../utils/jwt';
 import { routes } from '../utils/routes';
 import getConfig from 'next/config';
@@ -29,7 +28,6 @@ const getDestination = (
 //TODO add unit test, and move this to be an api
 export const getServerSideProps: GetServerSideProps = async ({
   req,
-  res,
   query,
 }) => {
   const { publicRuntimeConfig } = getConfig();
@@ -50,7 +48,6 @@ export const getServerSideProps: GetServerSideProps = async ({
       },
     };
   }
-  await initiateCSRFCookie(req, res);
 
   const destination = getDestination(result, publicRuntimeConfig, {
     applyMigrationStatus: query?.applyMigrationStatus as string,

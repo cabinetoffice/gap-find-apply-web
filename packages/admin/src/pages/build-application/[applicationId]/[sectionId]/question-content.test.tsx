@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import QuestionContent, { getServerSideProps } from './question-content.page';
 import { merge } from 'lodash';
-import { Redirect } from 'next';
+import { GetServerSidePropsContext, Redirect } from 'next';
 import { getApplicationFormSummary } from '../../../../services/ApplicationService';
 import {
   addFieldsToSession,
@@ -10,19 +10,9 @@ import {
 } from '../../../../services/SessionService';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
 import { ValidationError } from 'gap-web-ui';
-import { parseBody } from 'next/dist/server/api-utils/node';
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
-jest.mock('next/dist/server/api-utils/node');
+import { parseBody } from '../../../../utils/parseBody';
+
+jest.mock('../../../../utils/parseBody');
 jest.mock('../../../../services/SessionService');
 jest.mock('../../../../services/ApplicationService');
 
@@ -35,6 +25,7 @@ const customProps = {
   fieldTitle: '',
   hintText: '',
   optional: '',
+  csrfToken: '',
 };
 
 const expectedRedirectObject = {
@@ -107,7 +98,7 @@ describe('Question content page', () => {
       });
     });
 
-    const getContext = (overrides: any = {}) =>
+    const getContext = (overrides = {}) =>
       merge(
         {
           params: {
@@ -118,12 +109,12 @@ describe('Question content page', () => {
             method: 'GET',
             cookies: { session_id: '' },
           },
-          res: { setHeader: jest.fn() },
+          res: { setHeader: jest.fn(), getHeader: () => 'testCSRFToken' },
           resolvedUrl:
             '/build-application/testApplicationId/testSectionId/question-content',
         },
         overrides
-      );
+      ) as unknown as GetServerSidePropsContext;
 
     it('Should return a back button href', async () => {
       const value = (await getServerSideProps(
@@ -141,7 +132,8 @@ describe('Question content page', () => {
       )) as NextGetServerSidePropsResponse;
 
       expect(value.props.formAction).toStrictEqual(
-        '/build-application/testApplicationId/testSectionId/question-content'
+        process.env.SUB_PATH +
+          '/build-application/testApplicationId/testSectionId/question-content'
       );
     });
 

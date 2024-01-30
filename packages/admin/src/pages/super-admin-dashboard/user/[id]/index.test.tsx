@@ -40,8 +40,10 @@ describe('Super admin - Edit user page', () => {
         id: '1',
         name: 'Cabinet Office',
       },
+      colaSub: 'colaSub',
       created: new Date().toISOString(),
       isViewingOwnAccount: false,
+      isUserAdmin: true,
     });
 
     it('Should render a back button', () => {
@@ -76,11 +78,11 @@ describe('Super admin - Edit user page', () => {
       const changeLinks = screen.getAllByRole('link', { name: 'Change' });
       expect(changeLinks[0]).toHaveAttribute(
         'href',
-        '/super-admin-dashboard/user/1/change-department'
+        '/super-admin-dashboard/user/1/change-roles'
       );
       expect(changeLinks[1]).toHaveAttribute(
         'href',
-        '/super-admin-dashboard/user/1/change-roles'
+        '/super-admin-dashboard/user/1/change-department'
       );
     });
 
@@ -99,6 +101,63 @@ describe('Super admin - Edit user page', () => {
         )
       ).toBeNull();
       screen.getByText('-');
+    });
+
+    it('Should not render grant ownership if user is an applicant', () => {
+      render(
+        <UserPage
+          {...getPageProps(getDefaultProps, {
+            created: '',
+            isUserAdmin: false,
+            schemes: [],
+          })}
+        />
+      );
+
+      expect(screen.queryByText('Grants this user owns')).toBeNull();
+      expect(
+        screen.queryByText('This user does not own any grants.')
+      ).toBeNull();
+      expect(screen.queryByRole('link', { name: 'Change owner' })).toBeNull();
+    });
+
+    it('Should render grant ownership if user is an admin', () => {
+      render(
+        <UserPage
+          {...getPageProps(getDefaultProps, {
+            created: '',
+            isUserAdmin: true,
+          })}
+        />
+      );
+
+      expect(screen.queryByText('Grants this user owns')).toBeDefined();
+      expect(
+        screen.queryByText('This user does not own any grants.')
+      ).toBeDefined();
+      expect(
+        screen.queryByRole('link', { name: 'Change owner' })
+      ).toBeDefined();
+    });
+
+    it('Should render grant ownership if user is an applicant but previosuly owned grants', () => {
+      render(
+        <UserPage
+          {...getPageProps(getDefaultProps, {
+            created: '',
+            isUserAdmin: false,
+            schemes: [{ name: 'Test Scheme', schemeId: 'schemeId' }],
+          })}
+        />
+      );
+
+      expect(screen.queryByText('Grants this user owns')).toBeDefined();
+      expect(
+        screen.queryByText('This user does not own any grants.')
+      ).toBeNull();
+      expect(
+        screen.queryByRole('link', { name: 'Change owner' })
+      ).toBeDefined();
     });
 
     it('Should render a users schemes', () => {

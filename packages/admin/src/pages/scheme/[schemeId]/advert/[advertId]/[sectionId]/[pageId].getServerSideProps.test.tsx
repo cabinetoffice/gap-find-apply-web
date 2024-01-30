@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { htmlToRichText } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../../../utils/parseBody';
 import {
   getAdvertSectionPageContent,
   patchAdvertSectionPage,
@@ -16,7 +16,9 @@ import {
 } from '../../../../../../testUtils/unitTestHelpers';
 import { getServerSideProps } from './[pageId].getServerSideProps';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../../utils/parseBody', () => ({
+  parseBody: jest.fn(() => ({})),
+}));
 jest.mock('../../../../../../services/AdvertPageService');
 jest.mock('gap-web-ui');
 
@@ -69,6 +71,7 @@ describe('The advert question pages getServerSideProps component', () => {
         sectionId: 'testSectionId',
         pageId: 'testPageId',
       },
+      res: { getHeader: () => 'testCSRFToken' },
     });
 
     it('Should fetch the advertSectionPageContent', async () => {
@@ -92,11 +95,10 @@ describe('The advert question pages getServerSideProps component', () => {
           advertId: 'testAdvertId',
           csrfToken: 'testCSRFToken',
           fieldErrors: [],
-          formAction: '/testResolvedURL',
+          formAction: process.env.SUB_PATH + '/testResolvedURL',
           schemeId: 'testSchemeId',
           previousValues: null,
           pageId: 'testPageId',
-          tinyMceApiKey: 'testApiKey',
           ...getDefaultPageContent(),
         },
       });
@@ -138,6 +140,7 @@ describe('The advert question pages getServerSideProps component', () => {
         pageId: 'testPageId',
       },
       req: { method: 'POST' },
+      res: { getHeader: () => 'testCSRFToken' },
     });
 
     it('Should call patchAdvertSectionPage with a question type of "SHORT_ANSWER"', async () => {
@@ -410,10 +413,9 @@ describe('The advert question pages getServerSideProps component', () => {
         props: {
           advertId: 'testAdvertId',
           csrfToken: 'testCSRFToken',
-          formAction: '/testResolvedURL',
+          formAction: process.env.SUB_PATH + '/testResolvedURL',
           schemeId: 'testSchemeId',
           pageId: 'testPageId',
-          tinyMceApiKey: 'testApiKey',
           ...getDefaultPageContent(),
           fieldErrors: [
             {

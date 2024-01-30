@@ -104,7 +104,7 @@ export const getServerSideProps: GetServerSideProps<
         returnToSummaryPage ? 'summary' : 'sex'
       }`,
       defaultChecked: getDefaultChecked(grantBeneficiary),
-      csrfToken: (req as Req).csrfToken() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

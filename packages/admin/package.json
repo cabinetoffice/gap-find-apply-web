@@ -11,53 +11,36 @@
     "lint": "next lint",
     "integration": "yarn cypress run",
     "integration:gui": "yarn run cypress open",
-    "contentful-typescript-codegen": "contentful-typescript-codegen --output @types/generated/contentful.d.ts"
+    "contentful-typescript-codegen": "contentful-typescript-codegen --output @types/generated/contentful.d.ts",
+    "postinstall": "node ./postinstall.js"
   },
   "dependencies": {
-    "@auth0/auth0-react": "^1.4.0",
     "@aws-crypto/client-node": "3.2.0",
     "@contentful/rich-text-from-markdown": "15.16.6",
     "@contentful/rich-text-react-renderer": "^15.12.1",
-    "@elastic/elasticsearch": "7.10",
+    "@tinymce/tinymce-react": "4.3.2",
     "axios": "^0.27.2",
-    "body-parser": "^1.19.2",
-    "contentful": "^9.1.5",
+    "body-parser": "1.20.2",
     "cookie-parser": "^1.4.6",
-    "csurf": "^1.11.0",
     "cypress-recurse": "^1.18.0",
-    "date-fns": "^2.19.0",
-    "dotenv": "^16.0.0",
+    "fs-extra": "11.2.0",
     "gap-web-ui": "*",
     "govuk-frontend": "4.7.0",
-    "gray-matter": "4.0.3",
-    "imap-simple": "^5.1.0",
-    "jsonwebtoken": "^9.0.0",
-    "mailparser": "^3.4.0",
     "moment": "^2.29.4",
-    "moment-timezone": "^0.5.37",
-    "next": "12.3.4",
-    "next-logger": "^3.0.1",
-    "nextjs-basic-auth": "^0.1.3",
-    "nodemailer": "^6.7.3",
+    "next": "13.5.6",
+    "next-logger": "3.0.1",
     "nookies": "^2.5.2",
-    "notifications-node-client": "7.0.0",
     "number-to-words": "^1.2.4",
-    "pg": "^8.7.3",
     "react": "18.2.0",
     "react-device-detect": "^2.1.2",
     "react-dom": "18.2.0",
     "react-gtm-module": "^2.0.11",
-    "react-moment": "^1.1.1",
-    "react-number-format": "^4.9.1"
+    "tinymce": "6.8.2"
   },
   "devDependencies": {
-    "@elastic/elasticsearch-mock": "^1.0.0",
     "@types/cookie": "^0.5.1",
     "@types/cookie-parser": "^1.4.3",
-    "@types/csurf": "^1.11.2",
     "@types/number-to-words": "^1.2.1",
-    "@types/turndown": "^5.0.1",
-    "contentful-management": "^10.0.0",
     "contentful-typescript-codegen": "^3.2.3",
     "cypress": "^9.5.0",
     "cypress-axe": "^0.14.0",
@@ -79,7 +62,7 @@
     ]
   },
   "engines": {
-    "node": "16.14.0",
-    "npm": "8.3.1"
+    "node": "18.17.0",
+    "npm": "9.6.7"
   }
 }

@@ -2,20 +2,26 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import {
   checkIfGrantExistsInContentful,
   getAdvertBySlug,
+  validateGrantWebpageUrl,
 } from '../../services/GrantAdvertService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const slug = req.query.slug as string;
+import { APIGlobalHandler } from '../../utils/apiErrorHandler';
+
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const contentfulSlug = req.query.slug as string;
   const grantWebpageUrl = req.query.grantWebpageUrl as string;
+  const jwt = getJwtFromCookies(req);
+
+  if (contentfulSlug === undefined && grantWebpageUrl == 'grant-is-closed') {
+    const redirectUrl = `${process.env.HOST}/grant-is-closed`;
+    return res.redirect(redirectUrl);
+  }
 
   try {
     const { isAdvertInContentful } = await checkIfGrantExistsInContentful(
-      slug,
-      getJwtFromCookies(req)
+      contentfulSlug,
+      jwt
     );
 
     if (!isAdvertInContentful) {
@@ -30,9 +36,11 @@ export default async function handler(
       grantSchemeId,
       isAdvertInDatabase,
       mandatoryQuestionsDto,
-    } = await getAdvertBySlug(getJwtFromCookies(req), slug);
+      isPublished,
+    } = await getAdvertBySlug(jwt, contentfulSlug);
 
     if (!isAdvertInDatabase && isAdvertInContentful) {
+      await validateGrantWebpageUrl({ grantWebpageUrl, contentfulSlug, jwt });
       res.redirect(grantWebpageUrl);
     }
 
@@ -44,6 +52,10 @@ export default async function handler(
     }
 
     if (version === 2) {
+      if (!isPublished) {
+        redirectToServiceError();
+      }
+
       const mqAreCompleted =
         mandatoryQuestionsDto !== null &&
         mandatoryQuestionsDto.status === 'COMPLETED';
@@ -66,6 +78,11 @@ export default async function handler(
       );
     }
   } catch (e) {
+    console.log(e);
+    redirectToServiceError();
+  }
+
+  function redirectToServiceError() {
     const serviceErrorProps = {
       errorInformation: 'There was an error in the service',
       linkAttributes: {
@@ -74,9 +91,11 @@ export default async function handler(
         linkInformation: '',
       },
     };
-    console.log(e);
     res.redirect(
       `${process.env.HOST}${routes.serviceError(serviceErrorProps)}`
     );
   }
 }
+
+export default (req: NextApiRequest, res: NextApiResponse) =>
+  APIGlobalHandler(req, res, handler);

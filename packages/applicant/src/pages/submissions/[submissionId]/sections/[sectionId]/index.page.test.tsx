@@ -1,13 +1,14 @@
 import { render, screen, within } from '@testing-library/react';
 import { ValidationError } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
-import { parseBody } from 'next/dist/server/api-utils/node';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { parseBody } from '../../../../../utils/parseBody';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import {
   QuestionType,
   SectionData,
   SectionReviewBody,
   getSectionById,
+  isApplicantEligible,
   postHasSectionBeenCompleted,
 } from '../../../../../services/SubmissionService';
 import { createMockRouter } from '../../../../../testUtils/createMockRouter';
@@ -28,7 +29,7 @@ import SectionRecap, {
 
 jest.mock('../../../../../services/SubmissionService');
 jest.mock('../../../../../utils/jwt');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../utils/parseBody');
 jest.mock('next/config', () => () => {
   return {
     serverRuntimeConfig: {
@@ -41,18 +42,21 @@ jest.mock('next/config', () => () => {
   };
 });
 
+const mockParseBody = jest.mocked(parseBody);
+
 const context = {
   params: {
     submissionId: '12345678',
     sectionId: '987654321',
   },
   req: {
-    csrfToken: () => 'testCSRFToken',
     headers: {
       referer: `${process.env.HOST}/test/path`,
     },
   },
-  res: {},
+  res: {
+    getHeader: () => 'testCSRFToken',
+  },
 } as unknown as GetServerSidePropsContext;
 const contextNoToken = {
   params: {
@@ -64,7 +68,9 @@ const contextNoToken = {
       referer: `${process.env.HOST}/test/path`,
     },
   },
-  res: {},
+  res: {
+    getHeader: () => '',
+  },
 } as unknown as GetServerSidePropsContext;
 const shortAnswer: QuestionType = {
   questionId: 'APPLICANT_ORG_NAME',
@@ -157,6 +163,7 @@ describe('getServerSideProps', () => {
   it('should return sections and expected props', async () => {
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
       spiedGetMandatoryQuestionBySubmissionId,
       mockMandatoryQuestionDto
@@ -185,6 +192,7 @@ describe('getServerSideProps', () => {
   it('should return sections and expected props with no csrf Token', async () => {
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
       spiedGetMandatoryQuestionBySubmissionId,
       mockMandatoryQuestionDto
@@ -228,11 +236,14 @@ describe('getServerSideProps', () => {
           referer: `${process.env.HOST}/test/path`,
         },
       },
-      res: {},
+      res: {
+        getHeader: () => '',
+      },
     } as unknown as GetServerSidePropsContext;
 
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
       spiedGetMandatoryQuestionBySubmissionId,
       mockMandatoryQuestionDto
@@ -276,11 +287,14 @@ describe('getServerSideProps', () => {
           referer: `${process.env.HOST}/test/path`,
         },
       },
-      res: {},
+      res: {
+        getHeader: () => '',
+      },
     } as unknown as GetServerSidePropsContext;
 
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
       spiedGetMandatoryQuestionBySubmissionId,
       mockMandatoryQuestionDto
@@ -311,7 +325,6 @@ describe('getServerSideProps', () => {
 
     const req = {
       method: 'POST',
-      csrfToken: () => 'testCSRFToken',
       headers: {
         referer: `${process.env.HOST}/test/path`,
       },
@@ -323,7 +336,9 @@ describe('getServerSideProps', () => {
         sectionId: '987654321',
       },
       req,
-      res: {},
+      res: {
+        getHeader: () => 'testCSRFToken',
+      },
     };
 
     const validationErrors: ValidationError[] = [];
@@ -340,8 +355,9 @@ describe('getServerSideProps', () => {
       },
     };
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
-    (parseBody as jest.Mock).mockResolvedValue(requestBody);
+    mockParseBody.mockResolvedValue(requestBody);
     (postHasSectionBeenCompleted as jest.Mock).mockReturnValue(acceptedValue);
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     const response = (await getServerSideProps(
       ctx as any
     )) as NextGetServerSidePropsResponse;
@@ -353,7 +369,6 @@ describe('getServerSideProps', () => {
 
     const req = {
       method: 'POST',
-      csrfToken: () => 'testCSRFToken',
       headers: {
         referer: `${process.env.HOST}/test/path`,
       },
@@ -365,7 +380,9 @@ describe('getServerSideProps', () => {
         sectionId: '987654321',
       },
       req,
-      res: {},
+      res: {
+        getHeader: () => 'testCSRFToken',
+      },
     };
 
     const validationErrors: ValidationError[] = [
@@ -390,12 +407,27 @@ describe('getServerSideProps', () => {
       },
     };
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
-    (parseBody as jest.Mock).mockResolvedValue(requestBody);
+    mockParseBody.mockResolvedValue(requestBody);
     (postHasSectionBeenCompleted as jest.Mock).mockRejectedValue(rejectedValue);
+    (isApplicantEligible as jest.Mock).mockReturnValue(true);
     const response = (await getServerSideProps(
       ctx as any
     )) as NextGetServerSidePropsResponse;
     expect(response).toEqual(expectedProps);
+  });
+
+  it('Should redirect to sections if eligibility response is set to No', async () => {
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (isApplicantEligible as jest.Mock).mockReturnValue(false);
+
+    const response = await getServerSideProps(context);
+
+    expect(response).toEqual({
+      redirect: {
+        permanent: false,
+        destination: '/submissions/12345678/sections',
+      },
+    });
   });
 });
 
@@ -519,7 +551,7 @@ describe('getSectionUrl', () => {
     const questionId = 'SOME_QUESTION';
 
     const expectedUrl =
-      '/submissions/456/sections/ELIGIBILITY/questions/SOME_QUESTION';
+      '/submissions/456/sections/ELIGIBILITY/questions/SOME_QUESTION?fromSubmissionPage=true&submissionId=456&sectionId=ELIGIBILITY';
 
     expect(
       getQuestionUrl(
@@ -566,11 +598,11 @@ describe('Section Recap Page', () => {
       });
       expect(changeLink).toHaveAttribute(
         'href',
-        '/submissions/12345678/sections/987654321/questions/APPLICANT_AMOUNT'
+        '/submissions/12345678/sections/987654321/questions/APPLICANT_AMOUNT?fromSubmissionPage=true&submissionId=12345678&sectionId=987654321'
       );
       expect(addLink).toHaveAttribute(
         'href',
-        '/submissions/12345678/sections/987654321/questions/APPLICANT_ORG_NAME'
+        '/submissions/12345678/sections/987654321/questions/APPLICANT_ORG_NAME?fromSubmissionPage=true&submissionId=12345678&sectionId=987654321'
       );
     });
 

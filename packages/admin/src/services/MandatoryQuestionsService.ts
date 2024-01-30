@@ -4,12 +4,13 @@ import { axiosSessionConfig } from '../utils/session';
 const BASE_MANDATORY_QUESTIONS_URL =
   process.env.BACKEND_HOST + '/mandatory-questions';
 
-const downloadDueDiligenceData = async (
+const downloadMandatoryQuestionsDueDiligenceData = async (
   sessionCookie: string,
-  schemeId: string
+  schemeId: string,
+  internal: string
 ) => {
   const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/due-diligence/${schemeId}`,
+    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/due-diligence/?isInternal=${internal}`,
     {
       withCredentials: true,
       responseType: 'arraybuffer',
@@ -21,46 +22,20 @@ const downloadDueDiligenceData = async (
   return response;
 };
 
-const spotlightExport = async (sessionCookie: string, schemeId: string) => {
-  const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/spotlight-export/${schemeId}`,
-    {
-      withCredentials: true,
-      responseType: 'arraybuffer',
-      headers: {
-        Cookie: `SESSION=${sessionCookie};`,
-      },
-    }
-  );
-  return response;
-};
-
-const completedMandatoryQuestions = async (
+const hasCompletedMandatoryQuestions = async (
   schemeId: string,
-  sessionCookie: string
+  sessionCookie: string,
+  isInternal: boolean
 ): Promise<boolean> => {
   const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/complete`,
-    axiosSessionConfig(sessionCookie)
-  );
-  return response.data;
-};
-
-const hasSpotlightData = async (
-  schemeId: string,
-  sessionCookie: string
-): Promise<boolean> => {
-  const response = await axios.get(
-    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/spotlight-complete`,
+    `${BASE_MANDATORY_QUESTIONS_URL}/scheme/${schemeId}/is-completed?isInternal=${isInternal}`,
     axiosSessionConfig(sessionCookie)
   );
   return response.data;
 };
 
 export {
-  completedMandatoryQuestions,
-  downloadDueDiligenceData,
-  hasSpotlightData,
+  downloadMandatoryQuestionsDueDiligenceData,
   // eslint-disable-next-line prettier/prettier
-  spotlightExport
+  hasCompletedMandatoryQuestions
 };

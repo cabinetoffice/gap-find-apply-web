@@ -29,7 +29,9 @@ module.exports = {
   /* Add Your Scss File Folder Path Here */
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
-    prependData: `$sub_path: '${process.env.SUB_PATH || '/apply/applicant'}';`,
+    additionalData: `$sub_path: '${
+      process.env.SUB_PATH || '/apply/applicant'
+    }';`,
   },
   basePath: process.env.SUB_PATH || '/apply/applicant',
 };
