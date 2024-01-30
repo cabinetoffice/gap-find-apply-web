@@ -121,13 +121,13 @@ export const getServerSideProps = async ({
     props: {
       fieldErrors: fieldErrors,
       backButtonHref: `/build-application/${applicationId}/dashboard`,
-      formAction: resolvedUrl,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       pageCaption: appForm.applicationName,
       defaultValue:
         body?.displayText === undefined
           ? existingDisplayText || ''
           : body.displayText,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
       applicationStatus: appForm.applicationStatus,
     },
   };

@@ -1,6 +1,7 @@
 name: Applicant CD
 
 on:
+  create:
   push:
     branches:
       - release/**
@@ -9,17 +10,18 @@ on:
       - "packages/applicant/**"
       - "packages/gap-web-ui/**"
       - ".github/workflows/applicant-sandbox-qa-cd.yml"
+      - "Dockerfile"
       - "package.json"
       - "yarn.lock"
 
 jobs:
   test:
+      # Need to check here as create event can't be filtered by branch name: https://github.com/orgs/community/discussions/54860
+      if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release')
+      
       name: Test app
 
       runs-on: ubuntu-latest
-
-      permissions:
-        contents: read
 
       steps:
         - name: Checkout repo
@@ -100,6 +102,9 @@ jobs:
           run: yarn jest --selectProjects gap-web-ui --runInBand --ci
 
   build:
+    # Need to check here as create event can't be filtered by branch name: https://github.com/orgs/community/discussions/54860
+    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release')
+      
     runs-on: ubuntu-latest
 
     outputs:

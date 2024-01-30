@@ -96,14 +96,13 @@ export const getServerSideProps = async ({
   return {
     props: {
       ...pageContent,
-      csrfToken: (req as any).csrfToken?.() || '',
-      formAction: resolvedUrl,
+      csrfToken: res.getHeader('x-csrf-token') as string,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       fieldErrors: fieldErrors || [],
       schemeId: schemeId,
       advertId: advertId,
       previousValues: body || null,
       pageId,
-      tinyMceApiKey: process.env.TINYMCE_API_KEY,
     },
   };
 };
@@ -145,6 +144,7 @@ function createQuestionsBody(
           body[`${question.questionId}-day`] as string,
           body[`${question.questionId}-month`] as string,
           body[`${question.questionId}-year`] as string,
+          body[`${question.questionId}-time`] as string,
         ];
         return {
           multiResponse: dateFields,

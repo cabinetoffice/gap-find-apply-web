@@ -1,8 +1,5 @@
-import {
-  Checkboxes,
-  FlexibleQuestionPageLayout,
-  QuestionPageGetServerSideProps,
-} from 'gap-web-ui';
+import { Checkboxes, FlexibleQuestionPageLayout } from 'gap-web-ui';
+
 import { GetServerSidePropsContext } from 'next';
 import { getUserTokenFromCookies } from '../../../../utils/session';
 import {
@@ -13,6 +10,7 @@ import {
 import Meta from '../../../../components/layout/Meta';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
+import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
 
 type PageBodyResponse = {
   newUserRoles: string | string[];
@@ -20,11 +18,23 @@ type PageBodyResponse = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
+  const APPLICANT_ROLES_IDS = ['1', '2'];
+  const ADMIN_ROLES_IDS = ['3', '4', '5'];
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
-    const findAndApplicantRoles = ['1', '2'];
-    const newUserRoles = findAndApplicantRoles.concat(body.newUserRoles || []);
-    return updateUserRoles(userId, newUserRoles, jwt);
+    let departmentPageUrl = `/super-admin-dashboard/user/${userId}/change-department`;
+    const oldUserRoles = (await getUserById(userId, jwt)).roles.map((role) =>
+      String(role.id)
+    );
+    const newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
+    const userDepartment = (await getUserById(userId, jwt)).department;
+
+    if (hasAdminRole(newUserRoles) && !hasAdminRole(oldUserRoles)) {
+      departmentPageUrl += `?newRoles=${newUserRoles}`;
+      return { userDepartment, newUserRoles, userId, departmentPageUrl };
+    }
+    await updateUserRoles(userId, newUserRoles, jwt);
+    return { userDepartment, newUserRoles, userId, departmentPageUrl };
   }
 
   async function fetchPageData(jwt: string) {
@@ -40,6 +50,24 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     };
   }
 
+  function onSuccessRedirectHref({
+    userDepartment,
+    newUserRoles,
+    userId,
+    departmentPageUrl,
+  }: Awaited<ReturnType<typeof handleRequest>>) {
+    const userHasDepartment = userDepartment !== null;
+    const userBecomingApplicant = !hasAdminRole(newUserRoles);
+
+    return userHasDepartment || userBecomingApplicant
+      ? `/super-admin-dashboard/user/${userId}`
+      : departmentPageUrl;
+  }
+
+  function hasAdminRole(roles: string[]) {
+    return roles.some((role) => ADMIN_ROLES_IDS.includes(role));
+  }
+
   return QuestionPageGetServerSideProps<
     PageBodyResponse,
     Awaited<ReturnType<typeof fetchPageData>>,
@@ -50,7 +78,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     handleRequest,
     jwt: getUserTokenFromCookies(context.req),
     onErrorMessage: 'Failed to update roles, please try again later.',
-    onSuccessRedirectHref: `/super-admin-dashboard/user/${userId}`,
+    onSuccessRedirectHref,
   });
 }
 

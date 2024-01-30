@@ -8,26 +8,15 @@ import { getApplicationFormSummary } from '../../../../services/ApplicationServi
 import { getSummaryFromSession } from '../../../../services/SessionService';
 import { postQuestion } from '../../../../services/QuestionService';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../utils/parseBody';
 import { ValidationError } from 'gap-web-ui';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
 jest.mock('../../../../services/ApplicationService');
 jest.mock('../../../../services/QuestionService');
 jest.mock('../../../../services/SessionService');
-jest.mock('next/dist/server/api-utils/node', () => ({
-  parseBody: jest.fn(),
-}));
+jest.mock('../../../../utils/parseBody');
+
+const mockParseBody = jest.mocked(parseBody);
 
 describe('Question Options', () => {
   const parsedValidationErrors = [
@@ -118,9 +107,7 @@ describe('Question Options', () => {
         />
       );
       screen.getByRole('heading', { name: 'There is a problem' });
-      const topLevelErrors = screen.getAllByRole('link', {
-        name: 'Example error for all options',
-      });
+
       screen.getByRole('link', { name: 'Example error for the second option' });
     });
 
@@ -198,6 +185,7 @@ describe('Question Options', () => {
             method: 'GET',
             cookies: { session_id: 'sessionId', 'gap-test': 'testSessionId' },
           },
+          res: { getHeader: () => 'testCSRFToken' },
         },
         overrides
       );
@@ -297,8 +285,16 @@ describe('Question Options', () => {
     });
 
     describe('When Handing a POST Request', () => {
-      const postContext = (overrides: any = {}) =>
-        getContext(merge({ req: { method: 'POST' } }, overrides));
+      const postContext = (overrides = {}) =>
+        getContext(
+          merge(
+            {
+              req: { method: 'POST' },
+              res: { getHeader: () => 'testCSRFToken' },
+            },
+            overrides
+          )
+        );
 
       const validationErrors = [
         { fieldName: 'options', errorMessage: 'Example error for all options' },
@@ -310,8 +306,8 @@ describe('Question Options', () => {
 
       describe('Add another option', () => {
         it('Should return an array with new empty option when a single option is retrieved from body', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
+          mockParseBody.mockResolvedValue({
+            options: ['option one'],
             'add-another-option': '',
           });
 
@@ -323,10 +319,9 @@ describe('Question Options', () => {
         });
 
         it('Should return options from body if already an array including a new option', async () => {
-          const expectcedOptionsArray = ['option one', 'option two', ''];
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          const expectedOptionsArray = ['option one', 'option two', ''];
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
             'add-another-option': '',
           });
 
@@ -334,15 +329,14 @@ describe('Question Options', () => {
             postContext()
           )) as NextGetServerSidePropsResponse;
 
-          expect(result.props.options).toStrictEqual(expectcedOptionsArray);
+          expect(result.props.options).toStrictEqual(expectedOptionsArray);
         });
       });
 
       describe('Save Question', () => {
         it('Should redirect to dashboard after successfully adding question with options', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
           });
 
           (postQuestion as jest.Mock).mockResolvedValue({});
@@ -360,16 +354,15 @@ describe('Question Options', () => {
 
           expect(result).toStrictEqual({
             redirect: {
-              destination: '/build-application/applicationId/dashboard',
+              destination: '/build-application/applicationId/sectionId',
               statusCode: 302,
             },
           });
         });
 
         it('Should redirect to service error page if saving throws an error', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
           });
 
           (postQuestion as jest.Mock).mockRejectedValue({});
@@ -382,9 +375,8 @@ describe('Question Options', () => {
         });
 
         it('Should return field errors if they are returned from the backend.', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
           });
           (postQuestion as jest.Mock).mockRejectedValue({
             response: { data: { fieldErrors: validationErrors } },
@@ -400,9 +392,8 @@ describe('Question Options', () => {
         });
 
         it('Should parse class level errors into field level errors', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
-            'options[0]': 'option one',
-            'options[1]': 'option two',
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
           });
           (postQuestion as jest.Mock).mockRejectedValue({
             response: { data: { fieldErrors: validationErrors } },

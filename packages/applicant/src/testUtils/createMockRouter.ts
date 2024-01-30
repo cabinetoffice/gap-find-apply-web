@@ -25,5 +25,5 @@ export function createMockRouter(router: Partial<NextRouter>): NextRouter {
     domainLocales: [],
     isPreview: false,
     ...router,
-  };
+  } as NextRouter;
 }

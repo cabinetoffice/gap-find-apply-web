@@ -1,23 +1,20 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { AxiosError } from 'axios';
+import { merge } from 'lodash';
 import { GetServerSidePropsResult, Redirect } from 'next';
-import {
-  getGrantScheme,
-  findApplicationFormFromScheme,
-} from '../../../services/SchemeService';
+import AdvertStatusEnum from '../../../enums/AdvertStatus';
+import { getGrantAdvertPublishInformationBySchemeId } from '../../../services/AdvertPageService';
+import { getAdvertPublishInformationBySchemeIdResponse } from '../../../services/AdvertPageService.d';
 import { getApplicationFormSummary } from '../../../services/ApplicationService';
+import {
+  findApplicationFormFromScheme,
+  getGrantScheme,
+} from '../../../services/SchemeService';
 import { ApplicationFormSummary } from '../../../types/ApplicationForm';
 import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
 import Scheme from '../../../types/Scheme';
 import ViewScheme, { getServerSideProps } from './index.page';
-import { merge } from 'lodash';
-import { getAdvertPublishInformationBySchemeIdResponse } from '../../../services/AdvertPageService.d';
-import {
-  getAdvertStatusBySchemeId,
-  getGrantAdvertPublishInformationBySchemeId,
-} from '../../../services/AdvertPageService';
-import AdvertStatusEnum from '../../../enums/AdvertStatus';
 
 const applicationForm = {
   applicationName: 'Test application name',
@@ -68,6 +65,7 @@ const mockScheme: Scheme = {
   createdDate: '2022-7-12T17:00:00',
   applicationFormId: 'mock-app-id',
   contactEmail: 'test@gmail.com',
+  version: '2',
 };
 
 const mockGrantadvertData: getAdvertPublishInformationBySchemeIdResponse = {
@@ -96,10 +94,6 @@ describe('scheme/[schemeId]', () => {
     const mockedFindApplicationFormFromScheme =
       findApplicationFormFromScheme as jest.MockedFn<
         typeof findApplicationFormFromScheme
-      >;
-    const mockGetAdvertStatusBySchemeId =
-      getAdvertStatusBySchemeId as jest.MockedFn<
-        typeof getAdvertStatusBySchemeId
       >;
     const mockGetAdvertPublishInformationBySchemeId =
       getGrantAdvertPublishInformationBySchemeId as jest.MockedFn<
@@ -401,6 +395,80 @@ describe('scheme/[schemeId]', () => {
       );
 
       expect(screen.queryByTestId('build-advert-component')).toBeFalsy();
+    });
+
+    it('Should render a "Due diligence checks" section for internal applications', () => {
+      render(
+        <ViewScheme
+          scheme={mockScheme}
+          schemeApplicationsData={schemeApplicationsData}
+          enabledAdBuilder={'disabled'}
+          grantAdvertPublishData={mockGrantadvertData}
+        />
+      );
+      screen.getByRole('heading', { name: 'Due diligence checks' });
+      screen.getByText(
+        /you can download details about your applicants to run due diligence checks\. we gather this information as part of the application form for your grant\./i
+      );
+
+      expect(
+        screen.getByRole('button', { name: 'Manage due diligence checks' })
+      ).toHaveAttribute(
+        'href',
+        `/apply/scheme/${mockScheme.schemeId}/manage-due-diligence-checks`
+      );
+    });
+
+    it('Should render a "Due diligence checks" section for external applications', () => {
+      render(
+        <ViewScheme
+          scheme={mockScheme}
+          schemeApplicationsData={null}
+          enabledAdBuilder={'disabled'}
+          grantAdvertPublishData={mockGrantadvertData}
+        />
+      );
+      screen.getByRole('heading', { name: 'Due diligence checks' });
+      screen.getByText(
+        /you can download details about your applicants to run due diligence checks\. we gather this information before applicants start an application form\./i
+      );
+
+      expect(
+        screen.getByRole('button', { name: 'Manage due diligence checks' })
+      ).toHaveAttribute(
+        'href',
+        `/apply/scheme/${mockScheme.schemeId}/manage-due-diligence-checks`
+      );
+    });
+
+    it('Should not render a "Due diligence checks" section V1 schemes', () => {
+      mockScheme.version = '1';
+      render(
+        <ViewScheme
+          scheme={mockScheme}
+          schemeApplicationsData={null}
+          enabledAdBuilder={'disabled'}
+          grantAdvertPublishData={mockGrantadvertData}
+        />
+      );
+      expect(
+        screen.queryByText(/due diligence checks/)
+      ).not.toBeInTheDocument();
+    });
+
+    it('Should not render a "Due diligence checks" section when no advert and no application', () => {
+      mockScheme.version = '2';
+      render(
+        <ViewScheme
+          scheme={mockScheme}
+          schemeApplicationsData={null}
+          enabledAdBuilder={'disabled'}
+          grantAdvertPublishData={{ status: 404 }}
+        />
+      );
+      expect(
+        screen.queryByText(/due diligence checks/)
+      ).not.toBeInTheDocument();
     });
   });
 });

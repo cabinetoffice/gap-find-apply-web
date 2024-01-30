@@ -1,9 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { merge } from 'lodash';
 import { getAdvertStatusBySchemeId } from '../../../../../services/AdvertPageService';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
-import { getAdvertStatusBySchemeIdResponse } from '../../../../../services/AdvertPageService.d';
 import PublishSuccessPage, { getServerSideProps } from './publish-success.page';
 import { GetServerSidePropsContext } from 'next';
 import {
@@ -65,7 +63,9 @@ describe('Advert - Publish Success Page', () => {
         getContext(getDefaultContext)
       )) as NextGetServerSidePropsResponse;
 
-      expect(result.props.backToAccountLink).toStrictEqual('/scheme/schemeId');
+      expect(result.props.backToAccountLink).toStrictEqual(
+        '/scheme/schemeId/advert/advertId/survey'
+      );
       expect(result.props.linkToAdvertInFindAGrant).toStrictEqual(
         `https://some-url.com/grants/contentful-slug`
       );

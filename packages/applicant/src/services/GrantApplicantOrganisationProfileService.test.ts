@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { GrantApplicantOrganisationProfile } from '../models/GrantApplicantOrganisationProfile';
+import { GrantApplicantOrganisationProfile } from '../types/models/GrantApplicantOrganisationProfile';
 import {
   GrantApplicantOrganisationProfileService,
   UpdateOrganisationDetailsDto,

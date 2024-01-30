@@ -60,14 +60,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     req,
     res,
     async (body: any) => {
-      const parsedOptions: string[] = [];
-      Object.keys(body).forEach((key) => {
-        if (key.startsWith('options')) {
-          parsedOptions.push(body[key]);
-        }
-      });
-
-      options = parsedOptions;
+      options = body.options;
 
       if ('add-another-option' in body) {
         options.push('');
@@ -96,7 +89,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     },
     (response: { data: string }) => {
       return response.data === 'QUESTION_SAVED'
-        ? `/build-application/${applicationId}/dashboard`
+        ? `/build-application/${applicationId}/${sectionId}`
         : '';
     },
     getErrorPageParams(applicationId)
@@ -144,7 +137,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       fieldErrors,
       formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/question-options`,
       options,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

@@ -2,20 +2,26 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import {
   checkIfGrantExistsInContentful,
   getAdvertBySlug,
+  validateGrantWebpageUrl,
 } from '../../services/GrantAdvertService';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const slug = req.query.slug as string;
+import { APIGlobalHandler } from '../../utils/apiErrorHandler';
+
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const contentfulSlug = req.query.slug as string;
   const grantWebpageUrl = req.query.grantWebpageUrl as string;
+  const jwt = getJwtFromCookies(req);
+
+  if (contentfulSlug === undefined && grantWebpageUrl == 'grant-is-closed') {
+    const redirectUrl = `${process.env.HOST}/grant-is-closed`;
+    return res.redirect(redirectUrl);
+  }
 
   try {
     const { isAdvertInContentful } = await checkIfGrantExistsInContentful(
-      slug,
-      getJwtFromCookies(req)
+      contentfulSlug,
+      jwt
     );
 
     if (!isAdvertInContentful) {
@@ -30,9 +36,11 @@ export default async function handler(
       grantSchemeId,
       isAdvertInDatabase,
       mandatoryQuestionsDto,
-    } = await getAdvertBySlug(getJwtFromCookies(req), slug);
+      isPublished,
+    } = await getAdvertBySlug(jwt, contentfulSlug);
 
     if (!isAdvertInDatabase && isAdvertInContentful) {
+      await validateGrantWebpageUrl({ grantWebpageUrl, contentfulSlug, jwt });
       res.redirect(grantWebpageUrl);
     }
 
@@ -44,21 +52,37 @@ export default async function handler(
     }
 
     if (version === 2) {
-      //in case the user already answered the mandatory questions, and reapply through find a grant,  redirect to the applications list page
-      if (
-        mandatoryQuestionsDto !== null &&
-        mandatoryQuestionsDto.submissionId !== null
-      ) {
-        res.redirect(`${process.env.HOST}${routes.applications}`);
-      } else {
-        res.redirect(
-          `${process.env.HOST}${routes.mandatoryQuestions.startPage(
-            grantSchemeId.toString()
-          )}`
-        );
+      if (!isPublished) {
+        redirectToServiceError();
       }
+
+      const mqAreCompleted =
+        mandatoryQuestionsDto !== null &&
+        mandatoryQuestionsDto.status === 'COMPLETED';
+
+      const advertIsInternal = mandatoryQuestionsDto?.submissionId !== null;
+
+      if (mqAreCompleted) {
+        const redirectUrl = advertIsInternal
+          ? `${process.env.HOST}${routes.applications}`
+          : externalSubmissionUrl;
+
+        return res.redirect(redirectUrl);
+      }
+
+      //if they are not completed, redirect to the start page
+      return res.redirect(
+        `${process.env.HOST}${routes.mandatoryQuestions.startPage(
+          grantSchemeId.toString()
+        )}`
+      );
     }
   } catch (e) {
+    console.log(e);
+    redirectToServiceError();
+  }
+
+  function redirectToServiceError() {
     const serviceErrorProps = {
       errorInformation: 'There was an error in the service',
       linkAttributes: {
@@ -67,9 +91,11 @@ export default async function handler(
         linkInformation: '',
       },
     };
-    console.log(e);
     res.redirect(
       `${process.env.HOST}${routes.serviceError(serviceErrorProps)}`
     );
   }
 }
+
+export default (req: NextApiRequest, res: NextApiResponse) =>
+  APIGlobalHandler(req, res, handler);

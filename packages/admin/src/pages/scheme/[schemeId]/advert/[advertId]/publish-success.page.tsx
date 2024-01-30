@@ -40,7 +40,7 @@ export const getServerSideProps = async ({
 
   return {
     props: {
-      backToAccountLink: `/scheme/${schemeId}`,
+      backToAccountLink: `/scheme/${schemeId}/advert/${advertId}/survey`,
       linkToAdvertInFindAGrant: `${process.env.FIND_A_GRANT_URL}/grants/${grantAdvertData?.data?.contentfulSlug}`,
     },
   };

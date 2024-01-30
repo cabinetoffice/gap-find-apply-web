@@ -30,10 +30,11 @@ const ServiceErrorPage = ({ serviceError }: ServiceErrorProps) => {
               <p className="govuk-body">{serviceError.errorInformation}</p>
               {serviceError.linkAttributes && (
                 <p className="govuk-body">
-                  <Link href={serviceError.linkAttributes.href}>
-                    <a className="govuk-link">
-                      {serviceError.linkAttributes.linkText}
-                    </a>
+                  <Link
+                    href={serviceError.linkAttributes.href}
+                    className="govuk-link"
+                  >
+                    {serviceError.linkAttributes.linkText}
                   </Link>{' '}
                   {serviceError.linkAttributes.linkInformation}
                 </p>

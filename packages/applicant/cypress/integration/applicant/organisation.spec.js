@@ -39,11 +39,11 @@ describe('Manage your organisation details', () => {
       'Type of organisation'
     );
     cy.get(
-      '[data-cy="cy-organisation-details-Charity commission number"]'
-    ).should('have.text', 'Charity commission number');
-    cy.get('[data-cy="cy-organisation-details-Companies house number"]').should(
+      '[data-cy="cy-organisation-details-Charity Commission number"]'
+    ).should('have.text', 'Charity Commission number');
+    cy.get('[data-cy="cy-organisation-details-Companies House number"]').should(
       'have.text',
-      'Companies house number'
+      'Companies House number'
     );
   });
 
@@ -203,7 +203,7 @@ describe('Manage your organisation details', () => {
   it('should be able to edit charity commission number', () => {
     // Check initial charity commission number values
     cy.get(
-      '[data-cy="cy-organisation-value-Charity commission number"]'
+      '[data-cy="cy-organisation-value-Charity Commission number"]'
     ).should('have.text', '12345678');
 
     // Implement charity commission number update
@@ -248,7 +248,7 @@ describe('Manage your organisation details', () => {
 
     checkErrorBanner(
       'charityCommissionNumber',
-      'Charity commission number must be 250 characters or less',
+      'Charity Commission number must be 250 characters or less',
       true
     );
 
@@ -262,7 +262,7 @@ describe('Manage your organisation details', () => {
     cy.url().should('include', organisationUrl);
 
     cy.get(
-      '[data-cy="cy-organisation-value-Charity commission number"]'
+      '[data-cy="cy-organisation-value-Charity Commission number"]'
     ).should('have.text', '87654321');
 
     // Check user can cancel actions
@@ -278,7 +278,7 @@ describe('Manage your organisation details', () => {
     cy.url().should('include', organisationUrl);
 
     cy.get(
-      '[data-cy="cy-organisation-value-Charity commission number"]'
+      '[data-cy="cy-organisation-value-Charity Commission number"]'
     ).should('have.text', '87654321');
 
     // Check if user can add as well as update charity commission number field
@@ -290,7 +290,7 @@ describe('Manage your organisation details', () => {
     cy.get('[data-cy="cy-button-submit-Save"]').click();
 
     cy.get(
-      '[data-cy="cy-organisation-value-Charity commission number"]'
+      '[data-cy="cy-organisation-value-Charity Commission number"]'
     ).should('have.text', '-');
     cy.get(
       '[data-cy=cy-organisation-details-navigation-organisationCharity]'
@@ -299,7 +299,7 @@ describe('Manage your organisation details', () => {
 
   it('should be able to edit companies house number', () => {
     // Check initial companies house number values
-    cy.get('[data-cy="cy-organisation-value-Companies house number"]').should(
+    cy.get('[data-cy="cy-organisation-value-Companies House number"]').should(
       'have.text',
       '12345678'
     );
@@ -348,7 +348,7 @@ describe('Manage your organisation details', () => {
 
     checkErrorBanner(
       'companiesHouseNumber',
-      'Companies house number must be 250 characters or less',
+      'Companies House number must be 250 characters or less',
       true
     );
 
@@ -361,7 +361,7 @@ describe('Manage your organisation details', () => {
     // Assert companies house number update has been successful
     cy.url().should('include', organisationUrl);
 
-    cy.get('[data-cy="cy-organisation-value-Companies house number"]').should(
+    cy.get('[data-cy="cy-organisation-value-Companies House number"]').should(
       'have.text',
       '87654321'
     );
@@ -378,7 +378,7 @@ describe('Manage your organisation details', () => {
 
     cy.url().should('include', organisationUrl);
 
-    cy.get('[data-cy="cy-organisation-value-Companies house number"]').should(
+    cy.get('[data-cy="cy-organisation-value-Companies House number"]').should(
       'have.text',
       '87654321'
     );
@@ -391,7 +391,7 @@ describe('Manage your organisation details', () => {
     cy.get('[data-cy=cy-companiesHouseNumber-text-input]').clear();
     cy.get('[data-cy="cy-button-submit-Save"]').click();
 
-    cy.get('[data-cy="cy-organisation-value-Companies house number"]').should(
+    cy.get('[data-cy="cy-organisation-value-Companies House number"]').should(
       'have.text',
       '-'
     );

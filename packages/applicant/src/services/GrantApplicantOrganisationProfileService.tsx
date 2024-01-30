@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GrantApplicantOrganisationProfile } from '../models/GrantApplicantOrganisationProfile';
+import { GrantApplicantOrganisationProfile } from '../types/models/GrantApplicantOrganisationProfile';
 import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
 
@@ -44,6 +44,12 @@ export class GrantApplicantOrganisationProfileService {
       axiosConfig(jwt)
     );
 
+    return data;
+  }
+
+  public async isOrgProfileComplete(jwt: string) {
+    const url = `${this.BACKEND_HOST}/grant-applicant-organisation-profile/isComplete`;
+    const { data } = await axios.get<boolean>(url, axiosConfig(jwt));
     return data;
   }
 

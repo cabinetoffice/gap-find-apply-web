@@ -2,14 +2,16 @@ import React from 'react';
 import styles from './Table.module.scss';
 
 export interface TableProps {
-  caption?: string;
+  caption?: string | JSX.Element;
   captionSize?: 's' | 'm' | 'l' | 'xl';
+  captionClassName?: string;
   forceCellTopBorder?: boolean;
   tHeadColumns: TheadColumn[]; //needed for accessibility
   rows: Row[];
   tableAttributes?: Record<string, unknown>;
   tableClassName?: string;
   alignLastCellToTheRight?: boolean;
+  disableBottomRowBorder?: boolean;
 }
 
 export interface TheadColumn {
@@ -34,17 +36,20 @@ export interface Row {
 interface Cell {
   content: string | number | JSX.Element;
   cellAttributes?: Record<string, unknown>;
+  className?: string;
 }
 
 const Table = ({
   caption,
   captionSize,
+  captionClassName,
   forceCellTopBorder,
   tHeadColumns,
   rows,
   tableAttributes,
   tableClassName,
   alignLastCellToTheRight = false,
+  disableBottomRowBorder = false,
 }: TableProps) => {
   return (
     <table className={`govuk-table ${tableClassName}`} {...tableAttributes}>
@@ -52,7 +57,7 @@ const Table = ({
         <caption
           className={`govuk-table__caption${
             captionSize ? ` govuk-table__caption--${captionSize}` : ''
-          }`}
+          } ${captionClassName}`}
           data-testid="table-caption"
           data-cy={`cy-table-caption-${caption}`}
         >
@@ -104,6 +109,10 @@ const Table = ({
                   className={`govuk-table__cell${
                     tHeadColumns[cellIndex].isNumber
                       ? ' govuk-table__cell--numeric'
+                      : ''
+                  } ${cell.className ?? ''} ${
+                    disableBottomRowBorder && rowIndex === rows.length - 1
+                      ? ' ' + styles['disable-bottom-row-border']
                       : ''
                   }${
                     forceCellTopBorder

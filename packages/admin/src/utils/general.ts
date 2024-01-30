@@ -31,9 +31,33 @@ type GetLoginUrlOptions = {
 const getLoginUrl = (options?: GetLoginUrlOptions) => {
   const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
   if (options?.redirectToApplicant && oneLoginEnabled) {
-    return `${process.env.USER_SERVICE_URL}/v2/login?redirectUrl=${process.env.APPLICANT_DOMAIN}/api/isNewApplicant`;
+    return `${process.env.USER_SERVICE_URL}/v2/login?redirectUrl=${process.env.APPLICANT_DOMAIN}/dashboard`;
   }
-  return oneLoginEnabled ? process.env.V2_LOGIN_URL : process.env.LOGIN_URL;
+  return oneLoginEnabled
+    ? (process.env.V2_LOGIN_URL as string)
+    : (process.env.LOGIN_URL as string);
 };
 
-export { isJSEnabled, downloadFile, getObjEntriesByKeySubstr, getLoginUrl };
+const validateRedirectUrl = (redirectUrl: string) => {
+  const isInternalRedirect = redirectUrl.startsWith('/');
+  if (isInternalRedirect) return;
+
+  const url = new URL(redirectUrl);
+
+  const redirectUrlHost = (url.protocol + '//' + url.host).replace('www.', '');
+
+  const isValid = redirectUrlHost.startsWith(process.env.FIND_A_GRANT_URL);
+
+  if (!isValid) {
+    console.error('admin redirect was invalid: ', { redirectUrl });
+    throw new Error('Invalid redirect URL');
+  }
+};
+
+export {
+  validateRedirectUrl,
+  isJSEnabled,
+  downloadFile,
+  getObjEntriesByKeySubstr,
+  getLoginUrl,
+};

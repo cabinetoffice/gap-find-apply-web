@@ -1,4 +1,3 @@
-import { resolve } from 'styled-jsx/css';
 import CallServiceMethod from './callServiceMethod';
 import {
   ValidationError,
@@ -32,22 +31,24 @@ export default async function QuestionPageGetServerSideProps<
   K extends FetchPageData,
   V
 >(props: QuestionPageGetServerSidePropsType<T, K, V>) {
-  const { context, fetchPageData, jwt } = props;
-  const { req, resolvedUrl } = context;
+  const { context, fetchPageData, jwt, fetchPageDataErrorHandler } = props;
+  const { res, resolvedUrl } = context;
 
   const pageData = await fetchAndHandlePageData(
     fetchPageData,
     jwt,
-    resolvedUrl
+    resolvedUrl,
+    fetchPageDataErrorHandler
   );
 
-  if ('redirect' in pageData) {
+  if (pageData instanceof Object && 'redirect' in pageData) {
     return pageData as NextRedirect;
   }
 
   const postResponse = await postPagesResult({
     ...props,
     ...context,
+    pageData,
   });
 
   if (postResponse && 'redirect' in postResponse) {
@@ -58,8 +59,8 @@ export default async function QuestionPageGetServerSideProps<
 
   return {
     props: {
-      csrfToken: (req as any).csrfToken?.() || ('' as string),
-      formAction: resolvedUrl,
+      csrfToken: res.getHeader('x-csrf-token') as string,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       fieldErrors,
       pageData,
       previousValues,
@@ -70,14 +71,16 @@ export default async function QuestionPageGetServerSideProps<
 async function fetchAndHandlePageData<K extends FetchPageData>(
   fetchPageData: (jwt: string) => Promise<K>,
   jwt: string,
-  resolvedUrl: string
+  resolvedUrl: string,
+  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect
 ) {
   try {
     return await fetchPageData(jwt);
   } catch (err: any) {
+    if (fetchPageDataErrorHandler) {
+      return fetchPageDataErrorHandler(err);
+    }
     if (err?.response?.data?.code) {
-      console.log('hello');
-      console.log(resolvedUrl);
       return generateRedirect(
         `/error-page/code/${err.response.data.code}?href=${resolvedUrl}`
       );
@@ -89,21 +92,28 @@ async function fetchAndHandlePageData<K extends FetchPageData>(
   }
 }
 
-async function postPagesResult<T extends PageBodyResponse, V>({
+async function postPagesResult<
+  T extends PageBodyResponse,
+  K extends FetchPageData,
+  V
+>({
   req,
   res,
   handleRequest,
+  fetchPageDataErrorHandler,
   jwt,
   onSuccessRedirectHref,
   onErrorMessage,
   resolvedUrl,
-}: PostPageResultProps<T, V>) {
+  pageData,
+}: PostPageResultProps<T, K, V>) {
   return CallServiceMethod<T, V>(
     req,
     res,
-    (body) => handleRequest(body, jwt),
+    (body) => handleRequest(body, jwt, pageData),
     onSuccessRedirectHref,
-    generateServiceErrorProps(onErrorMessage, resolvedUrl)
+    generateServiceErrorProps(onErrorMessage, resolvedUrl),
+    fetchPageDataErrorHandler
   );
 }
 

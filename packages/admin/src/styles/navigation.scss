@@ -25,6 +25,10 @@ $navigation-height: 50px;
   line-height: $navigation-height;
 }
 
+.super-admin-navbar .app-navigation__list-item {
+  padding: 0 govuk-spacing(2);
+}
+
 .app-navigation__list-item--current {
   border-bottom: 4px solid govuk-colour('blue');
 }

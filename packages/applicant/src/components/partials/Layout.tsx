@@ -2,6 +2,8 @@ import getConfig from 'next/config';
 import { FC, ReactNode, useEffect } from 'react';
 import Footer from './Footer';
 import Header from './Header';
+import { NavigationBar } from './navigation';
+import { useAuth } from '../../pages/_app.page';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -18,11 +20,8 @@ interface LayoutPropsType {
   isUserLoggedIn?: boolean;
 }
 
-const Layout: FC<LayoutPropsType> = ({
-  children,
-  backBtnUrl = null,
-  isUserLoggedIn,
-}) => {
+const Layout: FC<LayoutPropsType> = ({ children, backBtnUrl = null }) => {
+  const { isUserLoggedIn, oneLoginEnabledInFind } = useAuth();
   useEffect(() => {
     const GOVUKFrontend = window.GOVUKFrontend;
     if (typeof GOVUKFrontend !== 'undefined') {
@@ -32,7 +31,11 @@ const Layout: FC<LayoutPropsType> = ({
 
   return (
     <>
-      <Header isUserLoggedIn={isUserLoggedIn} />
+      <Header
+        oneLoginEnabledInFind={oneLoginEnabledInFind}
+        isUserLoggedIn={isUserLoggedIn}
+      />
+      {isUserLoggedIn && oneLoginEnabledInFind === 'true' && <NavigationBar />}
       <div className="govuk-width-container">
         {backBtnUrl && (
           <a

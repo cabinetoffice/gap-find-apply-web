@@ -3,13 +3,13 @@ import { render, screen } from '@testing-library/react';
 import { ValidationError } from 'gap-web-ui';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext, Redirect } from 'next';
-import { parseBody } from 'next/dist/server/api-utils/node';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import React from 'react';
 import {
   getGrantBeneficiary,
   postGrantBeneficiaryResponse,
 } from '../../../../services/GrantBeneficiaryService';
+import { parseBody } from '../../../../utils/parseBody';
 import { createMockRouter } from '../../../../testUtils/createMockRouter';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
 import { getJwtFromCookies } from '../../../../utils/jwt';
@@ -18,9 +18,11 @@ import EqualityAndDiversityPage, {
   SubmissionConfirmationProps,
 } from './index.page';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../utils/parseBody');
 jest.mock('../../../../services/GrantBeneficiaryService');
 jest.mock('../../../../utils/jwt');
+
+const mockParseBody = jest.mocked(parseBody);
 
 const renderWithRouter = (ui: React.ReactNode) => {
   render(
@@ -97,8 +99,11 @@ describe('Equality and diversity start page', () => {
           req: {
             method: 'GET',
           },
+          res: {
+            getHeader: () => 'testCSRFToken',
+          },
           resolvedUrl: '/testResolvedURL',
-        } as GetServerSidePropsContext,
+        } as unknown as GetServerSidePropsContext,
         overrides
       );
 
@@ -194,7 +199,7 @@ describe('Equality and diversity start page', () => {
     describe('when handling a POST request', () => {
       beforeEach(() => {
         jest.resetAllMocks();
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           hasProvidedAdditionalAnswers: 'Yes',
         });
         (postGrantBeneficiaryResponse as jest.Mock).mockResolvedValue(
@@ -220,7 +225,7 @@ describe('Equality and diversity start page', () => {
         const rejectedValue = {
           response: { data: { errors: validationErrors } },
         };
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           hasProvidedAdditionalAnswers: null,
         });
         (postGrantBeneficiaryResponse as jest.Mock).mockRejectedValue(
@@ -233,7 +238,7 @@ describe('Equality and diversity start page', () => {
             formAction: '/testResolvedURL',
             defaultChecked:
               'Yes, answer the equality questions (takes 2 minutes)',
-            csrfToken: '',
+            csrfToken: 'testCSRFToken',
             fieldErrors: validationErrors,
           },
         });
@@ -256,7 +261,7 @@ describe('Equality and diversity start page', () => {
       });
 
       it('Should call postGrantBeneficiaryResponse when the response is "No"', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           hasProvidedAdditionalAnswers: 'No',
         });
 
@@ -308,7 +313,7 @@ describe('Equality and diversity start page', () => {
       });
 
       it('Should redirect to the submission confirmation page when the response is "No"', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           hasProvidedAdditionalAnswers: 'No',
         });
 

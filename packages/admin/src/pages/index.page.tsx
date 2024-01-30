@@ -1,15 +1,26 @@
 import React from 'react';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext, NextApiResponse } from 'next';
 import { authenticateUser } from '../services/AuthService';
 import { fetchDataOrGetRedirect } from '../utils/fetchDataOrGetRedirect';
+import { getLoginUrl, validateRedirectUrl } from '../utils/general';
 
 export const getServerSideProps = async ({
   req,
   res,
   query,
 }: GetServerSidePropsContext) => {
-  const cookieValue = req.cookies[process.env.JWT_COOKIE_NAME!];
+  const cookieValue = req.cookies[process.env.JWT_COOKIE_NAME];
   const redirectUrl = query?.redirectUrl as string | undefined;
+  try {
+    if (redirectUrl) validateRedirectUrl(redirectUrl);
+  } catch (err: unknown) {
+    return {
+      redirect: {
+        destination: getLoginUrl(),
+        permanent: false,
+      },
+    };
+  }
 
   const response = await fetchDataOrGetRedirect(async () =>
     authenticateUser(cookieValue)

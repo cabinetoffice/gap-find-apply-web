@@ -5,7 +5,7 @@ import { GetServerSidePropsContext, Redirect } from 'next';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
 import DeleteQuestion, { getServerSideProps } from './delete-confirmation.page';
 import { deleteQuestion } from '../../../../../services/QuestionService';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../../utils/parseBody';
 
 jest.mock('next/config', () => () => {
   return {
@@ -18,7 +18,7 @@ jest.mock('next/config', () => () => {
     },
   };
 });
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/QuestionService');
 
 const APPLICATION_ID = 'testApplicationId';
@@ -30,6 +30,7 @@ const customProps = {
   backButtonHref: '/dashboard',
   formAction: '',
   defaultValue: '',
+  csrfToken: '',
 };
 
 const expectedRedirectObject = {
@@ -41,7 +42,7 @@ const expectedRedirectObject = {
 
 const component = <DeleteQuestion {...customProps} />;
 
-const getContext = (overrides: any = {}) =>
+const getContext = (overrides = {}) =>
   merge(
     {
       params: {
@@ -52,10 +53,11 @@ const getContext = (overrides: any = {}) =>
       req: {
         method: 'GET',
         cookies: { 'gap-test': 'testSessionId' },
-      } as any,
+      },
+      res: { getHeader: () => 'testCSRFToken' },
       resolvedUrl:
         '/build-application/testApplicationId/testSectionId/testQuestionId/delete-confirmation',
-    } as GetServerSidePropsContext,
+    } as unknown as GetServerSidePropsContext,
     overrides
   );
 
@@ -126,7 +128,8 @@ describe('Delete question page', () => {
       )) as NextGetServerSidePropsResponse;
 
       expect(value.props.formAction).toStrictEqual(
-        `/build-application/${APPLICATION_ID}/${SECTION_ID}/${QUESTION_ID}/delete-confirmation`
+        process.env.SUB_PATH +
+          `/build-application/${APPLICATION_ID}/${SECTION_ID}/${QUESTION_ID}/delete-confirmation`
       );
     });
 

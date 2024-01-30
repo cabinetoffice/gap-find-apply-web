@@ -85,10 +85,11 @@ export const getServerSideProps: GetServerSideProps = async ({
     async (body: any) => {
       options = Object.keys(body).reduce((array, key) => {
         if (key.startsWith('options')) {
-          array.push(body[key]);
+          array.push(...body[key]);
         }
+
         if (key.startsWith('delete_')) {
-          const deleteOptionIndex = array.indexOf(body[key.split('_')[1]]);
+          const deleteOptionIndex = Number(key.split('_')[1]);
           array.splice(deleteOptionIndex, 1);
         }
         return array;
@@ -170,7 +171,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       fieldErrors,
       cancelChangesHref: `/build-application/${applicationId}/${sectionId}/${questionId}/preview`,
       options,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };
@@ -222,7 +223,7 @@ const QuestionOptions = ({
               >
                 {options.length > 2 && (
                   <button
-                    name={`delete_options[${index}]`}
+                    name={`delete_${index}`}
                     className="button--tertiary govuk-!-margin-left-3"
                     aria-label={`Delete the ${toWordsOrdinal(
                       index + 1

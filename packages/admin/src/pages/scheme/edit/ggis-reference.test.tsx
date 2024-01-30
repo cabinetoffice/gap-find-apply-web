@@ -43,9 +43,9 @@ const mockGetSchemeReturn = {
 const getServersidePropsReturn = {
   fieldErrors: [],
   backButtonHref: '/scheme/someId',
-  formAction: '/testFormAction',
+  formAction: process.env.SUB_PATH + '/testFormAction',
   defaultValue: null,
-  csrfToken: '',
+  csrfToken: 'testCSRFToken',
 };
 
 const component = <SchemeGGiSReference {...mockSchemeParams} />;
@@ -65,7 +65,8 @@ describe('Scheme ggis reference page', () => {
       const context = {
         query: {} as ParsedUrlQuery,
         req: { method: 'GET' },
-      } as GetServerSidePropsContext;
+        res: { getHeader: jest.fn() },
+      } as unknown as GetServerSidePropsContext;
 
       const value = (await getServerSideProps(
         context
@@ -85,8 +86,9 @@ describe('Scheme ggis reference page', () => {
         const context = {
           query: { schemeId: 'someId' } as ParsedUrlQuery,
           req: { method: 'GET' },
+          res: { getHeader: () => 'testCSRFToken' },
           resolvedUrl: '/testFormAction',
-        } as GetServerSidePropsContext;
+        } as unknown as GetServerSidePropsContext;
 
         mockedgetScheme.mockResolvedValue(mockGetSchemeReturn);
         const value = (await getServerSideProps(context)) as {

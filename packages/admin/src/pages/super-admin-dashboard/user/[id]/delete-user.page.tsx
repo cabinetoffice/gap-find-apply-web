@@ -50,8 +50,11 @@ const DeleteUserPage = ({
 }: InferProps<typeof getServerSideProps>) => (
   <>
     <Meta title="Delete User" />
-    <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
-      <a className="govuk-back-link">Back</a>
+    <Link
+      href={`/super-admin-dashboard/user/${pageData.userId}`}
+      className="govuk-back-link"
+    >
+      Back
     </Link>
     <div className="govuk-!-padding-top-7">
       <FlexibleQuestionPageLayout
@@ -77,8 +80,11 @@ const DeleteUserPage = ({
               Delete user
             </button>
           )}
-          <Link href={`/super-admin-dashboard/user/${pageData.userId}`}>
-            <a className="govuk-link">Cancel</a>
+          <Link
+            href={`/super-admin-dashboard/user/${pageData.userId}`}
+            className="govuk-link"
+          >
+            Cancel
           </Link>
         </div>
       </FlexibleQuestionPageLayout>

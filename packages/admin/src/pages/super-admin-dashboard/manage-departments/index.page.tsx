@@ -65,7 +65,7 @@ const getDepartmentRow = ({ id, name, ggisID = '' }: Department): Row => ({
   key: name,
   value: ggisID,
   action: (
-    <div className={styles['float-left-sm']}>
+    <div className={styles['text-align-left']}>
       <CustomLink href={`/super-admin-dashboard/manage-departments/edit/${id}`}>
         Edit
       </CustomLink>

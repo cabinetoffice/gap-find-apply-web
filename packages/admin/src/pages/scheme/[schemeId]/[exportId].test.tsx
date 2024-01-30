@@ -40,10 +40,12 @@ const getContext = (overrides: any = {}) =>
         method: 'GET',
         cookies: { 'gap-test': 'testSessionId' },
         headers: { referer: '/testRefererPage' },
-        csrfToken: () => 'testCSRFToken',
       } as any,
+      res: {
+        getHeader: () => 'testCSRFToken',
+      },
       resolvedUrl: '/testResolvedURL',
-    } as GetServerSidePropsContext,
+    } as unknown as GetServerSidePropsContext,
     overrides
   );
 
@@ -224,7 +226,9 @@ describe.skip('Completed submissions page', () => {
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(result.props.formAction).toStrictEqual('/testResolvedURL');
+        expect(result.props.formAction).toStrictEqual(
+          process.env.SUB_PATH + '/testResolvedURL'
+        );
       });
 
       it('Should return scheme name', async () => {

@@ -92,9 +92,9 @@ export const getServerSideProps = async ({
         schemeId,
         advertId,
         futurePublishingDate,
-        resolvedUrl,
+        resolvedUrl: process.env.SUB_PATH + resolvedUrl,
         status,
-        csrfToken: (req as any).csrfToken?.() || '',
+        csrfToken: res.getHeader('x-csrf-token') as string,
         grantAdvertData,
       },
     };
@@ -124,7 +124,7 @@ const checkIfOpeningDateIsInFuture = (
       hour,
       minute,
     ]);
-    return openingDate.isAfter(moment().hour(23).minute(59));
+    return openingDate.isAfter(moment());
   } else {
     return false;
   }

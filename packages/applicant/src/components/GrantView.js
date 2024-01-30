@@ -19,16 +19,16 @@ const GrantView = () => {
             </strong>
             <span className="govuk-phase-banner__text">
               This is a new service – your{' '}
-              <Link href="/">
-                <a className="govuk-link">feedback</a>
+              <Link href="/" className="govuk-link">
+                feedback
               </Link>{' '}
               will help us to improve it.
             </span>
           </p>
         </div>
 
-        <Link href="/">
-          <a className="govuk-back-link">Back</a>
+        <Link href="/" className="govuk-back-link">
+          Back
         </Link>
 
         <main

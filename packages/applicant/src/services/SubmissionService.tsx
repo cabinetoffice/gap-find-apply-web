@@ -102,7 +102,7 @@ export async function postDocumentResponse(
 export async function createSubmission(applicationId: string, jwt: string) {
   const { data } = await axios.post<CreateSubmissionResponse>(
     `${BACKEND_HOST}/submissions/createSubmission/${applicationId}`,
-    applicationId,
+    null,
     axiosConfig(jwt)
   );
 
@@ -175,12 +175,30 @@ export async function getNextNavigation(
   return data;
 }
 
+export async function downloadSummary(submissionId, jwt) {
+  return await axios.get(
+    `${BACKEND_HOST}/submissions/${submissionId}/download-summary`,
+    { ...axiosConfig(jwt), responseType: 'arraybuffer' }
+  );
+}
+
+export async function isApplicantEligible(
+  submissionId: string,
+  jwt: string
+): Promise<boolean> {
+  const { data } = await axios.get<boolean>(
+    `${BACKEND_HOST}/submissions/${submissionId}/isApplicantEligible`,
+    axiosConfig(jwt)
+  );
+  return data;
+}
+
 export interface SectionReviewBody {
   isComplete: boolean;
 }
 
 export interface CreateSubmissionResponse {
-  submissionCreated: string;
+  submissionCreated: boolean;
   submissionId: string;
   message?: string;
 }
@@ -205,6 +223,7 @@ export interface QuestionPostBody {
   response?: string;
   multiResponse?: string[];
   attachment?: File;
+  shouldUpdateSectionStatus: boolean;
 }
 export interface ApplicationDetailsInterface {
   grantSchemeId: string;
@@ -219,6 +238,7 @@ export interface SectionData {
   sectionId: string;
   sectionTitle: string;
   sectionStatus: string;
+  questionIds: string[];
   questions: QuestionType[];
 }
 

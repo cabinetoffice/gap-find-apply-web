@@ -79,7 +79,7 @@ describe('Date component', () => {
 
     expect(term[0]).toHaveTextContent(`${question.title}`);
     expect(term[0]).toHaveTextContent(`Advert opening date`);
-    expect(definition[0]).toHaveTextContent('5 November 2099, 10:00am');
+    expect(definition[0]).toHaveTextContent('5 November 2099, 10:00 AM');
     expect(links[0]).toHaveTextContent('Change');
     expect(links[0]).toHaveAccessibleName(
       'Change response for Grant Application Open date question'

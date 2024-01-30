@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { GetServerSidePropsContext } from 'next';
 import { DescriptionListProps } from '../../components/description-list/DescriptionList';
-import { GrantApplicant } from '../../models/GrantApplicant';
+import { GrantApplicant } from '../../types/models/GrantApplicant';
 import { getApplicationsListById } from '../../services/ApplicationService';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { getJwtFromCookies } from '../../utils/jwt';
@@ -115,6 +115,7 @@ describe('getServerSideProps', () => {
 
     expectObjectEquals(result, {
       props: {
+        organisationType: 'Registered Charity',
         descriptionList,
         hasApplications: true,
         bannerProps: null,
@@ -139,6 +140,7 @@ describe('getServerSideProps', () => {
 
     expectObjectEquals(result, {
       props: {
+        organisationType: 'Registered Charity',
         descriptionList: {
           data: [
             { term: 'Email', detail: MOCK_GRANT_APPLICANT_NO_LEGAL_NAME.email },
@@ -220,7 +222,7 @@ describe('getServerSideProps', () => {
     const mandatoryQuestionsEnabledBackup =
       process.env.MANDATORY_QUESTIONS_ENABLED;
     process.env.MANDATORY_QUESTIONS_ENABLED = 'false';
-    const result = await getServerSideProps(
+    await getServerSideProps(
       getContext(getDefaultContext, {
         req: {
           cookies: {

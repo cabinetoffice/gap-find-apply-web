@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GrantBeneficiary } from '../models/GrantBeneficiary';
+import { GrantBeneficiary } from '../types/models/GrantBeneficiary';
 import {
   getGrantBeneficiary,
   postGrantBeneficiaryResponse,

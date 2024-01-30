@@ -4,25 +4,18 @@ import { GetServerSidePropsContext } from 'next';
 import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
 import { merge } from 'lodash';
 import axios from 'axios';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../utils/parseBody';
 import { getApplicationFormSummary } from '../../../services/ApplicationService';
+import { postSection } from '../../../services/SectionService';
 import { ValidationError } from 'gap-web-ui';
 import SectionNameContent, { getServerSideProps } from './section-name.page';
 
 jest.mock('axios');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../utils/parseBody');
 jest.mock('../../../services/ApplicationService');
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
+jest.mock('../../../services/SectionService');
+
+const mockedPostSection = jest.mocked(postSection);
 
 const APPLICATION_NAME = 'Test Application Name';
 const APPLICATION_ID = 123;
@@ -80,7 +73,7 @@ describe('Section name page', () => {
 });
 
 describe('getServerSideProps', () => {
-  const getContext = (overrides: any = {}) =>
+  const getContext = (overrides = {}) =>
     merge(
       {
         params: { applicationId: APPLICATION_ID.toLocaleString() } as Record<
@@ -90,8 +83,9 @@ describe('getServerSideProps', () => {
         req: {
           method: 'GET',
           cookies: { 'gap-test': 'testSessionId' },
-        } as any,
-      } as GetServerSidePropsContext,
+        },
+        res: { getHeader: () => 'testCSRFToken' },
+      } as unknown as GetServerSidePropsContext,
       overrides
     );
 
@@ -175,20 +169,22 @@ describe('getServerSideProps', () => {
       );
 
     it('Should redirect to the dashboard when posting succeeds', async () => {
+      mockedPostSection.mockResolvedValue('testSectionId');
+
       const result = (await getServerSideProps(
         getPostContext({})
       )) as NextGetServerSidePropsResponse;
 
       expect(result).toStrictEqual({
         redirect: {
-          destination: `/build-application/${APPLICATION_ID}/dashboard`,
+          destination: `/build-application/${APPLICATION_ID}/testSectionId`,
           statusCode: 302,
         },
       });
     });
 
     it('Should redirect to the error service page when posting fails (and it is not a validation error)', async () => {
-      (axios.post as jest.Mock).mockRejectedValue({});
+      mockedPostSection.mockRejectedValue('');
 
       const result = (await getServerSideProps(
         getPostContext({})
@@ -206,7 +202,7 @@ describe('getServerSideProps', () => {
       ] as ValidationError[];
 
       beforeEach(() => {
-        (axios.post as jest.Mock).mockRejectedValue({
+        mockedPostSection.mockRejectedValue({
           response: { data: { fieldErrors: validationErrors } },
         });
       });
@@ -243,7 +239,8 @@ describe('getServerSideProps', () => {
         )) as NextGetServerSidePropsResponse;
 
         expect(result.props.formAction).toStrictEqual(
-          `/build-application/${APPLICATION_ID}/section-name`
+          process.env.SUB_PATH +
+            `/build-application/${APPLICATION_ID}/section-name`
         );
       });
     });

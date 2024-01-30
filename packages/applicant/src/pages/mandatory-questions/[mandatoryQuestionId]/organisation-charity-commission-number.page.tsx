@@ -1,11 +1,9 @@
-import Layout from '../../../components/partials/Layout';
-import InferProps from '../../../types/InferProps';
-import { routes } from '../../../utils/routes';
-import getServerSideProps from './getServerSideProps';
-import Meta from '../../../components/partials/Meta';
 import { Button, FlexibleQuestionPageLayout, TextInput } from 'gap-web-ui';
-import { SaveAndCancel } from '../../../components/save-and-cancel/SaveAndCancel';
 import { ButtonTypePropertyEnum } from '../../../components/button/Button';
+import Layout from '../../../components/partials/Layout';
+import Meta from '../../../components/partials/Meta';
+import InferProps from '../../../types/InferProps';
+import getServerSideProps from './getServerSideProps';
 
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationCharityCommissionNumberPage({
@@ -13,11 +11,8 @@ export default function MandatoryQuestionOrganisationCharityCommissionNumberPage
   fieldErrors,
   formAction,
   defaultFields,
-  mandatoryQuestion,
-  mandatoryQuestionId,
+  backButtonUrl,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl =
-    routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
   return (
     <>
       <Meta

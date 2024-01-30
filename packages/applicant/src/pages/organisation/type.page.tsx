@@ -6,6 +6,7 @@ import { SaveAndCancel } from '../../components/save-and-cancel/SaveAndCancel';
 import InferProps from '../../types/InferProps';
 import { routes } from '../../utils/routes';
 import getServerSideProps from './getServerSideProps';
+import { MQ_ORG_TYPES } from '../../utils/constants';
 
 export { getServerSideProps };
 
@@ -32,28 +33,30 @@ export default function OrganisationType({
         >
           <Radio
             questionTitle="What is your organisation type? (optional)"
-            questionHintText={
-              <>
-                <Details
-                  title="Why do we need this information?"
-                  text="It helps us to identify you or your organisation. We use this information for due diligence checks and to prevent fraud."
-                />
-                <p className="govuk-body">Choose one:</p>
-              </>
-            }
+            questionHintText="Choose the option that best describes you or your organisation"
             fieldName="type"
             fieldErrors={fieldErrors}
             radioOptions={[
-              { label: 'Limited company', value: 'Limited company' },
-              { label: 'Non-limited company', value: 'Non-limited company' },
-              { label: 'Charity', value: 'Charity' },
               {
-                label: 'I am applying as an Individual',
-                value: 'I am applying as an Individual',
+                label: MQ_ORG_TYPES.LIMITED_COMPANY,
+                value: MQ_ORG_TYPES.LIMITED_COMPANY,
               },
-              { label: 'Other', value: 'Other' },
+              {
+                label: MQ_ORG_TYPES.NON_LIMITED_COMPANY,
+                value: MQ_ORG_TYPES.NON_LIMITED_COMPANY,
+              },
+              { label: MQ_ORG_TYPES.CHARITY, value: MQ_ORG_TYPES.CHARITY },
+              {
+                label: MQ_ORG_TYPES.INDIVIDUAL,
+                value: MQ_ORG_TYPES.INDIVIDUAL,
+              },
+              { label: MQ_ORG_TYPES.OTHER, value: MQ_ORG_TYPES.OTHER },
             ]}
             defaultChecked={defaultFields.type}
+          />
+          <Details
+            title="Why do we need this information?"
+            text="It helps us to identify you or your organisation. We use this information for due diligence checks and to prevent fraud."
           />
 
           <input type="hidden" value={organisationId} name="id" />

@@ -1,10 +1,10 @@
-import { Button, FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
+import { Button, Details, FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
 import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
 import InferProps from '../../../types/InferProps';
-import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
+import { MQ_ORG_TYPES } from '../../../utils/constants';
 
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationTypePage({
@@ -12,11 +12,8 @@ export default function MandatoryQuestionOrganisationTypePage({
   fieldErrors,
   formAction,
   defaultFields,
-  mandatoryQuestion,
-  mandatoryQuestionId,
+  backButtonUrl,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl =
-    routes.mandatoryQuestions.addressPage(mandatoryQuestionId);
   return (
     <>
       <Meta
@@ -37,16 +34,26 @@ export default function MandatoryQuestionOrganisationTypePage({
             fieldName="orgType"
             fieldErrors={fieldErrors}
             radioOptions={[
-              { label: 'Limited company', value: 'Limited company' },
-              { label: 'Non-limited company', value: 'Non-limited company' },
-              { label: 'Charity', value: 'Charity' },
               {
-                label: 'I am applying as an Individual',
-                value: 'I am applying as an Individual',
+                label: MQ_ORG_TYPES.LIMITED_COMPANY,
+                value: MQ_ORG_TYPES.LIMITED_COMPANY,
               },
-              { label: 'Other', value: 'Other' },
+              {
+                label: MQ_ORG_TYPES.NON_LIMITED_COMPANY,
+                value: MQ_ORG_TYPES.NON_LIMITED_COMPANY,
+              },
+              { label: MQ_ORG_TYPES.CHARITY, value: MQ_ORG_TYPES.CHARITY },
+              {
+                label: MQ_ORG_TYPES.INDIVIDUAL,
+                value: MQ_ORG_TYPES.INDIVIDUAL,
+              },
+              { label: MQ_ORG_TYPES.OTHER, value: MQ_ORG_TYPES.OTHER },
             ]}
             defaultChecked={defaultFields.orgType}
+          />
+          <Details
+            title="Why do we need this information?"
+            text="It helps us to identify you or your organisation. We use this information for due diligence checks and to prevent fraud."
           />
 
           <Button

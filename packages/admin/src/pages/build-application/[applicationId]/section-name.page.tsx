@@ -50,7 +50,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     req,
     res,
     (body: RequestBody) => postSection(sessionId, applicationId, body),
-    `/build-application/${applicationId}/dashboard`,
+    (sectionId) => `/build-application/${applicationId}/${sectionId}`,
     errorPageParams
   );
 
@@ -76,9 +76,9 @@ export const getServerSideProps: GetServerSideProps = async ({
     props: {
       fieldErrors,
       backButtonHref: `/build-application/${applicationId}/dashboard`,
-      formAction: resolvedUrl,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       pageCaption: applicationName,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

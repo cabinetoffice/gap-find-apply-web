@@ -54,20 +54,19 @@ describe('Funding Location page', () => {
       />
     );
     const values = [
-      'North East England',
-      'North West England',
+      'North East (England)',
+      'North West (England)',
       'Yorkshire and the Humber',
       'East Midlands (England)',
-      'West Midlands',
-      'East England',
+      'West Midlands (England)',
+      'East (England)',
       'London',
-      'South East England',
-      'South West England',
-      'Midlands',
+      'South East (England)',
+      'South West (England)',
       'Scotland',
       'Wales',
       'Northern Ireland',
-      'Outside UK',
+      'Outside of the UK',
     ];
     const checkboxes = screen.getAllByRole('checkbox');
     checkboxes.forEach((checkbox, index) => {
@@ -87,36 +86,34 @@ describe('Funding Location page', () => {
     );
 
     const keys = [
-      'North East England',
-      'North West England',
+      'North East (England)',
+      'North West (England)',
       'Yorkshire and the Humber',
       'East Midlands (England)',
-      'West Midlands',
-      'East England',
+      'West Midlands (England)',
+      'East (England)',
       'London',
-      'South East England',
-      'South West England',
-      'Midlands',
+      'South East (England)',
+      'South West (England)',
       'Scotland',
       'Wales',
       'Northern Ireland',
-      'Outside UK',
+      'Outside of the UK',
     ];
     const values = {
-      'North East England': false,
-      'North West England': false,
+      'North East (England)': false,
+      'North West (England)': false,
       'Yorkshire and the Humber': false,
       'East Midlands (England)': false,
-      'West Midlands': false,
-      'East England': false,
+      'West Midlands (England)': false,
+      'East (England)': false,
       London: true,
-      'South East England': false,
-      'South West England': false,
-      Midlands: false,
+      'South East (England)': false,
+      'South West (England)': false,
       Scotland: true,
       Wales: false,
       'Northern Ireland': true,
-      'Outside UK': false,
+      'Outside of the UK': false,
     };
     const checkboxes = screen.getAllByRole('checkbox');
     checkboxes.forEach((checkbox, index) => {
