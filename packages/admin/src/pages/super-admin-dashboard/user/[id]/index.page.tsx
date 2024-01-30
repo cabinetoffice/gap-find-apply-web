@@ -151,7 +151,7 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
 
             {!pageData.isViewingOwnAccount && (
               <div className="govuk-button-group">
-                {pageData.schemes > 0 && (
+                {pageData.schemes.length > 0 && (
                   <CustomLink
                     href={`/super-admin-dashboard/user/${pageData.gapUserId}/delete-user`}
                     customStyle="govuk-button govuk-button--warning"
