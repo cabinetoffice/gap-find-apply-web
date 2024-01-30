@@ -89,7 +89,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     },
     (response: { data: string }) => {
       return response.data === 'QUESTION_SAVED'
-        ? `/build-application/${applicationId}/dashboard`
+        ? `/build-application/${applicationId}/${sectionId}`
         : '';
     },
     getErrorPageParams(applicationId)

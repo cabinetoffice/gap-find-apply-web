@@ -16,17 +16,6 @@ import NextGetServerSidePropsResponse from '../../../types/NextGetServerSideProp
 import ServiceError from '../../../types/ServiceError';
 import Dashboard, { getServerSideProps } from './dashboard.page';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../services/SchemeService');
 const mockedGetApplicationFormSummary =

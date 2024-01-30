@@ -1,24 +1,21 @@
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import getConfig from 'next/config';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import { getApplicationFormSummary } from '../../../services/ApplicationService';
 import { getGrantScheme } from '../../../services/SchemeService';
-import {
-  ApplicationFormSection,
-  ApplicationFormSummary,
-} from '../../../types/ApplicationForm';
 import ServiceError from '../../../types/ServiceError';
 import { getSessionIdFromCookies } from '../../../utils/session';
 import PublishButton from './components/PublishButton';
 import Sections from './components/Sections';
 import UnpublishSummary from './components/UnpublishSummary';
+import InferProps from '../../../types/InferProps';
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps = async ({
   params,
   query,
   req,
-}) => {
+}: GetServerSidePropsContext) => {
   const { applicationId } = params as Record<string, string>;
   const { recentlyUnpublished } = query;
 
@@ -80,7 +77,7 @@ const Dashboard = ({
   applicationStatus,
   recentlyUnpublished,
   applyToApplicationUrl,
-}: DashboardProps) => {
+}: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
   const findAGrantLink = publicRuntimeConfig.FIND_A_GRANT_URL;
 
@@ -145,9 +142,9 @@ const Dashboard = ({
             target="_blank"
             rel="noopener noreferrer"
           >
-            Find a grant (opens in new tab)
+            Find a grant
           </a>
-          .
+          {'.'}
         </p>
 
         <Sections
@@ -155,8 +152,6 @@ const Dashboard = ({
           applicationId={applicationId}
           applicationStatus={applicationStatus}
         />
-
-        <hr className="govuk-section-break govuk-section-break--m" />
 
         {applicationStatus === 'PUBLISHED' ? (
           <UnpublishSummary
@@ -175,15 +170,5 @@ const Dashboard = ({
     </>
   );
 };
-
-interface DashboardProps {
-  sections: ApplicationFormSection[];
-  grantApplicationName: string;
-  applicationId: string;
-  grantSchemeId: string;
-  applicationStatus: ApplicationFormSummary['applicationStatus'];
-  recentlyUnpublished: boolean;
-  applyToApplicationUrl: string;
-}
 
 export default Dashboard;
