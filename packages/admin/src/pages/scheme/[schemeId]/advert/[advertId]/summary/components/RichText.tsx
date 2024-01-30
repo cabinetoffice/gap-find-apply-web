@@ -73,7 +73,7 @@ export function RichText({
         className="govuk-summary-list__key"
         data-cy={`cy-summary-${section.title}-${question.title}`}
       >
-        {question.title}
+        <div>{question.title}</div>
       </dt>
       <dd
         className="govuk-summary-list__value"
@@ -84,13 +84,15 @@ export function RichText({
 
       {isGrantAdvertNotPublished(status) && (
         <dd className="govuk-summary-list__actions">
-          <CustomLink
-            href={`/scheme/${schemeId}/advert/${advertId}/${section.id}/${page.id}`}
-            dataCy={`cy-summary-${section.title}-${question.title}-change`}
-            ariaLabel={`${actionText} response for ${question.title} question`}
-          >
-            {actionText}
-          </CustomLink>
+          <div>
+            <CustomLink
+              href={`/scheme/${schemeId}/advert/${advertId}/${section.id}/${page.id}`}
+              dataCy={`cy-summary-${section.title}-${question.title}-change`}
+              ariaLabel={`${actionText} response for ${question.title} question`}
+            >
+              {actionText}
+            </CustomLink>
+          </div>
         </dd>
       )}
     </div>

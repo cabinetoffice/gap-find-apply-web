@@ -5,7 +5,7 @@ import DueDiligence, { getServerSideProps } from './due-diligence.page';
 import { merge } from 'lodash';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
 import { updateSectionStatus } from '../../../../services/SectionService';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../utils/parseBody';
 
 const mockSchemeParams = {
   fieldErrors: [],
@@ -29,7 +29,7 @@ jest.mock('next/config', () => () => {
   };
 });
 jest.mock('axios');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../utils/parseBody');
 jest.mock('../../../../services/SectionService');
 
 const renderComponent = () => render(<DueDiligence {...mockSchemeParams} />);
@@ -40,7 +40,7 @@ const getCallParams = (overrides: any = {}) =>
       resolvedUrl: '/resolvedUrl',
       params: { applicationId: 'testAppId', sectionId: 'testSectionId' },
       req: { method: 'POST', cookies: { 'gap-test': 'testSessionId' } } as any,
-      res: {} as any,
+      res: { getHeader: jest.fn() },
     },
     overrides
   );
@@ -232,34 +232,21 @@ describe('Due diligence page', () => {
         )) as NextGetServerSidePropsResponse;
       });
 
-      it('should return expected backButtonHref value', async () => {
+      it('should return expected props', async () => {
         expect(result.props.backButtonHref).toStrictEqual(
           '/build-application/testAppId/dashboard'
         );
-      });
-
-      it('should return expected fieldErrors value', async () => {
         expect(result.props.fieldErrors).toStrictEqual([]);
-      });
-
-      it('should return expected formAction value', async () => {
-        expect(result.props.formAction).toStrictEqual('/resolvedUrl');
-      });
-
-      it('should return expected pageCaption value', async () => {
+        expect(result.props.formAction).toStrictEqual(
+          process.env.SUB_PATH + '/resolvedUrl'
+        );
         expect(result.props.pageCaption).toStrictEqual('Test Application Name');
-      });
-
-      it('should return expected sectionQuestions value', async () => {
         expect(result.props.sectionQuestions).toStrictEqual([
           {
             questionId: 'testQuestionId',
             adminSummary: 'Admin Summary Text',
           },
         ]);
-      });
-
-      it('should return expected defaultCheckboxes value', async () => {
         expect(result.props.defaultCheckboxes).toStrictEqual([]);
       });
     });

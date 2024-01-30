@@ -66,9 +66,9 @@ export const getServerSideProps = async ({
     props: {
       fieldErrors,
       backButtonHref: `/scheme/${schemeId}`,
-      formAction: resolvedUrl,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       defaultValue,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };
@@ -95,6 +95,8 @@ const AdvertName = ({
       />
 
       <div className="govuk-!-padding-top-7">
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore ts seems not to understand async components */}
         <NoSSRWrapper>
           <FlexibleQuestionPageLayout
             formAction={formAction}

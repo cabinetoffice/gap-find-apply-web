@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import { createMockRouter } from '../../testUtils/createMockRouter';
 import Header from './Header';
 
@@ -11,7 +11,7 @@ describe('Header Component', () => {
         <RouterContext.Provider
           value={createMockRouter({ pathname: '/header' })}
         >
-          <Header />
+          <Header isUserLoggedIn={true} />
         </RouterContext.Provider>
       );
     });

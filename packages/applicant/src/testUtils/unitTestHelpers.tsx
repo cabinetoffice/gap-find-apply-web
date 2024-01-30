@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext } from 'next';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import React from 'react';
 import { createMockRouter } from './createMockRouter';
 
@@ -33,7 +33,9 @@ const getContext = (
       req: {
         method: 'GET',
         cookies: { 'gap-test': 'testSessionId' },
-        csrfToken: () => 'testCSRFToken',
+      },
+      res: {
+        getHeader: () => 'testCSRFToken',
       },
       resolvedUrl: '/testResolvedURL',
     },

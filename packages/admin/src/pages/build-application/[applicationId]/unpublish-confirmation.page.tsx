@@ -1,5 +1,5 @@
 import { FlexibleQuestionPageLayout, Radio, ValidationError } from 'gap-web-ui';
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import { updateApplicationFormStatus } from '../../../services/ApplicationService';
@@ -7,17 +7,18 @@ import callServiceMethod from '../../../utils/callServiceMethod';
 import { getSessionIdFromCookies } from '../../../utils/session';
 import { errorPageParams } from './publish-service-errors';
 import getConfig from 'next/config';
+import InferProps from '../../../types/InferProps';
 
 type RequestBody = {
   confirmation: string;
 };
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps = async ({
   params,
   resolvedUrl,
   req,
   res,
-}) => {
+}: GetServerSidePropsContext) => {
   const { applicationId } = params as Record<string, string>;
 
   let fieldErrors = [] as ValidationError[];
@@ -69,9 +70,9 @@ export const getServerSideProps: GetServerSideProps = async ({
   return {
     props: {
       backHref: `/build-application/${applicationId}/dashboard`,
-      formAction: resolvedUrl,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       fieldErrors: fieldErrors,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };
@@ -81,7 +82,7 @@ const UnpublishConfirmationPage = ({
   formAction,
   fieldErrors,
   csrfToken,
-}: PublishConfirmationPageProps) => {
+}: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
   return (
     <>
@@ -94,55 +95,43 @@ const UnpublishConfirmationPage = ({
       <CustomLink isBackButton href={backHref} />
 
       <div className="govuk-!-padding-top-7">
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
-            <FlexibleQuestionPageLayout
-              formAction={formAction}
-              fieldErrors={fieldErrors}
-              csrfToken={csrfToken}
-            >
-              <Radio
-                questionTitle="Are you sure you want to unpublish this application form?"
-                questionHintText={
-                  <p className="govuk-body">
-                    Once unpublished, your application form will no longer
-                    appear on{' '}
-                    <a
-                      href={publicRuntimeConfig.FIND_A_GRANT_URL}
-                      className="govuk-link"
-                    >
-                      Find a grant
-                    </a>{' '}
-                    and applications cannot be submitted.
-                  </p>
-                }
-                fieldName="confirmation"
-                fieldErrors={fieldErrors}
-              />
-              <div className="govuk-button-group">
-                <button
-                  className="govuk-button"
-                  data-module="govuk-button"
-                  data-cy="cy_unpublishConfirmation-ConfirmButton"
+        <FlexibleQuestionPageLayout
+          formAction={formAction}
+          fieldErrors={fieldErrors}
+          csrfToken={csrfToken}
+        >
+          <Radio
+            questionTitle="Are you sure you want to unpublish this application form?"
+            questionHintText={
+              <p className="govuk-body">
+                Once unpublished, your application form will no longer appear on{' '}
+                <a
+                  href={publicRuntimeConfig.FIND_A_GRANT_URL}
+                  className="govuk-link"
                 >
-                  Confirm
-                </button>
+                  Find a grant
+                </a>{' '}
+                and applications cannot be submitted.
+              </p>
+            }
+            fieldName="confirmation"
+            fieldErrors={fieldErrors}
+          />
+          <div className="govuk-button-group">
+            <button
+              className="govuk-button"
+              data-module="govuk-button"
+              data-cy="cy_unpublishConfirmation-ConfirmButton"
+            >
+              Confirm
+            </button>
 
-                <CustomLink href={backHref}>Cancel</CustomLink>
-              </div>
-            </FlexibleQuestionPageLayout>
+            <CustomLink href={backHref}>Cancel</CustomLink>
           </div>
-        </div>
+        </FlexibleQuestionPageLayout>
       </div>
     </>
   );
-};
-
-type PublishConfirmationPageProps = {
-  backHref: string;
-  formAction: string;
-  fieldErrors: ValidationError[];
-  csrfToken: string;
 };
 
 export default UnpublishConfirmationPage;

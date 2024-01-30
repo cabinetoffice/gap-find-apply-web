@@ -26,6 +26,7 @@ import getConfig from 'next/config';
 
 export const getServerSideProps = async ({
   req,
+  res,
   params,
   query,
 }: GetServerSidePropsContext) => {
@@ -61,7 +62,7 @@ export const getServerSideProps = async ({
         advertId,
         grantAdvertData,
         recentlyUnpublished,
-        csrfToken: (req as any).csrfToken?.() || '',
+        csrfToken: res.getHeader('x-csrf-token') as string,
       },
     };
   } catch (err) {

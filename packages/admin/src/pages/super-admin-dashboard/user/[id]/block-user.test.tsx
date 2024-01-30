@@ -7,7 +7,7 @@ import { updateUserRoles } from '../../../../services/SuperAdminService';
 import BlockUserPage, { getServerSideProps } from './block-user.page';
 import { renderWithRouter } from '../../../../testUtils/unitTestHelpers';
 
-jest.mock('next/dist/server/api-utils/node', () => ({
+jest.mock('../../../../utils/parseBody', () => ({
   parseBody: () => ({}),
 }));
 

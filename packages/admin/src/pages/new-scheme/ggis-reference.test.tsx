@@ -7,9 +7,9 @@ import {
 } from '../../services/SessionService';
 import NextGetServerSidePropsResponse from '../../types/NextGetServerSidePropsResponse';
 import { merge } from 'lodash';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../utils/parseBody';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../utils/parseBody');
 jest.mock('../../services/SessionService');
 jest.mock('next/config', () => () => {
   return {
@@ -49,7 +49,7 @@ describe('Scheme ggis-reference page', () => {
           req: { cookies: { session_id: 'someId' } },
           method: 'GET',
           query: {},
-          res: { setHeader: jest.fn() },
+          res: { setHeader: jest.fn(), getHeader: jest.fn() },
         },
         overrides
       );

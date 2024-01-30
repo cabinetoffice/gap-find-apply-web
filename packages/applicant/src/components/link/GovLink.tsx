@@ -13,15 +13,14 @@ export const GovLink: FC<LinkType> = ({
   noVisitedState = false,
 }) => {
   return (
-    <Link href={url}>
-      <a
-        className={
-          'govuk-link ' + (noVisitedState ? 'govuk-link--no-visited-state' : '')
-        }
-        data-cy={`cy-link-${text}`}
-      >
-        {text}
-      </a>
+    <Link
+      href={url}
+      className={
+        'govuk-link ' + (noVisitedState ? 'govuk-link--no-visited-state' : '')
+      }
+      data-cy={`cy-link-${text}`}
+    >
+      {text}
     </Link>
   );
 };

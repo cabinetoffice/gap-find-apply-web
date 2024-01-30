@@ -1,4 +1,7 @@
-import { SuperAdminDashboardResponse } from './../pages/super-admin-dashboard/types';
+import {
+  ChangeDepartmentDto,
+  SuperAdminDashboardResponse,
+} from './../pages/super-admin-dashboard/types';
 import getConfig from 'next/config';
 import axios from 'axios';
 import { axiosUserServiceConfig } from '../utils/session';
@@ -8,8 +11,8 @@ import {
   SuperAdminDashboardFilterData,
   User,
 } from '../pages/super-admin-dashboard/types';
-import UserDetails from '../types/UserDetails';
 import PaginationType from '../types/Pagination';
+import { Integration } from '../pages/super-admin-dashboard/integrations/index.page';
 
 const { serverRuntimeConfig } = getConfig();
 
@@ -85,11 +88,13 @@ export const updateDepartment = async (
   departmentId: string,
   userToken: string
 ) => {
+  const changeDepartmentDto: ChangeDepartmentDto = {
+    departmentId: departmentId,
+  };
   await axios.patch(
     `${serverRuntimeConfig.userServiceHost}/user/${userId}/department`,
-    {},
+    changeDepartmentDto,
     {
-      params: { departmentId },
       ...axiosUserServiceConfig(userToken),
     }
   );
@@ -179,3 +184,23 @@ export const createDepartmentInformation = async (
     body,
     axiosUserServiceConfig(userToken)
   );
+
+type UserServiceIntegrationResponse = Omit<Integration, 'connectionUrl'>;
+
+const getSpotlightIntegration = async (userToken: string) => {
+  const integration = await axios.get<UserServiceIntegrationResponse>(
+    `${process.env.USER_SERVICE_URL}/spotlight/integration`,
+    axiosUserServiceConfig(userToken)
+  );
+  return {
+    ...integration.data,
+    connectionUrl: `${serverRuntimeConfig.userServiceHost}/spotlight/oauth/authorize`,
+  };
+};
+
+export const getIntegrations = async (
+  userToken: string
+): Promise<Integration[]> => {
+  const spotlightIntegration = await getSpotlightIntegration(userToken);
+  return [spotlightIntegration];
+};

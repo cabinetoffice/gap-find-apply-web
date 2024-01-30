@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
 import { GetServerSidePropsResult, Redirect } from 'next';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../utils/parseBody';
 import { createNewAdvert } from '../../../../services/AdvertPageService';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
 import AdvertName, { getServerSideProps } from './name.page';
@@ -10,9 +10,7 @@ import AdvertName, { getServerSideProps } from './name.page';
 jest.mock('../../../../services/SessionService');
 jest.mock('../../../../services/SchemeService');
 jest.mock('../../../../services/AdvertPageService');
-jest.mock('next/dist/server/api-utils/node', () => ({
-  parseBody: jest.fn(),
-}));
+jest.mock('../../../../utils/parseBody');
 
 const getProps = (overrides: any = {}) =>
   merge(
@@ -87,8 +85,8 @@ describe('Application name page', () => {
           req: {
             method: 'GET',
             cookies: { session_id: 'test-session-id' },
-            csrfToken: () => 'testCSRFToken',
           },
+          res: { getHeader: () => 'testCSRFToken' },
           resolvedUrl: '/mock/resolvedUrl',
         },
         overrides
@@ -110,7 +108,9 @@ describe('Application name page', () => {
         getContext()
       )) as NextGetServerSidePropsResponse;
 
-      expect(response.props.formAction).toStrictEqual('/mock/resolvedUrl');
+      expect(response.props.formAction).toStrictEqual(
+        process.env.SUB_PATH + '/mock/resolvedUrl'
+      );
     });
 
     it('Should return a csrfToken', async () => {

@@ -19,14 +19,14 @@ import {
   expectObjectEquals,
   getPageProps,
 } from '../../../../../../testUtils/unitTestHelpers';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../../../utils/parseBody';
 import InferProps from '../../../../../../types/InferProps';
 import AdvertStatusEnum from '../../../../../../enums/AdvertStatus';
 
 jest.mock('../../../../../../utils/session');
 jest.mock('../../../../../../services/AdvertPageService');
 jest.mock('../../../../../../utils/serviceErrorHelpers');
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../../utils/parseBody');
 
 const mockSessionUtils = jest.mocked(sessionUtils);
 const mockAdvertPageService = jest.mocked(AdvertPageService);
@@ -56,14 +56,14 @@ describe('getServerSideProps', () => {
   });
 
   it('should get without csrf token', async () => {
-    const context = getContext();
+    const context = getContext({ res: { getHeader: () => '' } });
     const expectedResult: InferProps<typeof getServerSideProps> = {
       advertName,
       sections: summaryPageResponse.sections,
       schemeId: context.params.schemeId,
       futurePublishingDate: false,
       advertId: context.params.advertId,
-      resolvedUrl: '/resolvedURL',
+      resolvedUrl: process.env.SUB_PATH + '/resolvedURL',
       csrfToken: '',
       status: AdvertStatusEnum.DRAFT,
       grantAdvertData: {
@@ -98,7 +98,10 @@ describe('getServerSideProps', () => {
 
   it('should get with csrf token', async () => {
     const csrfToken = 'testCSRFToken';
-    const context = getContext({ req: { csrfToken: () => csrfToken } });
+    const context = getContext({
+      req: {},
+      res: { getHeader: () => 'testCSRFToken' },
+    });
     const expectedResult: InferProps<typeof getServerSideProps> = {
       advertName,
       sections: summaryPageResponse.sections,
@@ -106,7 +109,7 @@ describe('getServerSideProps', () => {
       futurePublishingDate: false,
       advertId: context.params.advertId,
       csrfToken,
-      resolvedUrl: '/resolvedURL',
+      resolvedUrl: process.env.SUB_PATH + '/resolvedURL',
       status: AdvertStatusEnum.DRAFT,
       grantAdvertData: {
         status: 200,

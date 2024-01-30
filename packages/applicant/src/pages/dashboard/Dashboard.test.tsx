@@ -4,6 +4,11 @@ import { DescriptionListProps } from '../../components/description-list/Descript
 import { routes } from '../../utils/routes';
 import { ApplicantDashBoardProps, ApplicantDashboard } from './Dashboard';
 import { getProps } from 'gap-web-ui';
+import { MQ_ORG_TYPES } from '../../utils/constants';
+
+jest.mock('next/router', () => ({
+  useRouter: jest.fn(),
+}));
 
 const descriptionList: DescriptionListProps = {
   data: [
@@ -20,6 +25,7 @@ function getDefaultProps(): ApplicantDashBoardProps {
     hasApplications: true,
     bannerProps: null,
     oneLoginEnabled: true,
+    organisationType: MQ_ORG_TYPES.LIMITED_COMPANY,
   };
 }
 
@@ -65,7 +71,7 @@ describe('Dashboard', () => {
       expect(
         screen.getByRole('button', { name: /find a grant/i })
       ).toHaveAttribute('href', routes.findAGrant);
-      screen.getByText(/Change your organisation details/i);
+      screen.getByText(/Change the details saved to your profile/i);
     });
   });
 

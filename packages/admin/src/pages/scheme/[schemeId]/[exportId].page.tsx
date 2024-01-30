@@ -12,6 +12,7 @@ import { getSessionIdFromCookies } from '../../../utils/session';
 
 export const getServerSideProps = async ({
   req,
+  res,
   params,
   resolvedUrl,
 }: GetServerSidePropsContext) => {
@@ -40,10 +41,10 @@ export const getServerSideProps = async ({
 
   return {
     props: {
-      formAction: resolvedUrl,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       schemeName: grantScheme.name,
       submissionList,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };
@@ -158,7 +159,9 @@ export const CompletedSubmissions = ({
           content: (
             <div className="govuk-!-text-align-right">
               <CustomLink
-                href={submission.url}
+                href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
+                  submission.s3key
+                )}`}
                 ariaLabel={`Download submission "${submission.label}"`}
                 excludeSubPath
               >
@@ -172,12 +175,16 @@ export const CompletedSubmissions = ({
   });
 
   const multiDownloadHandler = async () => {
-    for (const fileName of isChecked) {
-      const fileInfo = submissionList.find(
-        (submission) => submission.label === fileName
-      );
-      if (fileInfo) await downloadFile(fileInfo.url, fileInfo.label);
-    }
+    const filesToDownload = isChecked
+      .map((filename) =>
+        submissionList.find((submission) => submission.label === filename)
+      )
+      .filter((fileInfo) => !!fileInfo);
+    await Promise.all(
+      filesToDownload.map((fileInfo) =>
+        downloadFile(fileInfo!.s3key, fileInfo!.label)
+      )
+    );
   };
 
   return (

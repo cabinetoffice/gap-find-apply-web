@@ -11,11 +11,12 @@ import {
 import { getLoggedInUsersDetails } from '../../../services/UserService';
 import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../utils/session';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../utils/parseBody';
 import InferProps from '../../../types/InferProps';
 
 export const getServerSideProps = async ({
   req,
+  res,
   query,
   resolvedUrl,
 }: GetServerSidePropsContext) => {
@@ -56,7 +57,7 @@ export const getServerSideProps = async ({
   }
 
   if (req.method === 'POST') {
-    const body = await parseBody(req, '1mb');
+    const body: object = await parseBody(req, res);
     if ('download-submitted-applications' in body) {
       requestSubmissionsExport(sessionCookie, applicationId);
       return {
@@ -86,8 +87,8 @@ export const getServerSideProps = async ({
       exportStatus,
       requested: requested || null,
       emailAddress: userDetails.emailAddress,
-      formAction: resolvedUrl,
-      csrfToken: (req as any).csrfToken?.() || '',
+      formAction: process.env.SUB_PATH + resolvedUrl,
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

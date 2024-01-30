@@ -2,18 +2,6 @@ import axios from 'axios';
 import { deleteSection, postSection } from './SectionService';
 import getConfig from 'next/config';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
-
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const { serverRuntimeConfig } = getConfig();
@@ -26,9 +14,9 @@ const SESSION_ID = 'SessionId';
 describe('SectionService', () => {
   describe('postSection', () => {
     it('Should add a new section', async () => {
-      mockedAxios.patch.mockResolvedValue({});
+      mockedAxios.post.mockResolvedValue({ data: { id: 'testSectionId' } });
 
-      await postSection(SESSION_ID, APPLICATION_ID, {
+      const response = await postSection(SESSION_ID, APPLICATION_ID, {
         sectionTitle: 'New Section Name',
       });
 
@@ -39,6 +27,7 @@ describe('SectionService', () => {
         },
         { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
       );
+      expect(response).toStrictEqual('testSectionId');
     });
   });
 

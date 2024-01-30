@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import React from 'react';
-import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
+import { GrantBeneficiary } from '../../../../../types/models/GrantBeneficiary';
 import { getGrantBeneficiary } from '../../../../../services/GrantBeneficiaryService';
 import { createMockRouter } from '../../../../../testUtils/createMockRouter';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';

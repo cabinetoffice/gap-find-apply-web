@@ -7,7 +7,7 @@ const Custom404 = () => {
     <>
       <Meta title="Page not found - Apply for a grant" />
 
-      <Layout isUserLoggedIn={false}>
+      <Layout>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-full">
             <h1
@@ -26,8 +26,8 @@ const Custom404 = () => {
             </p>
             <p className="govuk-body">
               To return to the dashboard, please visit the{' '}
-              <Link href="/">
-                <a className="govuk-link">dashboard</a>
+              <Link href="/" className="govuk-link">
+                dashboard
               </Link>{' '}
               page.
             </p>

@@ -7,7 +7,6 @@ import {
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
 import InferProps from '../../../types/InferProps';
-import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 
 export { getServerSideProps };
@@ -16,11 +15,8 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
   fieldErrors,
   formAction,
   defaultFields,
-  mandatoryQuestion,
-  mandatoryQuestionId,
+  backButtonUrl,
 }: InferProps<typeof getServerSideProps>) {
-  const backButtonUrl =
-    routes.mandatoryQuestions.fundingAmountPage(mandatoryQuestionId);
   return (
     <>
       <>
@@ -48,20 +44,19 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
               }
               fieldName="fundingLocation"
               options={[
-                'North East England',
-                'North West England',
+                'North East (England)',
+                'North West (England)',
                 'Yorkshire and the Humber',
                 'East Midlands (England)',
-                'West Midlands',
-                'East England',
+                'West Midlands (England)',
+                'East (England)',
                 'London',
-                'South East England',
-                'South West England',
-                'Midlands',
+                'South East (England)',
+                'South West (England)',
                 'Scotland',
                 'Wales',
                 'Northern Ireland',
-                'Outside UK',
+                'Outside of the UK',
               ]}
               defaultCheckboxes={defaultFields.fundingLocation}
               fieldErrors={fieldErrors}

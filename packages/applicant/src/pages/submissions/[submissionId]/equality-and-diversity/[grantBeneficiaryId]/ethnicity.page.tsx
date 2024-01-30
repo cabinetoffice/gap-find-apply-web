@@ -8,7 +8,7 @@ import { GetServerSideProps } from 'next';
 import getConfig from 'next/config';
 import Layout from '../../../../../components/partials/Layout';
 import Meta from '../../../../../components/partials/Meta';
-import { GrantBeneficiary } from '../../../../../models/GrantBeneficiary';
+import { GrantBeneficiary } from '../../../../../types/models/GrantBeneficiary';
 import { postGrantBeneficiaryResponse } from '../../../../../services/GrantBeneficiaryService';
 import callServiceMethod from '../../../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../../../utils/jwt';
@@ -157,7 +157,7 @@ export const getServerSideProps: GetServerSideProps<
       defaultChecked: defaultChecked,
       defaultEthnicityDetails: defaultEthnicityDetails,
       fieldErrors: fieldErrors,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

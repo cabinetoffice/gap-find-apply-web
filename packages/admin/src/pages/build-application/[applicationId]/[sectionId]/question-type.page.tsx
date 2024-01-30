@@ -82,7 +82,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     },
     (response: { data: any }) => {
       if (response.data === 'QUESTION_SAVED') {
-        return `/build-application/${applicationId}/dashboard`;
+        return `/build-application/${applicationId}/${sectionId}`;
       } else {
         return `/build-application/${applicationId}/${sectionId}/question-options`;
       }
@@ -140,7 +140,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       backButtonHref: `/build-application/${applicationId}/${sectionId}/question-content`,
       fieldErrors: fieldErrors,
       formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/question-type`,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

@@ -2,8 +2,8 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext, Redirect } from 'next';
-import { parseBody } from 'next/dist/server/api-utils/node';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
+import { parseBody } from '../../../../../utils/parseBody';
 import React from 'react';
 import {
   getGrantBeneficiary,
@@ -17,9 +17,11 @@ import EqualityAndDiversityPage, {
   getServerSideProps,
 } from './age.page';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/GrantBeneficiaryService');
 jest.mock('../../../../../utils/jwt');
+
+const mockParseBody = jest.mocked(parseBody);
 
 const renderWithRouter = (ui: React.ReactNode) => {
   render(
@@ -94,8 +96,11 @@ describe('Age page', () => {
           req: {
             method: 'GET',
           },
+          res: {
+            getHeader: () => 'testCSRFToken',
+          },
           resolvedUrl: '/testResolvedURL',
-        } as GetServerSidePropsContext,
+        } as unknown as GetServerSidePropsContext,
         overrides
       );
 
@@ -240,7 +245,7 @@ describe('Age page', () => {
     describe('when handling a POST request', () => {
       beforeEach(() => {
         jest.resetAllMocks();
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedAges: ['25 to 54 year olds', '55 to 64 year olds'],
         });
         (postGrantBeneficiaryResponse as jest.Mock).mockResolvedValue(
@@ -276,7 +281,7 @@ describe('Age page', () => {
       });
 
       it('Should call postGrantBeneficiaryResponse when the response contains "ageGroup", CASE: ALL', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedAges: ['No, we support all age groups'],
         });
 
@@ -302,7 +307,7 @@ describe('Age page', () => {
       });
 
       it('Should call postGrantBeneficiaryResponse when the response contains "ageGroup", CASE: ALL', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedAges: [
             '0 to 14 year olds',
             '15 to 24 year olds',
@@ -333,14 +338,28 @@ describe('Age page', () => {
         );
       });
 
-      it('Should NOT call postGrantBeneficiaryResponse when the response does NOT contain "ageGroup"', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({});
+      it('Should call postGrantBeneficiaryResponse when the response does NOT contain "ageGroup"', async () => {
+        mockParseBody.mockResolvedValue({});
 
         await getServerSideProps(getPostContext());
 
         expect(
           postGrantBeneficiaryResponse as jest.Mock
-        ).not.toHaveBeenCalled();
+        ).toHaveBeenNthCalledWith(
+          1,
+          {
+            submissionId: 'testSubmissionId',
+            hasProvidedAdditionalAnswers: false,
+            ageGroup1: false,
+            ageGroup2: false,
+            ageGroup3: false,
+            ageGroup4: false,
+            ageGroup5: false,
+            ageGroupAll: false,
+          },
+          'testJwt',
+          'testGrantBeneficiaryId'
+        );
       });
 
       it('Should redirect to the next question when the returnToSummaryPage does NOT exist', async () => {
@@ -399,7 +418,7 @@ describe('Age page', () => {
       });
 
       it('Should return the previously entered response prop as the default value when a validation error is thrown', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           supportedAges: '25 to 54 year olds',
         });
 
