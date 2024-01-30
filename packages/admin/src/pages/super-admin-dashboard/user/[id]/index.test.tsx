@@ -44,9 +44,15 @@ describe('Super admin - Edit user page', () => {
       created: new Date().toISOString(),
       isViewingOwnAccount: false,
       isUserAdmin: true,
+      schemes: [
+        {
+          name: 'Test Scheme',
+          schemeId: 'schemeId',
+        },
+      ],
     });
 
-    it('Should render a back button', () => {
+    fit('Should render a back button', () => {
       render(<UserPage {...getPageProps(getDefaultProps)} />);
 
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
