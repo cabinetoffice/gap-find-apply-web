@@ -65,7 +65,7 @@ const updateSectionTitle = async ({
 
   await axios.patch(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/title`,
-    { sectionTitle: sectionTitle.replace(/"/g, '') },
+    { sectionTitle },
     config
   );
 };
