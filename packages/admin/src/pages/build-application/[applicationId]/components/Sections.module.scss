@@ -7,3 +7,12 @@
 .table {
     outline: 1px solid govuk-colour("mid-grey");
 }
+
+.separator {
+    border-left: 1px solid govuk-colour("mid-grey");
+    padding: 7px
+}
+
+.b {
+    bottom: 7px
+}
