@@ -47,36 +47,38 @@ const Sections = ({
                   sectionIndex >= 2 && applicationStatus != 'PUBLISHED' ? (
                     <div className="govuk-width-container">
                       <div className="govuk-grid-row">
-                        <div className="govuk-grid-column-two-thirds">
+                        <div className="govuk-grid-column-one-third">
                           {sectionIndex + 1}. {section.sectionTitle}
-                          <button
-                            className="govuk-button govuk-!-margin-right-1"
-                            data-module="govuk-button"
-                            data-cy="cyUpButton"
-                            name={`Up/${section.sectionId}`}
-                            disabled={sectionIndex === 2}
-                          >
-                            Up
-                          </button>
-                          <button
-                            className="govuk-button govuk-!-margin-bottom-0"
-                            data-module="govuk-button"
-                            data-cy="cyDownButton"
-                            name={`Down/${section.sectionId}`}
-                            disabled={sectionIndex === sections.length - 1}
-                          >
-                            Down
-                          </button>
                         </div>
 
-                        <div className="govuk-grid-column-one-third">
-                          <p className="govuk-!-text-align-right govuk-!-font-size-19 govuk-!-margin-0">
+                        <div className="govuk-grid-column-two-thirds">
+                          <div className="govuk-button-group">
+                            <button
+                              className="govuk-button"
+                              data-module="govuk-button"
+                              data-cy="cyUpButton"
+                              name={`Up/${section.sectionId}`}
+                              disabled={sectionIndex === 2}
+                            >
+                              Up
+                            </button>
+                            <button
+                              className="govuk-button"
+                              data-module="govuk-button"
+                              data-cy="cyDownButton"
+                              name={`Down/${section.sectionId}`}
+                              disabled={sectionIndex === sections.length - 1}
+                            >
+                              Down
+                            </button>
+                          </div>
+                          <div>
                             <CustomLink
                               href={`/build-application/${applicationId}/${section.sectionId}`}
                             >
                               Edit section
                             </CustomLink>
-                          </p>
+                          </div>
                         </div>
                       </div>
                     </div>

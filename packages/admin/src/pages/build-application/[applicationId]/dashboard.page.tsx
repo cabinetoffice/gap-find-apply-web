@@ -26,6 +26,21 @@ export const getServerSideProps = async ({
   const { applicationId } = params as Record<string, string>;
   const { recentlyUnpublished } = query;
 
+  const result = await callServiceMethod(
+    req,
+    res,
+    async (body) => {
+      const sectionId = Object.keys(body)[0].split('/')[1];
+      const increment = Object.keys(body)[0].split('/')[0] === 'Up' ? -1 : 1;
+      await handleSectionOrdering(increment, sectionId, applicationId);
+    },
+    `/build-application/${applicationId}/dashboard`,
+    generateErrorPageParams(
+      'Something went wrong while trying to update section orders.',
+      `/build-application/${applicationId}/dashboard`
+    )
+  );
+
   let grantScheme;
   let applicationFormSummary;
   try {
@@ -62,21 +77,6 @@ export const getServerSideProps = async ({
     grantScheme.version === '1'
       ? `/applications/${applicationId}`
       : `/mandatory-questions/start?schemeId=${grantScheme.schemeId}`;
-
-  const result = await callServiceMethod(
-    req,
-    res,
-    async (body) => {
-      const sectionId = Object.keys(body)[0].split('/')[1];
-      const increment = Object.keys(body)[0].split('/')[0] === 'Up' ? -1 : 1;
-      await handleSectionOrdering(increment, sectionId, applicationId);
-    },
-    `/build-application/${applicationId}/dashboard`,
-    generateErrorPageParams(
-      'Something went wrong while trying to update section orders.',
-      `/build-application/${applicationId}/dashboard`
-    )
-  );
 
   return {
     props: {
