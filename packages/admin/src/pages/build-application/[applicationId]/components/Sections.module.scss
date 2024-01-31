@@ -10,9 +10,18 @@
 
 .separator {
     border-left: 1px solid govuk-colour("mid-grey");
-    padding: 7px
-}
+    padding: 7px;
+    @media (max-width: 640px) {
+        display: none;
+    }
+}   
 
 .b {
-    bottom: 7px
+    bottom: 7px;
+    min-width: 72px;
+    @media (max-width: 640px) {
+        display: block;
+        margin-top: 7px;
+    }
 }
+

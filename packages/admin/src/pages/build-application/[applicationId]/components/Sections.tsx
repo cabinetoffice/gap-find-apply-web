@@ -45,48 +45,44 @@ const Sections = ({
               <Table
                 caption={
                   sectionIndex >= 2 && applicationStatus != 'PUBLISHED' ? (
-                    <div className="govuk-width-container">
-                      <div className="govuk-grid-row govuk-!-padding-top-5 govuk-!-padding-bottom-3">
-                        <div className="govuk-grid-column-one-third govuk-!-padding-left-5">
-                          {sectionIndex + 1}. {section.sectionTitle}
-                        </div>
+                    <div className="govuk-grid-row govuk-!-padding-top-5 govuk-!-padding-bottom-3 govuk-!-padding-left-3 govuk-!-padding-right-3">
+                      <div className="govuk-grid-column-one-third">
+                        {sectionIndex + 1}. {section.sectionTitle}
+                      </div>
 
-                        <div className="govuk-grid-column-two-thirds govuk-!-text-align-right govuk-!-padding-right-5">
-                          <button
-                            className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['b']}`}
-                            data-module="govuk-button"
-                            data-cy="cyUpButton"
-                            name={`Up/${section.sectionId}`}
-                            disabled={sectionIndex === 2}
-                          >
-                            Up
-                          </button>
-                          <button
-                            className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['b']}`}
-                            data-module="govuk-button"
-                            data-cy="cyDownButton"
-                            name={`Down/${section.sectionId}`}
-                            disabled={sectionIndex === sections.length - 1}
-                          >
-                            Down
-                          </button>
+                      <div className="govuk-grid-column-two-thirds govuk-!-text-align-right">
+                        <button
+                          className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['b']}`}
+                          data-module="govuk-button"
+                          data-cy="cyUpButton"
+                          name={`Up/${section.sectionId}`}
+                          disabled={sectionIndex === 2}
+                        >
+                          Up
+                        </button>
+                        <button
+                          className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['b']}`}
+                          data-module="govuk-button"
+                          data-cy="cyDownButton"
+                          name={`Down/${section.sectionId}`}
+                          disabled={sectionIndex === sections.length - 1}
+                        >
+                          Down
+                        </button>
 
-                          <i className={styles['separator']} />
+                        <i className={styles['separator']} />
 
-                          <CustomLink
-                            href={`/build-application/${applicationId}/${section.sectionId}`}
-                          >
-                            Edit section
-                          </CustomLink>
-                        </div>
+                        <CustomLink
+                          href={`/build-application/${applicationId}/${section.sectionId}`}
+                        >
+                          Edit section
+                        </CustomLink>
                       </div>
                     </div>
                   ) : (
-                    <div className="govuk-width-container">
-                      <div className="govuk-grid-row govuk-!-padding-top-4 govuk-!-padding-bottom-4 govuk-!-padding-left-2">
-                        <div className="govuk-grid-column-two-thirds">
-                          {sectionIndex + 1}. {section.sectionTitle}
-                        </div>
+                    <div className="govuk-grid-row govuk-!-padding-top-5 govuk-!-padding-bottom-3 govuk-!-padding-left-3 govuk-!-padding-right-3">
+                      <div className="govuk-grid-column-two-thirds">
+                        {sectionIndex + 1}. {section.sectionTitle}
                       </div>
                     </div>
                   )
