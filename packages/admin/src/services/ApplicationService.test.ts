@@ -6,6 +6,7 @@ import {
   getApplicationFormSection,
   getApplicationFormSummary,
   updateApplicationFormStatus,
+  handleSectionOrdering,
 } from './ApplicationService';
 import getConfig from 'next/config';
 import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
@@ -183,6 +184,19 @@ describe('ApplicationService', () => {
         { applicationStatus: 'PUBLISHED' },
         { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
       );
+    });
+  });
+
+  describe('handleSectionOrdering', () => {
+    it('Should call the expected endpoint to update an application forms section order', async () => {
+      const increment = 1;
+      await handleSectionOrdering(increment, SECTION_ID, APPLICATION_ID);
+
+      expect(mockedAxios.patch).toHaveBeenCalledWith(
+        `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/order`,
+        { increment: 1, sectionId: SECTION_ID }
+      );
+      expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
     });
   });
 });
