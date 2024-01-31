@@ -1,4 +1,4 @@
-import { Table } from 'gap-web-ui';
+import { FlexibleQuestionPageLayout, Table } from 'gap-web-ui';
 import React from 'react';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import { ResponseTypeLabels } from '../../../../enums/ResponseType';
@@ -12,15 +12,24 @@ interface SectionsProps {
   sections: ApplicationFormSection[];
   applicationId: string;
   applicationStatus: ApplicationFormSummary['applicationStatus'];
+  resolvedUrl: string;
+  csrfToken: string;
 }
 
 const Sections = ({
   sections,
   applicationId,
   applicationStatus,
+  resolvedUrl,
+  csrfToken,
 }: SectionsProps) => {
   return (
-    <>
+    <FlexibleQuestionPageLayout
+      formAction={resolvedUrl}
+      fieldErrors={[]}
+      csrfToken={csrfToken}
+      fullPageWidth={true}
+    >
       {sections.map((section, sectionIndex) => {
         const isSectionEligibilityOrEssential =
           section.sectionId === 'ELIGIBILITY' ||
@@ -38,10 +47,29 @@ const Sections = ({
                   sectionIndex >= 2 && applicationStatus != 'PUBLISHED' ? (
                     <div className="govuk-width-container">
                       <div className="govuk-grid-row">
-                        <div className="govuk-grid-column-one-half">
+                        <div className="govuk-grid-column-two-thirds">
                           {sectionIndex + 1}. {section.sectionTitle}
+                          <button
+                            className="govuk-button govuk-!-margin-right-1"
+                            data-module="govuk-button"
+                            data-cy="cyUpButton"
+                            name={`Up/${section.sectionId}`}
+                            disabled={sectionIndex === 2}
+                          >
+                            Up
+                          </button>
+                          <button
+                            className="govuk-button govuk-!-margin-bottom-0"
+                            data-module="govuk-button"
+                            data-cy="cyDownButton"
+                            name={`Down/${section.sectionId}`}
+                            disabled={sectionIndex === sections.length - 1}
+                          >
+                            Down
+                          </button>
                         </div>
-                        <div className="govuk-grid-column-one-half">
+
+                        <div className="govuk-grid-column-one-third">
                           <p className="govuk-!-text-align-right govuk-!-font-size-19 govuk-!-margin-0">
                             <CustomLink
                               href={`/build-application/${applicationId}/${section.sectionId}`}
@@ -98,7 +126,7 @@ const Sections = ({
           Add a new section
         </CustomLink>
       )}
-    </>
+    </FlexibleQuestionPageLayout>
   );
 };
 

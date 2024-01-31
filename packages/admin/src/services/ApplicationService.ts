@@ -90,10 +90,23 @@ const updateApplicationFormStatus = async (
   );
 };
 
+const handleSectionOrdering = async (
+  increment: number,
+  sectionId: string,
+  applicationId: string
+) => {
+  console.log('sending patch request');
+  await axios.patch(`${BASE_APPLICATION_URL}/${applicationId}/sections/order`, {
+    sectionId: sectionId,
+    increment: increment,
+  });
+};
+
 export {
   createNewApplicationForm,
   findMatchingApplicationForms,
   getApplicationFormSummary,
   getApplicationFormSection,
   updateApplicationFormStatus,
+  handleSectionOrdering,
 };
