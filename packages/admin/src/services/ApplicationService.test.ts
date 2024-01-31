@@ -194,7 +194,7 @@ describe('ApplicationService', () => {
 
       expect(mockedAxios.patch).toHaveBeenCalledWith(
         `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/order`,
-        { increment: 1, sectionId: SECTION_ID }
+        { increment, sectionId: SECTION_ID }
       );
       expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
     });
