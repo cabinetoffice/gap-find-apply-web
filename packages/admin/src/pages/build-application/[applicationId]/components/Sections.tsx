@@ -110,7 +110,7 @@ function tableRows(
 ) {
   let tableRows = section.questions
     ? section.questions.map((question) => {
-        let link = `/build-application/${applicationId}/${section.sectionId}/${question.questionId}/preview`;
+        let link = `/build-application/${applicationId}/${section.sectionId}/${question.questionId}/edit/question-content?backTo=dashboard`;
         // Eligibility is handled differently, so we explicitly direct to the eligibility-statement page here
         if (section.sectionId === 'ELIGIBILITY') {
           link = `/build-application/${applicationId}/${section.sectionId}/${question.questionId}/eligibility-statement`;

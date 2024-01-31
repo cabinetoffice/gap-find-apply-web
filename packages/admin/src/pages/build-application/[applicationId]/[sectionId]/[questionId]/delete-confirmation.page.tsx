@@ -18,6 +18,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   resolvedUrl,
   req,
   res,
+  query: { backTo },
 }) => {
   const { applicationId, sectionId, questionId } = params as Record<
     string,
@@ -64,7 +65,9 @@ export const getServerSideProps: GetServerSideProps = async ({
         });
       }
     },
-    `/build-application/${applicationId}/dashboard`,
+    backTo === 'dashboard'
+      ? `/build-application/${applicationId}/dashboard`
+      : `/build-application/${applicationId}/${sectionId}`,
     errorPageParams
   );
 
