@@ -95,7 +95,6 @@ const handleSectionOrdering = async (
   sectionId: string,
   applicationId: string
 ) => {
-  console.log('sending patch request');
   await axios.patch(`${BASE_APPLICATION_URL}/${applicationId}/sections/order`, {
     sectionId: sectionId,
     increment: increment,
