@@ -18,7 +18,6 @@ jest.mock('../../../../services/SchemeService');
 describe('Super admin - Edit user page', () => {
   describe('UI', () => {
     const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
-      schemes: [],
       gapUserId: '1',
       emailAddress: 'test@gmail.com',
       sub: 'sub',
@@ -44,15 +43,10 @@ describe('Super admin - Edit user page', () => {
       created: new Date().toISOString(),
       isViewingOwnAccount: false,
       isUserAdmin: true,
-      schemes: [
-        {
-          name: 'Test Scheme',
-          schemeId: 'schemeId',
-        },
-      ],
+      schemes: [],
     });
 
-    fit('Should render a back button', () => {
+    it('Should render a back button', () => {
       render(<UserPage {...getPageProps(getDefaultProps)} />);
 
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
@@ -194,13 +188,40 @@ describe('Super admin - Edit user page', () => {
       expect(screen.queryByRole('link', { name: 'Change owner' })).toBeNull();
     });
 
-    it('Should render a delete user button', () => {
+    it('renders a delete user button in disabled state when user does not have schemes', () => {
       render(<UserPage {...getPageProps(getDefaultProps)} />);
 
-      expect(screen.getByRole('link', { name: 'Delete user' })).toHaveAttribute(
+      const deleteUserButton = screen.getByRole('link', {
+        name: 'Delete user',
+      });
+
+      expect(deleteUserButton).toHaveAttribute(
         'href',
         '/apply/super-admin-dashboard/user/1/delete-user'
       );
+      expect(deleteUserButton).toBeEnabled();
+    });
+
+    it('renders delete user button in disabled state when user has schemes', () => {
+      const props = {
+        ...getPageProps(getDefaultProps),
+        schemes: [
+          {
+            name: 'Test Scheme',
+            schemeId: 'schemeId',
+            ggisReference: 'reference',
+            funderId: 'someid',
+            createdDate: 'many eons ago',
+          },
+        ],
+      };
+      render(<UserPage {...props} />);
+
+      const deleteUserButton = screen.getByRole('button', {
+        name: 'Delete user',
+      });
+
+      expect(deleteUserButton).toBeDisabled();
     });
 
     it('Should render an unblock user button', () => {
