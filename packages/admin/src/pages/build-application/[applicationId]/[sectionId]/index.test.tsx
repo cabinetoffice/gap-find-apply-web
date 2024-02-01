@@ -171,7 +171,7 @@ describe('Edit section page', () => {
       screen.getByText('Long answer');
       expect(screen.getByRole('link', { name: 'Edit' })).toHaveProperty(
         'href',
-        'http://localhost/apply/#'
+        'http://localhost/apply/build-application/some-application-id/testSectionId/testQuestionId/edit/question-content'
       );
     });
 
