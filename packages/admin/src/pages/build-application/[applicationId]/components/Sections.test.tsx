@@ -129,11 +129,8 @@ describe('Sections component', () => {
       );
     });
 
-    it('Should render an "Up" button', () => {
+    it('Should render an "Up" and "Down" buttons', () => {
       screen.getByRole('button', { name: 'Up' });
-    });
-
-    it('Should render a "Down" button', () => {
       screen.getByRole('button', { name: 'Down' });
     });
   });

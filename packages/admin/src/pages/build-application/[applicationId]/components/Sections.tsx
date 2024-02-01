@@ -16,6 +16,8 @@ interface SectionsProps {
   csrfToken: string;
 }
 
+const CUSTOM_SECTION_FIRST_INDEX = 2;
+
 const Sections = ({
   sections,
   applicationId,
@@ -44,7 +46,8 @@ const Sections = ({
             <div className={`${styles['table']}`}>
               <Table
                 caption={
-                  sectionIndex >= 2 && applicationStatus != 'PUBLISHED' ? (
+                  sectionIndex >= CUSTOM_SECTION_FIRST_INDEX &&
+                  applicationStatus != 'PUBLISHED' ? (
                     <div className="govuk-grid-row govuk-!-padding-top-5 govuk-!-padding-bottom-3 govuk-!-padding-left-3 govuk-!-padding-right-3">
                       <div className="govuk-grid-column-one-third">
                         {sectionIndex + 1}. {section.sectionTitle}
@@ -52,16 +55,16 @@ const Sections = ({
 
                       <div className="govuk-grid-column-two-thirds govuk-!-text-align-right">
                         <button
-                          className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['b']}`}
+                          className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
                           data-module="govuk-button"
                           data-cy="cyUpButton"
                           name={`Up/${section.sectionId}`}
-                          disabled={sectionIndex === 2}
+                          disabled={sectionIndex === CUSTOM_SECTION_FIRST_INDEX}
                         >
                           Up
                         </button>
                         <button
-                          className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['b']}`}
+                          className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
                           data-module="govuk-button"
                           data-cy="cyDownButton"
                           name={`Down/${section.sectionId}`}

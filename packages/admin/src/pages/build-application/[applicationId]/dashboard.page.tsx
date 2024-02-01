@@ -30,8 +30,11 @@ export const getServerSideProps = async ({
     req,
     res,
     async (body) => {
-      const sectionId = Object.keys(body)[0].split('/')[1];
-      const increment = Object.keys(body)[0].split('/')[0] === 'Up' ? -1 : 1;
+      const params = Object.keys(body)[0].split('/');
+      const { increment, sectionId } = {
+        increment: params[0] === 'Up' ? -1 : 1,
+        sectionId: params[1],
+      };
       await handleSectionOrdering(increment, sectionId, applicationId);
     },
     `/build-application/${applicationId}/dashboard`,
