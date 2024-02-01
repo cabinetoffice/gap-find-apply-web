@@ -3,8 +3,6 @@ import { FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import {
   getChangeDepartmentPage,
-  getUserFromJwt,
-  getUserRoles,
   updateDepartment,
   updateUserRoles,
 } from '../../../../services/SuperAdminService';
