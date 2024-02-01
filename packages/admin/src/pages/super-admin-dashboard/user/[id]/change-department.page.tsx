@@ -3,8 +3,6 @@ import { FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import {
   getChangeDepartmentPage,
-  getUserFromJwt,
-  getUserRoles,
   updateDepartment,
   updateUserRoles,
 } from '../../../../services/SuperAdminService';
@@ -14,7 +12,7 @@ import CustomLink from '../../../../components/custom-link/CustomLink';
 import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
 
 type PageBodyResponse = {
-  department: string;
+  department: number;
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {

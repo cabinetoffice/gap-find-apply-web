@@ -85,7 +85,7 @@ export const getChangeDepartmentPage = async (
 
 export const updateDepartment = async (
   userId: string,
-  departmentId: string,
+  departmentId: number,
   userToken: string
 ) => {
   const changeDepartmentDto: ChangeDepartmentDto = {
