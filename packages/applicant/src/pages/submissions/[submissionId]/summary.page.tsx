@@ -116,6 +116,7 @@ export default function SubmissionSummary({
               }
               method="POST"
             >
+              {/* 'Important' Banner must go here */}
               <span
                 className="govuk-caption-l"
                 data-cy={`cy-application-name-${applicationName}`}

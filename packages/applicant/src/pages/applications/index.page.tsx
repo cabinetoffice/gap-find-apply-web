@@ -186,6 +186,7 @@ const ApplicationRow = (application) => {
         aria-describedby={`application-link-${submissionId}`}
       >
         {submissionStatus === 'GRANT_CLOSED' ? (
+          //GRANT CLOSED - will have a "view" link which redirects to summary page of that application
           '-'
         ) : (
           <a
