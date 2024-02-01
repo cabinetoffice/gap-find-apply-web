@@ -119,11 +119,17 @@ export const getAllDepartments = async (userToken: string) => {
 export const updateUserRoles = async (
   id: string,
   newUserRoles: string | string[],
-  userToken: string
+  userToken: string,
+  departmentId?: number
 ) => {
+  const body =
+    typeof newUserRoles === 'string'
+      ? { departmentId, newUserRoles: [newUserRoles] }
+      : { departmentId, newUserRoles };
+
   await axios.patch(
     `${process.env.USER_SERVICE_URL}/user/${id}/role`,
-    typeof newUserRoles === 'string' ? [newUserRoles] : newUserRoles,
+    body,
     axiosUserServiceConfig(userToken)
   );
 };
