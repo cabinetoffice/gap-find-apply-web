@@ -30,12 +30,18 @@ export const getServerSideProps = async ({
     req,
     res,
     async (body) => {
+      const sessionId = getSessionIdFromCookies(req);
       const params = Object.keys(body)[0].split('/');
       const { increment, sectionId } = {
         increment: params[0] === 'Up' ? -1 : 1,
         sectionId: params[1],
       };
-      await handleSectionOrdering(increment, sectionId, applicationId);
+      await handleSectionOrdering(
+        increment,
+        sectionId,
+        applicationId,
+        sessionId
+      );
     },
     `/build-application/${applicationId}/dashboard`,
     generateErrorPageParams(

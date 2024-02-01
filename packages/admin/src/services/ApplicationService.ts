@@ -93,12 +93,17 @@ const updateApplicationFormStatus = async (
 const handleSectionOrdering = async (
   increment: number,
   sectionId: string,
-  applicationId: string
+  applicationId: string,
+  sessionId: string
 ) => {
-  await axios.patch(`${BASE_APPLICATION_URL}/${applicationId}/sections/order`, {
-    sectionId,
-    increment,
-  });
+  await axios.patch(
+    `${BASE_APPLICATION_URL}/${applicationId}/sections/order`,
+    {
+      sectionId,
+      increment,
+    },
+    axiosSessionConfig(sessionId)
+  );
 };
 
 export {

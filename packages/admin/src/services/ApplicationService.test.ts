@@ -190,11 +190,17 @@ describe('ApplicationService', () => {
   describe('handleSectionOrdering', () => {
     it('Should call the expected endpoint to update an application forms section order', async () => {
       const increment = 1;
-      await handleSectionOrdering(increment, SECTION_ID, APPLICATION_ID);
+      await handleSectionOrdering(
+        increment,
+        SECTION_ID,
+        APPLICATION_ID,
+        SESSION_ID
+      );
 
       expect(mockedAxios.patch).toHaveBeenCalledWith(
         `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/order`,
-        { increment, sectionId: SECTION_ID }
+        { increment, sectionId: SECTION_ID },
+        { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
       );
       expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
     });
