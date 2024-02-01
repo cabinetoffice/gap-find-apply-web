@@ -52,7 +52,10 @@ export const getServerSideProps: GetServerSideProps = async ({
     return questionErrorPageRedirect(applicationId);
   }
 
-  const patchQuestionRedirect = `/build-application/${applicationId}/${sectionId}`;
+  const redirect =
+    backTo === 'dashboard'
+      ? `/build-application/${applicationId}/dashboard`
+      : `/build-application/${applicationId}/${sectionId}`;
 
   const result = await callServiceMethod(
     req,
@@ -65,7 +68,7 @@ export const getServerSideProps: GetServerSideProps = async ({
         validation: { mandatory: optional !== 'true' },
       });
     },
-    patchQuestionRedirect,
+    redirect,
     getErrorPageParams(applicationId)
   );
 
@@ -115,16 +118,11 @@ export const getServerSideProps: GetServerSideProps = async ({
     defaultInputValues = { ...defaultInputValues, ...questionSummary };
   }
 
-  const backButtonHref =
-    backTo === 'dashboard'
-      ? `/build-application/${applicationId}/dashboard`
-      : `/build-application/${applicationId}/${sectionId}`;
-
   return {
     props: {
       fieldErrors,
       backTo: backTo ?? '',
-      backButtonHref,
+      backButtonHref: redirect,
       formAction: process.env.SUB_PATH + resolvedUrl,
       ...defaultInputValues,
       csrfToken: res.getHeader('x-csrf-token') as string,
