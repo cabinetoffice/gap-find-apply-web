@@ -16,6 +16,8 @@ import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { ProcessMultiResponse } from './sections/[sectionId]/processMultiResponse';
 import { getQuestionUrl } from './sections/[sectionId]/index.page';
+import { ImportantBanner } from 'gap-web-ui';
+import { fetchSubmission } from '../../../services/SubmissionService';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -43,6 +45,12 @@ export const getServerSideProps: GetServerSideProps<
   );
 
   const hasBeenSubmitted = await hasSubmissionBeenSubmitted(submissionId, jwt);
+
+  const submission = await fetchSubmission(submissionId, jwt);
+  const submissionExists = submission.status !== 404;
+
+  const closedAndInProgress =
+    grantApplicationStatus === 'REMOVED' && submissionExists;
 
   const hydratedSections = await Promise.all(
     sections.map(async (section) => {
@@ -85,6 +93,7 @@ export const getServerSideProps: GetServerSideProps<
       applicationName,
       hasSubmissionBeenSubmitted: hasBeenSubmitted,
       csrfToken: res.getHeader('x-csrf-token') as string,
+      closedAndInProgress: closedAndInProgress,
     },
   };
 };
@@ -96,13 +105,14 @@ export default function SubmissionSummary({
   applicationName,
   hasSubmissionBeenSubmitted,
   csrfToken,
+  closedAndInProgress,
 }) {
   return (
     <>
       <Meta title="My application - Apply for a grant" />
       <Layout
         backBtnUrl={
-          hasSubmissionBeenSubmitted
+          hasSubmissionBeenSubmitted || closedAndInProgress
             ? routes.applications
             : routes.submissions.sections(grantSubmissionId)
         }
@@ -116,7 +126,10 @@ export default function SubmissionSummary({
               }
               method="POST"
             >
-              {/* 'Important' Banner must go here */}
+              <ImportantBanner
+                bannerHeading="This grant has closed. You cannot submit your application"
+                bannerContent="You can still view your answers and download a copy of your application on this page."
+              />
               <span
                 className="govuk-caption-l"
                 data-cy={`cy-application-name-${applicationName}`}
@@ -143,20 +156,20 @@ export default function SubmissionSummary({
                 Download a copy of your application
               </h1>
               <p className="govuk-body">
-                You can{' '}
-                <Link
+                You can {/* <Link */}
+                <a
+                  className="govuk-link govuk-link--no-visited-state"
                   href={routes.api.submissions.downloadSummary(
                     grantSubmissionId
                   )}
                 >
-                  <a className="govuk-link govuk-link--no-visited-state">
-                    download a copy of your answers (ZIP)
-                  </a>
-                </Link>{' '}
+                  download a copy of your answers (ZIP)
+                </a>
+                {/* </Link>{' '} */}
                 for future reference.
               </p>
 
-              {hasSubmissionBeenSubmitted ? (
+              {hasSubmissionBeenSubmitted || closedAndInProgress ? (
                 <div className="govuk-button-group">
                   <a
                     href={publicRuntimeConfig.subPath + routes.applications}

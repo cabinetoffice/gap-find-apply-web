@@ -185,19 +185,14 @@ const ApplicationRow = (application) => {
         className="govuk-table__cell"
         aria-describedby={`application-link-${submissionId}`}
       >
-        {submissionStatus === 'GRANT_CLOSED' ? (
-          //GRANT CLOSED - will have a "view" link which redirects to summary page of that application
-          '-'
-        ) : (
-          <a
-            href={applicationLink}
-            className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-            data-cy={`cy-application-link-${applicationName}`}
-            id={`application-link-${submissionId}`}
-          >
-            {applicationLinkText}
-          </a>
-        )}
+        <a
+          href={applicationLink}
+          className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+          data-cy={`cy-application-link-${applicationName}`}
+          id={`application-link-${submissionId}`}
+        >
+          {applicationLinkText}
+        </a>
       </td>
 
       {/* Left in to stop AXE accessibility warnings */}
