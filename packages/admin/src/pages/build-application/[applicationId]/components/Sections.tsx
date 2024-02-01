@@ -87,7 +87,7 @@ const Sections = ({
                     </div>
                   )
                 }
-                captionClassName={`${styles['caption']}`}
+                captionClassName={styles['caption']}
                 disableBottomRowBorder
                 tHeadColumns={[
                   {
