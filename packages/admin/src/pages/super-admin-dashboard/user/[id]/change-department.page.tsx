@@ -14,7 +14,7 @@ import CustomLink from '../../../../components/custom-link/CustomLink';
 import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
 
 type PageBodyResponse = {
-  department: string;
+  department: number;
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
