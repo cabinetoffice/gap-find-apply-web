@@ -144,15 +144,21 @@ describe('Middleware', () => {
     process.env.MANDATORY_QUESTIONS_ENABLED = mandatoryQuestionsEnabledBackup;
   });
 
-  it('redirect to grant-is-closed if it gets a removed response from the API', async () => {
+  it('redirect to grant-is-closed if it gets a removed response from the API and submission is not submitted', async () => {
     const req = getMockRequest(
       'https://some.website.com/submissions/some-uuid'
     );
 
     req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
-    jest.spyOn(global, 'fetch').mockResolvedValue({
-      text: jest.fn().mockResolvedValue('REMOVED'),
-    } as unknown as Response);
+    const mapUrlToResponse = {
+      'undefined/submissions/some-uuid/application/status': 'REMOVED',
+      'undefined/submissions/some-uuid/isSubmitted': 'false',
+    };
+    jest.spyOn(global, 'fetch').mockImplementation((url) => {
+      return {
+        text: jest.fn().mockResolvedValue(mapUrlToResponse[url as string]),
+      } as unknown as Promise<Response>;
+    });
     const res = await middleware(req);
     expect(res.status).toBe(307);
     expect(res.headers.get('Location')).toBe(
@@ -160,18 +166,69 @@ describe('Middleware', () => {
     );
   });
 
-  it('redirect to grant-is-closed if it gets a removed response from the API for mandatory questions', async () => {
+  it('should not redirect to grant-is-closed if it gets a removed response from the API but submission is submitted', async () => {
+    const req = getMockRequest(
+      'https://some.website.com/submissions/some-uuid'
+    );
+
+    req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
+
+    const mapUrlToResponse = {
+      'undefined/submissions/some-uuid/application/status': 'REMOVED',
+      'undefined/submissions/some-uuid/isSubmitted': 'true',
+    };
+    jest.spyOn(global, 'fetch').mockImplementation((url) => {
+      return {
+        text: jest.fn().mockResolvedValue(mapUrlToResponse[url as string]),
+      } as unknown as Promise<Response>;
+    });
+    const res = await middleware(req);
+    expect(res.status).toBe(307);
+    expect(res.headers.get('Location')).not.toBe(
+      `${process.env.HOST}/grant-is-closed`
+    );
+  });
+
+  it('redirect to grant-is-closed if it gets a removed response from the API for mandatory questions and submission is not submitted', async () => {
     const req = getMockRequest(
       'https://some.website.com/mandatory-questions/000/some-url'
     );
 
     req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
-    jest.spyOn(global, 'fetch').mockResolvedValue({
-      text: jest.fn().mockResolvedValue('REMOVED'),
-    } as unknown as Response);
+    const mapUrlToResponse = {
+      'undefined/grant-mandatory-questions/000/application/status': 'REMOVED',
+      'undefined/submissions/000/isSubmitted': 'false',
+    };
+    jest.spyOn(global, 'fetch').mockImplementation((url) => {
+      return {
+        text: jest.fn().mockResolvedValue(mapUrlToResponse[url as string]),
+      } as unknown as Promise<Response>;
+    });
     const res = await middleware(req);
     expect(res.status).toBe(307);
     expect(res.headers.get('Location')).toBe(
+      `${process.env.HOST}/grant-is-closed`
+    );
+  });
+
+  it('should not redirect to grant-is-closed if it gets a removed response from the API for mandatory questions but submission is submitted', async () => {
+    const req = getMockRequest(
+      'https://some.website.com/mandatory-questions/000/some-url'
+    );
+
+    req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
+    const mapUrlToResponse = {
+      'undefined/grant-mandatory-questions/000/application/status': 'REMOVED',
+      'undefined/submissions/000/isSubmitted': 'true',
+    };
+    jest.spyOn(global, 'fetch').mockImplementation((url) => {
+      return {
+        text: jest.fn().mockResolvedValue(mapUrlToResponse[url as string]),
+      } as unknown as Promise<Response>;
+    });
+    const res = await middleware(req);
+    expect(res.status).toBe(307);
+    expect(res.headers.get('Location')).not.toBe(
       `${process.env.HOST}/grant-is-closed`
     );
   });
