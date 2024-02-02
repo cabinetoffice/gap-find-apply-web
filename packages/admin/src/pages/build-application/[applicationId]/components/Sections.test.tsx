@@ -63,10 +63,10 @@ describe('Sections component', () => {
     });
 
     it('Should render section titles', () => {
-      screen.getByRole('table', { name: '1. Eligibility' });
-      screen.getByRole('table', { name: '2. Required checks' });
+      screen.getByRole('table', { name: 'Section 1: Eligibility' });
+      screen.getByRole('table', { name: 'Section 2: Required checks' });
       screen.getByRole('table', {
-        name: '3. Custom section Up Down Edit section',
+        name: 'Section 3: Custom section',
       });
     });
 

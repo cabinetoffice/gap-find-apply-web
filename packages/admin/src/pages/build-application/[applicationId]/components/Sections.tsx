@@ -103,6 +103,9 @@ const Sections = ({
                   )
                 }
                 captionClassName={styles['caption']}
+                captionLabel={`Section ${sectionIndex + 1}: ${
+                  section.sectionTitle
+                }`}
                 disableBottomRowBorder
                 tHeadColumns={[
                   {

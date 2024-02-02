@@ -149,9 +149,11 @@ function questionTableRows(
           content: (
             <p className="govuk-!-font-weight-bold">{question.fieldTitle}</p>
           ),
+          className: 'govuk-!-padding-1',
         },
         {
           content: <p>{ResponseTypeLabels[question.responseType]}</p>,
+          className: 'govuk-!-padding-1',
         },
         {
           content: (
@@ -177,6 +179,7 @@ function questionTableRows(
               </div>
             </div>
           ),
+          className: 'govuk-!-padding-1',
         },
       ],
     })) || []
