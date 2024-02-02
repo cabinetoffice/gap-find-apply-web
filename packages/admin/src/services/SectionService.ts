@@ -58,15 +58,10 @@ const updateSectionTitle = async ({
   sectionId,
   body: { sectionTitle },
 }: UpdateSectionTitleProps) => {
-  const config: AxiosConfig = {
-    ...axiosSessionConfig(sessionId),
-  };
-  config.headers['Content-Type'] = 'application/json';
-
   await axios.patch(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/title`,
     { sectionTitle },
-    config
+    axiosSessionConfig(sessionId)
   );
 };
 

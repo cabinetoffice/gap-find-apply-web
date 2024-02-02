@@ -46,6 +46,7 @@ export default function EditSectionTitle({
   pageData: { sectionTitle, applicationId, sectionId },
   formAction,
   fieldErrors,
+  previousValues,
 }: InferProps<typeof getServerSideProps>) {
   return (
     <>
@@ -68,7 +69,7 @@ export default function EditSectionTitle({
           <h1 className="govuk-heading-l">Change the title of this section</h1>
 
           <TextInput
-            defaultValue={sectionTitle}
+            defaultValue={previousValues?.sectionTitle ?? sectionTitle}
             fieldName="sectionTitle"
             fieldErrors={fieldErrors}
           />
