@@ -29,6 +29,11 @@ const Sections = ({
   formRef,
   setNewScrollPosition,
 }: SectionsProps) => {
+  function handleOnUpDownButtonClick() {
+    setNewScrollPosition(window.scrollY);
+    formRef?.current?.submit();
+  }
+
   return (
     <FlexibleQuestionPageLayout
       formAction={formAction}
@@ -65,10 +70,7 @@ const Sections = ({
                           data-cy="cyUpButton"
                           name={`Up/${section.sectionId}`}
                           disabled={sectionIndex === CUSTOM_SECTION_FIRST_INDEX}
-                          onClick={() => {
-                            setNewScrollPosition(window.scrollY);
-                            formRef?.current?.submit();
-                          }}
+                          onClick={handleOnUpDownButtonClick}
                         >
                           Up
                         </button>
@@ -78,10 +80,7 @@ const Sections = ({
                           data-cy="cyDownButton"
                           name={`Down/${section.sectionId}`}
                           disabled={sectionIndex === sections.length - 1}
-                          onClick={() => {
-                            setNewScrollPosition(window.scrollY);
-                            formRef?.current?.submit();
-                          }}
+                          onClick={handleOnUpDownButtonClick}
                         >
                           Down
                         </button>
