@@ -27,6 +27,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   params,
   resolvedUrl,
   req,
+  query: { backTo },
   res,
 }) => {
   const sessionId = getSessionIdFromCookies(req);
@@ -51,11 +52,10 @@ export const getServerSideProps: GetServerSideProps = async ({
     return questionErrorPageRedirect(applicationId);
   }
 
-  const patchQuestionRedirect =
-    questionData.responseType == ResponseTypeEnum.Dropdown ||
-    questionData.responseType == ResponseTypeEnum.MultipleSelection
-      ? `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-options`
-      : `/build-application/${applicationId}/dashboard`;
+  const redirect =
+    backTo === 'dashboard'
+      ? `/build-application/${applicationId}/dashboard`
+      : `/build-application/${applicationId}/${sectionId}`;
 
   const result = await callServiceMethod(
     req,
@@ -68,7 +68,7 @@ export const getServerSideProps: GetServerSideProps = async ({
         validation: { mandatory: optional !== 'true' },
       });
     },
-    patchQuestionRedirect,
+    redirect,
     getErrorPageParams(applicationId)
   );
 
@@ -98,10 +98,6 @@ export const getServerSideProps: GetServerSideProps = async ({
     };
   }
 
-  const sectionTitle = applicationFormSummary.sections.find(
-    (section) => section.sectionId === sectionId
-  )?.sectionTitle;
-
   let defaultInputValues: RequestBody = {
     fieldTitle: '',
     hintText: '',
@@ -125,24 +121,26 @@ export const getServerSideProps: GetServerSideProps = async ({
   return {
     props: {
       fieldErrors,
-      backButtonHref: `/build-application/${applicationId}/${sectionId}/${questionId}/preview`,
+      backTo: backTo ?? '',
+      backButtonHref: redirect,
       formAction: process.env.SUB_PATH + resolvedUrl,
-      pageCaption: sectionTitle,
       ...defaultInputValues,
       csrfToken: res.getHeader('x-csrf-token') as string,
+      deleteConfirmationUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/delete-confirmation`,
     },
   };
 };
 
 const QuestionContent = ({
   fieldErrors,
-  backButtonHref,
   formAction,
-  pageCaption,
   fieldTitle,
   hintText,
   optional,
   csrfToken,
+  backButtonHref,
+  backTo,
+  deleteConfirmationUrl,
 }: QuestionContentPageProps) => {
   return (
     <>
@@ -155,15 +153,16 @@ const QuestionContent = ({
       <CustomLink href={backButtonHref} isBackButton />
 
       <div className="govuk-!-padding-top-7">
+        <h1 className="govuk-heading-l">Edit a question</h1>
         <FlexibleQuestionPageLayout
           formAction={formAction}
-          pageCaption={pageCaption}
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
         >
           <TextInput
-            questionTitle="Enter a question"
-            questionHintText="Applicants will see this on their application form"
+            questionTitle="Question title"
+            titleSize="m"
+            questionHintText="This will be shown to applicants as a page title."
             fieldName="fieldTitle"
             fieldErrors={fieldErrors}
             defaultValue={fieldTitle}
@@ -196,16 +195,51 @@ const QuestionContent = ({
           />
           <div className="govuk-button-group">
             <Button
-              text="Save and continue"
+              text="Save changes"
               data-cy="cy_questionEdit_saveAndContinueButton"
             />
             <CustomLink
-              href={backButtonHref}
+              href={'#change-question-type'} //Implemented with GAP-2105
+              isSecondaryButton
               dataCy="cy_questionEdit_cancelChangesButton"
             >
-              Cancel
+              Change question type
             </CustomLink>
           </div>
+
+          <hr className="govuk-section-break govuk-section-break--visible govuk-section-break--xl" />
+
+          <h3 className="govuk-heading-m" id="change-question-type">
+            Preview question
+          </h3>
+
+          <p className="govuk-body">
+            You can preview how your question will look to applicants.
+          </p>
+
+          <CustomLink
+            href={'#change-question-type'} //Implemented with GAP-2106
+            isSecondaryButton
+            dataCy="cy_questionEdit_cancelChangesButton"
+          >
+            Preview Question
+          </CustomLink>
+
+          <hr className="govuk-section-break govuk-section-break--visible govuk-section-break--xl" />
+
+          <h2 className="govuk-heading-m">Delete question</h2>
+
+          <p className="govuk-body">
+            You will not be able to undo this action.
+          </p>
+
+          <CustomLink
+            href={deleteConfirmationUrl + '?backTo=' + backTo}
+            isButton
+            customStyle="govuk-button--warning"
+          >
+            Delete question
+          </CustomLink>
         </FlexibleQuestionPageLayout>
       </div>
     </>

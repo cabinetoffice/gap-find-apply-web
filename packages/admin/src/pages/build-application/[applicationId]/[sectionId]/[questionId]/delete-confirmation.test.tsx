@@ -31,6 +31,8 @@ const customProps = {
   formAction: '',
   defaultValue: '',
   csrfToken: '',
+  deleteConfirmationUrl: 'some-url',
+  backTo: '',
 };
 
 const expectedRedirectObject = {
@@ -45,6 +47,9 @@ const component = <DeleteQuestion {...customProps} />;
 const getContext = (overrides = {}) =>
   merge(
     {
+      query: {
+        backTo: 'dashboard',
+      },
       params: {
         applicationId: APPLICATION_ID,
         sectionId: SECTION_ID,
@@ -63,11 +68,6 @@ const getContext = (overrides = {}) =>
 
 describe('Delete question page', () => {
   describe('UI', () => {
-    it('Should render a meta title without "Error: " when fieldErrors is empty', () => {
-      render(component);
-      expect(document.title).toBe('Delete a question - Manage a grant');
-    });
-
     it('Should render a meta title with "Error: " when fieldErrors is NOT empty', () => {
       render(
         <DeleteQuestion
@@ -79,32 +79,17 @@ describe('Delete question page', () => {
       expect(document.title).toBe('Error: Delete a question - Manage a grant');
     });
 
-    it('Should render a back button with correct link on it', () => {
+    it('Renders page layout', () => {
       render(component);
+      screen.getByTestId('question-page-form');
+      screen.getByTestId('radioFormDiv');
+      screen.getByRole('button', { name: 'Confirm' });
+      screen.getByRole('link', { name: 'Cancel' });
+      expect(document.title).toBe('Delete a question - Manage a grant');
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
         '/dashboard'
       );
-    });
-
-    it('Renders page layout', () => {
-      render(component);
-      screen.getByTestId('question-page-form');
-    });
-
-    it('Renders radio input to confirm whether to delete question or not', () => {
-      render(component);
-      screen.getByTestId('radioFormDiv');
-    });
-
-    it('Renders "Confirm" button', () => {
-      render(component);
-      screen.getByRole('button', { name: 'Confirm' });
-    });
-
-    it('Renders "Cancel" link', () => {
-      render(component);
-      screen.getByRole('link', { name: 'Cancel' });
     });
   });
 
@@ -194,6 +179,23 @@ describe('Delete question page', () => {
       expect(value).toStrictEqual({
         redirect: {
           destination: `/build-application/${APPLICATION_ID}/dashboard`,
+          statusCode: 302,
+        },
+      });
+    });
+
+    it('should redirect to the edit section page.', async () => {
+      (parseBody as jest.Mock).mockResolvedValue({
+        deleteBool: 'false',
+      });
+      const value = (await getServerSideProps(
+        getPostContext({ query: { backTo: 'edit-section' } })
+      )) as NextGetServerSidePropsResponse;
+
+      expect(deleteQuestion).not.toHaveBeenCalled();
+      expect(value).toStrictEqual({
+        redirect: {
+          destination: `/build-application/${APPLICATION_ID}/${SECTION_ID}`,
           statusCode: 302,
         },
       });

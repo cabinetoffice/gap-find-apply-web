@@ -99,7 +99,7 @@ const EditSectionPage = ({
           },
           { name: 'Actions', isVisuallyHidden: true, width: 'one-third' },
         ]}
-        rows={questionTableRows(section)}
+        rows={questionTableRows(section, applicationId)}
       />
 
       <CustomLink
@@ -139,7 +139,8 @@ const EditSectionPage = ({
 };
 
 function questionTableRows(
-  section: InferProps<typeof getServerSideProps>['section']
+  section: InferProps<typeof getServerSideProps>['section'],
+  applicationId: string
 ) {
   return (
     section.questions?.map((question) => ({
@@ -168,7 +169,7 @@ function questionTableRows(
                   {/* <Button text="Down" isSecondary /> */}
                 </div>
                 <CustomLink
-                  href="/#"
+                  href={`/build-application/${applicationId}/${section.sectionId}/${question.questionId}/edit/question-content`}
                   customStyle="govuk-!-padding-left-6 govuk-!-padding-top-2 govuk-grid-column-one-quarter govuk-!-text-align-left"
                 >
                   Edit

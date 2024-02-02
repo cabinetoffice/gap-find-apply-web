@@ -37,6 +37,8 @@ const customProps = {
   hintText: '',
   optional: '',
   csrfToken: '',
+  deleteConfirmationUrl: '',
+  backTo: '',
 };
 
 const expectedRedirectObject = {
@@ -49,11 +51,6 @@ const component = <QuestionContent {...customProps} />;
 
 describe('Question content page', () => {
   describe('UI', () => {
-    it('Should render a meta title without "Error: " when fieldErrors is empty', () => {
-      render(component);
-      expect(document.title).toBe('Edit a question - Manage a grant');
-    });
-
     it('Should render a meta title with "Error: " when fieldErrors is NOT empty', () => {
       render(
         <QuestionContent
@@ -75,36 +72,13 @@ describe('Question content page', () => {
 
     it('Renders the question page layout output', () => {
       render(component);
+      expect(document.title).toBe('Edit a question - Manage a grant');
       screen.getByTestId('question-page-form');
-    });
-
-    it('Renders text input field for question name', () => {
-      render(component);
       screen.getByTestId('text-input-component');
-    });
-
-    it('Renders text area with character counter for question description', () => {
-      render(component);
       screen.getByTestId('text-area-component');
       screen.getByTestId('character-limit-div');
-    });
-
-    it('Renders radio section to determine whether the question is mandatory', () => {
-      render(component);
       screen.getByTestId('radioFormDiv');
-    });
-
-    it('Renders "Save and continue" button', () => {
-      render(component);
-      screen.getByRole('button', { name: 'Save and continue' });
-    });
-
-    it('Renders "Cancel" link', () => {
-      render(component);
-      expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute(
-        'href',
-        '/apply/back'
-      );
+      screen.getByRole('button', { name: 'Save changes' });
     });
   });
 
@@ -128,6 +102,7 @@ describe('Question content page', () => {
     const getContext = (overrides = {}) =>
       merge(
         {
+          query: { backTo: 'dashboard' },
           params: {
             applicationId: 'testApplicationId',
             sectionId: 'testSectionId',
@@ -150,7 +125,17 @@ describe('Question content page', () => {
       )) as NextGetServerSidePropsResponse;
 
       expect(value.props.backButtonHref).toStrictEqual(
-        '/build-application/testApplicationId/testSectionId/testQuestionId/preview'
+        '/build-application/testApplicationId/dashboard'
+      );
+    });
+
+    it('back button href should link to section edit page when the user visted from that page.', async () => {
+      const value = (await getServerSideProps(
+        getContext({ query: { backTo: 'edit-section' } })
+      )) as NextGetServerSidePropsResponse;
+
+      expect(value.props.backButtonHref).toStrictEqual(
+        '/build-application/testApplicationId/testSectionId'
       );
     });
 
@@ -163,14 +148,6 @@ describe('Question content page', () => {
         process.env.SUB_PATH +
           '/build-application/testApplicationId/testSectionId/edit/question-content'
       );
-    });
-
-    it('Should return a page caption of the section title', async () => {
-      const value = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
-
-      expect(value.props.pageCaption).toStrictEqual('Custom section name');
     });
 
     it('Should redirect to the service error page when fetching the question data fails', async () => {
@@ -274,7 +251,7 @@ describe('Question content page', () => {
         expect(value).toStrictEqual(expectedRedirectObject);
       });
 
-      it('Should redirect to application builder dashboard when question is NOT multiple option type and patching the question succeeds', async () => {
+      it('Should redirect to application dashboard when patching the question succeeds', async () => {
         const value = (await getServerSideProps(
           getPostContext()
         )) as NextGetServerSidePropsResponse;
@@ -287,43 +264,14 @@ describe('Question content page', () => {
         });
       });
 
-      it('Should redirect to question-options page when question type is "Dropdown" and patching the question succeeds', async () => {
-        (getQuestion as jest.Mock).mockResolvedValue({
-          fieldTitle: 'Test Section Field Title',
-          hintText: 'Test hint text',
-          validation: { mandatory: 'true' },
-          responseType: 'Dropdown',
-        });
-
+      it('Should redirect to edit section page when patching the question succeeds (and the user reached this page from edit section)', async () => {
         const value = (await getServerSideProps(
-          getPostContext()
+          getPostContext({ query: { backTo: 'edit-section' } })
         )) as NextGetServerSidePropsResponse;
 
         expect(value).toStrictEqual({
           redirect: {
-            destination:
-              '/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-options',
-            statusCode: 302,
-          },
-        });
-      });
-
-      it('Should redirect to question-options page when question type is "Dropdown" and patching the question succeeds', async () => {
-        (getQuestion as jest.Mock).mockResolvedValue({
-          fieldTitle: 'Test Section Field Title',
-          hintText: 'Test hint text',
-          validation: { mandatory: 'true' },
-          responseType: 'MultipleSelection',
-        });
-
-        const value = (await getServerSideProps(
-          getPostContext()
-        )) as NextGetServerSidePropsResponse;
-
-        expect(value).toStrictEqual({
-          redirect: {
-            destination:
-              '/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-options',
+            destination: '/build-application/testApplicationId/testSectionId',
             statusCode: 302,
           },
         });
