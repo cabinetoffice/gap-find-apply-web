@@ -163,7 +163,7 @@ async function getApplicationStatusBySubmissionId(
   return await data.text();
 }
 
-async function getIsSubmissionSubmittedBySubmissionId(id: string, jwt: string) {
+async function getIsSubmissionSubmitted(id: string, jwt: string) {
   const url = `${BACKEND_HOST}/submissions/${id}/isSubmitted`;
   const data = await fetch(url, {
     headers: {
@@ -187,10 +187,7 @@ async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
     pathname
   );
 
-  const isSubmissionSubmitted = await getIsSubmissionSubmittedBySubmissionId(
-    id,
-    jwt
-  );
+  const isSubmissionSubmitted = await getIsSubmissionSubmitted(id, jwt);
 
   if (applicationStatus === 'REMOVED' && !isSubmissionSubmitted) {
     return NextResponse.redirect(process.env.HOST + GRANT_CLOSED_REDIRECT);
