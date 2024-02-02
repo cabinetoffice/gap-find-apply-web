@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { ApplicationFormStatus } from '../types/ApplicationForm';
 import getConfig from 'next/config';
-import { axiosSessionConfig } from '../utils/session';
+import { AxiosConfig, axiosSessionConfig } from '../utils/session';
+import { UpdateSectionTitleProps } from '../types/Section';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -39,7 +40,7 @@ const updateSectionStatus = (
   sectionId: string,
   newSectionStatus: ApplicationFormStatus
 ) => {
-  const config: any = {
+  const config: AxiosConfig = {
     ...axiosSessionConfig(sessionId),
   };
   config.headers['Content-Type'] = 'application/json';
@@ -51,4 +52,17 @@ const updateSectionStatus = (
   );
 };
 
-export { postSection, deleteSection, updateSectionStatus };
+const updateSectionTitle = async ({
+  sessionId,
+  applicationId,
+  sectionId,
+  body: { sectionTitle },
+}: UpdateSectionTitleProps) => {
+  await axios.patch(
+    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/title`,
+    { sectionTitle },
+    axiosSessionConfig(sessionId)
+  );
+};
+
+export { postSection, deleteSection, updateSectionStatus, updateSectionTitle };

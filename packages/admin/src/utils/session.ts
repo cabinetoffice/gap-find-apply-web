@@ -20,6 +20,12 @@ export const getUserTokenFromCookies = (
   return req.cookies[process.env.JWT_COOKIE_NAME] || '';
 };
 
+export type AxiosConfig = ReturnType<typeof axiosSessionConfig> & {
+  headers: ReturnType<typeof axiosSessionConfig>['headers'] & {
+    'Content-Type'?: string;
+  };
+};
+
 export const axiosSessionConfig = (sessionId: string) => {
   return {
     withCredentials: true,

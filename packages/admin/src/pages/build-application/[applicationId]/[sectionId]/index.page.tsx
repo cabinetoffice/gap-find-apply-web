@@ -73,14 +73,13 @@ const EditSectionPage = ({
                 {section.sectionTitle}
               </div>
             ),
-            // GAP-2103: Uncomment this when the edit section page is implemented
-            // action: (
-            //   <CustomLink
-            //     href={`/build-application/${applicationId}/${section.sectionId}/section-name`}
-            //   >
-            //     Edit
-            //   </CustomLink>
-            // ),
+            action: (
+              <CustomLink
+                href={`/build-application/${applicationId}/${section.sectionId}/edit-title`}
+              >
+                Edit
+              </CustomLink>
+            ),
           },
         ]}
       />
