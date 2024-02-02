@@ -20,6 +20,9 @@ RUN yarn workspace gap-web-ui build
 
 RUN yarn workspace ${APP_NAME} build
 
+RUN mkdir -p /app/.next/cache && chown nextjs:nodejs /app/.next/cache
+VOLUME ["/app/.next/cache"]
+
 FROM --platform=linux/amd64 node:${NODE_VERSION}-alpine
 
 ARG APP_NAME
