@@ -7,6 +7,7 @@ import {
 import { routes } from '../../utils/routes';
 import { ImportantBanner } from 'gap-web-ui';
 import Link from 'next/link';
+import styles from '../../components/card/Card.module.scss';
 
 export type ApplicantDashBoardProps = {
   organisationType: string;
@@ -138,11 +139,20 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
               description="Change the details saved to your profile"
             />
             {oneLoginEnabled && (
-              <Card
-                link={routes.signInDetails}
-                linkDescription={'Your sign in details'}
-                description={'Change your sign in details'}
-              />
+              <div className="govuk-grid-column-one-half ">
+                <div className={styles.card}>
+                  <h3 className="govuk-heading-s">
+                    <a
+                      href={'/apply/applicant/sign-in-details'}
+                      data-cy={`cy-link-card-Your sign in details`}
+                      className="govuk-link govuk-link--no-visited-state"
+                    >
+                      {'Your sign in details'}
+                    </a>
+                  </h3>
+                  <p className="govuk-body">{'Change your sign in details'}</p>
+                </div>
+              </div>
             )}
           </div>
         </section>
