@@ -147,7 +147,7 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
                       data-cy={`cy-link-card-Your sign in details`}
                       className="govuk-link govuk-link--no-visited-state"
                     >
-                      {'Your sign in details'}
+                      Your sign in details
                     </a>
                   </h3>
                   <p className="govuk-body">Change your sign in details</p>
