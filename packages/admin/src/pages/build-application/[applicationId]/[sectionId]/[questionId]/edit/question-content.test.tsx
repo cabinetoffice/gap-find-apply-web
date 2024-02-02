@@ -59,7 +59,7 @@ describe('Question content page', () => {
         />
       );
 
-      expect(document.title).toBe('Error: Edit a question - Manage a grant');
+      expect(document.title).toBe('Error: Edit this question - Manage a grant');
     });
 
     it('Should render a back button with correct link on it', () => {
@@ -72,7 +72,7 @@ describe('Question content page', () => {
 
     it('Renders the question page layout output', () => {
       render(component);
-      expect(document.title).toBe('Edit a question - Manage a grant');
+      expect(document.title).toBe('Edit this question - Manage a grant');
       screen.getByTestId('question-page-form');
       screen.getByTestId('text-input-component');
       screen.getByTestId('text-area-component');
