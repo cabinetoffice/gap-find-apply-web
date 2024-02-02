@@ -12,7 +12,7 @@ interface SectionsProps {
   sections: ApplicationFormSection[];
   applicationId: string;
   applicationStatus: ApplicationFormSummary['applicationStatus'];
-  resolvedUrl: string;
+  formAction: string;
   csrfToken: string;
 }
 
@@ -22,12 +22,12 @@ const Sections = ({
   sections,
   applicationId,
   applicationStatus,
-  resolvedUrl,
+  formAction,
   csrfToken,
 }: SectionsProps) => {
   return (
     <FlexibleQuestionPageLayout
-      formAction={resolvedUrl}
+      formAction={formAction}
       fieldErrors={[]}
       csrfToken={csrfToken}
       fullPageWidth={true}
