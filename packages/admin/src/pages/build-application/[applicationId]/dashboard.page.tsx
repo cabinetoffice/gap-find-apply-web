@@ -15,6 +15,7 @@ import UnpublishSummary from './components/UnpublishSummary';
 import InferProps from '../../../types/InferProps';
 import callServiceMethod from '../../../utils/callServiceMethod';
 import { generateErrorPageParams } from '../../../utils/serviceErrorHelpers';
+import { useEffect, useState, useRef } from 'react';
 
 export const getServerSideProps = async ({
   params,
@@ -24,7 +25,10 @@ export const getServerSideProps = async ({
   resolvedUrl,
 }: GetServerSidePropsContext) => {
   const { applicationId } = params as Record<string, string>;
-  const { recentlyUnpublished } = query;
+  const { recentlyUnpublished, scrollPosition } = query as Record<
+    string,
+    string
+  >;
 
   const result = await callServiceMethod(
     req,
@@ -41,12 +45,16 @@ export const getServerSideProps = async ({
         sessionId
       );
     },
-    `/build-application/${applicationId}/dashboard`,
+    `/build-application/${applicationId}/dashboard?scrollPosition=${scrollPosition}`,
     generateErrorPageParams(
       'Something went wrong while trying to update section orders.',
       `/build-application/${applicationId}/dashboard`
     )
   );
+
+  if ('redirect' in result) {
+    return result;
+  }
 
   let grantScheme;
   let applicationFormSummary;
@@ -96,6 +104,7 @@ export const getServerSideProps = async ({
       applyToApplicationUrl,
       resolvedUrl: process.env.SUB_PATH + resolvedUrl,
       csrfToken: res.getHeader('x-csrf-token') as string,
+      scrollPosition: Number(scrollPosition ?? 0),
     },
   };
 };
@@ -110,6 +119,7 @@ const Dashboard = ({
   applyToApplicationUrl,
   resolvedUrl,
   csrfToken,
+  scrollPosition,
 }: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
   const findAGrantLink = publicRuntimeConfig.FIND_A_GRANT_URL;
@@ -124,6 +134,22 @@ const Dashboard = ({
       return section.questions ? section.questions.length < 1 : true;
     }
   });
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const [newScrollPosition, setNewScrollPosition] = useState(
+    scrollPosition ?? 0
+  );
+  const formAction =
+    resolvedUrl.split('?')[0] + `?scrollPosition=${newScrollPosition}`;
+
+  useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo({
+        top: scrollPosition,
+        behavior: 'instant' as ScrollBehavior,
+      });
+    }, 10);
+  }, []);
 
   return (
     <>
@@ -184,8 +210,10 @@ const Dashboard = ({
           sections={sections}
           applicationId={applicationId}
           applicationStatus={applicationStatus}
-          resolvedUrl={resolvedUrl}
+          formAction={formAction}
           csrfToken={csrfToken}
+          setNewScrollPosition={setNewScrollPosition}
+          formRef={formRef}
         />
 
         {applicationStatus === 'PUBLISHED' ? (

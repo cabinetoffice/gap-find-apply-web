@@ -12,8 +12,10 @@ interface SectionsProps {
   sections: ApplicationFormSection[];
   applicationId: string;
   applicationStatus: ApplicationFormSummary['applicationStatus'];
-  resolvedUrl: string;
+  formAction: string;
   csrfToken: string;
+  formRef: React.RefObject<HTMLFormElement>;
+  setNewScrollPosition: (scrollPosition: number) => void;
 }
 
 const CUSTOM_SECTION_FIRST_INDEX = 2;
@@ -22,15 +24,23 @@ const Sections = ({
   sections,
   applicationId,
   applicationStatus,
-  resolvedUrl,
+  formAction,
   csrfToken,
+  formRef,
+  setNewScrollPosition,
 }: SectionsProps) => {
+  function handleOnUpDownButtonClick() {
+    setNewScrollPosition(window.scrollY);
+    formRef?.current?.submit();
+  }
+
   return (
     <FlexibleQuestionPageLayout
-      formAction={resolvedUrl}
+      formAction={formAction}
       fieldErrors={[]}
       csrfToken={csrfToken}
       fullPageWidth={true}
+      formRef={formRef}
     >
       {sections.map((section, sectionIndex) => {
         const isSectionEligibilityOrEssential =
@@ -60,6 +70,7 @@ const Sections = ({
                           data-cy="cyUpButton"
                           name={`Up/${section.sectionId}`}
                           disabled={sectionIndex === CUSTOM_SECTION_FIRST_INDEX}
+                          onClick={handleOnUpDownButtonClick}
                         >
                           Up
                         </button>
@@ -69,6 +80,7 @@ const Sections = ({
                           data-cy="cyDownButton"
                           name={`Down/${section.sectionId}`}
                           disabled={sectionIndex === sections.length - 1}
+                          onClick={handleOnUpDownButtonClick}
                         >
                           Down
                         </button>
