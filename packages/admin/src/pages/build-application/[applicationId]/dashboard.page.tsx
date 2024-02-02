@@ -15,7 +15,7 @@ import UnpublishSummary from './components/UnpublishSummary';
 import InferProps from '../../../types/InferProps';
 import callServiceMethod from '../../../utils/callServiceMethod';
 import { generateErrorPageParams } from '../../../utils/serviceErrorHelpers';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export const getServerSideProps = async ({
   params,
@@ -135,24 +135,12 @@ const Dashboard = ({
     }
   });
 
+  const formRef = useRef<HTMLFormElement>(null);
   const [newScrollPosition, setNewScrollPosition] = useState(
     scrollPosition ?? 0
   );
   const formAction =
     resolvedUrl.split('?')[0] + `?scrollPosition=${newScrollPosition}`;
-
-  function handleScroll() {
-    setNewScrollPosition(window.scrollY);
-  }
-
-  // Repeatedly calculate the scroll position every 10ms - I hope there's a better way
-  useEffect(() => {
-    const interval = setInterval(() => {
-      handleScroll();
-    }, 10);
-
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -224,6 +212,8 @@ const Dashboard = ({
           applicationStatus={applicationStatus}
           formAction={formAction}
           csrfToken={csrfToken}
+          setNewScrollPosition={setNewScrollPosition}
+          formRef={formRef}
         />
 
         {applicationStatus === 'PUBLISHED' ? (
