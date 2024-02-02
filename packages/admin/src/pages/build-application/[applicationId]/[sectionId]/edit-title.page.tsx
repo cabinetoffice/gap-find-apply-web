@@ -37,7 +37,7 @@ export const getServerSideProps = (context: GetServerSidePropsContext) => {
     handleRequest,
     jwt: getSessionIdFromCookies(context.req),
     onErrorMessage: 'Failed to edit title, please try again later.',
-    onSuccessRedirectHref: `/build-application/${context.params?.applicationId}/${context.params?.sectionId}/`,
+    onSuccessRedirectHref: `/build-application/${applicationId}/${sectionId}`,
   });
 };
 
