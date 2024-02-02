@@ -111,12 +111,15 @@ const DeleteQuestion = ({
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
         >
-          <Radio
-            questionHintText="This question and all of its settings will be deleted permanently."
-            questionTitle="Do you want to delete this question?"
-            fieldName="deleteBool"
-            fieldErrors={fieldErrors}
-          />
+          <h1 className="govuk-heading-l">
+            Do you want to delete this question?
+          </h1>
+
+          <p className="govuk-caption-m">
+            This question and all of its settings will be deleted permanently.
+          </p>
+
+          <Radio fieldName="deleteBool" fieldErrors={fieldErrors} />
           <div className="govuk-button-group">
             <Button text="Confirm" />
 
