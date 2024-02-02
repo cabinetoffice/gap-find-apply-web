@@ -1,4 +1,4 @@
-import { Table } from 'gap-web-ui';
+import { FlexibleQuestionPageLayout, Table } from 'gap-web-ui';
 import React from 'react';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import { ResponseTypeLabels } from '../../../../enums/ResponseType';
@@ -12,15 +12,26 @@ interface SectionsProps {
   sections: ApplicationFormSection[];
   applicationId: string;
   applicationStatus: ApplicationFormSummary['applicationStatus'];
+  resolvedUrl: string;
+  csrfToken: string;
 }
+
+const CUSTOM_SECTION_FIRST_INDEX = 2;
 
 const Sections = ({
   sections,
   applicationId,
   applicationStatus,
+  resolvedUrl,
+  csrfToken,
 }: SectionsProps) => {
   return (
-    <>
+    <FlexibleQuestionPageLayout
+      formAction={resolvedUrl}
+      fieldErrors={[]}
+      csrfToken={csrfToken}
+      fullPageWidth={true}
+    >
       {sections.map((section, sectionIndex) => {
         const isSectionEligibilityOrEssential =
           section.sectionId === 'ELIGIBILITY' ||
@@ -35,28 +46,51 @@ const Sections = ({
             <div className={`${styles['table']}`}>
               <Table
                 caption={
-                  sectionIndex >= 2 && applicationStatus != 'PUBLISHED' ? (
-                    <div className="govuk-width-container">
-                      <div className="govuk-grid-row">
-                        <div className="govuk-grid-column-one-half">
-                          {sectionIndex + 1}. {section.sectionTitle}
-                        </div>
-                        <div className="govuk-grid-column-one-half">
-                          <p className="govuk-!-text-align-right govuk-!-font-size-19 govuk-!-margin-0">
-                            <CustomLink
-                              href={`/build-application/${applicationId}/${section.sectionId}`}
-                            >
-                              Edit section
-                            </CustomLink>
-                          </p>
-                        </div>
+                  sectionIndex >= CUSTOM_SECTION_FIRST_INDEX &&
+                  applicationStatus != 'PUBLISHED' ? (
+                    <div className="govuk-grid-row govuk-!-padding-top-5 govuk-!-padding-bottom-3 govuk-!-padding-left-3 govuk-!-padding-right-3">
+                      <div className="govuk-grid-column-one-third">
+                        {sectionIndex + 1}. {section.sectionTitle}
+                      </div>
+
+                      <div className="govuk-grid-column-two-thirds govuk-!-text-align-right">
+                        <button
+                          className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
+                          data-module="govuk-button"
+                          data-cy="cyUpButton"
+                          name={`Up/${section.sectionId}`}
+                          disabled={sectionIndex === CUSTOM_SECTION_FIRST_INDEX}
+                        >
+                          Up
+                        </button>
+                        <button
+                          className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
+                          data-module="govuk-button"
+                          data-cy="cyDownButton"
+                          name={`Down/${section.sectionId}`}
+                          disabled={sectionIndex === sections.length - 1}
+                        >
+                          Down
+                        </button>
+
+                        <i className={styles['separator']} />
+
+                        <CustomLink
+                          href={`/build-application/${applicationId}/${section.sectionId}`}
+                        >
+                          Edit section
+                        </CustomLink>
                       </div>
                     </div>
                   ) : (
-                    `${sectionIndex + 1}. ${section.sectionTitle}`
+                    <div className="govuk-grid-row govuk-!-padding-top-5 govuk-!-padding-bottom-3 govuk-!-padding-left-3 govuk-!-padding-right-3">
+                      <div className="govuk-grid-column-two-thirds">
+                        {sectionIndex + 1}. {section.sectionTitle}
+                      </div>
+                    </div>
                   )
                 }
-                captionClassName={`${styles['caption']} govuk-!-padding-4`}
+                captionClassName={styles['caption']}
                 disableBottomRowBorder
                 tHeadColumns={[
                   {
@@ -98,7 +132,7 @@ const Sections = ({
           Add a new section
         </CustomLink>
       )}
-    </>
+    </FlexibleQuestionPageLayout>
   );
 };
 
