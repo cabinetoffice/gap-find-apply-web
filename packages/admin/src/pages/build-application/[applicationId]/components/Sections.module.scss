@@ -1,9 +1,9 @@
-@import '~govuk-frontend/govuk/helpers/colour';
-
-.caption {
-    background-color: govuk-colour("light-grey");
+.sections-delete-section-btn-mrg-left {
+    font-size: large;
+    margin-left: 20px;
+    line-height: 40px;
 }
 
-.table {
-    outline: 1px solid govuk-colour("mid-grey");
+.sections-cta-margin-bottom {
+    margin-bottom: -20px;
 }

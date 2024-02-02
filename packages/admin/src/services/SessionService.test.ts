@@ -7,6 +7,18 @@ import {
 } from './SessionService';
 import getConfig from 'next/config';
 
+jest.mock('next/config', () => () => {
+  return {
+    serverRuntimeConfig: {
+      backendHost: 'http://localhost:8080',
+    },
+    publicRuntimeConfig: {
+      SUB_PATH: '/apply',
+      APPLICANT_DOMAIN: 'http://localhost:8080',
+    },
+  };
+});
+
 jest.mock('axios');
 
 describe('SessionService', () => {

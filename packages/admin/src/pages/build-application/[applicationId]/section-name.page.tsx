@@ -50,7 +50,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     req,
     res,
     (body: RequestBody) => postSection(sessionId, applicationId, body),
-    (sectionId) => `/build-application/${applicationId}/${sectionId}`,
+    `/build-application/${applicationId}/dashboard`,
     errorPageParams
   );
 

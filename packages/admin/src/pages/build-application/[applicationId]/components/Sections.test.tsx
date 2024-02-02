@@ -63,7 +63,7 @@ describe('Sections component', () => {
     it('Should render section titles', () => {
       screen.getByRole('table', { name: '1. Eligibility' });
       screen.getByRole('table', { name: '2. Required checks' });
-      screen.getByRole('table', { name: '3. Custom section Edit section' });
+      screen.getByRole('table', { name: '3. Custom section' });
     });
 
     it('Should render question titles & truncates them 50 chars (Except for when the section ID is "ESSENTIAL"', () => {
@@ -102,6 +102,15 @@ describe('Sections component', () => {
       });
     });
 
+    it('Should render "Delete" links ONLY for each CUSTOM question', () => {
+      screen.getByRole('link', { name: 'Delete question: Custom question' });
+      expect(
+        screen.queryByRole('link', {
+          name: 'Delete question: Due-diligence checks',
+        })
+      ).toBeFalsy();
+    });
+
     it('Should return the correct "View or change" link for the eligibility sections', () => {
       const link = screen.getByRole('link', {
         name: 'View or change question "Eligibility statement"',
@@ -112,17 +121,22 @@ describe('Sections component', () => {
       );
     });
 
-    it('Should render an "Add a new section" button', () => {
-      screen.getByRole('button', { name: 'Add a new section' });
+    it('Should render an "Add a question" button when the section is NOT "eligibility" or "essential"', () => {
+      const addAQuestionButton = screen.getByRole('button', {
+        name: 'Add a new question to Custom section',
+      });
+      expect(addAQuestionButton).toHaveAttribute(
+        'href',
+        '/apply/build-application/87654321/testCustomSectionId/question-content'
+      );
     });
 
-    it('Should render an "Edit section" button', () => {
-      expect(
-        screen.getByRole('link', { name: 'Edit section' })
-      ).toHaveAttribute(
-        'href',
-        '/apply/build-application/87654321/testCustomSectionId'
-      );
+    it('Should render an "Add new section" button', () => {
+      screen.getByRole('button', { name: 'Add new section' });
+    });
+
+    it('Should render an "Delete this section" link', () => {
+      screen.getByRole('link', { name: 'Delete this section: Custom section' });
     });
   });
 
@@ -173,10 +187,6 @@ describe('Sections component', () => {
       expect(
         screen.queryByRole('link', { name: 'Delete question: Custom question' })
       ).toBeFalsy();
-    });
-
-    it('Should NOT render an "Edit section" button', () => {
-      expect(screen.queryByRole('link', { name: 'Edit section' })).toBeFalsy();
     });
   });
 });
