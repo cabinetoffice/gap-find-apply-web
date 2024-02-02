@@ -150,7 +150,7 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
                       {'Your sign in details'}
                     </a>
                   </h3>
-                  <p className="govuk-body">{'Change your sign in details'}</p>
+                  <p className="govuk-body">Change your sign in details</p>
                 </div>
               </div>
             )}
