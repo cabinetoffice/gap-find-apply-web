@@ -6,11 +6,11 @@ import InferProps from '../../../../../types/InferProps';
 export const getServerSideProps = async ({
   params,
 }: GetServerSidePropsContext) => {
-  const { schemeId } = params as Record<string, string>;
+  const { schemeId, advertId } = params as Record<string, string>;
 
   return {
     props: {
-      backToAccountLink: `/scheme/${schemeId}`,
+      backToAccountLink: `/scheme/${schemeId}/advert/${advertId}/survey`,
     },
   };
 };
