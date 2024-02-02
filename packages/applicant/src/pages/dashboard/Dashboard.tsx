@@ -143,8 +143,8 @@ export const ApplicantDashboard: FC<ApplicantDashBoardProps> = ({
                 <div className={styles.card}>
                   <h3 className="govuk-heading-s">
                     <a
-                      href={'/apply/applicant/sign-in-details'}
-                      data-cy={`cy-link-card-Your sign in details`}
+                      href="/apply/applicant/sign-in-details"
+                      data-cy="cy-link-card-Your sign in details"
                       className="govuk-link govuk-link--no-visited-state"
                     >
                       Your sign in details
