@@ -143,12 +143,10 @@ const Dashboard = ({
     resolvedUrl.split('?')[0] + `?scrollPosition=${newScrollPosition}`;
 
   useEffect(() => {
-    setTimeout(() => {
-      window.scrollTo({
-        top: scrollPosition,
-        behavior: 'instant' as ScrollBehavior,
-      });
-    }, 10);
+    window.scrollTo({
+      top: scrollPosition,
+      behavior: 'instant' as ScrollBehavior,
+    });
   }, []);
 
   return (
