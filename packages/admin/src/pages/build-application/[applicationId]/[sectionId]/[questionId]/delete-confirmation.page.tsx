@@ -112,6 +112,7 @@ const DeleteQuestion = ({
           csrfToken={csrfToken}
         >
           <Radio
+            questionHintText="This question and all of its settings will be deleted permanently."
             questionTitle="Do you want to delete this question?"
             fieldName="deleteBool"
             fieldErrors={fieldErrors}

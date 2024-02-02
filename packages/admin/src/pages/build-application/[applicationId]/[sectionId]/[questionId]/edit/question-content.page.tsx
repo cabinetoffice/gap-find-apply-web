@@ -147,13 +147,13 @@ const QuestionContent = ({
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Edit a question - Manage a grant`}
+        }Edit this question - Manage a grant`}
       />
 
       <CustomLink href={backButtonHref} isBackButton />
 
       <div className="govuk-!-padding-top-7">
-        <h1 className="govuk-heading-l">Edit a question</h1>
+        <h1 className="govuk-heading-l">Edit this question</h1>
         <FlexibleQuestionPageLayout
           formAction={formAction}
           fieldErrors={fieldErrors}
