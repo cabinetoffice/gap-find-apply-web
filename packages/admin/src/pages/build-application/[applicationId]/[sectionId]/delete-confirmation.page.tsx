@@ -103,12 +103,21 @@ const DeleteSectionContent = ({
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
         >
+          <h1 className="govuk-heading-l">
+            Do you want to delete this section?
+          </h1>
+
+          <p className="govuk-caption-m">
+            Any questions or information in this section will be deleted
+            permanently.
+          </p>
+
           <Radio
-            questionTitle="Do you want to delete this section?"
             titleSize="l"
             fieldName="deleteBool"
             fieldErrors={fieldErrors}
           />
+
           <div className="govuk-button-group">
             <Button text="Confirm" />
             <CustomLink
