@@ -82,7 +82,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     },
     (response: { data: any }) => {
       if (response.data === 'QUESTION_SAVED') {
-        return `/build-application/${applicationId}/${sectionId}`;
+        return `/build-application/${applicationId}/dashboard`;
       } else {
         return `/build-application/${applicationId}/${sectionId}/question-options`;
       }

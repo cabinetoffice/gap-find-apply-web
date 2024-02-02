@@ -9,6 +9,17 @@ import DeleteSectionContent, {
 import { deleteSection } from '../../../../services/SectionService';
 import { parseBody } from '../../../../utils/parseBody';
 
+jest.mock('next/config', () => () => {
+  return {
+    serverRuntimeConfig: {
+      backendHost: 'http://localhost:8080',
+    },
+    publicRuntimeConfig: {
+      SUB_PATH: '/apply',
+      APPLICANT_DOMAIN: 'http://localhost:8080',
+    },
+  };
+});
 jest.mock('../../../../utils/parseBody');
 jest.mock('../../../../services/SectionService');
 jest.mock('../../../../services/ApplicationService');

@@ -11,7 +11,17 @@ import {
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
 import { ValidationError } from 'gap-web-ui';
 import { parseBody } from '../../../../utils/parseBody';
-
+jest.mock('next/config', () => () => {
+  return {
+    serverRuntimeConfig: {
+      backendHost: 'http://localhost:8080',
+    },
+    publicRuntimeConfig: {
+      SUB_PATH: '/apply',
+      APPLICANT_DOMAIN: 'http://localhost:8080',
+    },
+  };
+});
 jest.mock('../../../../utils/parseBody');
 jest.mock('../../../../services/SessionService');
 jest.mock('../../../../services/ApplicationService');

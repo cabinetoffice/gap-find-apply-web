@@ -11,6 +11,17 @@ import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSideP
 import { parseBody } from '../../../../utils/parseBody';
 import { ValidationError } from 'gap-web-ui';
 
+jest.mock('next/config', () => () => {
+  return {
+    serverRuntimeConfig: {
+      backendHost: 'http://localhost:8080',
+    },
+    publicRuntimeConfig: {
+      SUB_PATH: '/apply',
+      APPLICANT_DOMAIN: 'http://localhost:8080',
+    },
+  };
+});
 jest.mock('../../../../services/ApplicationService');
 jest.mock('../../../../services/QuestionService');
 jest.mock('../../../../services/SessionService');
@@ -354,7 +365,7 @@ describe('Question Options', () => {
 
           expect(result).toStrictEqual({
             redirect: {
-              destination: '/build-application/applicationId/sectionId',
+              destination: '/build-application/applicationId/dashboard',
               statusCode: 302,
             },
           });

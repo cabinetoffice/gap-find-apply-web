@@ -222,15 +222,15 @@ describe('Table component', () => {
       render(<Table {...customProps} />);
       expect(screen.getByRole('cell', { name: 'January' })).toHaveAttribute(
         'class',
-        'govuk-table__cell   gap-table-cell-top-border'
+        'govuk-table__cell gap-table-cell-top-border'
       );
       expect(screen.getByRole('cell', { name: '23000' })).toHaveAttribute(
         'class',
-        'govuk-table__cell govuk-table__cell--numeric   gap-table-cell-top-border'
+        'govuk-table__cell govuk-table__cell--numeric gap-table-cell-top-border'
       );
       expect(screen.getByRole('cell', { name: '45000' })).toHaveAttribute(
         'class',
-        'govuk-table__cell govuk-table__cell--numeric   gap-table-cell-top-border govuk-!-width-full'
+        'govuk-table__cell govuk-table__cell--numeric gap-table-cell-top-border govuk-!-width-full'
       );
     });
 
@@ -239,15 +239,15 @@ describe('Table component', () => {
       render(<Table {...props} />);
       expect(screen.getByRole('cell', { name: 'January' })).toHaveAttribute(
         'class',
-        'govuk-table__cell  '
+        'govuk-table__cell'
       );
       expect(screen.getByRole('cell', { name: '23000' })).toHaveAttribute(
         'class',
-        'govuk-table__cell govuk-table__cell--numeric  '
+        'govuk-table__cell govuk-table__cell--numeric'
       );
       expect(screen.getByRole('cell', { name: '45000' })).toHaveAttribute(
         'class',
-        'govuk-table__cell govuk-table__cell--numeric   govuk-!-width-full'
+        'govuk-table__cell govuk-table__cell--numeric govuk-!-width-full'
       );
     });
     it('should have the last column aligned to right if alignLastCellToTheRight is true and if the cell is the last column', () => {
@@ -259,15 +259,15 @@ describe('Table component', () => {
 
       expect(bodyRow1_cell1).toHaveAttribute(
         'class',
-        'govuk-table__cell   gap-table-cell-top-border'
+        'govuk-table__cell gap-table-cell-top-border'
       );
       expect(bodyRow1_cell2).toHaveAttribute(
         'class',
-        'govuk-table__cell govuk-table__cell--numeric   gap-table-cell-top-border'
+        'govuk-table__cell govuk-table__cell--numeric gap-table-cell-top-border'
       );
       expect(bodyRow1_cell3).toHaveAttribute(
         'class',
-        'govuk-table__cell govuk-table__cell--numeric   gap-table-cell-top-border govuk-!-text-align-right govuk-!-width-full'
+        'govuk-table__cell govuk-table__cell--numeric gap-table-cell-top-border govuk-!-text-align-right govuk-!-width-full'
       );
     });
 
