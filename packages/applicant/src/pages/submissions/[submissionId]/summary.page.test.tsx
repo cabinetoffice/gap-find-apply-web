@@ -334,6 +334,7 @@ describe('SubmissionSummary', () => {
     const submittedProps = {
       ...mockProps,
       hasSubmissionBeenSubmitted: true,
+      closedAndInProgress: false,
     };
 
     render(<SubmissionSummary {...submittedProps} />);
@@ -392,6 +393,22 @@ describe('SubmissionSummary', () => {
       'href',
       `http://localhost/submissions/${mockProps.grantSubmissionId}/submit`
     );
+  });
+
+  it('Renders Important Banner when grant is closed and application is IN PROGRESS', () => {
+    const closedAndInProgressProps = {
+      ...mockProps,
+      closedAndInProgress: true,
+    };
+
+    render(<SubmissionSummary {...closedAndInProgressProps} />);
+
+    expect(screen.getByText('Important')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'This grant has closed. You cannot submit your application'
+      )
+    ).toBeInTheDocument();
   });
 });
 
