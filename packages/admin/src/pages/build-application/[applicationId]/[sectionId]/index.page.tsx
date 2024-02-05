@@ -1,86 +1,13 @@
-import { GetServerSidePropsContext } from 'next';
-import {
-  getApplicationFormSummary,
-  handleQuestionOrdering,
-} from '../../../../services/ApplicationService';
-import { getSessionIdFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import Meta from '../../../../components/layout/Meta';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import { FlexibleQuestionPageLayout, SummaryList, Table } from 'gap-web-ui';
 import { ResponseTypeLabels } from '../../../../enums/ResponseType';
-import ServiceError from '../../../../types/ServiceError';
-import styles from './index.module.scss';
-import { useEffect, useRef, useState } from 'react';
-import callServiceMethod from '../../../../utils/callServiceMethod';
-import { generateErrorPageParams } from '../../../../utils/serviceErrorHelpers';
+import { useLayoutEffect, useRef, useState } from 'react';
+import QuestionRowActionComponent from './index/QuestionRowActionComponent';
+import getServerSideProps from './index/getServerSideProps';
 
-export const getServerSideProps = async ({
-  params,
-  req,
-  res,
-  query,
-  resolvedUrl,
-}: GetServerSidePropsContext) => {
-  const { applicationId, sectionId } = params as Record<string, string>;
-  const { scrollPosition } = query as Record<string, string>;
-
-  const result = await callServiceMethod(
-    req,
-    res,
-    async (body) => {
-      const sessionId = getSessionIdFromCookies(req);
-      const params = Object.keys(body)[0].split('/');
-      const increment = params[0] === 'Up' ? -1 : 1;
-      const questionId = params[1];
-      await handleQuestionOrdering(
-        sessionId,
-        applicationId,
-        sectionId,
-        questionId,
-        increment
-      );
-    },
-    `/build-application/${applicationId}/${sectionId}?scrollPosition=${scrollPosition}`,
-    generateErrorPageParams(
-      'Something went wrong while trying to update section orders.',
-      `/build-application/${applicationId}/dashboard`
-    )
-  );
-
-  if ('redirect' in result) {
-    return result;
-  }
-
-  let applicationFormSummary;
-  try {
-    applicationFormSummary = await getApplicationFormSummary(
-      applicationId,
-      getSessionIdFromCookies(req)
-    );
-  } catch (err) {
-    return redirectError;
-  }
-
-  const section = applicationFormSummary.sections.find(
-    (section) => section.sectionId === sectionId
-  );
-
-  if (!section) {
-    return redirectError;
-  }
-
-  return {
-    props: {
-      section,
-      grantApplicationName: applicationFormSummary.applicationName,
-      applicationId: applicationFormSummary.grantApplicationId,
-      scrollPosition: Number(scrollPosition ?? 0),
-      resolvedUrl: process.env.SUB_PATH + resolvedUrl,
-      csrfToken: res.getHeader('x-csrf-token') as string,
-    },
-  };
-};
+export { getServerSideProps };
 
 const EditSectionPage = ({
   section,
@@ -102,7 +29,7 @@ const EditSectionPage = ({
     formRef?.current?.submit();
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     window.scrollTo({
       top: scrollPosition,
       behavior: 'instant' as ScrollBehavior,
@@ -234,62 +161,18 @@ function questionTableRows(
       },
       {
         content: (
-          <div className="govuk-!-text-align-right govuk-width-container govuk-!-padding-top-4 govuk-!-padding-right-2">
-            <div className="govuk-grid-row">
-              <button
-                className={`govuk-button govuk-button--secondary govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
-                data-module="govuk-button"
-                data-cy="cyUpButton"
-                name={`Up/${question.questionId}`}
-                disabled={questionIndex === 0}
-                onClick={handleOnUpDownButtonClick}
-                data-testid={`upButton-${questionIndex}`}
-                aria-label="Move section up"
-              >
-                Up
-              </button>
-              <button
-                className={`govuk-button govuk-button--secondary govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
-                data-module="govuk-button"
-                data-cy="cyDownButton"
-                name={`Down/${question.questionId}`}
-                disabled={questionIndex === questions.length - 1}
-                onClick={handleOnUpDownButtonClick}
-                data-testid={`downButton-${questionIndex}`}
-                aria-label="Move section down"
-              >
-                Down
-              </button>
-
-              <CustomLink
-                href={`/build-application/${applicationId}/${section.sectionId}/${question.questionId}/edit/question-content`}
-              >
-                Edit
-              </CustomLink>
-            </div>
-          </div>
+          <QuestionRowActionComponent
+            section={section}
+            questions={questions}
+            question={question}
+            questionIndex={questionIndex}
+            applicationId={applicationId}
+            handleOnUpDownButtonClick={handleOnUpDownButtonClick}
+          />
         ),
       },
     ],
   }));
 }
-
-const errorProps: ServiceError = {
-  errorInformation: 'Something went wrong while trying to edit a section',
-  linkAttributes: {
-    href: `/scheme-list`,
-    linkText: 'Please find your scheme application form and continue.',
-    linkInformation: 'Your previous progress has been saved.',
-  },
-};
-
-const redirectError = {
-  redirect: {
-    destination: `/service-error?serviceErrorProps=${JSON.stringify(
-      errorProps
-    )}`,
-    permanent: false,
-  },
-};
 
 export default EditSectionPage;

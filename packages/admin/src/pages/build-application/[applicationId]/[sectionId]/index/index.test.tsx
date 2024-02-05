@@ -7,16 +7,22 @@ import {
   getContext,
   mockServiceMethod,
 } from 'gap-web-ui';
-import InferProps from '../../../../types/InferProps';
-import { getApplicationFormSummary } from '../../../../services/ApplicationService';
-import EditSectionPage, { getServerSideProps } from './index.page';
+import InferProps from '../../../../../types/InferProps';
+import {
+  getApplicationFormSummary,
+  handleQuestionOrdering,
+} from '../../../../../services/ApplicationService';
+import EditSectionPage, { getServerSideProps } from '../index.page';
 import { GetServerSidePropsContext } from 'next';
-import { getPageProps } from '../../../../testUtils/unitTestHelpers';
-import ResponseTypeEnum from '../../../../enums/ResponseType';
+import { getPageProps } from '../../../../../testUtils/unitTestHelpers';
+import ResponseTypeEnum from '../../../../../enums/ResponseType';
+import { parseBody } from '../../../../../utils/parseBody';
 
-jest.mock('../../../../services/ApplicationService');
+jest.mock('../../../../../services/ApplicationService');
+jest.mock('../../../../../utils/parseBody');
 
 const mockedGetApplicationFormSummary = jest.mocked(getApplicationFormSummary);
+const mockedHandleQuestionOrdering = jest.mocked(handleQuestionOrdering);
 
 const getDefaultAppFormSummary = (): InferServiceMethodResponse<
   typeof getApplicationFormSummary
@@ -88,68 +94,137 @@ describe('Edit section page', () => {
       );
     });
 
-    it('Should call getApplicationFormSummary with correct params', async () => {
-      await getServerSideProps(getContext(getDefaultContext));
+    describe('getServerSideProps "POST" context', () => {
+      beforeEach(() => {
+        mockedHandleQuestionOrdering.mockResolvedValue(undefined);
+        (parseBody as jest.Mock).mockResolvedValue({
+          'Up/testQuestionId': '',
+        });
+      });
 
-      expect(mockedGetApplicationFormSummary).toHaveBeenCalledWith(
-        'testApplicationId',
-        ''
-      );
-    });
+      it('Should call handleQuestionOrdering with correct params', async () => {
+        await getServerSideProps(
+          getContext(getDefaultContext, {
+            req: {
+              method: 'POST',
+            },
+          })
+        );
 
-    it('Should return props with correct values', async () => {
-      const result = await getServerSideProps(getContext(getDefaultContext));
-
-      expectObjectEquals(result, {
-        props: {
+        expect(mockedHandleQuestionOrdering).toHaveBeenCalledWith({
+          sessionId: '',
           applicationId: 'testApplicationId',
-          grantApplicationName: 'Some application name',
-          csrfToken: 'some-csrf-token',
-          resolvedUrl: '/apply/admin/testResolvedURL',
-          scrollPosition: 0,
-          section: {
-            sectionId: 'testSectionId',
-            sectionStatus: 'COMPLETE',
-            sectionTitle: 'some-section-title',
-            questions: [],
+          sectionId: 'testSectionId',
+          questionId: 'testQuestionId',
+          increment: -1,
+        });
+      });
+
+      it('Should redirect to this page', async () => {
+        const result = await getServerSideProps(
+          getContext(getDefaultContext, {
+            req: {
+              method: 'POST',
+            },
+          })
+        );
+
+        expectObjectEquals(result, {
+          redirect: {
+            destination:
+              '/build-application/testApplicationId/testSectionId?scrollPosition=0',
+            statusCode: 302,
           },
-        },
+        });
+      });
+
+      it('Should redirect to service error page if something goes wrong', async () => {
+        mockedHandleQuestionOrdering.mockRejectedValue(new Error('error'));
+
+        const result = await getServerSideProps(
+          getContext(getDefaultContext, {
+            req: {
+              method: 'POST',
+            },
+          })
+        );
+
+        expectObjectEquals(result, {
+          redirect: {
+            destination:
+              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to update section order.","linkAttributes":{"href":"/build-application/testApplicationId/dashboard","linkText":"Please return","linkInformation":" and try again."}}',
+            statusCode: 302,
+          },
+        });
       });
     });
 
-    it('Should redirect to service error page if section is not found', async () => {
-      const result = await getServerSideProps(
-        getContext(() => ({
-          params: {
+    describe('getServerSideProps "GET" context', () => {
+      it('Should call getApplicationFormSummary with correct params', async () => {
+        await getServerSideProps(getContext(getDefaultContext));
+
+        expect(mockedGetApplicationFormSummary).toHaveBeenCalledWith(
+          'testApplicationId',
+          ''
+        );
+      });
+
+      it('Should return props with correct values', async () => {
+        const result = await getServerSideProps(getContext(getDefaultContext));
+
+        expectObjectEquals(result, {
+          props: {
             applicationId: 'testApplicationId',
-            sectionId: 'non-existent-section-id',
+            grantApplicationName: 'Some application name',
+            csrfToken: 'some-csrf-token',
+            resolvedUrl: '/apply/admin/testResolvedURL',
+            scrollPosition: 0,
+            section: {
+              sectionId: 'testSectionId',
+              sectionStatus: 'COMPLETE',
+              sectionTitle: 'some-section-title',
+              questions: [],
+            },
           },
-          query: {
-            scrollPosition: '0',
-          },
-        }))
-      );
-
-      expectObjectEquals(result, {
-        redirect: {
-          destination:
-            '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/scheme-list","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
-          permanent: false,
-        },
+        });
       });
-    });
 
-    it('Should redirect to service error page if something goes wrong', async () => {
-      mockedGetApplicationFormSummary.mockRejectedValueOnce(new Error('error'));
+      it('Should redirect to service error page if section is not found', async () => {
+        const result = await getServerSideProps(
+          getContext(() => ({
+            params: {
+              applicationId: 'testApplicationId',
+              sectionId: 'non-existent-section-id',
+            },
+            query: {
+              scrollPosition: '0',
+            },
+          }))
+        );
 
-      const result = await getServerSideProps(getContext(getDefaultContext));
+        expectObjectEquals(result, {
+          redirect: {
+            destination:
+              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/scheme-list","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
+            permanent: false,
+          },
+        });
+      });
 
-      expectObjectEquals(result, {
-        redirect: {
-          destination:
-            '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/scheme-list","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
-          permanent: false,
-        },
+      it('Should redirect to service error page if something goes wrong', async () => {
+        mockedGetApplicationFormSummary.mockRejectedValueOnce(
+          new Error('error')
+        );
+
+        const result = await getServerSideProps(getContext(getDefaultContext));
+
+        expectObjectEquals(result, {
+          redirect: {
+            destination:
+              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/scheme-list","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
+            permanent: false,
+          },
+        });
       });
     });
   });
@@ -254,20 +329,23 @@ describe('Edit section page', () => {
         />
       );
 
-      expect(
-        screen.getAllByRole('button', { name: 'Move section up' })
-      ).toHaveLength(3);
-      expect(
-        screen.getAllByRole('button', { name: 'Move section down' })
-      ).toHaveLength(3);
+      const upButtons = screen.getAllByRole('button', {
+        name: 'Move section up',
+      });
+      const downButtons = screen.getAllByRole('button', {
+        name: 'Move section down',
+      });
 
-      expect(screen.getByTestId('upButton-0')).toBeDisabled();
-      expect(screen.getByTestId('upButton-1')).not.toBeDisabled();
-      expect(screen.getByTestId('upButton-2')).not.toBeDisabled();
+      expect(upButtons).toHaveLength(3);
+      expect(downButtons).toHaveLength(3);
 
-      expect(screen.getByTestId('downButton-0')).not.toBeDisabled();
-      expect(screen.getByTestId('downButton-1')).not.toBeDisabled();
-      expect(screen.getByTestId('downButton-2')).toBeDisabled();
+      expect(upButtons[0]).toBeDisabled();
+      expect(upButtons[1]).not.toBeDisabled();
+      expect(upButtons[2]).not.toBeDisabled();
+
+      expect(downButtons[0]).not.toBeDisabled();
+      expect(downButtons[1]).not.toBeDisabled();
+      expect(downButtons[2]).toBeDisabled();
     });
   });
 });
