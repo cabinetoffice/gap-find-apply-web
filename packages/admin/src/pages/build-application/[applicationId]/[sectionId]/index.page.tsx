@@ -243,6 +243,8 @@ function questionTableRows(
                 name={`Up/${question.questionId}`}
                 disabled={questionIndex === 0}
                 onClick={handleOnUpDownButtonClick}
+                data-testid={`upButton-${questionIndex}`}
+                aria-label="Move section up"
               >
                 Up
               </button>
@@ -253,6 +255,8 @@ function questionTableRows(
                 name={`Down/${question.questionId}`}
                 disabled={questionIndex === questions.length - 1}
                 onClick={handleOnUpDownButtonClick}
+                data-testid={`downButton-${questionIndex}`}
+                aria-label="Move section down"
               >
                 Down
               </button>

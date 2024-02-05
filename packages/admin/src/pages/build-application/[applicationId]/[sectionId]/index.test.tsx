@@ -45,6 +45,9 @@ const getDefaultAppFormSummary = (): InferServiceMethodResponse<
 const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
   applicationId: 'some-application-id',
   grantApplicationName: 'some-grant-application-name',
+  csrfToken: 'some-csrf-token',
+  scrollPosition: 0,
+  resolvedUrl: '/apply/build-application/some-application-id/testSectionId',
   section: {
     sectionId: 'testSectionId',
     sectionStatus: 'COMPLETE',
@@ -73,6 +76,9 @@ describe('Edit section page', () => {
         applicationId: 'testApplicationId',
         sectionId: 'testSectionId',
       },
+      query: {
+        scrollPosition: '0',
+      },
     });
 
     beforeEach(() => {
@@ -98,6 +104,9 @@ describe('Edit section page', () => {
         props: {
           applicationId: 'testApplicationId',
           grantApplicationName: 'Some application name',
+          csrfToken: 'some-csrf-token',
+          resolvedUrl: '/apply/admin/testResolvedURL',
+          scrollPosition: 0,
           section: {
             sectionId: 'testSectionId',
             sectionStatus: 'COMPLETE',
@@ -114,6 +123,9 @@ describe('Edit section page', () => {
           params: {
             applicationId: 'testApplicationId',
             sectionId: 'non-existent-section-id',
+          },
+          query: {
+            scrollPosition: '0',
           },
         }))
       );
@@ -143,15 +155,13 @@ describe('Edit section page', () => {
   });
 
   describe('Edit Section Page', () => {
-    beforeEach(() => {
-      render(<EditSectionPage {...getPageProps(getDefaultProps)} />);
-    });
-
     it('Should render a meta title', () => {
+      render(<EditSectionPage {...getPageProps(getDefaultProps)} />);
       expect(document.title).toBe('Build an application form - Manage a grant');
     });
 
     it("Should render 'Back' button", () => {
+      render(<EditSectionPage {...getPageProps(getDefaultProps)} />);
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
         '/apply/build-application/some-application-id/dashboard'
@@ -159,14 +169,17 @@ describe('Edit section page', () => {
     });
 
     it('Should render title of the page', () => {
+      render(<EditSectionPage {...getPageProps(getDefaultProps)} />);
       screen.getByText('Edit this section');
     });
 
     it('Should render the section title', () => {
+      render(<EditSectionPage {...getPageProps(getDefaultProps)} />);
       screen.getByText('some-section-title');
     });
 
     it('Should render a question', () => {
+      render(<EditSectionPage {...getPageProps(getDefaultProps)} />);
       screen.getByText('some-question-title');
       screen.getByText('Long answer');
       expect(screen.getAllByRole('link', { name: 'Edit' })).toHaveLength(2);
@@ -186,10 +199,75 @@ describe('Edit section page', () => {
         '/apply/build-application/some-application-id/dashboard',
       ],
     ])('button %s should have href %s', (name, href) => {
+      render(<EditSectionPage {...getPageProps(getDefaultProps)} />);
       expect(screen.getByRole('button', { name })).toHaveAttribute(
         'href',
         href
       );
+    });
+
+    it('Should render up and down buttons', () => {
+      render(<EditSectionPage {...getPageProps(getDefaultProps)} />);
+      expect(
+        screen.getByRole('button', { name: 'Move section up' })
+      ).toBeDisabled();
+      expect(
+        screen.getByRole('button', { name: 'Move section down' })
+      ).toBeDisabled();
+    });
+
+    it('Should render multiple up and down buttons', () => {
+      render(
+        <EditSectionPage
+          {...getPageProps(getDefaultProps, {
+            section: {
+              ...getDefaultProps().section,
+              questions: [
+                ...getDefaultProps().section.questions!,
+                {
+                  questionId: 'testQuestionId2',
+                  fieldTitle: 'some-question-title',
+                  responseType: ResponseTypeEnum.LongAnswer,
+                  adminSummary: '',
+                  displayText: '',
+                  fieldPrefix: '',
+                  hintText: '',
+                  profileField: '',
+                  questionSuffix: '',
+                  validation: {},
+                },
+                {
+                  questionId: 'testQuestionId3',
+                  fieldTitle: 'some-question-title',
+                  responseType: ResponseTypeEnum.LongAnswer,
+                  adminSummary: '',
+                  displayText: '',
+                  fieldPrefix: '',
+                  hintText: '',
+                  profileField: '',
+                  questionSuffix: '',
+                  validation: {},
+                },
+              ],
+            },
+          })}
+        />
+      );
+
+      expect(
+        screen.getAllByRole('button', { name: 'Move section up' })
+      ).toHaveLength(3);
+      expect(
+        screen.getAllByRole('button', { name: 'Move section down' })
+      ).toHaveLength(3);
+
+      expect(screen.getByTestId('upButton-0')).toBeDisabled();
+      expect(screen.getByTestId('upButton-1')).not.toBeDisabled();
+      expect(screen.getByTestId('upButton-2')).not.toBeDisabled();
+
+      expect(screen.getByTestId('downButton-0')).not.toBeDisabled();
+      expect(screen.getByTestId('downButton-1')).not.toBeDisabled();
+      expect(screen.getByTestId('downButton-2')).toBeDisabled();
     });
   });
 });
