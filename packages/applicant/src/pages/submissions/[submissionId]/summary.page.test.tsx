@@ -7,6 +7,7 @@ import {
   getSubmissionById,
   hasSubmissionBeenSubmitted,
   QuestionType,
+  fetchSubmission,
 } from '../../../services/SubmissionService';
 import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
 import SubmissionSummary, {
@@ -51,6 +52,7 @@ const mockGetApplicationStatusBySchemeId = jest.mocked(
 const mockGetSubmissionById = jest.mocked(getSubmissionById);
 const mockGetJwtFromCookies = jest.mocked(getJwtFromCookies);
 const mockHasSubmissionBeenSubmitted = jest.mocked(hasSubmissionBeenSubmitted);
+const mockFetchSubmission = jest.mocked(fetchSubmission);
 
 jest.mock('../../../services/ApplicationService', () => ({
   getApplicationStatusBySchemeId: jest.fn(),
@@ -207,6 +209,7 @@ describe('getServerSideProps', () => {
     mockGetSubmissionById.mockResolvedValue(propsWithAllValues);
     mockGetJwtFromCookies.mockReturnValue('testJwt');
     mockHasSubmissionBeenSubmitted.mockResolvedValue(false);
+    mockFetchSubmission.mockResolvedValue({ data: { status: 200 } } as any);
 
     const response = await getServerSideProps(context);
     expect(response).toEqual({
@@ -217,6 +220,7 @@ describe('getServerSideProps', () => {
         csrfToken: 'testCSRFToken',
         hasSubmissionBeenSubmitted: false,
         mandatoryQuestionId: '87654321',
+        closedAndInProgress: false,
       },
     });
     expect(getSubmissionById).toHaveBeenCalled();
@@ -230,6 +234,7 @@ describe('getServerSideProps', () => {
     mockGetSubmissionById.mockResolvedValue(propsWithAllValues);
     mockGetJwtFromCookies.mockReturnValue('testJwt');
     mockHasSubmissionBeenSubmitted.mockResolvedValue(false);
+    mockFetchSubmission.mockResolvedValue({ data: { status: 200 } } as any);
 
     const response = await getServerSideProps(contextNoToken);
     expect(response).toEqual({
@@ -240,6 +245,7 @@ describe('getServerSideProps', () => {
         csrfToken: '',
         hasSubmissionBeenSubmitted: false,
         mandatoryQuestionId: '87654321',
+        closedAndInProgress: false,
       },
     });
     expect(getSubmissionById).toHaveBeenCalled();
@@ -253,6 +259,7 @@ describe('getServerSideProps', () => {
     mockGetSubmissionById.mockResolvedValue(propsWithAllValues);
     mockGetJwtFromCookies.mockReturnValue('testJwt');
     mockHasSubmissionBeenSubmitted.mockResolvedValue(true);
+    mockFetchSubmission.mockResolvedValue({ data: { status: 200 } } as any);
 
     const response = await getServerSideProps(context);
     expect(response).toEqual({
@@ -263,6 +270,7 @@ describe('getServerSideProps', () => {
         csrfToken: 'testCSRFToken',
         hasSubmissionBeenSubmitted: true,
         mandatoryQuestionId: '87654321',
+        closedAndInProgress: false,
       },
     });
     expect(getSubmissionById).toHaveBeenCalled();
@@ -310,6 +318,7 @@ describe('SubmissionSummary', () => {
     applicationName: 'My Mock Application',
     hasSubmissionBeenSubmitted: false,
     csrfToken: 'abc123',
+    closedAndInProgress: false,
   };
 
   it('renders SubmissionSummary component correctly', () => {
