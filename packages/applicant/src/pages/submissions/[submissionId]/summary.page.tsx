@@ -126,10 +126,14 @@ export default function SubmissionSummary({
               }
               method="POST"
             >
-              <ImportantBanner
-                bannerHeading="This grant has closed. You cannot submit your application"
-                bannerContent="You can still view your answers and download a copy of your application on this page."
-              />
+              {closedAndInProgress ? (
+                <ImportantBanner
+                  bannerHeading="This grant has closed. You cannot submit your application"
+                  bannerContent="You can still view your answers and download a copy of your application on this page."
+                />
+              ) : (
+                <></>
+              )}
               <span
                 className="govuk-caption-l"
                 data-cy={`cy-application-name-${applicationName}`}
@@ -148,7 +152,7 @@ export default function SubmissionSummary({
                   section={section}
                   submissionId={grantSubmissionId}
                   mandatoryQuestionId={mandatoryQuestionId}
-                  readOnly={hasSubmissionBeenSubmitted}
+                  readOnly={hasSubmissionBeenSubmitted || closedAndInProgress}
                 />
               ))}
 
