@@ -47,6 +47,17 @@ export const getValidationErrorsFromQuery = (
   return [JSON.parse(errors)];
 };
 
+function trimWhiteSpace(obj: QuestionPostBody) {
+  return Object.entries(obj).reduce(
+    (acc, [key, value]: [string, string | unknown]) => {
+      acc[key] =
+        typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : value;
+      return acc;
+    },
+    {} as QuestionPostBody
+  );
+}
+
 export const getServerSideProps: GetServerSideProps<
   QuestionPageProps
 > = async ({ params, req, res, query }) => {
@@ -102,7 +113,13 @@ export const getServerSideProps: GetServerSideProps<
       req,
       res,
       (body: QuestionPostBody) =>
-        postQuestionResponse(submissionId, sectionId, questionId, body, jwt),
+        postQuestionResponse(
+          submissionId,
+          sectionId,
+          questionId,
+          trimWhiteSpace(body),
+          jwt
+        ),
       submissionId,
       sectionId,
       questionId,
