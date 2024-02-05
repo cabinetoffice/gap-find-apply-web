@@ -169,10 +169,7 @@ describe('Edit section page', () => {
     it('Should render a question', () => {
       screen.getByText('some-question-title');
       screen.getByText('Long answer');
-      expect(screen.getByRole('link', { name: 'Edit' })).toHaveProperty(
-        'href',
-        'http://localhost/apply/#'
-      );
+      expect(screen.getAllByRole('link', { name: 'Edit' })).toHaveLength(2);
     });
 
     it.each([

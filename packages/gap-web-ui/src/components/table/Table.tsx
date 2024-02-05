@@ -5,6 +5,7 @@ export interface TableProps {
   caption?: string | JSX.Element;
   captionSize?: 's' | 'm' | 'l' | 'xl';
   captionClassName?: string;
+  captionLabel?: string;
   forceCellTopBorder?: boolean;
   tHeadColumns: TheadColumn[]; //needed for accessibility
   rows: Row[];
@@ -43,6 +44,7 @@ const Table = ({
   caption,
   captionSize,
   captionClassName,
+  captionLabel,
   forceCellTopBorder,
   tHeadColumns,
   rows,
@@ -60,6 +62,7 @@ const Table = ({
           } ${captionClassName}`}
           data-testid="table-caption"
           data-cy={`cy-table-caption-${caption}`}
+          aria-label={captionLabel}
         >
           {caption}
         </caption>

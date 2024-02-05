@@ -73,14 +73,13 @@ const EditSectionPage = ({
                 {section.sectionTitle}
               </div>
             ),
-            // GAP-2103: Uncomment this when the edit section page is implemented
-            // action: (
-            //   <CustomLink
-            //     href={`/build-application/${applicationId}/${section.sectionId}/section-name`}
-            //   >
-            //     Edit
-            //   </CustomLink>
-            // ),
+            action: (
+              <CustomLink
+                href={`/build-application/${applicationId}/${section.sectionId}/edit-title`}
+              >
+                Edit
+              </CustomLink>
+            ),
           },
         ]}
       />
@@ -100,7 +99,7 @@ const EditSectionPage = ({
           },
           { name: 'Actions', isVisuallyHidden: true, width: 'one-third' },
         ]}
-        rows={questionTableRows(section)}
+        rows={questionTableRows(section, applicationId)}
       />
 
       <CustomLink
@@ -140,7 +139,8 @@ const EditSectionPage = ({
 };
 
 function questionTableRows(
-  section: InferProps<typeof getServerSideProps>['section']
+  section: InferProps<typeof getServerSideProps>['section'],
+  applicationId: string
 ) {
   return (
     section.questions?.map((question) => ({
@@ -149,9 +149,11 @@ function questionTableRows(
           content: (
             <p className="govuk-!-font-weight-bold">{question.fieldTitle}</p>
           ),
+          className: 'govuk-!-padding-1',
         },
         {
           content: <p>{ResponseTypeLabels[question.responseType]}</p>,
+          className: 'govuk-!-padding-1',
         },
         {
           content: (
@@ -169,7 +171,7 @@ function questionTableRows(
                   {/* <Button text="Down" isSecondary /> */}
                 </div>
                 <CustomLink
-                  href="/#"
+                  href={`/build-application/${applicationId}/${section.sectionId}/${question.questionId}/edit/question-content`}
                   customStyle="govuk-!-padding-left-6 govuk-!-padding-top-2 govuk-grid-column-one-quarter govuk-!-text-align-left"
                 >
                   Edit
@@ -177,6 +179,7 @@ function questionTableRows(
               </div>
             </div>
           ),
+          className: 'govuk-!-padding-1',
         },
       ],
     })) || []

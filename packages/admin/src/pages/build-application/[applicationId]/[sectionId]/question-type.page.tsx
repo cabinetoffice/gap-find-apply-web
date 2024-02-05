@@ -32,6 +32,11 @@ type RequestBody = {
   _csrf?: string;
 };
 
+const WORD_LIMIT_MAP = {
+  [ResponseType.ShortAnswer]: 300,
+  [ResponseType.LongAnswer]: 5000,
+};
+
 export const getServerSideProps: GetServerSideProps = async ({
   params,
   req,
@@ -67,11 +72,16 @@ export const getServerSideProps: GetServerSideProps = async ({
           sessionCookie
         )) as QuestionSummary;
         const { optional, ...restOfQuestionSummary } = questionSummary;
+        const maxWords =
+          WORD_LIMIT_MAP[body.responseType as keyof typeof WORD_LIMIT_MAP];
 
         await postQuestion(sessionId, applicationId, sectionId, {
           ...restOfQuestionSummary,
           ...props,
-          validation: { mandatory: optional !== 'true' },
+          validation: {
+            maxWords,
+            mandatory: optional !== 'true',
+          },
         });
 
         return {
@@ -194,7 +204,7 @@ const QuestionType = ({
                 label: ResponseTypeLabels[ResponseType.ShortAnswer],
                 hint: (
                   <QuestionTypeHint
-                    description="Can have a maximum of 250 characters entered."
+                    description="Can have a maximum of 300 words entered."
                     questionType="short-answer"
                     imageFileName="text-input"
                     imageAlt="A screenshot of a text input, with a title and description"
@@ -206,7 +216,7 @@ const QuestionType = ({
                 label: ResponseTypeLabels[ResponseType.LongAnswer],
                 hint: (
                   <QuestionTypeHint
-                    description="Can have a maximum of 6000 characters entered."
+                    description="Can have a maximum of 5000 words entered."
                     questionType="long-answer"
                     imageFileName="text-area"
                     imageAlt="A screenshot of a long text area input, along with a title and description"

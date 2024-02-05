@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import { TextInputSubtype } from '../../../types/InputType';
 import ErrorMessage from '../../display-errors/ErrorMessage';
 import { InputComponentProps } from './InputComponentProps';
+import { HARD_CHAR_LIMIT } from './constants';
 
 const TextInput = ({
   children,
@@ -22,6 +23,7 @@ const TextInput = ({
   fieldPrefix = '£',
   multipleQuestionPage = true,
   limit,
+  limitWords = false,
 }: TextInputComponentProps) => {
   const ariaDescribedByText: string = fieldName + '-hint';
   const hasError = fieldErrors.some((fieldError) =>
@@ -102,7 +104,8 @@ const TextInput = ({
     <div
       className="govuk-character-count"
       data-module="govuk-character-count"
-      data-maxlength={limit}
+      data-maxlength={!limitWords ? limit : undefined}
+      data-maxwords={limitWords ? limit : undefined}
     >
       <div
         className={`govuk-form-group${
@@ -152,7 +155,11 @@ const TextInput = ({
             className="govuk-hint govuk-character-count__message"
             data-testid="character-limit-div"
           >
-            You can enter up to {limit} characters
+            {limitWords
+              ? `You can enter up to ${limit} ${
+                  limit > HARD_CHAR_LIMIT ? 'characters' : 'words'
+                }`
+              : `You can enter up to ${limit} characters`}
           </div>
         )}
         {children}
@@ -172,6 +179,7 @@ export interface TextInputComponentProps extends InputComponentProps {
   newLineAccepted?: boolean;
   fieldPrefix?: string | null;
   limit?: number;
+  limitWords?: boolean;
 }
 
 export default TextInput;

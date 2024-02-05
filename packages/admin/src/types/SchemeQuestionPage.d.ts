@@ -6,6 +6,8 @@ type SchemeQuestionPage = {
   formAction: string;
   pageCaption?: string;
   defaultValue?: string;
+  deleteConfirmationUrl: string;
   csrfToken: string;
+  backTo?: string;
 };
 export default SchemeQuestionPage;

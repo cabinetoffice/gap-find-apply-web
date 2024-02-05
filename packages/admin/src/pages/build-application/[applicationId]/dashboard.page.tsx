@@ -2,7 +2,10 @@ import { GetServerSidePropsContext } from 'next';
 import getConfig from 'next/config';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
-import { getApplicationFormSummary } from '../../../services/ApplicationService';
+import {
+  getApplicationFormSummary,
+  handleSectionOrdering,
+} from '../../../services/ApplicationService';
 import { getGrantScheme } from '../../../services/SchemeService';
 import ServiceError from '../../../types/ServiceError';
 import { getSessionIdFromCookies } from '../../../utils/session';
@@ -10,14 +13,48 @@ import PublishButton from './components/PublishButton';
 import Sections from './components/Sections';
 import UnpublishSummary from './components/UnpublishSummary';
 import InferProps from '../../../types/InferProps';
+import callServiceMethod from '../../../utils/callServiceMethod';
+import { generateErrorPageParams } from '../../../utils/serviceErrorHelpers';
+import { useEffect, useState, useRef } from 'react';
 
 export const getServerSideProps = async ({
   params,
   query,
+  res,
   req,
+  resolvedUrl,
 }: GetServerSidePropsContext) => {
   const { applicationId } = params as Record<string, string>;
-  const { recentlyUnpublished } = query;
+  const { recentlyUnpublished, scrollPosition } = query as Record<
+    string,
+    string
+  >;
+
+  const result = await callServiceMethod(
+    req,
+    res,
+    async (body) => {
+      const sessionId = getSessionIdFromCookies(req);
+      const params = Object.keys(body)[0].split('/');
+      const increment = params[0] === 'Up' ? -1 : 1;
+      const sectionId = params[1];
+      await handleSectionOrdering(
+        increment,
+        sectionId,
+        applicationId,
+        sessionId
+      );
+    },
+    `/build-application/${applicationId}/dashboard?scrollPosition=${scrollPosition}`,
+    generateErrorPageParams(
+      'Something went wrong while trying to update section orders.',
+      `/build-application/${applicationId}/dashboard`
+    )
+  );
+
+  if ('redirect' in result) {
+    return result;
+  }
 
   let grantScheme;
   let applicationFormSummary;
@@ -65,6 +102,9 @@ export const getServerSideProps = async ({
       applicationStatus: applicationFormSummary.applicationStatus,
       recentlyUnpublished: !!recentlyUnpublished,
       applyToApplicationUrl,
+      resolvedUrl: process.env.SUB_PATH + resolvedUrl,
+      csrfToken: res.getHeader('x-csrf-token') as string,
+      scrollPosition: Number(scrollPosition ?? 0),
     },
   };
 };
@@ -77,6 +117,9 @@ const Dashboard = ({
   applicationStatus,
   recentlyUnpublished,
   applyToApplicationUrl,
+  resolvedUrl,
+  csrfToken,
+  scrollPosition,
 }: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
   const findAGrantLink = publicRuntimeConfig.FIND_A_GRANT_URL;
@@ -91,6 +134,20 @@ const Dashboard = ({
       return section.questions ? section.questions.length < 1 : true;
     }
   });
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const [newScrollPosition, setNewScrollPosition] = useState(
+    scrollPosition ?? 0
+  );
+  const formAction =
+    resolvedUrl.split('?')[0] + `?scrollPosition=${newScrollPosition}`;
+
+  useEffect(() => {
+    window.scrollTo({
+      top: scrollPosition,
+      behavior: 'instant' as ScrollBehavior,
+    });
+  }, []);
 
   return (
     <>
@@ -151,6 +208,10 @@ const Dashboard = ({
           sections={sections}
           applicationId={applicationId}
           applicationStatus={applicationStatus}
+          formAction={formAction}
+          csrfToken={csrfToken}
+          setNewScrollPosition={setNewScrollPosition}
+          formRef={formRef}
         />
 
         {applicationStatus === 'PUBLISHED' ? (

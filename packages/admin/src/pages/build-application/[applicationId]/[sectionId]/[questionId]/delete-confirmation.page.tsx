@@ -18,6 +18,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   resolvedUrl,
   req,
   res,
+  query: { backTo },
 }) => {
   const { applicationId, sectionId, questionId } = params as Record<
     string,
@@ -64,7 +65,9 @@ export const getServerSideProps: GetServerSideProps = async ({
         });
       }
     },
-    `/build-application/${applicationId}/dashboard`,
+    backTo === 'dashboard'
+      ? `/build-application/${applicationId}/dashboard`
+      : `/build-application/${applicationId}/${sectionId}`,
     errorPageParams
   );
 
@@ -108,11 +111,15 @@ const DeleteQuestion = ({
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
         >
-          <Radio
-            questionTitle="Do you want to delete this question?"
-            fieldName="deleteBool"
-            fieldErrors={fieldErrors}
-          />
+          <h1 className="govuk-heading-l">
+            Do you want to delete this question?
+          </h1>
+
+          <p className="govuk-caption-m">
+            This question and all of its settings will be deleted permanently.
+          </p>
+
+          <Radio fieldName="deleteBool" fieldErrors={fieldErrors} />
           <div className="govuk-button-group">
             <Button text="Confirm" />
 
