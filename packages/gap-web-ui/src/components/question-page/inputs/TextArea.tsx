@@ -2,6 +2,7 @@ import React from 'react';
 import ErrorMessage from '../../display-errors/ErrorMessage';
 import Details from '../Details';
 import { InputComponentProps } from './InputComponentProps';
+import { HARD_CHAR_LIMIT } from './constants';
 
 const TextArea = ({
   questionTitle,
@@ -88,9 +89,10 @@ const TextArea = ({
           className="govuk-hint govuk-character-count__message"
           data-testid="character-limit-div"
         >
-          {/* Written as full sentences for accessibility */}
           {limitWords
-            ? `You can enter up to ${limit} words`
+            ? `You can enter up to ${limit} ${
+                limit > HARD_CHAR_LIMIT ? 'characters' : 'words'
+              }`
             : `You can enter up to ${limit} characters`}
         </div>
       )}
