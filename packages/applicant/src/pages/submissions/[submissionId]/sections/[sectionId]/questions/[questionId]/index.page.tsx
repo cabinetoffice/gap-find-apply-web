@@ -201,7 +201,12 @@ export default function QuestionPage({
       inputType = (
         <TextInput
           {...commonProps}
-          limit={question.validation.maxLength || undefined}
+          limitWords={Boolean(question.validation.maxWords)}
+          limit={
+            question.validation.maxWords ||
+            question.validation.maxLength ||
+            undefined
+          }
           defaultValue={
             error ? temporaryErrorInputValue[0] : response || undefined
           }
@@ -224,7 +229,12 @@ export default function QuestionPage({
       inputType = (
         <TextArea
           {...commonProps}
-          limit={question.validation.maxLength || undefined}
+          limitWords={Boolean(question.validation.maxWords)}
+          limit={
+            question.validation.maxWords ||
+            question.validation.maxLength ||
+            undefined
+          }
           defaultValue={
             error ? temporaryErrorInputValue[0] : response || undefined
           }
