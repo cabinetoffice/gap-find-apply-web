@@ -18,6 +18,7 @@ import { ProcessMultiResponse } from './sections/[sectionId]/processMultiRespons
 import { getQuestionUrl } from './sections/[sectionId]/index.page';
 import { ImportantBanner } from 'gap-web-ui';
 import { fetchSubmission } from '../../../services/SubmissionService';
+import { redirect } from 'next/dist/server/api-utils';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -36,18 +37,31 @@ export const getServerSideProps: GetServerSideProps<
   const jwt = getJwtFromCookies(req);
   const submissionId = params.submissionId.toString();
 
-  const { sections, grantSubmissionId, applicationName, grantSchemeId } =
-    await getSubmissionById(submissionId, getJwtFromCookies(req));
+  const {
+    sections,
+    grantSubmissionId,
+    applicationName,
+    grantSchemeId,
+    submissionStatus,
+  } = await getSubmissionById(submissionId, getJwtFromCookies(req));
+
+  const submissionExists =
+    submissionStatus === 'IN_PROGRESS' || 'SUBMITTED' || 'GRANT_CLOSED';
+
+  if (!submissionExists) {
+    return {
+      redirect: {
+        destination: `/grant-is-closed`,
+        permanent: false,
+      },
+    };
+  }
 
   const grantApplicationStatus = await getApplicationStatusBySchemeId(
     grantSchemeId,
     jwt
   );
-
   const hasBeenSubmitted = await hasSubmissionBeenSubmitted(submissionId, jwt);
-
-  const submission = await fetchSubmission(submissionId, jwt);
-  const submissionExists = submission.status !== 404;
 
   const closedAndInProgress =
     grantApplicationStatus === 'REMOVED' && submissionExists;
