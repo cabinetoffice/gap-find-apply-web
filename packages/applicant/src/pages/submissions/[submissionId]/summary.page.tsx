@@ -17,8 +17,6 @@ import { routes } from '../../../utils/routes';
 import { ProcessMultiResponse } from './sections/[sectionId]/processMultiResponse';
 import { getQuestionUrl } from './sections/[sectionId]/index.page';
 import { ImportantBanner } from 'gap-web-ui';
-import { fetchSubmission } from '../../../services/SubmissionService';
-import { redirect } from 'next/dist/server/api-utils';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -37,34 +35,14 @@ export const getServerSideProps: GetServerSideProps<
   const jwt = getJwtFromCookies(req);
   const submissionId = params.submissionId.toString();
 
-  const {
-    sections,
-    grantSubmissionId,
-    applicationName,
-    grantSchemeId,
-    submissionStatus,
-  } = await getSubmissionById(submissionId, getJwtFromCookies(req));
-
-  const submissionExists =
-    submissionStatus === 'IN_PROGRESS' || 'SUBMITTED' || 'GRANT_CLOSED';
-
-  if (!submissionExists) {
-    return {
-      redirect: {
-        destination: `/grant-is-closed`,
-        permanent: false,
-      },
-    };
-  }
+  const { sections, grantSubmissionId, applicationName, grantSchemeId } =
+    await getSubmissionById(submissionId, getJwtFromCookies(req));
 
   const grantApplicationStatus = await getApplicationStatusBySchemeId(
     grantSchemeId,
     jwt
   );
   const hasBeenSubmitted = await hasSubmissionBeenSubmitted(submissionId, jwt);
-
-  const closedAndInProgress =
-    grantApplicationStatus === 'REMOVED' && submissionExists;
 
   const hydratedSections = await Promise.all(
     sections.map(async (section) => {
@@ -107,7 +85,7 @@ export const getServerSideProps: GetServerSideProps<
       applicationName,
       hasSubmissionBeenSubmitted: hasBeenSubmitted,
       csrfToken: res.getHeader('x-csrf-token') as string,
-      closedAndInProgress: closedAndInProgress,
+      closedAndInProgress: grantApplicationStatus === 'REMOVED',
     },
   };
 };
@@ -144,7 +122,8 @@ export default function SubmissionSummary({
                 <ImportantBanner
                   bannerHeading="This grant has closed. You cannot submit your application"
                   bannerContent="You can still view your answers and download a copy of your application on this page."
-                />)}
+                />
+              )}
               <span
                 className="govuk-caption-l"
                 data-cy={`cy-application-name-${applicationName}`}
@@ -171,16 +150,16 @@ export default function SubmissionSummary({
                 Download a copy of your application
               </h1>
               <p className="govuk-body">
-                You can {/* <Link */}
-                <a
-                  className="govuk-link govuk-link--no-visited-state"
+                You can{' '}
+                <Link
                   href={routes.api.submissions.downloadSummary(
                     grantSubmissionId
                   )}
                 >
-                  download a copy of your answers (ZIP)
-                </a>
-                {/* </Link>{' '} */}
+                  <a className="govuk-link govuk-link--no-visited-state">
+                    download a copy of your answers (ZIP)
+                  </a>
+                </Link>{' '}
                 for future reference.
               </p>
 
