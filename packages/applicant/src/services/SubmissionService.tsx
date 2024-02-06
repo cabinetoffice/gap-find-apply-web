@@ -145,16 +145,6 @@ export async function hasSubmissionBeenSubmitted(
   return data;
 }
 
-export async function fetchSubmission(submissionId: string, jwt: string) {
-  const data = await fetch(`${BACKEND_HOST}/submissions/${submissionId}`, {
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-      Accept: 'application/json',
-    },
-  });
-  return data;
-}
-
 export async function deleteAttachmentByQuestionId(
   submissionId: string,
   sectionId: string,
