@@ -35,10 +35,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const url = `${getConfig().serverRuntimeConfig.backendHost}/feedback/add`;
 
-  const fieldErrors: ValidationError[] = context.query.fieldErrors
-    ? [JSON.parse(context.query.fieldErrors as string)]
-    : [];
-
   async function handleRequest(body: PageBodyResponse, jwt: string) {
     await postSurveyResponse(
       body.satisfaction,
@@ -95,7 +91,6 @@ const Survey = ({
           <h2 className="govuk-heading-m" tabIndex={-1}>
             Satisfaction survey
           </h2>
-          <ErrorBanner fieldErrors={fieldErrors} />
 
           <FlexibleQuestionPageLayout
             formAction={formAction}
@@ -108,7 +103,6 @@ const Survey = ({
               fieldName="satisfaction"
               questionTitle="Overall, how did you feel about the service you received today?"
               titleSize="s"
-              defaultChecked="Neither satisfied nor dissatisfied"
               radioOptions={[
                 {
                   label: 'Very satisfied',

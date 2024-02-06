@@ -15,14 +15,17 @@ const postSurveyResponse = async (
   userJourney: string
 ) => {
   if (!satisfaction && comment === '') {
-    return await axios.post('#', null, {
-      params: {
-        fieldErrors: {
-          fieldName: 'satisfaction',
-          errorMessage: 'Please complete at least one field',
+    return Promise.reject({
+      response: {
+        data: {
+          fieldErrors: [
+            {
+              fieldName: 'satisfaction',
+              errorMessage: 'Please complete at least one field',
+            },
+          ],
         },
       },
-      ...axiosSessionConfig(sessionId),
     });
   } else {
     const surveyResponse = {
