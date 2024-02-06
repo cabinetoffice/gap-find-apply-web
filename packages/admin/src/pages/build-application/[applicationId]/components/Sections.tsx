@@ -71,6 +71,7 @@ const Sections = ({
                           name={`Up/${section.sectionId}`}
                           disabled={sectionIndex === CUSTOM_SECTION_FIRST_INDEX}
                           onClick={handleOnUpDownButtonClick}
+                          aria-label={`Move section ${section.sectionTitle} up`}
                         >
                           Up
                         </button>
@@ -81,6 +82,7 @@ const Sections = ({
                           name={`Down/${section.sectionId}`}
                           disabled={sectionIndex === sections.length - 1}
                           onClick={handleOnUpDownButtonClick}
+                          aria-label={`Move section ${section.sectionTitle} down`}
                         >
                           Down
                         </button>

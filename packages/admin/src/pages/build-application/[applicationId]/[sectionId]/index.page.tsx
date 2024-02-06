@@ -1,51 +1,41 @@
-import { GetServerSidePropsContext } from 'next';
-import { getApplicationFormSummary } from '../../../../services/ApplicationService';
-import { getSessionIdFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import Meta from '../../../../components/layout/Meta';
 import CustomLink from '../../../../components/custom-link/CustomLink';
-import { SummaryList, Table } from 'gap-web-ui';
+import { FlexibleQuestionPageLayout, SummaryList, Table } from 'gap-web-ui';
 import { ResponseTypeLabels } from '../../../../enums/ResponseType';
-import ServiceError from '../../../../types/ServiceError';
+import { useLayoutEffect, useRef, useState } from 'react';
+import QuestionRowActionComponent from './index/QuestionRowActionComponent';
+import getServerSideProps from './index/getServerSideProps';
 
-export const getServerSideProps = async ({
-  params,
-  req,
-}: GetServerSidePropsContext) => {
-  const { applicationId, sectionId } = params as Record<string, string>;
-
-  let applicationFormSummary;
-  try {
-    applicationFormSummary = await getApplicationFormSummary(
-      applicationId,
-      getSessionIdFromCookies(req)
-    );
-  } catch (err) {
-    return redirectError;
-  }
-
-  const section = applicationFormSummary.sections.find(
-    (section) => section.sectionId === sectionId
-  );
-
-  if (!section) {
-    return redirectError;
-  }
-
-  return {
-    props: {
-      section,
-      grantApplicationName: applicationFormSummary.applicationName,
-      applicationId: applicationFormSummary.grantApplicationId,
-    },
-  };
-};
+export { getServerSideProps };
 
 const EditSectionPage = ({
   section,
   grantApplicationName,
   applicationId,
+  scrollPosition,
+  resolvedUrl,
+  csrfToken,
 }: InferProps<typeof getServerSideProps>) => {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [newScrollPosition, setNewScrollPosition] = useState(
+    scrollPosition ?? 0
+  );
+  const formAction =
+    resolvedUrl.split('?')[0] + `?scrollPosition=${newScrollPosition}`;
+
+  function handleOnUpDownButtonClick() {
+    setNewScrollPosition(window.scrollY);
+    formRef?.current?.submit();
+  }
+
+  useLayoutEffect(() => {
+    window.scrollTo({
+      top: scrollPosition,
+      behavior: 'instant' as ScrollBehavior,
+    });
+  }, []);
+
   return (
     <>
       <Meta title="Build an application form - Manage a grant" />
@@ -84,23 +74,32 @@ const EditSectionPage = ({
         ]}
       />
 
-      <Table
-        caption="Questions"
-        tHeadColumns={[
-          {
-            name: 'Question title',
-            isVisuallyHidden: true,
-            width: 'one-third',
-          },
-          {
-            name: 'Question type',
-            isVisuallyHidden: true,
-            width: 'one-third',
-          },
-          { name: 'Actions', isVisuallyHidden: true, width: 'one-third' },
-        ]}
-        rows={questionTableRows(section, applicationId)}
-      />
+      <FlexibleQuestionPageLayout
+        formAction={formAction}
+        fieldErrors={[]}
+        csrfToken={csrfToken}
+        fullPageWidth
+      >
+        <Table
+          caption="Questions"
+          tHeadColumns={[
+            {
+              name: 'Question title',
+              isVisuallyHidden: true,
+            },
+            {
+              name: 'Question type',
+              isVisuallyHidden: true,
+            },
+            { name: 'Actions', isVisuallyHidden: true },
+          ]}
+          rows={questionTableRows(
+            section,
+            applicationId,
+            handleOnUpDownButtonClick
+          )}
+        />
+      </FlexibleQuestionPageLayout>
 
       <CustomLink
         href={`/build-application/${applicationId}/${section.sectionId}/question-content`}
@@ -140,68 +139,40 @@ const EditSectionPage = ({
 
 function questionTableRows(
   section: InferProps<typeof getServerSideProps>['section'],
-  applicationId: string
+  applicationId: InferProps<typeof getServerSideProps>['applicationId'],
+  handleOnUpDownButtonClick: () => void
 ) {
-  return (
-    section.questions?.map((question) => ({
-      cells: [
-        {
-          content: (
-            <p className="govuk-!-font-weight-bold">{question.fieldTitle}</p>
-          ),
-          className: 'govuk-!-padding-1',
-        },
-        {
-          content: <p>{ResponseTypeLabels[question.responseType]}</p>,
-          className: 'govuk-!-padding-1',
-        },
-        {
-          content: (
-            <div className="govuk-!-text-align-right govuk-width-container govuk-!-padding-top-2">
-              <div className="govuk-grid-row">
-                <div className="govuk-grid-column-one-quarter">
-                  <p />
-                </div>
-                <div className="govuk-grid-column-one-quarter">
-                  {/* GAP-2111: Uncomment when move question order is implemented */}
-                  {/* <Button text="Up" isSecondary /> */}
-                </div>
-                <div className="govuk-grid-column-one-quarter">
-                  {/* GAP-2111: Uncomment when move question order is implemented */}
-                  {/* <Button text="Down" isSecondary /> */}
-                </div>
-                <CustomLink
-                  href={`/build-application/${applicationId}/${section.sectionId}/${question.questionId}/edit/question-content`}
-                  customStyle="govuk-!-padding-left-6 govuk-!-padding-top-2 govuk-grid-column-one-quarter govuk-!-text-align-left"
-                >
-                  Edit
-                </CustomLink>
-              </div>
-            </div>
-          ),
-          className: 'govuk-!-padding-1',
-        },
-      ],
-    })) || []
-  );
+  const questions = section.questions;
+  if (!questions) {
+    return [];
+  }
+
+  return questions.map((question, questionIndex) => ({
+    cells: [
+      {
+        content: (
+          <p className="govuk-!-font-weight-bold">{question.fieldTitle}</p>
+        ),
+        className: 'govuk-!-padding-1',
+      },
+      {
+        content: <p>{ResponseTypeLabels[question.responseType]}</p>,
+        className: 'govuk-!-padding-1',
+      },
+      {
+        content: (
+          <QuestionRowActionComponent
+            section={section}
+            questions={questions}
+            question={question}
+            questionIndex={questionIndex}
+            applicationId={applicationId}
+            handleOnUpDownButtonClick={handleOnUpDownButtonClick}
+          />
+        ),
+      },
+    ],
+  }));
 }
-
-const errorProps: ServiceError = {
-  errorInformation: 'Something went wrong while trying to edit a section',
-  linkAttributes: {
-    href: `/scheme-list`,
-    linkText: 'Please find your scheme application form and continue.',
-    linkInformation: 'Your previous progress has been saved.',
-  },
-};
-
-const redirectError = {
-  redirect: {
-    destination: `/service-error?serviceErrorProps=${JSON.stringify(
-      errorProps
-    )}`,
-    permanent: false,
-  },
-};
 
 export default EditSectionPage;
