@@ -21,6 +21,7 @@ jest.mock('../../../../../../../services/QuestionService');
 
 const mockedGetApplicationFormSummary = jest.mocked(getApplicationFormSummary);
 const mockedGetQuestion = jest.mocked(getQuestion);
+const mockedPatchQuestion = jest.mocked(patchQuestion);
 
 const getDefaultAppFormSummary = (): InferServiceMethodResponse<
   typeof getApplicationFormSummary
@@ -61,9 +62,9 @@ const getDefaultQuestion = (): InferServiceMethodResponse<
   displayText: '',
 });
 
-const expectedRedirectObject = {
+const expectedGetRedirectObject = {
   redirect: {
-    destination: `/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to update the question.","linkAttributes":{"href":"/build-application/testApplicationId/dashboard","linkText":"Please return","linkInformation":" and try again."}}`,
+    destination: `/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to load this page.","linkAttributes":{"href":"/testResolvedURL","linkText":"Please return","linkInformation":" and try again."}}`,
     statusCode: 302,
   } as Redirect,
 };
@@ -95,19 +96,19 @@ describe('getServerSideProps', () => {
     if ('redirect' in value) throw new Error('Expected props');
 
     expect(value.props.pageData.backButtonHref).toStrictEqual(
-      '/build-application/testApplicationId/dashboard'
+      '/build-application/testApplicationId/testSectionId'
     );
   });
 
-  it('back button href should link to section edit page when the user visited from that page.', async () => {
+  it('back button href should link to dashboard when backTo links there.', async () => {
     const value = await getServerSideProps(
-      getContext(getDefaultContext, { query: { backTo: 'edit-section' } })
+      getContext(getDefaultContext, { query: { backTo: 'dashboard' } })
     );
 
     if ('redirect' in value) throw new Error('Expected props');
 
     expect(value.props.pageData.backButtonHref).toStrictEqual(
-      '/build-application/testApplicationId/testSectionId'
+      '/build-application/testApplicationId/dashboard'
     );
   });
 
@@ -117,8 +118,7 @@ describe('getServerSideProps', () => {
     if ('redirect' in value) throw new Error('Expected props');
 
     expect(value.props.formAction).toStrictEqual(
-      process.env.SUB_PATH +
-        '/build-application/testApplicationId/testSectionId/edit/question-content'
+      process.env.SUB_PATH + '/testResolvedURL'
     );
   });
 
@@ -127,7 +127,7 @@ describe('getServerSideProps', () => {
 
     const value = await getServerSideProps(getContext(getDefaultContext));
 
-    expect(value).toStrictEqual(expectedRedirectObject);
+    expect(value).toStrictEqual(expectedGetRedirectObject);
   });
 
   it('Should redirect to the service error page when fetching the section title fails', async () => {
@@ -135,7 +135,7 @@ describe('getServerSideProps', () => {
 
     const value = await getServerSideProps(getContext(getDefaultContext));
 
-    expect(value).toStrictEqual(expectedRedirectObject);
+    expect(value).toStrictEqual(expectedGetRedirectObject);
   });
 
   it('Should redirect to question preview page if the application has been published', async () => {
@@ -196,8 +196,8 @@ describe('getServerSideProps', () => {
       if ('redirect' in value) throw new Error('Expected props');
 
       expect(
-        value.props.pageData.questionData.validation.optional
-      ).toStrictEqual('false');
+        value.props.pageData.questionData.validation.mandatory
+      ).toStrictEqual('true');
     });
   });
 
@@ -208,7 +208,7 @@ describe('getServerSideProps', () => {
         hintText: 'A hint describing the question',
         optional: 'true',
       });
-      (patchQuestion as jest.Mock).mockResolvedValue({});
+      mockedPatchQuestion.mockResolvedValue();
     });
 
     it('Should redirect to the error service page when patching the question fails', async () => {
@@ -218,7 +218,12 @@ describe('getServerSideProps', () => {
         getContext(getDefaultContext, { req: { method: 'POST' } })
       );
 
-      expect(value).toStrictEqual(expectedRedirectObject);
+      expect(value).toStrictEqual({
+        redirect: {
+          destination: `/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to update the question.","linkAttributes":{"href":"/testResolvedURL","linkText":"Please return","linkInformation":" and try again."}}`,
+          statusCode: 302,
+        },
+      });
     });
 
     it('Should redirect to application dashboard when patching the question succeeds', async () => {
@@ -228,7 +233,7 @@ describe('getServerSideProps', () => {
 
       expect(value).toStrictEqual({
         redirect: {
-          destination: '/build-application/testApplicationId/dashboard',
+          destination: '/build-application/testApplicationId/testSectionId',
           statusCode: 302,
         },
       });
@@ -251,7 +256,7 @@ describe('getServerSideProps', () => {
     });
 
     describe('Throws validation errors', () => {
-      const validationErrors = [
+      const validationErrors: ValidationError[] = [
         {
           fieldName: 'fieldTitle',
           errorMessage: 'Question title should be greater than 2 characters',
@@ -261,10 +266,10 @@ describe('getServerSideProps', () => {
           errorMessage:
             'Question hint should not be greater than 1000 characters',
         },
-      ] as ValidationError[];
+      ];
 
       beforeEach(() => {
-        (patchQuestion as jest.Mock).mockRejectedValue({
+        mockedPatchQuestion.mockRejectedValue({
           response: {
             data: { fieldErrors: validationErrors },
           },
@@ -289,7 +294,7 @@ describe('getServerSideProps', () => {
         if ('redirect' in value) throw new Error('Expected props');
 
         expect(value.props.pageData.questionData.fieldTitle).toStrictEqual(
-          'Title'
+          'Test Section Field Title'
         );
       });
 
@@ -301,7 +306,7 @@ describe('getServerSideProps', () => {
         if ('redirect' in value) throw new Error('Expected props');
 
         expect(value.props.pageData.questionData.hintText).toStrictEqual(
-          'A hint describing the question'
+          'Test hint text'
         );
       });
 
@@ -313,7 +318,7 @@ describe('getServerSideProps', () => {
         if ('redirect' in value) throw new Error('Expected props');
 
         expect(
-          value.props.pageData.questionData.validation.optional
+          value.props.pageData.questionData.validation.mandatory
         ).toStrictEqual('true');
       });
     });

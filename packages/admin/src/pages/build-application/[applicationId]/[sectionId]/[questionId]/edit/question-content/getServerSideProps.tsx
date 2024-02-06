@@ -76,7 +76,7 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
     handleRequest,
     jwt: getSessionIdFromCookies(context.req),
     onSuccessRedirectHref,
-    onErrorMessage: 'Failed to edit question. Please try again.',
+    onErrorMessage: 'Something went wrong while trying to update the question.',
   });
 };
 

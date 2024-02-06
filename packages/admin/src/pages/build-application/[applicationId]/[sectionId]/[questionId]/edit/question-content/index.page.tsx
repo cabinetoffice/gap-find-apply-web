@@ -20,6 +20,14 @@ const QuestionContent = ({
   pageData: { backButtonHref, questionData, deleteConfirmationUrl, backTo },
   previousValues,
 }: InferProps<typeof getServerSideProps>) => {
+  const optionalRadioDefault = () => {
+    if (previousValues?.optional) return previousValues?.optional;
+    if (questionData.validation.mandatory !== undefined) {
+      return questionData.validation.mandatory === 'false' ? 'Yes' : 'No';
+    }
+    return undefined;
+  };
+
   return (
     <>
       <Meta
@@ -80,13 +88,7 @@ const QuestionContent = ({
             titleSize="m"
             TitleTag="h2"
             fieldErrors={fieldErrors}
-            defaultChecked={
-              (previousValues?.optional ??
-                questionData.validation.mandatory.toString() !== 'true') ===
-              'true'
-                ? 'Yes'
-                : 'No'
-            }
+            defaultChecked={optionalRadioDefault()}
           />
 
           <div className="govuk-button-group">

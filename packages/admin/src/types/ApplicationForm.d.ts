@@ -10,7 +10,7 @@ type ApplicationFormQuestion = {
   displayText: string;
   questionSuffix: string;
   responseType: ResponseType;
-  validation: { [key: string]: string };
+  validation: { [key: string]: string | undefined };
   options?: string[];
 };
 
