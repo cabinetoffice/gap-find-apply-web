@@ -140,14 +140,11 @@ export default function SubmissionSummary({
               }
               method="POST"
             >
-              {closedAndInProgress ? (
+              {closedAndInProgress && (
                 <ImportantBanner
                   bannerHeading="This grant has closed. You cannot submit your application"
                   bannerContent="You can still view your answers and download a copy of your application on this page."
-                />
-              ) : (
-                <></>
-              )}
+                />)}
               <span
                 className="govuk-caption-l"
                 data-cy={`cy-application-name-${applicationName}`}
