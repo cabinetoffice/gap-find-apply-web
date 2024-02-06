@@ -34,7 +34,7 @@ const QuestionRowActionComponent = ({
           name={`Up/${question.questionId}`}
           disabled={questionIndex === 0}
           onClick={handleOnUpDownButtonClick}
-          aria-label="Move section up"
+          aria-label={`Move question ${question.fieldTitle} up`}
         >
           Up
         </button>
@@ -45,7 +45,7 @@ const QuestionRowActionComponent = ({
           name={`Down/${question.questionId}`}
           disabled={questionIndex === questions.length - 1}
           onClick={handleOnUpDownButtonClick}
-          aria-label="Move section down"
+          aria-label={`Move question ${question.fieldTitle} down`}
         >
           Down
         </button>
