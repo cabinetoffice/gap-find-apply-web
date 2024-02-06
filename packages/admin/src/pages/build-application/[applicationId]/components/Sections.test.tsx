@@ -130,8 +130,8 @@ describe('Sections component', () => {
     });
 
     it('Should render an "Up" and "Down" buttons', () => {
-      screen.getByRole('button', { name: 'Up' });
-      screen.getByRole('button', { name: 'Down' });
+      screen.getByRole('button', { name: 'Move section Custom section up' });
+      screen.getByRole('button', { name: 'Move section Custom section down' });
     });
   });
 

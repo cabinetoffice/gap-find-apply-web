@@ -15,7 +15,7 @@ import UnpublishSummary from './components/UnpublishSummary';
 import InferProps from '../../../types/InferProps';
 import callServiceMethod from '../../../utils/callServiceMethod';
 import { generateErrorPageParams } from '../../../utils/serviceErrorHelpers';
-import { useEffect, useState, useRef } from 'react';
+import { useLayoutEffect, useState, useRef } from 'react';
 
 export const getServerSideProps = async ({
   params,
@@ -142,7 +142,7 @@ const Dashboard = ({
   const formAction =
     resolvedUrl.split('?')[0] + `?scrollPosition=${newScrollPosition}`;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     window.scrollTo({
       top: scrollPosition,
       behavior: 'instant' as ScrollBehavior,
