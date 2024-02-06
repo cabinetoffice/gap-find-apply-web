@@ -61,7 +61,7 @@ export const getServerSideProps: GetServerSideProps<
     grantSchemeId,
     jwt
   );
-  const hasBeenSubmitted = await hasSubmissionBeenSubmitted(submissionId, jwt);
+  const hasBeenSubmitted = submissionStatus === 'SUBMITTED';
 
   const closedAndInProgress =
     grantApplicationStatus === 'REMOVED' && submissionExists;
