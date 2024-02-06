@@ -16,6 +16,7 @@ export interface ButtonProps {
   ariaLabel?: string;
   tabIndex?: number;
   hidden?: boolean;
+  onClick?: () => void;
 }
 
 const Button: FC<ButtonProps> = ({
@@ -26,6 +27,7 @@ const Button: FC<ButtonProps> = ({
   addNameAttribute = false,
   disabled = false,
   ariaLabel,
+  onClick,
   ...additionalProps
 }) => {
   return (
@@ -43,6 +45,7 @@ const Button: FC<ButtonProps> = ({
       aria-label={ariaLabel}
       aria-disabled={disabled}
       disabled={disabled}
+      onClick={onClick}
     >
       {text}
     </button>

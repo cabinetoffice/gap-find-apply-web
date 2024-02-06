@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, RefObject } from 'react';
 import { ValidationError } from '../../types/ValidationErrorType';
 import ErrorBanner from '../display-errors/ErrorBanner';
 
@@ -74,7 +74,7 @@ export interface FlexibleQuestionPageProps {
   encType?: string; //can be optional as forms default to 'application/x-www-form-urlencoded' but needs to be set to 'multipart/form-data' for file uploads
   sideBarContent?: JSX.Element;
   fullPageWidth?: boolean;
-  formRef?: React.RefObject<HTMLFormElement>;
+  formRef?: RefObject<HTMLFormElement>;
 }
 
 export default FlexibleQuestionPageLayout;
