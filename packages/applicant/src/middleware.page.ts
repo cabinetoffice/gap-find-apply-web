@@ -163,20 +163,11 @@ async function getApplicationStatusBySubmissionId(
   return await data.text();
 }
 
-async function fetchSubmission(submissionId: string, jwt: string) {
-  const data = await fetch(`${BACKEND_HOST}/submissions/${submissionId}`, {
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-      Accept: 'application/json',
-    },
-  });
-  return data;
-}
-
 async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
   const { pathname } = req.nextUrl;
   const id = pathname.split('/')[2];
 
+  if (pathname.includes('summary')) return;
   if (!id) return;
 
   const applicationStatus = await getApplicationStatusBySubmissionId(
@@ -185,10 +176,7 @@ async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
     pathname
   );
 
-  const submissionResponse = await fetchSubmission(id, jwt);
-  console.log('Submission status: ', await submissionResponse.status);
-
-  if (applicationStatus === 'REMOVED' && submissionResponse.status === 404) {
+  if (applicationStatus === 'REMOVED') {
     return NextResponse.redirect(process.env.HOST + GRANT_CLOSED_REDIRECT);
   }
 }
