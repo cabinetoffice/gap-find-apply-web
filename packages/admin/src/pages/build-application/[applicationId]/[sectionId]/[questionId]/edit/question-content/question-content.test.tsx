@@ -1,44 +1,50 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import QuestionContent, { getServerSideProps } from './question-content.page';
+import QuestionContent, { getServerSideProps } from './index.page';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext, Redirect } from 'next';
-import { getApplicationFormSummary } from '../../../../../../services/ApplicationService';
-import NextGetServerSidePropsResponse from '../../../../../../types/NextGetServerSidePropsResponse';
+import { getApplicationFormSummary } from '../../../../../../../services/ApplicationService';
+import NextGetServerSidePropsResponse from '../../../../../../../types/NextGetServerSidePropsResponse';
 import { ValidationError } from 'gap-web-ui';
-import { parseBody } from '../../../../../../utils/parseBody';
+import { parseBody } from '../../../../../../../utils/parseBody';
 import {
   getQuestion,
   patchQuestion,
-} from '../../../../../../services/QuestionService';
+} from '../../../../../../../services/QuestionService';
+import InferProps from '../../../../../../../types/InferProps';
+import ResponseTypeEnum from '../../../../../../../enums/ResponseType';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
-jest.mock('../../../../../../utils/parseBody');
-jest.mock('../../../../../../services/ApplicationService');
-jest.mock('../../../../../../services/QuestionService');
+jest.mock('../../../../../../../utils/parseBody');
+jest.mock('../../../../../../../services/ApplicationService');
+jest.mock('../../../../../../../services/QuestionService');
 
-const customProps = {
+const customProps: InferProps<typeof getServerSideProps> = {
   fieldErrors: [],
-  backButtonHref: '/back',
+  pageData: {
+    backButtonHref: '/back',
+    deleteConfirmationUrl: '',
+    backTo: '',
+    questionData: {
+      responseType: ResponseTypeEnum.ShortAnswer,
+      validation: { mandatory: 'true', maxWords: '300' },
+      fieldTitle: 'Test Section Field Title',
+      hintText: 'Test hint text',
+      questionId: 'testQuestionId',
+      adminSummary: '',
+      profileField: '',
+      fieldPrefix: '',
+      questionSuffix: '',
+      displayText: '',
+    },
+  },
+  previousValues: {
+    fieldTitle: 'Test 2 Section Field Title',
+    hintText: 'Test 2 hint text',
+    optional: 'false',
+    maxWords: '300',
+  },
   formAction: '',
-  pageCaption: 'Some page caption',
-  defaultValue: '',
-  fieldTitle: '',
-  hintText: '',
-  optional: '',
   csrfToken: '',
-  deleteConfirmationUrl: '',
-  backTo: '',
 };
 
 const expectedRedirectObject = {

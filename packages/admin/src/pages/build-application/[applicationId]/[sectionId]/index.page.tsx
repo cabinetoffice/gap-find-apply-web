@@ -4,7 +4,7 @@ import { getSessionIdFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
 import Meta from '../../../../components/layout/Meta';
 import CustomLink from '../../../../components/custom-link/CustomLink';
-import { Button, SummaryList, Table } from 'gap-web-ui';
+import { SummaryList, Table } from 'gap-web-ui';
 import { ResponseTypeLabels } from '../../../../enums/ResponseType';
 import ServiceError from '../../../../types/ServiceError';
 

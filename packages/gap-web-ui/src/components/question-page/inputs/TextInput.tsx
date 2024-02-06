@@ -4,6 +4,30 @@ import ErrorMessage from '../../display-errors/ErrorMessage';
 import { InputComponentProps } from './InputComponentProps';
 import { HARD_CHAR_LIMIT } from './constants';
 
+export type TextInputComponentProps = InputComponentProps & {
+  children?: ReactNode;
+  defaultValue?: string;
+  textInputSubtype?: TextInputSubtype;
+  width?: string;
+  fluidWidth?: string;
+  readOnly?: boolean;
+  disabled?: boolean;
+  newLineAccepted?: boolean;
+} & // GDS does not seem to support a limit and a prefix/suffix at the same time
+  (| {
+        limitWords?: boolean;
+        limit: number;
+        fieldPrefix?: undefined;
+        fieldSuffix?: undefined;
+      }
+    | {
+        limitWords?: undefined;
+        limit?: undefined;
+        fieldPrefix?: string | null;
+        fieldSuffix?: string;
+      }
+  );
+
 const TextInput = ({
   children,
   questionTitle,
@@ -20,7 +44,8 @@ const TextInput = ({
   disabled = false,
   TitleTag = 'h1',
   newLineAccepted = false,
-  fieldPrefix = '£',
+  fieldPrefix,
+  fieldSuffix,
   multipleQuestionPage = true,
   limit,
   limitWords = false,
@@ -72,22 +97,11 @@ const TextInput = ({
         );
       case 'numeric':
         return (
-          <div className="govuk-input__wrapper">
-            {fieldPrefix && (
-              <div
-                className="govuk-input__prefix"
-                aria-hidden="true"
-                data-cy={`cy-${fieldName}-text-input-prefix`}
-              >
-                {fieldPrefix}
-              </div>
-            )}
-            <input
-              {...requiredProps}
-              spellCheck="false"
-              data-cy={`cy-${fieldName}-text-input-numeric`}
-            />
-          </div>
+          <input
+            {...requiredProps}
+            spellCheck="false"
+            data-cy={`cy-${fieldName}-text-input-numeric`}
+          />
         );
       default:
         return (
@@ -148,38 +162,52 @@ const TextInput = ({
 
         <ErrorMessage fieldErrors={fieldErrors} fieldName={fieldName} />
 
-        <InputElement />
-        {limit && (
-          <div
-            id={`${fieldName}-info`}
-            className="govuk-hint govuk-character-count__message"
-            data-testid="character-limit-div"
-          >
-            {limitWords
-              ? `You can enter up to ${limit} ${
-                  limit > HARD_CHAR_LIMIT ? 'characters' : 'words'
-                }`
-              : `You can enter up to ${limit} characters`}
+        {limit ? (
+          <InputElement />
+        ) : (
+          <div className="govuk-input__wrapper">
+            {fieldPrefix && (
+              <div
+                className="govuk-input__prefix"
+                aria-hidden="true"
+                data-cy={`cy-${fieldName}-text-input-prefix`}
+              >
+                {fieldPrefix}
+              </div>
+            )}
+
+            <InputElement />
+
+            {fieldSuffix && (
+              <div
+                className="govuk-input__suffix"
+                aria-hidden="true"
+                data-cy={`cy-${fieldName}-text-input-suffix`}
+              >
+                {fieldSuffix}
+              </div>
+            )}
           </div>
         )}
+
         {children}
       </div>
+
+      {limit && (
+        <div
+          id={`${fieldName}-info`}
+          className="govuk-hint govuk-character-count__message"
+          data-testid="character-limit-div"
+        >
+          {limitWords
+            ? `You can enter up to ${limit} ${
+                limit > HARD_CHAR_LIMIT ? 'characters' : 'words'
+              }`
+            : `You can enter up to ${limit} characters`}
+        </div>
+      )}
     </div>
   );
 };
-
-export interface TextInputComponentProps extends InputComponentProps {
-  children?: ReactNode;
-  defaultValue?: string;
-  textInputSubtype?: TextInputSubtype;
-  width?: string;
-  fluidWidth?: string;
-  readOnly?: boolean;
-  disabled?: boolean;
-  newLineAccepted?: boolean;
-  fieldPrefix?: string | null;
-  limit?: number;
-  limitWords?: boolean;
-}
 
 export default TextInput;

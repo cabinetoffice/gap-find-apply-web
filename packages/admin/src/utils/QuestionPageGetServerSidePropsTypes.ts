@@ -10,7 +10,7 @@ export type QuestionPageGetServerSidePropsType<
   V
 > = {
   context: GetServerSidePropsContext;
-  fetchPageData: (jwt: string) => Promise<K>;
+  fetchPageData: (jwt: string) => Promise<K | NextRedirect>;
   handleRequest: (body: T, jwt: string, pageData: K) => Promise<V>;
   jwt: string;
   onSuccessRedirectHref: string | ((result: V) => string);

@@ -17,7 +17,7 @@ const patchQuestion = (
     fieldTitle: string;
     displayText: string;
     hintText: string;
-    validation: { mandatory: boolean };
+    validation: { mandatory: boolean; maxWords?: string };
     options: string[];
   }>
 ): Promise<void> => {
