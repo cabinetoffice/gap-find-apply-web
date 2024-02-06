@@ -16,7 +16,6 @@ type RequestBody = {
 };
 
 const getServerSideProps = (context: GetServerSidePropsContext) => {
-  const sessionId = getSessionIdFromCookies(context.req);
   const { applicationId, sectionId, questionId } = context.params as Record<
     string,
     string
@@ -29,10 +28,10 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
       : `/build-application/${applicationId}/${sectionId}`;
   }
 
-  async function fetchPageData() {
+  async function fetchPageData(jwt: string) {
     const applicationFormSummary = await getApplicationFormSummary(
       applicationId,
-      sessionId
+      jwt
     );
 
     if (applicationFormSummary.applicationStatus === 'PUBLISHED') {
@@ -45,7 +44,7 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
     }
 
     const questionData = await getQuestion(
-      sessionId,
+      jwt,
       applicationId,
       sectionId,
       questionId
@@ -59,10 +58,10 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
     };
   }
 
-  async function handleRequest(body: RequestBody) {
+  async function handleRequest(body: RequestBody, jwt: string) {
     const { optional, maxWords, ...restOfBody } = body;
 
-    return patchQuestion(sessionId, applicationId, sectionId, questionId, {
+    return patchQuestion(jwt, applicationId, sectionId, questionId, {
       ...restOfBody,
       validation: {
         mandatory: optional !== 'true',
@@ -75,7 +74,7 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
     context,
     fetchPageData,
     handleRequest,
-    jwt: sessionId,
+    jwt: getSessionIdFromCookies(context.req),
     onSuccessRedirectHref,
     onErrorMessage: 'Failed to edit question. Please try again.',
   });

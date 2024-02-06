@@ -25,7 +25,7 @@ import OptionsQuestionSummary from '../../components/OptionsQuestionSummary';
 import {
   getErrorPageParams,
   questionErrorPageRedirect,
-} from './question-content/editQuestionServiceError';
+} from './editQuestionServiceError';
 
 export const getServerSideProps: GetServerSideProps = async ({
   params,
