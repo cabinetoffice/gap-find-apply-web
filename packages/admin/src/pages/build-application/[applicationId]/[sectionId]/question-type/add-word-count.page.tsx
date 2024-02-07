@@ -55,7 +55,7 @@ export const getServerSideProps = async (
       ...restOfBody,
       responseType: ResponseTypeEnum.LongAnswer,
       validation: {
-        maxWords: Number(body.maxWords),
+        maxWords: body.maxWords,
         mandatory: optional !== 'true',
       },
     });
