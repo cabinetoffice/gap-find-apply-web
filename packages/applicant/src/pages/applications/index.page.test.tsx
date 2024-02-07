@@ -229,10 +229,8 @@ describe('Closed applications', () => {
 
     const row = getRow('Application 1');
     expect(getTextForRow(row, 'Grant Closed')).toBeInTheDocument();
-    expect(getQueriesForElement(row).getAllByText('-')).toHaveLength(2);
-    expect(
-      getQueriesForElement(row).queryByRole('link')
-    ).not.toBeInTheDocument();
+    expect(getQueriesForElement(row).getAllByText('View')).toHaveLength(1);
+    expect(getQueriesForElement(row).queryByRole('link')).toBeInTheDocument();
   });
 });
 

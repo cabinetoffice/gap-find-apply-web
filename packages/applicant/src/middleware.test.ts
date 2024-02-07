@@ -150,7 +150,7 @@ describe('Middleware', () => {
     );
 
     req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
-    jest.spyOn(global, 'fetch').mockResolvedValue({
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce({
       text: jest.fn().mockResolvedValue('REMOVED'),
     } as unknown as Response);
     const res = await middleware(req);

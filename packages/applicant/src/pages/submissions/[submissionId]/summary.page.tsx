@@ -16,6 +16,7 @@ import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { ProcessMultiResponse } from './sections/[sectionId]/processMultiResponse';
 import { getQuestionUrl } from './sections/[sectionId]/index.page';
+import { ImportantBanner } from 'gap-web-ui';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -41,7 +42,6 @@ export const getServerSideProps: GetServerSideProps<
     grantSchemeId,
     jwt
   );
-
   const hasBeenSubmitted = await hasSubmissionBeenSubmitted(submissionId, jwt);
 
   const hydratedSections = await Promise.all(
@@ -85,6 +85,7 @@ export const getServerSideProps: GetServerSideProps<
       applicationName,
       hasSubmissionBeenSubmitted: hasBeenSubmitted,
       csrfToken: res.getHeader('x-csrf-token') as string,
+      closedAndInProgress: grantApplicationStatus === 'REMOVED',
     },
   };
 };
@@ -96,13 +97,14 @@ export default function SubmissionSummary({
   applicationName,
   hasSubmissionBeenSubmitted,
   csrfToken,
+  closedAndInProgress,
 }) {
   return (
     <>
       <Meta title="My application - Apply for a grant" />
       <Layout
         backBtnUrl={
-          hasSubmissionBeenSubmitted
+          hasSubmissionBeenSubmitted || closedAndInProgress
             ? routes.applications
             : routes.submissions.sections(grantSubmissionId)
         }
@@ -116,6 +118,12 @@ export default function SubmissionSummary({
               }
               method="POST"
             >
+              {closedAndInProgress && (
+                <ImportantBanner
+                  bannerHeading="This grant has closed. You cannot submit your application"
+                  bannerContent="You can still view your answers and download a copy of your application on this page."
+                />
+              )}
               <span
                 className="govuk-caption-l"
                 data-cy={`cy-application-name-${applicationName}`}
@@ -134,7 +142,7 @@ export default function SubmissionSummary({
                   section={section}
                   submissionId={grantSubmissionId}
                   mandatoryQuestionId={mandatoryQuestionId}
-                  readOnly={hasSubmissionBeenSubmitted}
+                  readOnly={hasSubmissionBeenSubmitted || closedAndInProgress}
                 />
               ))}
 
@@ -155,7 +163,7 @@ export default function SubmissionSummary({
                 for future reference.
               </p>
 
-              {hasSubmissionBeenSubmitted ? (
+              {hasSubmissionBeenSubmitted || closedAndInProgress ? (
                 <div className="govuk-button-group">
                   <a
                     href={publicRuntimeConfig.subPath + routes.applications}
