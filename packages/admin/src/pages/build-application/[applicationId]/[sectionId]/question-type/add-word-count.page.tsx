@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
 import QuestionPageGetServerSideProps from '../../../../../utils/QuestionPageGetServerSideProps';
@@ -6,16 +6,11 @@ import Meta from '../../../../../components/layout/Meta';
 import CustomLink from '../../../../../components/custom-link/CustomLink';
 import { Button, FlexibleQuestionPageLayout, TextInput } from 'gap-web-ui';
 import { ApplicationFormSection } from '../../../../../types/ApplicationForm';
-import {
-  getQuestion,
-  postQuestion,
-} from '../../../../../services/QuestionService';
+import { postQuestion } from '../../../../../services/QuestionService';
 import { getSummaryFromSession } from '../../../../../services/SessionService';
-import {
-  QuestionSummary,
-  QuestionWithOptionsSummary,
-} from '../../../../../types/QuestionSummary';
+import { QuestionWithOptionsSummary } from '../../../../../types/QuestionSummary';
 import ResponseTypeEnum from '../../../../../enums/ResponseType';
+import InferProps from '../../../../../types/InferProps';
 
 type RequestBody = {
   fieldTitle: string;
@@ -24,7 +19,9 @@ type RequestBody = {
   maxWords?: string;
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
   const { applicationId, sectionId } = context.params as Record<string, string>;
   const sessionCookie = getSessionIdFromCookies(context.req);
 
@@ -37,13 +34,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     (section) => section.sectionId === sectionId
   ) as ApplicationFormSection;
 
-  const fetchPageData = async (jwt: string) => {
+  async function fetchPageData() {
     return {
       backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type`,
-      applicationId,
       sectionTitle,
     };
-  };
+  }
 
   async function handleRequest(body: RequestBody, jwt: string) {
     const questionSummary = (await getSummaryFromSession(
@@ -52,7 +48,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     )) as QuestionWithOptionsSummary;
 
     const { optional, ...restOfQuestionSummary } = questionSummary;
-    const { maxWords, ...restOfBody } = body;
+    const { maxWords: _, ...restOfBody } = body;
 
     await postQuestion(jwt, applicationId, sectionId, {
       ...restOfQuestionSummary,
@@ -81,7 +77,7 @@ export default function AddWordCount({
   previousValues,
   pageData: { sectionTitle, backButtonHref },
   csrfToken,
-}: any) {
+}: InferProps<typeof getServerSideProps>) {
   return (
     <>
       <Meta
