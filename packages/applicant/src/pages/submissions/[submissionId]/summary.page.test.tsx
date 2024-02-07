@@ -401,7 +401,7 @@ describe('SubmissionSummary', () => {
     expect(screen.getByText('Important')).toBeInTheDocument();
     expect(
       screen.getByText(
-        'This grant has closed. You cannot submit your application'
+        'This grant has closed. You cannot submit your application.'
       )
     ).toBeInTheDocument();
   });
