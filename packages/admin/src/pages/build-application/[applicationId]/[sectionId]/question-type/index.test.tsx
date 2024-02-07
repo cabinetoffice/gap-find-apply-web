@@ -1,16 +1,16 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
-import QuestionType, { getServerSideProps } from './question-type.page';
+import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
+import QuestionType, { getServerSideProps } from './index.page';
 import { merge } from 'lodash';
 import axios from 'axios';
-import { parseBody } from '../../../../utils/parseBody';
+import { parseBody } from '../../../../../utils/parseBody';
 import {
   getSummaryFromSession,
   addFieldsToSession,
   getValueFromSession,
-} from '../../../../services/SessionService';
-import { getApplicationFormSummary } from '../../../../services/ApplicationService';
+} from '../../../../../services/SessionService';
+import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
 import { ValidationError } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 

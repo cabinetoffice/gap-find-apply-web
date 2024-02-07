@@ -6,36 +6,55 @@ import {
 } from 'gap-web-ui';
 import { GetServerSideProps } from 'next';
 import getConfig from 'next/config';
-import CustomLink from '../../../../components/custom-link/CustomLink';
-import Meta from '../../../../components/layout/Meta';
+import CustomLink from '../../../../../components/custom-link/CustomLink';
+import Meta from '../../../../../components/layout/Meta';
 import ResponseType, {
   ResponseTypeLabels,
-} from '../../../../enums/ResponseType';
-import { getApplicationFormSummary } from '../../../../services/ApplicationService';
-import { postQuestion } from '../../../../services/QuestionService';
+} from '../../../../../enums/ResponseType';
+import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
+import { postQuestion } from '../../../../../services/QuestionService';
 import {
   addFieldsToSession,
   getSummaryFromSession,
   getValueFromSession,
-} from '../../../../services/SessionService';
-import { QuestionSummary } from '../../../../types/QuestionSummary';
-import callServiceMethod from '../../../../utils/callServiceMethod';
-import { getSessionIdFromCookies } from '../../../../utils/session';
-import QuestionTypeHint from './components/QuestionTypeHint';
+} from '../../../../../services/SessionService';
+import { QuestionSummary } from '../../../../../types/QuestionSummary';
+import callServiceMethod from '../../../../../utils/callServiceMethod';
+import { getSessionIdFromCookies } from '../../../../../utils/session';
+import QuestionTypeHint from '../components/QuestionTypeHint';
 import {
   getErrorPageParams,
   questionErrorPageRedirect,
-} from './newQuestionServiceError';
+} from '../newQuestionServiceError';
+import ResponseTypeEnum from '../../../../../enums/ResponseType';
 
 type RequestBody = {
   responseType: ResponseType;
   _csrf?: string;
 };
 
+const redirectQuestionType = [
+  ResponseType.Dropdown,
+  ResponseType.MultipleSelection,
+  ResponseType.LongAnswer,
+];
+
 const WORD_LIMIT_MAP = {
   [ResponseType.ShortAnswer]: 300,
-  [ResponseType.LongAnswer]: 5000,
 };
+
+function getRedirect(
+  responseType: ResponseType,
+  applicationId: string,
+  sectionId: string
+) {
+  const REDIRECT_MAP = {
+    [ResponseType.Dropdown]: `/build-application/${applicationId}/${sectionId}/question-options`,
+    [ResponseType.MultipleSelection]: `/build-application/${applicationId}/${sectionId}/question-options`,
+    [ResponseType.LongAnswer]: `/build-application/${applicationId}/${sectionId}/question-type/add-word-count`,
+  };
+  return REDIRECT_MAP[responseType as keyof typeof REDIRECT_MAP];
+}
 
 export const getServerSideProps: GetServerSideProps = async ({
   params,
@@ -43,6 +62,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   res,
 }) => {
   const { applicationId, sectionId } = params as Record<string, string>;
+
   const sessionId = req.cookies.session_id;
   const sessionCookie = getSessionIdFromCookies(req);
 
@@ -52,50 +72,55 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
 
   let fieldErrors = [] as ValidationError[];
+
   const result = await callServiceMethod(
     req,
     res,
     async (body: RequestBody) => {
       const { _csrf, ...props } = body;
-      if (
-        body.responseType === ResponseType.Dropdown ||
-        body.responseType === ResponseType.MultipleSelection
-      ) {
-        return addFieldsToSession(
-          'newQuestion',
-          props as RequestBody,
-          sessionCookie
-        );
-      } else {
-        const questionSummary = (await getSummaryFromSession(
-          'newQuestion',
-          sessionCookie
-        )) as QuestionSummary;
-        const { optional, ...restOfQuestionSummary } = questionSummary;
-        const maxWords =
-          WORD_LIMIT_MAP[body.responseType as keyof typeof WORD_LIMIT_MAP];
 
-        await postQuestion(sessionId, applicationId, sectionId, {
-          ...restOfQuestionSummary,
-          ...props,
-          validation: {
-            maxWords,
-            mandatory: optional !== 'true',
-          },
-        });
-
+      if (redirectQuestionType.includes(body.responseType)) {
+        await addFieldsToSession('newQuestion', props, sessionCookie);
         return {
-          data: 'QUESTION_SAVED',
-          sessionId,
+          redirectQuestionType: body.responseType,
         };
       }
+
+      const questionSummary = (await getSummaryFromSession(
+        'newQuestion',
+        sessionCookie
+      )) as QuestionSummary;
+      const { optional, ...restOfQuestionSummary } = questionSummary;
+      const maxWords =
+        WORD_LIMIT_MAP[body.responseType as keyof typeof WORD_LIMIT_MAP];
+
+      const obj = {
+        ...restOfQuestionSummary,
+        ...props,
+        validation: {
+          maxWords,
+          mandatory: optional !== 'true',
+        },
+      };
+
+      console.log(JSON.stringify({ obj }));
+
+      await postQuestion(sessionId, applicationId, sectionId, obj);
+
+      return {
+        data: 'QUESTION_SAVED',
+        sessionId,
+      };
     },
-    (response: { data: any }) => {
-      if (response.data === 'QUESTION_SAVED') {
-        return `/build-application/${applicationId}/${sectionId}`;
-      } else {
-        return `/build-application/${applicationId}/${sectionId}/question-options`;
+    (response: { redirectQuestionType?: ResponseTypeEnum }) => {
+      if (response.redirectQuestionType) {
+        return getRedirect(
+          response.redirectQuestionType,
+          applicationId,
+          sectionId
+        );
       }
+      return `/build-application/${applicationId}/${sectionId}`;
     },
     getErrorPageParams(applicationId)
   );
