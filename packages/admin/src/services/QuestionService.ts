@@ -39,7 +39,7 @@ const postQuestion = (
     hintText?: string;
     displayText?: string;
     questionSuffix?: string;
-    validation: { maxWords?: string; mandatory: boolean };
+    validation: { maxWords?: string | number; mandatory: boolean };
     options?: string[];
   }
 ): Promise<void> => {

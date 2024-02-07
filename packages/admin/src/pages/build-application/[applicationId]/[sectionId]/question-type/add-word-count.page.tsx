@@ -13,10 +13,7 @@ import ResponseTypeEnum from '../../../../../enums/ResponseType';
 import InferProps from '../../../../../types/InferProps';
 
 type RequestBody = {
-  fieldTitle: string;
-  hintText: string;
-  optional: string;
-  maxWords?: string;
+  maxWords: string;
 };
 
 export const getServerSideProps = async (
@@ -111,7 +108,7 @@ export default function AddWordCount({
                 questionHintText="This will set the maximum number of words an applicant can use to answer this question. You can choose a limit of up to 5000 words."
                 width="4"
                 fieldErrors={fieldErrors}
-                defaultValue={previousValues?.maxWords || ''}
+                defaultValue={(previousValues?.maxWords as string) || ''}
               />
             </div>
             <div className="govuk-grid-row govuk-button-group">
