@@ -14,6 +14,7 @@ import {
   patchQuestion,
 } from '../../../../../../../services/QuestionService';
 import ResponseTypeEnum from '../../../../../../../enums/ResponseType';
+import InferGetServerSideProps from '../../../../../../../types/InferGetServerSideProps';
 
 jest.mock('../../../../../../../utils/parseBody');
 jest.mock('../../../../../../../services/ApplicationService');
@@ -22,6 +23,8 @@ jest.mock('../../../../../../../services/QuestionService');
 const mockedGetApplicationFormSummary = jest.mocked(getApplicationFormSummary);
 const mockedGetQuestion = jest.mocked(getQuestion);
 const mockedPatchQuestion = jest.mocked(patchQuestion);
+
+type GetServerSideProps = InferGetServerSideProps<typeof getServerSideProps>;
 
 const getDefaultAppFormSummary = (): InferServiceMethodResponse<
   typeof getApplicationFormSummary
@@ -91,9 +94,9 @@ describe('getServerSideProps', () => {
   });
 
   it('Should return a back button href', async () => {
-    const value = await getServerSideProps(getContext(getDefaultContext));
-
-    if ('redirect' in value) throw new Error('Expected props');
+    const value = (await getServerSideProps(
+      getContext(getDefaultContext)
+    )) as GetServerSideProps;
 
     expect(value.props.pageData.backButtonHref).toStrictEqual(
       '/build-application/testApplicationId/testSectionId'
@@ -101,11 +104,9 @@ describe('getServerSideProps', () => {
   });
 
   it('back button href should link to dashboard when backTo links there.', async () => {
-    const value = await getServerSideProps(
+    const value = (await getServerSideProps(
       getContext(getDefaultContext, { query: { backTo: 'dashboard' } })
-    );
-
-    if ('redirect' in value) throw new Error('Expected props');
+    )) as GetServerSideProps;
 
     expect(value.props.pageData.backButtonHref).toStrictEqual(
       '/build-application/testApplicationId/dashboard'
@@ -113,9 +114,9 @@ describe('getServerSideProps', () => {
   });
 
   it('Should return a form action', async () => {
-    const value = await getServerSideProps(getContext(getDefaultContext));
-
-    if ('redirect' in value) throw new Error('Expected props');
+    const value = (await getServerSideProps(
+      getContext(getDefaultContext)
+    )) as GetServerSideProps;
 
     expect(value.props.formAction).toStrictEqual(
       process.env.SUB_PATH + '/testResolvedURL'
@@ -163,17 +164,17 @@ describe('getServerSideProps', () => {
     });
 
     it('Should return an empty array of field errors', async () => {
-      const value = await getServerSideProps(getContext(getDefaultContext));
-
-      if ('redirect' in value) throw new Error('Expected props');
+      const value = (await getServerSideProps(
+        getContext(getDefaultContext)
+      )) as GetServerSideProps;
 
       expect(value.props.fieldErrors).toStrictEqual([]);
     });
 
     it('Should return correct field title using the data retrieved from question entry', async () => {
-      const value = await getServerSideProps(getContext(getDefaultContext));
-
-      if ('redirect' in value) throw new Error('Expected props');
+      const value = (await getServerSideProps(
+        getContext(getDefaultContext)
+      )) as GetServerSideProps;
 
       expect(value.props.pageData.questionData.fieldTitle).toStrictEqual(
         'Test Section Field Title'
@@ -181,9 +182,9 @@ describe('getServerSideProps', () => {
     });
 
     it('Should return correct hint text using the data retrieved from question entry', async () => {
-      const value = await getServerSideProps(getContext(getDefaultContext));
-
-      if ('redirect' in value) throw new Error('Expected props');
+      const value = (await getServerSideProps(
+        getContext(getDefaultContext)
+      )) as GetServerSideProps;
 
       expect(value.props.pageData.questionData.hintText).toStrictEqual(
         'Test hint text'
@@ -191,9 +192,9 @@ describe('getServerSideProps', () => {
     });
 
     it('Should return correct value for optional state question using the data retrieved from question entry', async () => {
-      const value = await getServerSideProps(getContext(getDefaultContext));
-
-      if ('redirect' in value) throw new Error('Expected props');
+      const value = (await getServerSideProps(
+        getContext(getDefaultContext)
+      )) as GetServerSideProps;
 
       expect(
         value.props.pageData.questionData.validation.mandatory
@@ -277,46 +278,34 @@ describe('getServerSideProps', () => {
       });
 
       it('Should return a list of field errors when patching a question', async () => {
-        const value = await getServerSideProps(
+        const value = (await getServerSideProps(
           getContext(getDefaultContext, { req: { method: 'POST' } })
-        );
-
-        if ('redirect' in value) throw new Error('Expected props');
-
+        )) as GetServerSideProps;
         expect(value.props.fieldErrors).toStrictEqual(validationErrors);
       });
 
       it('Should return a default value of the previously entered field title when patching a question', async () => {
-        const value = await getServerSideProps(
+        const value = (await getServerSideProps(
           getContext(getDefaultContext, { req: { method: 'POST' } })
-        );
-
-        if ('redirect' in value) throw new Error('Expected props');
-
+        )) as GetServerSideProps;
         expect(value.props.pageData.questionData.fieldTitle).toStrictEqual(
           'Test Section Field Title'
         );
       });
 
       it('Should return a default value of the previously entered hint text when patching a question', async () => {
-        const value = await getServerSideProps(
+        const value = (await getServerSideProps(
           getContext(getDefaultContext, { req: { method: 'POST' } })
-        );
-
-        if ('redirect' in value) throw new Error('Expected props');
-
+        )) as GetServerSideProps;
         expect(value.props.pageData.questionData.hintText).toStrictEqual(
           'Test hint text'
         );
       });
 
       it('Should return a default value of the previously entered optional field when patching a question', async () => {
-        const value = await getServerSideProps(
+        const value = (await getServerSideProps(
           getContext(getDefaultContext, { req: { method: 'POST' } })
-        );
-
-        if ('redirect' in value) throw new Error('Expected props');
-
+        )) as GetServerSideProps;
         expect(
           value.props.pageData.questionData.validation.mandatory
         ).toStrictEqual('true');
