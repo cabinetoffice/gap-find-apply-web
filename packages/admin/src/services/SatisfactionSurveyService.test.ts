@@ -73,15 +73,18 @@ describe('SatisfactionSurveyService', () => {
     it('Should not send without a satisfaction score or comment', async () => {
       const mockPost = jest.fn();
       mockedAxios.post.mockImplementation(mockPost);
-      postSurveyResponse('', '', 'testSessionId', BASE_FEEDBACK_URL, 'advert');
 
-      expect(mockPost).toHaveBeenCalledWith('#', null, {
-        headers: { Cookie: 'SESSION=testSessionId;' },
-        withCredentials: true,
-        params: {
-          fieldErrors: {
-            fieldName: 'satisfaction',
-            errorMessage: 'Please complete at least one field',
+      expect(
+        postSurveyResponse('', '', 'testSessionId', BASE_FEEDBACK_URL, 'advert')
+      ).rejects.toMatchObject({
+        response: {
+          data: {
+            fieldErrors: [
+              {
+                fieldName: 'satisfaction',
+                errorMessage: 'Please complete at least one field',
+              },
+            ],
           },
         },
       });
