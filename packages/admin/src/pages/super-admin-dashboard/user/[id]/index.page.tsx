@@ -48,8 +48,36 @@ export const getServerSideProps = async ({
   return await fetchDataOrGetRedirect(getPageData);
 };
 
+const DeleteButton = ({
+  children,
+  userHasSchemes,
+  gapUserId,
+}: {
+  children: JSX.Element | string;
+  userHasSchemes: boolean;
+  gapUserId: string;
+}) =>
+  !userHasSchemes ? (
+    <CustomLink
+      href={`/super-admin-dashboard/user/${gapUserId}/delete-user`}
+      customStyle="govuk-button govuk-button--warning"
+    >
+      {children}
+    </CustomLink>
+  ) : (
+    <button
+      className="govuk-button govuk-button--warning govuk-button--disabled"
+      disabled
+      aria-disabled
+    >
+      {children}
+    </button>
+  );
+
 const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
+  const userHasSchemes = pageData.schemes.length > 0;
+
   function createdDate() {
     if (pageData.created) {
       return moment(pageData.created).format('DD MMMM YYYY');
@@ -93,8 +121,9 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                   action: pageData.role?.label ? (
                     <Link
                       href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-roles`}
+                      className="govuk-link"
                     >
-                      <a className="govuk-link">Change</a>
+                      Change
                     </Link>
                   ) : (
                     <></>
@@ -108,8 +137,9 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                         action: (
                           <Link
                             href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-department`}
+                            className="govuk-link"
                           >
-                            <a className="govuk-link">Change</a>
+                            Change
                           </Link>
                         ),
                       },
@@ -117,10 +147,10 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                   : []),
               ]}
             />
-            {(pageData.schemes.length > 0 || pageData.isUserAdmin) && (
+            {(userHasSchemes || pageData.isUserAdmin) && (
               <>
                 <h2 className="govuk-heading-m">Grants this user owns</h2>
-                {pageData.schemes.length === 0 ? (
+                {!userHasSchemes ? (
                   <p className="govuk-body">
                     This user does not own any grants.
                   </p>
@@ -136,8 +166,8 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                       return {
                         key: scheme.name,
                         value: (
-                          <Link href={href}>
-                            <a className="govuk-link">Change owner</a>
+                          <Link href={href} className="govuk-link">
+                            Change owner
                           </Link>
                         ),
                       };
@@ -149,13 +179,13 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
 
             {!pageData.isViewingOwnAccount && (
               <div className="govuk-button-group">
-                <CustomLink
-                  href={`/super-admin-dashboard/user/${pageData.gapUserId}/delete-user`}
-                  customStyle="govuk-button govuk-button--warning"
-                  data-module="govuk-button"
+                <DeleteButton
+                  gapUserId={pageData.gapUserId}
+                  userHasSchemes={userHasSchemes}
                 >
                   Delete user
-                </CustomLink>
+                </DeleteButton>
+
                 {!pageData.role?.label && (
                   <CustomLink
                     href={`/api/unblockUser?id=${pageData.gapUserId}`}

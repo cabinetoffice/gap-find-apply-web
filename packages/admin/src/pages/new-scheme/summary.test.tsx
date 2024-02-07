@@ -5,7 +5,7 @@ import SchemeSummary, { getServerSideProps } from './summary.page';
 import { getSummaryFromSession } from '../../services/SessionService';
 import NextGetServerSidePropsResponse from '../../types/NextGetServerSidePropsResponse';
 import { merge } from 'lodash';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../utils/parseBody';
 import { createNewScheme } from '../../services/SchemeService';
 
 jest.mock('next/config', () => () => {
@@ -19,7 +19,7 @@ jest.mock('next/config', () => () => {
     },
   };
 });
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../utils/parseBody');
 jest.mock('../../services/SessionService');
 jest.mock('../../services/SchemeService');
 
@@ -68,6 +68,7 @@ describe('Scheme summary page', () => {
       merge(
         {
           req: { method: 'GET', cookies: { session_id: 'sessionId' } },
+          res: { getHeader: jest.fn() },
           query: {},
         },
         overrides

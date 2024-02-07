@@ -12,13 +12,12 @@ export const Card: FC<CardType> = ({ link, linkDescription, description }) => {
     <div className="govuk-grid-column-one-half ">
       <div className={styles.card}>
         <h3 className="govuk-heading-s">
-          <Link href={link}>
-            <a
-              data-cy={`cy-link-card-${linkDescription}`}
-              className="govuk-link govuk-link--no-visited-state"
-            >
-              {linkDescription}
-            </a>
+          <Link
+            href={link}
+            data-cy={`cy-link-card-${linkDescription}`}
+            className="govuk-link govuk-link--no-visited-state"
+          >
+            {linkDescription}
           </Link>
         </h3>
         <p className="govuk-body">{description}</p>

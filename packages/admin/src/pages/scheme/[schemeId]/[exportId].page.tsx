@@ -12,6 +12,7 @@ import { getSessionIdFromCookies } from '../../../utils/session';
 
 export const getServerSideProps = async ({
   req,
+  res,
   params,
   resolvedUrl,
 }: GetServerSidePropsContext) => {
@@ -40,10 +41,10 @@ export const getServerSideProps = async ({
 
   return {
     props: {
-      formAction: resolvedUrl,
+      formAction: process.env.SUB_PATH + resolvedUrl,
       schemeName: grantScheme.name,
       submissionList,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

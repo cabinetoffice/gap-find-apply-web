@@ -20,11 +20,13 @@ const Custom404 = () => {
             If you pasted the web address, check you copied the entire address.
           </p>
           <p className="govuk-body">
-            To return to the admin dashboard, please visit the{' '}
-            <Link href="/dashboard">
-              <a className="govuk-link">dashboard</a>
-            </Link>{' '}
-            page.
+            If you need further support, contact our support team at{' '}
+            <a
+              href="mailto:findagrant@cabinetoffice.gov.uk"
+              className="govuk-link"
+            >
+              findagrant@cabinetoffice.gov.uk
+            </a>
           </p>
         </div>
       </div>

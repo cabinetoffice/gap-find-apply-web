@@ -5,7 +5,7 @@ export type Department = {
 };
 
 export type ChangeDepartmentDto = {
-  departmentId: string;
+  departmentId: number;
 };
 
 export type Role = {
@@ -22,7 +22,7 @@ export type User = {
   sub: string;
   roles: Role[];
   role?: Role;
-  department?: Department;
+  department: Department | null;
   created: string;
 };
 

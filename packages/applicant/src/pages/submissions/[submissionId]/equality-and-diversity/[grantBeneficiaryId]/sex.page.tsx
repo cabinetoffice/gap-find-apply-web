@@ -101,7 +101,7 @@ export const getServerSideProps: GetServerSideProps<
         returnToSummaryPage ? 'summary' : 'age'
       }`,
       defaultChecked: defaultChecked,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };

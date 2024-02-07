@@ -1,12 +1,12 @@
 import { ValidationError } from 'gap-web-ui';
 import { IncomingMessage } from 'http';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { GetServerSidePropsContext } from 'next';
 import {
   PostQuestionResponse,
   QuestionPostBody,
 } from '../services/SubmissionService';
-import { validateCSRF } from './csrf';
 import { routes } from './routes';
+import { parseBody } from './parseBody';
 
 export function removeAllCarriageReturns<T>(obj: T) {
   // This needs some explaining... New lines are encoded as CR + LF characters
@@ -27,13 +27,14 @@ export function removeAllCarriageReturns<T>(obj: T) {
 
 //TODO this function needs a major refactor
 export default async function postQuestion<B, _R>(
-  req: IncomingMessage,
-  res: any,
+  req: GetServerSidePropsContext['req'],
+  res: GetServerSidePropsContext['res'],
   serviceFunc: (body: QuestionPostBody) => Promise<PostQuestionResponse>,
   submissionId: string,
   sectionId: string,
   questionId: string,
-  questionType: string
+  questionType: string,
+  fromSummarySubmissionPage: boolean
 ): Promise<
   | {
       body: B;
@@ -43,12 +44,11 @@ export default async function postQuestion<B, _R>(
     }
   | { redirect: { destination: string; statusCode: 302 } }
 > {
-  let body: B;
+  let body: any;
   let isRefererCheckYourAnswerScreen: boolean;
   try {
-    body = await parseBody(req, '1mb');
+    body = await parseBody(req, res);
     body = removeAllCarriageReturns(body);
-    await validateCSRF(req, res, body);
 
     const isCancel = Object.keys(body).indexOf('cancel') !== -1;
     //if i press Cancel, i want to be redirected to the section without saving the response
@@ -64,8 +64,17 @@ export default async function postQuestion<B, _R>(
     isRefererCheckYourAnswerScreen =
       Object.keys(body).indexOf('isRefererCheckYourAnswerScreen') !== -1;
 
+    const shouldRedirectToSummary =
+      fromSummarySubmissionPage && body?.ELIGIBILITY !== 'No';
+
     const backendResponse = await serviceFunc(
-      createRequestBody(body, questionId, submissionId, questionType)
+      createRequestBody(
+        body,
+        questionId,
+        submissionId,
+        questionType,
+        shouldRedirectToSummary
+      )
     );
 
     const isResponseAccepted = backendResponse?.responseAccepted;
@@ -79,17 +88,23 @@ export default async function postQuestion<B, _R>(
       Object.keys(body).indexOf('save-and-continue') !== -1;
     const isSaveAndExit = Object.keys(body).indexOf('save-and-exit') !== -1;
 
+    const shouldContinueToNextQuestion =
+      nextNavigation &&
+      !nextNavigation?.sectionList &&
+      !isRefererCheckYourAnswerScreen;
+
     if (isResponseAccepted && isSaveAndContinue) {
-      const redirectUrl =
-        nextNavigation &&
-        !nextNavigation?.sectionList &&
-        !isRefererCheckYourAnswerScreen
-          ? routes.submissions.question(
-              submissionId,
-              sectionId,
-              nextNavigation.questionId
-            )
-          : routes.submissions.section(submissionId, sectionId);
+      let redirectUrl = routes.submissions.section(submissionId, sectionId);
+
+      if (shouldRedirectToSummary) {
+        redirectUrl = routes.submissions.summary(submissionId);
+      } else if (shouldContinueToNextQuestion) {
+        redirectUrl = routes.submissions.question(
+          submissionId,
+          sectionId,
+          nextNavigation.questionId
+        );
+      }
       return {
         redirect: {
           destination: redirectUrl,
@@ -107,7 +122,8 @@ export default async function postQuestion<B, _R>(
       };
     }
   } catch (err: any) {
-    if (err.response?.data) {
+    console.log('postQuestion', submissionId, err);
+    if (err.response?.data?.errors) {
       const errorsArray: ValidationError[] = [];
       const { errors } = err.response.data;
       errors.map((error: ValidationError) => {
@@ -224,7 +240,8 @@ export const createRequestBody = (
   body,
   questionId: string,
   submissionId: string,
-  questionType: string
+  questionType: string,
+  shouldRedirectToSummary: boolean
 ): QuestionPostBody => {
   const cleanedBody = body as unknown as CleanedBody;
   const isMultiSelectionQuestion = questionType === 'MultipleSelection';
@@ -250,6 +267,7 @@ export const createRequestBody = (
     submissionId,
     questionId,
     multiResponse: isResponseAnArray ? body[questionId] : multiResponseValues,
+    shouldUpdateSectionStatus: !shouldRedirectToSummary,
   };
   return requestBody;
 };

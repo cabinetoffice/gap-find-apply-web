@@ -33,9 +33,10 @@ export const getQuestionUrl = (
   sectionId: string,
   questionId: string,
   mandatoryQuestionId: string,
-  submissionId: string
+  submissionId: string,
+  fromPageType = 'fromSubmissionPage'
 ) => {
-  const queryParam = `?fromSubmissionPage=true&submissionId=${submissionId}&sectionId=${sectionId}`;
+  const queryParam = `?${fromPageType}=true&submissionId=${submissionId}&sectionId=${sectionId}`;
   if (sectionId === 'ORGANISATION_DETAILS') {
     switch (questionId) {
       case 'APPLICANT_TYPE': {
@@ -85,7 +86,10 @@ export const getQuestionUrl = (
       }
     }
   } else {
-    return routes.submissions.question(submissionId, sectionId, questionId);
+    return (
+      routes.submissions.question(submissionId, sectionId, questionId) +
+      queryParam
+    );
   }
 };
 
@@ -160,7 +164,7 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
       submissionId,
       section,
       mandatoryQuestionId,
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
       fieldErrors,
       backButtonUrl,
     },
@@ -274,16 +278,13 @@ export default function SectionRecap({
                             mandatoryQuestionId,
                             submissionId
                           )}
+                          className="govuk-link govuk-link--no-visited-state"
+                          data-cy={`cy-section-details-navigation-${questionId}`}
                         >
-                          <a
-                            className="govuk-link govuk-link--no-visited-state"
-                            data-cy={`cy-section-details-navigation-${questionId}`}
-                          >
-                            {response || multiResponse ? 'Change' : 'Add'}
-                            <span className="govuk-visually-hidden">
-                              {questionId.replaceAll('_', ' ')}
-                            </span>
-                          </a>
+                          {response || multiResponse ? 'Change' : 'Add'}
+                          <span className="govuk-visually-hidden">
+                            {questionId.replaceAll('_', ' ')}
+                          </span>
                         </Link>
                       </dd>
                     </div>

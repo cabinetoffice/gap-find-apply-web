@@ -7,7 +7,7 @@ import DeleteSectionContent, {
   getServerSideProps,
 } from './delete-confirmation.page';
 import { deleteSection } from '../../../../services/SectionService';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../../utils/parseBody';
 
 jest.mock('next/config', () => () => {
   return {
@@ -20,7 +20,7 @@ jest.mock('next/config', () => () => {
     },
   };
 });
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../utils/parseBody');
 jest.mock('../../../../services/SectionService');
 jest.mock('../../../../services/ApplicationService');
 
@@ -54,10 +54,11 @@ const getContext = (overrides: any = {}) =>
       req: {
         method: 'GET',
         cookies: { 'gap-test': 'testSessionId' },
-      } as any,
+      },
+      res: { getHeader: () => 'testCSRFToken' },
       resolvedUrl:
         '/build-application/testApplicationId/testSectionId/delete-confirmation',
-    } as GetServerSidePropsContext,
+    } as unknown as GetServerSidePropsContext,
     overrides
   );
 
@@ -129,7 +130,8 @@ describe('Delete section page', () => {
       )) as NextGetServerSidePropsResponse;
 
       expect(value.props.formAction).toStrictEqual(
-        `/build-application/${APPLICATION_ID}/${SECTION_ID}/delete-confirmation`
+        process.env.SUB_PATH +
+          `/build-application/${APPLICATION_ID}/${SECTION_ID}/delete-confirmation`
       );
     });
   });

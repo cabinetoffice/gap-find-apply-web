@@ -18,7 +18,7 @@ import MandatoryQuestionsBeforeYouStart, {
 } from './start.page';
 import { getApplicationStatusBySchemeId } from '../../services/ApplicationService';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../utils/parseBody');
 jest.mock('../../utils/jwt');
 jest.mock('../../services/ApplicationService');
 

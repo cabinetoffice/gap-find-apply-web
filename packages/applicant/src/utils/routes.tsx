@@ -56,6 +56,10 @@ export const routes = {
       questionId: string
     ) =>
       `/submissions/${grantSubmissionId}/sections/${sectionId}/questions/${questionId}`,
+    summary: (grantSubmissionId: string) =>
+      `/submissions/${grantSubmissionId}/summary`,
+    submit: (grantSubmissionId: string) =>
+      `/submissions/${grantSubmissionId}/submit`,
     submissionConfirmation: (grantSubmissionId: string) =>
       `/submissions/${grantSubmissionId}/submission-confirmation`,
   },
@@ -64,6 +68,8 @@ export const routes = {
     `/service-error?serviceErrorProps=${JSON.stringify(serviceErrorProps)}`,
   api: {
     submissions: {
+      downloadSummary: (submissionId: string) =>
+        `/api/routes/submissions/${submissionId}/download-summary`,
       section: (grantSubmissionId: string, sectionId: string) =>
         `/api/routes/submissions/${grantSubmissionId}/sections/${sectionId}`,
       question: (

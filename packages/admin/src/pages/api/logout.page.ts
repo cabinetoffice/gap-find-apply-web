@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSessionIdFromCookies } from '../../utils/session';
 import { logoutUser } from '../../services/AuthService';
+import { APIGlobalHandler } from '../../utils/apiErrorHandler';
 
 const logout = async (req: NextApiRequest, res: NextApiResponse) => {
   const sessionCookie = getSessionIdFromCookies(req);
@@ -20,4 +21,5 @@ const logout = async (req: NextApiRequest, res: NextApiResponse) => {
   res.redirect(302, logoutUrl);
 };
 
-export default logout;
+export default (req: NextApiRequest, res: NextApiResponse) =>
+  APIGlobalHandler(req, res, logout);

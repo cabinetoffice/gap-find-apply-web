@@ -33,14 +33,14 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   return {
     props: {
-      grantSchemeId: grantScheme.schemeId,
+      applicationId,
       applyToApplicationUrl,
     },
   };
 };
 
 const PublishSuccessPage = ({
-  grantSchemeId,
+  applicationId,
   applyToApplicationUrl,
 }: PublishSuccessPageProps) => {
   const { publicRuntimeConfig } = getConfig();
@@ -72,7 +72,7 @@ const PublishSuccessPage = ({
 
             <div className="govuk-button-group govuk-!-margin-top-9">
               <CustomLink
-                href={`/scheme/${grantSchemeId}`}
+                href={`/build-application/${applicationId}/survey`}
                 isButton
                 dataCy="cy_publishSuccess-manageThisGrant-button"
               >
@@ -94,7 +94,7 @@ const PublishSuccessPage = ({
 };
 
 type PublishSuccessPageProps = {
-  grantSchemeId: string;
+  applicationId: string;
   applyToApplicationUrl: string;
 };
 

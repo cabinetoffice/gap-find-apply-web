@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext, Redirect } from 'next';
 import { ValidationError } from 'gap-web-ui';
 
-export type PageBodyResponse = Record<string, string | string[]>;
+export type PageBodyResponse = Record<string, string | string[] | number>;
 export type FetchPageData = Record<string, any>;
 
 export type QuestionPageGetServerSidePropsType<
@@ -15,6 +15,7 @@ export type QuestionPageGetServerSidePropsType<
   jwt: string;
   onSuccessRedirectHref: string | ((result: V) => string);
   onErrorMessage: string;
+  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect;
 };
 
 export type PostPageResultProps<
@@ -30,6 +31,7 @@ export type PostPageResultProps<
   onErrorMessage: string;
   resolvedUrl: string;
   pageData: K;
+  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect;
 };
 
 export type generateValidationPropsType<T> =

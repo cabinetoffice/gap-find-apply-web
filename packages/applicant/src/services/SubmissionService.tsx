@@ -175,6 +175,13 @@ export async function getNextNavigation(
   return data;
 }
 
+export async function downloadSummary(submissionId, jwt) {
+  return await axios.get(
+    `${BACKEND_HOST}/submissions/${submissionId}/download-summary`,
+    { ...axiosConfig(jwt), responseType: 'arraybuffer' }
+  );
+}
+
 export async function isApplicantEligible(
   submissionId: string,
   jwt: string
@@ -216,6 +223,7 @@ export interface QuestionPostBody {
   response?: string;
   multiResponse?: string[];
   attachment?: File;
+  shouldUpdateSectionStatus: boolean;
 }
 export interface ApplicationDetailsInterface {
   grantSchemeId: string;
@@ -230,6 +238,7 @@ export interface SectionData {
   sectionId: string;
   sectionTitle: string;
   sectionStatus: string;
+  questionIds: string[];
   questions: QuestionType[];
 }
 

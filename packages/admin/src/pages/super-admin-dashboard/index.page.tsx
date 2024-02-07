@@ -3,9 +3,9 @@ import {
   ButtonTypePropertyEnum,
   Checkboxes,
   FlexibleQuestionPageLayout,
-  QuestionPageGetServerSideProps,
   Table,
 } from 'gap-web-ui';
+import QuestionPageGetServerSideProps from '../../utils/QuestionPageGetServerSideProps';
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import Meta from '../../components/layout/Meta';
@@ -193,8 +193,11 @@ const convertUserDataToTableRows = (users: User[]) =>
       { content: user.role?.label ?? 'Blocked' },
       {
         content: (
-          <Link href={`/super-admin-dashboard/user/${user.gapUserId}/`}>
-            <a className="govuk-link">Edit</a>
+          <Link
+            href={`/super-admin-dashboard/user/${user.gapUserId}/`}
+            className="govuk-link"
+          >
+            Edit
           </Link>
         ),
       },

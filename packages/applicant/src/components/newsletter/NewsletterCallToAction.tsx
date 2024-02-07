@@ -15,13 +15,12 @@ const NewsletterCallToAction = ({ returnParams }: NewsletterCTAProps) => {
           <h3 className={`govuk-heading-s ${styles.newsletterCtaTitle}`}>
             Get updates about new grants
           </h3>
-          <Link href={{ pathname: '/newsletter', query: returnParams }}>
-            <a
-              className={`govuk-link govuk-link--no-visited-state govuk-!-font-size-19`}
-              data-cy="cySignUpNewsletter"
-            >
-              Sign up and we will email you when new grants have been added.
-            </a>
+          <Link
+            href={{ pathname: '/newsletter', query: returnParams }}
+            className={`govuk-link govuk-link--no-visited-state govuk-!-font-size-19`}
+            data-cy="cySignUpNewsletter"
+          >
+            Sign up and we will email you when new grants have been added.
           </Link>
         </div>
       </div>

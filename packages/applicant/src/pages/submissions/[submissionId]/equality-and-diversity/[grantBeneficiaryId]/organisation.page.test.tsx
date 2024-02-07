@@ -2,8 +2,8 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext, Redirect, PreviewData } from 'next';
-import { parseBody } from 'next/dist/server/api-utils/node';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { parseBody } from '../../../../../utils/parseBody';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import React from 'react';
 import {
   getGrantBeneficiary,
@@ -20,9 +20,11 @@ import OrganisationPage, {
 import { getContext } from '../../../../../testUtils/unitTestHelpers';
 import { EqualityAndDiversityParams } from '../types';
 
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/GrantBeneficiaryService');
 jest.mock('../../../../../utils/jwt');
+
+const mockParseBody = jest.mocked(parseBody);
 
 const renderWithRouter = (ui: React.ReactNode) => {
   render(
@@ -78,6 +80,9 @@ describe('Organisation page', () => {
           },
           req: {
             method: 'GET',
+          },
+          res: {
+            getHeader: () => 'testCSRFToken',
           },
           resolvedUrl: '/testResolvedURL',
         }),
@@ -174,7 +179,7 @@ describe('Organisation page', () => {
     describe('when handling a POST request', () => {
       beforeEach(() => {
         jest.resetAllMocks();
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           organisation: OrganisationRadioOptions.VCSE,
         });
         (postGrantBeneficiaryResponse as jest.Mock).mockResolvedValue(
@@ -188,7 +193,7 @@ describe('Organisation page', () => {
         getServerContext(merge({ req: { method: 'POST' } }, overrides));
 
       it('Should call postGrantBeneficiaryResponse when the response contains "organisation"', async () => {
-        (parseBody as jest.Mock).mockResolvedValue({
+        mockParseBody.mockResolvedValue({
           organisation: OrganisationRadioOptions.VCSE,
         });
 

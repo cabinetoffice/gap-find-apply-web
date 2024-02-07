@@ -157,16 +157,13 @@ const OrganisationDataRow = ({
       </dd>
     )}
     <dd className="govuk-summary-list__actions">
-      <Link href={organisationDetail.url}>
-        <a
-          className="govuk-link govuk-link--no-visited-state"
-          data-cy={`cy-organisation-details-navigation-${organisationDetail.id}`}
-        >
-          {organisationDetail.status}
-          <span className="govuk-visually-hidden">
-            {organisationDetail.url}
-          </span>
-        </a>
+      <Link
+        href={organisationDetail.url}
+        className="govuk-link govuk-link--no-visited-state"
+        data-cy={`cy-organisation-details-navigation-${organisationDetail.id}`}
+      >
+        {organisationDetail.status}
+        <span className="govuk-visually-hidden">{organisationDetail.url}</span>
       </Link>
     </dd>
   </div>

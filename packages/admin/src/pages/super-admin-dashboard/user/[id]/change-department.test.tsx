@@ -1,24 +1,20 @@
 import '@testing-library/jest-dom';
-import { parseBody } from 'next/dist/server/api-utils/node';
 import { getContext } from 'gap-web-ui';
 import UserPage, { getServerSideProps } from './change-department.page';
-import { Department } from '../../types';
+import { Department, Role, User } from '../../types';
 import { render, screen } from '@testing-library/react';
-import { User } from '../../types';
+import { parseBody } from '../../../../utils/parseBody';
 import {
-  getUserById,
   getChangeDepartmentPage,
-  updateDepartment,
+  updateUserRoles,
 } from '../../../../services/SuperAdminService';
 
-jest.mock('next/dist/server/api-utils/node', () => ({
-  ...jest.requireActual('next/dist/server/api-utils/node'),
-  parseBody: jest.fn(),
-}));
+jest.mock('../../../../utils/parseBody');
 
 jest.mock('../../../../services/SuperAdminService', () => ({
   getUserById: jest.fn(),
   updateDepartment: jest.fn(),
+  updateUserRoles: jest.fn(),
   getChangeDepartmentPage: jest.fn(),
   getAllDepartments: async () => getMockDepartment(),
 }));
@@ -55,12 +51,15 @@ const getMockDepartment = (): Department => ({
   name: 'Test Department',
 });
 
-const getMockUser = (): User => ({
+const getMockUser = (
+  roles: Role[] = [getMockRoles()[0], getMockRoles()[3]]
+): User => ({
   gapUserId: 'mockId',
   sub: 'sub',
   colaSub: 'colaSub',
   emailAddress: 'test.superadmin@gmail.com',
-  roles: [getMockRoles()[0], getMockRoles()[3]],
+  roles: roles,
+  department: getMockDepartment(),
   created: 'NULL',
 });
 
@@ -104,7 +103,7 @@ describe('Change department page', () => {
           fieldErrors={[
             { fieldName: 'department', errorMessage: 'Select a department' },
           ]}
-          previousValues={{ department: '1' }}
+          previousValues={{ department: 1 }}
         />
       );
       render(component);
@@ -123,10 +122,10 @@ describe('Change department page', () => {
         user: getMockUser(),
         departments: [{ id: '4', name: 'hello world' }],
       });
-      mockParseBody.mockResolvedValueOnce({ department: 'fake department' });
+      mockParseBody.mockResolvedValueOnce({ department: 1 });
       const getDepartmentSelectedContext = () => ({
-        req: { method: 'POST' },
         params: { id: 'someId' },
+        req: { method: 'POST' },
       });
       const result = await getServerSideProps(
         getContext(getDepartmentSelectedContext)
@@ -137,6 +136,34 @@ describe('Change department page', () => {
           statusCode: 302,
         },
       });
+    });
+
+    test('Should update roles if user is being promoted to ADMIN', async () => {
+      mockGetChangeDepartmentPage.mockResolvedValueOnce({
+        user: getMockUser([getMockRoles()[0], getMockRoles()[1]]),
+        departments: [{ id: '4', name: 'hello world' }],
+      });
+      mockParseBody.mockResolvedValueOnce({ department: 1 });
+      const getDepartmentSelectedContext = () => ({
+        params: { id: 'someId' },
+        query: { newRoles: '3, 4' },
+        req: { method: 'POST' },
+      });
+      const result = await getServerSideProps(
+        getContext(getDepartmentSelectedContext)
+      );
+      expect(result).toEqual({
+        redirect: {
+          destination: '/super-admin-dashboard/user/someId',
+          statusCode: 302,
+        },
+      });
+      expect(updateUserRoles).toHaveBeenCalledWith(
+        'someId',
+        ['3', ' 4'],
+        '',
+        1
+      );
     });
   });
 });

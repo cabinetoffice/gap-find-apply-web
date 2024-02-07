@@ -1,9 +1,8 @@
 name: Security Vulnerabilites
 
 on:
-  pull_request:
-    branches:
-      - develop
+  schedule:
+    - cron: "0 0 * * *"
 
 jobs:
   build:

@@ -46,6 +46,7 @@ export async function getServerSideProps({
     };
   }
   const applicationStatus = await getApplicationStatusBySchemeId(schemeId, jwt);
+
   if (applicationStatus === 'REMOVED') {
     return {
       redirect: {
@@ -54,6 +55,7 @@ export async function getServerSideProps({
       },
     };
   }
+
   return {
     props: {
       schemeId,
@@ -88,15 +90,14 @@ export default function MandatoryQuestionsBeforeYouStart({
           </li>
         </ul>
 
-        <Link href={routes.api.createMandatoryQuestion(schemeId)}>
-          <a
-            className="govuk-button"
-            data-module="govuk-button"
-            aria-disabled="false"
-            role="button"
-          >
-            Continue
-          </a>
+        <Link
+          href={routes.api.createMandatoryQuestion(schemeId)}
+          className="govuk-button"
+          data-module="govuk-button"
+          aria-disabled="false"
+          role="button"
+        >
+          Continue
         </Link>
       </Layout>
     </>

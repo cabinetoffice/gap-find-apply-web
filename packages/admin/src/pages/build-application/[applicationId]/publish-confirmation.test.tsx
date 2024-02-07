@@ -7,7 +7,7 @@ import PublishConfirmationPage, {
 } from './publish-confirmation.page';
 import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
 import { updateApplicationFormStatus } from '../../../services/ApplicationService';
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from '../../../utils/parseBody';
 
 jest.mock('next/config', () => () => {
   return {
@@ -20,16 +20,17 @@ jest.mock('next/config', () => () => {
     },
   };
 });
-jest.mock('next/dist/server/api-utils/node');
+jest.mock('../../../utils/parseBody');
 jest.mock('../../../services/ApplicationService');
 
 describe('Publish confirmation page', () => {
-  const getProps = (overrides: any = {}) =>
+  const getProps = (overrides = {}) =>
     merge(
       {
         backHref: '/testBack',
         formAction: '/testFormAction',
         fieldErrors: [],
+        csrfToken: 'testCSRFToken',
       },
       overrides
     );
@@ -83,7 +84,7 @@ describe('Publish confirmation page', () => {
 });
 
 describe('getServerSideProps', () => {
-  const getContext = (overrides: any = {}) =>
+  const getContext = (overrides = {}) =>
     merge(
       {
         params: { applicationId: 'testApplicationId' } as Record<
@@ -93,9 +94,10 @@ describe('getServerSideProps', () => {
         req: {
           method: 'GET',
           cookies: { 'gap-test': 'testSessionId' },
-        } as any,
+        },
+        res: { getHeader: () => 'testCSRFToken' },
         resolvedUrl: '/resolvedURL',
-      } as GetServerSidePropsContext,
+      } as unknown as GetServerSidePropsContext,
       overrides
     );
 
@@ -119,7 +121,9 @@ describe('getServerSideProps', () => {
         getContext()
       )) as NextGetServerSidePropsResponse;
 
-      expect(response.props.formAction).toStrictEqual('/resolvedURL');
+      expect(response.props.formAction).toStrictEqual(
+        process.env.SUB_PATH + '/resolvedURL'
+      );
     });
 
     it('Should return a list of field errors', async () => {

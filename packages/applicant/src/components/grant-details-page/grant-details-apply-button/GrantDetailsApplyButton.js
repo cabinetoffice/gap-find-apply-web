@@ -11,16 +11,13 @@ export function GrantDetailsApplyButton({ grant }) {
               pathname: '/apply/[pid]',
               query: { pid: grant.label },
             }}
+            target="_blank"
+            className="govuk-button"
+            data-module="govuk-button"
+            aria-disabled="false"
+            role="button"
           >
-            <a
-              target="_blank"
-              className="govuk-button"
-              data-module="govuk-button"
-              aria-disabled="false"
-              role="button"
-            >
-              {gloss.buttons.newApplication}
-            </a>
+            {gloss.buttons.newApplication}
           </Link>
         ) : (
           <a

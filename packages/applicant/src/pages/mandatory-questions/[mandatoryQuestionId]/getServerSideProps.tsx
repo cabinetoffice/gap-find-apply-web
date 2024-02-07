@@ -77,12 +77,15 @@ const mapBackButtonUrl = (
   mandatoryQuestionId: string,
   fromSummaryPage: boolean,
   fromSubmissionPage: boolean,
+  fromSubmissionSummaryPage: boolean,
   submissionId: string,
   sectionId: string,
   isOrgProfileComplete: boolean
 ) => {
   if (fromSubmissionPage) {
     return routes.submissions.section(submissionId, sectionId);
+  } else if (fromSubmissionSummaryPage) {
+    return routes.submissions.summary(submissionId);
   } else if (fromSummaryPage) {
     return routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
   } else if (
@@ -122,10 +125,16 @@ export default async function getServerSideProps({
   resolvedUrl, //the url that the user requested
 }: GetServerSidePropsContext) {
   const { mandatoryQuestionId } = params as Record<string, string>;
-  const { fromSummaryPage, fromSubmissionPage, submissionId, sectionId } =
-    query as Record<string, string>;
+  const {
+    fromSummaryPage,
+    fromSubmissionPage,
+    fromSubmissionSummaryPage,
+    submissionId,
+    sectionId,
+  } = query as Record<string, string>;
   const isFromSummaryPage = fromSummaryPage === 'true';
   const isFromSubmissionPage = fromSubmissionPage === 'true';
+  const isFromSubmissionSummaryPage = fromSubmissionSummaryPage === 'true';
   const jwt = getJwtFromCookies(req);
   const { publicRuntimeConfig } = getConfig();
 
@@ -175,6 +184,8 @@ export default async function getServerSideProps({
         return routes.mandatoryQuestions.summaryPage(mandatoryQuestionId);
       } else if (isFromSubmissionPage) {
         return routes.submissions.section(submissionId, sectionId);
+      } else if (isFromSubmissionSummaryPage) {
+        return routes.submissions.summary(submissionId);
       } else {
         return result;
       }
@@ -204,6 +215,7 @@ export default async function getServerSideProps({
     mandatoryQuestionId,
     isFromSummaryPage,
     isFromSubmissionPage,
+    isFromSubmissionSummaryPage,
     submissionId,
     sectionId,
     isOrgProfileComplete
@@ -211,7 +223,7 @@ export default async function getServerSideProps({
 
   return {
     props: {
-      csrfToken: (req as any).csrfToken?.() || '',
+      csrfToken: res.getHeader('x-csrf-token') as string,
       formAction: publicRuntimeConfig.subPath + resolvedUrl,
       fieldErrors,
       defaultFields,

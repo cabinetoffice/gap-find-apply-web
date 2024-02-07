@@ -10,6 +10,7 @@ import {
 import callServiceMethod from '../../../utils/callServiceMethod';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import getConfig from 'next/config';
+import { routes } from '../../../utils/routes';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -52,7 +53,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
 
   return {
-    props: { submissionId, csrfToken: (req as any).csrfToken?.() || '' },
+    props: { submissionId, csrfToken: res.getHeader('x-csrf-token') as string },
   };
 };
 
@@ -61,11 +62,14 @@ function SubmitApplication({ submissionId, csrfToken }) {
     <>
       <Meta title="Submit application - Apply for a grant" />
 
-      <Layout backBtnUrl={`/submissions/${submissionId}/sections`}>
+      <Layout backBtnUrl={routes.submissions.summary(submissionId)}>
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <form
-              action={`${publicRuntimeConfig.subPath}/submissions/${submissionId}/submit`}
+              action={
+                publicRuntimeConfig.subPath +
+                routes.submissions.submit(submissionId)
+              }
               method="POST"
             >
               <h1
@@ -94,13 +98,12 @@ function SubmitApplication({ submissionId, csrfToken }) {
                 >
                   Yes, submit this application
                 </button>
-                <Link href={`/submissions/${submissionId}/sections`}>
-                  <a
-                    className="govuk-link govuk-!-font-size-19 govuk-link--no-visited-state"
-                    data-cy="cy-cancel-submission"
-                  >
-                    Cancel
-                  </a>
+                <Link
+                  href={routes.submissions.summary(submissionId)}
+                  className="govuk-link govuk-!-font-size-19 govuk-link--no-visited-state"
+                  data-cy="cy-cancel-submission"
+                >
+                  Cancel
                 </Link>
               </div>
             </form>

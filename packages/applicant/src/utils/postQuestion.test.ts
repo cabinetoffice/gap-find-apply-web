@@ -1,4 +1,4 @@
-import { parseBody } from 'next/dist/server/api-utils/node';
+import { parseBody } from './parseBody';
 import { QuestionPostBody } from '../services/SubmissionService';
 import postQuestion, {
   CleanedBody,
@@ -8,9 +8,10 @@ import postQuestion, {
   fieldsStartingWithQuestionIdInBody,
 } from './postQuestion';
 import { routes } from './routes';
-jest.mock('next/dist/server/api-utils/node', () => ({
-  parseBody: jest.fn(),
-}));
+
+jest.mock('./parseBody');
+
+const mockParseBody = jest.mocked(parseBody);
 
 const submissionId = 'submissionId';
 const sectionId = 'sectionId';
@@ -23,7 +24,7 @@ describe('callServiceMethod', () => {
         test: 'commission',
         cancel: '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,
@@ -38,7 +39,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
       );
 
       expect(result).toEqual({
@@ -53,7 +55,7 @@ describe('callServiceMethod', () => {
         test: 'commission',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,
@@ -68,7 +70,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
       );
 
       expect(result).toEqual({
@@ -88,7 +91,7 @@ describe('callServiceMethod', () => {
         test: 'commission',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,
@@ -103,7 +106,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
       );
 
       expect(result).toEqual({
@@ -119,7 +123,7 @@ describe('callServiceMethod', () => {
         'save-and-continue': '',
         isRefererCheckYourAnswerScreen: '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,
@@ -134,7 +138,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
       );
 
       expect(result).toEqual({
@@ -147,6 +152,69 @@ describe('callServiceMethod', () => {
     it('redirects to the checkYourAnswer page  when the call was successful and save and continue is in the body and there is no nextNavigation in the backend response', async () => {
       const req = {
         test: 'commission',
+        'save-and-continue': '',
+      } as any;
+      mockParseBody.mockResolvedValue(req);
+      const serviceFunc = jest.fn(() =>
+        Promise.resolve({
+          responseAccepted: true,
+        })
+      );
+
+      const result = await postQuestion(
+        req,
+        {},
+        serviceFunc,
+        submissionId,
+        sectionId,
+        questionId,
+        questionType,
+        false
+      );
+
+      expect(result).toEqual({
+        redirect: {
+          destination: routes.submissions.section(submissionId, sectionId),
+          statusCode: 302,
+        },
+      });
+    });
+
+    it('redirects to the section list when the call was successful and save and exit is in the body', async () => {
+      const req = {
+        test: 'commission',
+        'save-and-exit': '',
+      } as any;
+      mockParseBody.mockResolvedValue(req);
+      const serviceFunc = jest.fn(() =>
+        Promise.resolve({
+          responseAccepted: true,
+          nextNavigation: { sectionId: 'sectionId', questionId: 'questionId' },
+        })
+      );
+
+      const result = await postQuestion(
+        req,
+        {},
+        serviceFunc,
+        submissionId,
+        sectionId,
+        questionId,
+        questionType,
+        false
+      );
+
+      expect(result).toEqual({
+        redirect: {
+          destination: routes.submissions.sections(submissionId),
+          statusCode: 302,
+        },
+      });
+    });
+
+    it('redirects to the submission summary page when the call was successful, fromSummarySubmissionPage is true and ELIGIBILITY is Yes', async () => {
+      const req = {
+        ELIGIBILITY: 'Yes',
         'save-and-continue': '',
       } as any;
       (parseBody as jest.Mock).mockResolvedValue(req);
@@ -163,27 +231,27 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        true
       );
 
       expect(result).toEqual({
         redirect: {
-          destination: routes.submissions.section(submissionId, sectionId),
+          destination: routes.submissions.summary(submissionId),
           statusCode: 302,
         },
       });
     });
 
-    it('redirects to the section list when the call was successful and save and exit is in the body', async () => {
+    it('redirects to the submission summary page when the call was successful, fromSummarySubmissionPage is true and ELIGIBILITY is not present', async () => {
       const req = {
-        test: 'commission',
-        'save-and-exit': '',
+        FUNDING: 'Yes please',
+        'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
           responseAccepted: true,
-          nextNavigation: { sectionId: 'sectionId', questionId: 'questionId' },
         })
       );
 
@@ -194,7 +262,39 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        true
+      );
+
+      expect(result).toEqual({
+        redirect: {
+          destination: routes.submissions.summary(submissionId),
+          statusCode: 302,
+        },
+      });
+    });
+
+    it('redirects to the section list page when the call was successful and fromSummarySubmissionPage is true but ELIGIBILITY is No', async () => {
+      const req = {
+        ELIGIBILITY: 'No',
+        'save-and-exit': '',
+      } as any;
+      (parseBody as jest.Mock).mockResolvedValue(req);
+      const serviceFunc = jest.fn(() =>
+        Promise.resolve({
+          responseAccepted: true,
+        })
+      );
+
+      const result = await postQuestion(
+        req,
+        {},
+        serviceFunc,
+        submissionId,
+        sectionId,
+        questionId,
+        questionType,
+        true
       );
 
       expect(result).toEqual({
@@ -211,7 +311,7 @@ describe('callServiceMethod', () => {
         test: 'commission',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.reject({
           response: {
@@ -242,7 +342,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         questionId,
-        questionType
+        questionType,
+        false
       );
 
       expect(result).toEqual({
@@ -267,7 +368,7 @@ describe('callServiceMethod', () => {
         'CUSTOM_APPLICANT_ORG_ADDRESS-postcode': '',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.reject({
           response: {
@@ -306,7 +407,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         'CUSTOM_APPLICANT_ORG_ADDRESS',
-        'AddressInput'
+        'AddressInput',
+        false
       );
 
       expect(result).toEqual({
@@ -337,7 +439,7 @@ describe('callServiceMethod', () => {
         'CUSTOM_CUSTOM_QUESTION_4-year': '',
         'save-and-continue': '',
       } as any;
-      (parseBody as jest.Mock).mockResolvedValue(req);
+      mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.reject({
           response: {
@@ -368,7 +470,8 @@ describe('callServiceMethod', () => {
         submissionId,
         sectionId,
         'CUSTOM_CUSTOM_QUESTION_4',
-        'Date'
+        'Date',
+        false
       );
 
       expect(result).toEqual({
@@ -399,13 +502,15 @@ describe('createRequestBody', () => {
       body,
       questionId,
       submissionId,
-      questionType
+      questionType,
+      false
     );
     const expectedResult: QuestionPostBody = {
       response: 'saddsasda',
       submissionId,
       questionId,
       multiResponse: null,
+      shouldUpdateSectionStatus: true,
     };
     expect(result).toStrictEqual(expectedResult);
   });
@@ -426,13 +531,15 @@ describe('createRequestBody', () => {
       body,
       questionId,
       submissionId,
-      questionType
+      questionType,
+      false
     );
     const expectedResult: QuestionPostBody = {
       response: null,
       submissionId,
       questionId,
       multiResponse: ['fsa', '', 'fsa', '', 'fsaasf'],
+      shouldUpdateSectionStatus: true,
     };
     expect(result).toStrictEqual(expectedResult);
   });
@@ -448,13 +555,15 @@ describe('createRequestBody', () => {
       body,
       questionId,
       submissionId,
-      questionType
+      questionType,
+      false
     );
     const expectedResult: QuestionPostBody = {
       response: null,
       submissionId,
       questionId,
       multiResponse: ['test1', 'test2'],
+      shouldUpdateSectionStatus: true,
     };
     expect(result).toStrictEqual(expectedResult);
   });
@@ -469,13 +578,15 @@ describe('createRequestBody', () => {
       body,
       questionId,
       submissionId,
-      questionType
+      questionType,
+      false
     );
     const expectedResult: QuestionPostBody = {
       response: null,
       submissionId,
       questionId,
       multiResponse: null,
+      shouldUpdateSectionStatus: true,
     };
     expect(result).toStrictEqual(expectedResult);
   });

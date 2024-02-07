@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createPresignedUrl } from '../../services/SubmissionsService';
 import { getSessionIdFromCookies } from '../../utils/session';
+import { APIGlobalHandler } from '../../utils/apiErrorHandler';
 
 const signUrls = async (req: NextApiRequest, res: NextApiResponse) => {
   const sessionCookie = getSessionIdFromCookies(req);
@@ -16,4 +17,5 @@ const signUrls = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({ signedUrls });
 };
 
-export default signUrls;
+export default (req: NextApiRequest, res: NextApiResponse) =>
+  APIGlobalHandler(req, res, signUrls);
