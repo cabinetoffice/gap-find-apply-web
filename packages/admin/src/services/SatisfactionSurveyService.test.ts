@@ -13,7 +13,7 @@ describe('SatisfactionSurveyService', () => {
     it('Should successfully send full feedback', async () => {
       const mockPost = jest.fn();
       mockedAxios.post.mockImplementation(mockPost);
-      postSurveyResponse(
+      await postSurveyResponse(
         '5',
         'satisfied',
         'testSessionId',
@@ -35,7 +35,13 @@ describe('SatisfactionSurveyService', () => {
     it('Should successfully send just a satisfaction score', async () => {
       const mockPost = jest.fn();
       mockedAxios.post.mockImplementation(mockPost);
-      postSurveyResponse('5', '', 'testSessionId', BASE_FEEDBACK_URL, 'advert');
+      await postSurveyResponse(
+        '5',
+        '',
+        'testSessionId',
+        BASE_FEEDBACK_URL,
+        'advert'
+      );
 
       expect(mockPost).toHaveBeenCalledWith(BASE_FEEDBACK_URL, null, {
         headers: { Cookie: 'SESSION=testSessionId;' },
@@ -51,7 +57,7 @@ describe('SatisfactionSurveyService', () => {
     it('Should successfully send just a comment', async () => {
       const mockPost = jest.fn();
       mockedAxios.post.mockImplementation(mockPost);
-      postSurveyResponse(
+      await postSurveyResponse(
         '',
         'I am satisfied',
         'testSessionId',
@@ -74,20 +80,15 @@ describe('SatisfactionSurveyService', () => {
       const mockPost = jest.fn();
       mockedAxios.post.mockImplementation(mockPost);
 
-      expect(
-        postSurveyResponse('', '', 'testSessionId', BASE_FEEDBACK_URL, 'advert')
-      ).rejects.toMatchObject({
-        response: {
-          data: {
-            fieldErrors: [
-              {
-                fieldName: 'satisfaction',
-                errorMessage: 'Please complete at least one field',
-              },
-            ],
-          },
-        },
-      });
+      await postSurveyResponse(
+        '',
+        '',
+        'testSessionId',
+        BASE_FEEDBACK_URL,
+        'advert'
+      );
+
+      expect(mockedAxios.post).not.toHaveBeenCalled();
     });
   });
 });
