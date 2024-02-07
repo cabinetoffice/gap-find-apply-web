@@ -115,9 +115,7 @@ const TextInput = ({
   };
 
   const InputWithWrapperComponent = () => {
-    return limit ? (
-      <InputComponent />
-    ) : (
+    return (
       <div className="govuk-input__wrapper">
         {fieldPrefix && (
           <div
@@ -144,21 +142,19 @@ const TextInput = ({
     );
   };
 
-  const LimitComponent = () => {
+  const LimitComponent = ({ limit }: { limit: number }) => {
     return (
-      limit && (
-        <div
-          id={`${fieldName}-info`}
-          className="govuk-hint govuk-character-count__message"
-          data-testid="character-limit-div"
-        >
-          {limitWords
-            ? `You can enter up to ${limit} ${
-                limit > HARD_CHAR_LIMIT ? 'characters' : 'words'
-              }`
-            : `You can enter up to ${limit} characters`}
-        </div>
-      )
+      <div
+        id={`${fieldName}-info`}
+        className="govuk-hint govuk-character-count__message"
+        data-testid="character-limit-div"
+      >
+        {limitWords
+          ? `You can enter up to ${limit} ${
+              limit > HARD_CHAR_LIMIT ? 'characters' : 'words'
+            }`
+          : `You can enter up to ${limit} characters`}
+      </div>
     );
   };
 
@@ -197,7 +193,6 @@ const TextInput = ({
             </label>
           </TitleTag>
         )}
-
         {questionHintText && (
           <div
             id={`${fieldName}-hint`}
@@ -207,15 +202,13 @@ const TextInput = ({
             {questionHintText}
           </div>
         )}
-
         <ErrorMessage fieldErrors={fieldErrors} fieldName={fieldName} />
 
-        <InputWithWrapperComponent />
-
+        {limit ? <InputWithWrapperComponent /> : <InputComponent />}
         {children}
       </div>
 
-      <LimitComponent />
+      {limit && <LimitComponent limit={limit} />}
     </div>
   );
 };
