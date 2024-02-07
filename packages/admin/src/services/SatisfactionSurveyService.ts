@@ -1,8 +1,6 @@
 import axios from 'axios';
 import getConfig from 'next/config';
-import { axiosSessionConfig } from '../utils/session';
 
-// TODO: Why is this not populating?
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
 const BASE_FEEDBACK_URL = BACKEND_HOST + '/feedback';
@@ -14,27 +12,13 @@ const postSurveyResponse = async (
   backendUrl: string,
   userJourney: string
 ) => {
-  if (!satisfaction && comment === '') {
-    return Promise.reject({
-      response: {
-        data: {
-          fieldErrors: [
-            {
-              fieldName: 'satisfaction',
-              errorMessage: 'Please complete at least one field',
-            },
-          ],
-        },
-      },
-    });
-  } else {
+  if (satisfaction || comment !== '') {
     const surveyResponse = {
       satisfaction: satisfaction,
       comment: comment,
       journey: userJourney,
     };
 
-    // `${BASE_FEEDBACK_URL}/add`
     await axios.post(backendUrl, null, {
       withCredentials: true,
       headers: {
