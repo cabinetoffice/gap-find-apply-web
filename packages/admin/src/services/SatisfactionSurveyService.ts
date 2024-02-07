@@ -1,7 +1,6 @@
 import axios from 'axios';
 import getConfig from 'next/config';
 
-// TODO: Why is this not populating?
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
 const BASE_FEEDBACK_URL = BACKEND_HOST + '/feedback';
