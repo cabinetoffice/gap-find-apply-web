@@ -1,16 +1,16 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 import { ValidationError } from '../../../types';
-import TextInput from './TextInput';
+import TextInput, { TextInputComponentProps } from './TextInput';
 
 export default {
   title: 'gap-web-ui/TextInput',
   component: TextInput,
 } as ComponentMeta<typeof TextInput>;
 
-const Template: ComponentStory<typeof TextInput> = (args) => (
-  <TextInput {...args} />
-);
+const Template: ComponentStory<typeof TextInput> = (
+  args: TextInputComponentProps
+) => <TextInput {...args} />;
 const noValidationErrors: ValidationError[] = [];
 const validationErrors: ValidationError[] = [
   {
@@ -74,4 +74,35 @@ NumericWithError.args = {
   fieldErrors: validationErrors,
   textInputSubtype: 'numeric',
   width: '10',
+};
+
+export const WithPrefixAndSuffix = Template.bind({});
+WithPrefixAndSuffix.args = {
+  questionTitle: 'What is the cost in pounds?',
+  fieldName: 'details',
+  defaultValue: '',
+  fieldErrors: noValidationErrors,
+  textInputSubtype: 'numeric',
+  width: '10',
+  fieldPrefix: '£',
+  fieldSuffix: '.00',
+};
+
+export const WithCharLimit = Template.bind({});
+WithCharLimit.args = {
+  questionTitle: 'What is the cost in pounds?',
+  fieldName: 'details',
+  defaultValue: '',
+  fieldErrors: noValidationErrors,
+  limit: 500,
+};
+
+export const WithWordLimit = Template.bind({});
+WithWordLimit.args = {
+  questionTitle: 'What is the cost in pounds?',
+  fieldName: 'details',
+  defaultValue: '',
+  fieldErrors: noValidationErrors,
+  limit: 500,
+  limitWords: true,
 };

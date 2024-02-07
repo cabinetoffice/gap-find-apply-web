@@ -69,7 +69,7 @@ export default async function QuestionPageGetServerSideProps<
 }
 
 async function fetchAndHandlePageData<K extends FetchPageData>(
-  fetchPageData: (jwt: string) => Promise<K>,
+  fetchPageData: (jwt: string) => Promise<K | NextRedirect>,
   jwt: string,
   resolvedUrl: string,
   fetchPageDataErrorHandler?: (err: unknown) => NextRedirect

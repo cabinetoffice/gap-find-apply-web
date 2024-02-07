@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import TextInput, { TextInputComponentProps } from './TextInput';
+import TextInput from './TextInput';
 
-const customProps: TextInputComponentProps = {
+const customProps = {
   questionTitle: 'Page title',
   questionHintText:
     'A description of the page and the question what it is asking',
