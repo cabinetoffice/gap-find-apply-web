@@ -15,9 +15,9 @@ import { ValidationError } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 
 jest.mock('axios');
-jest.mock('../../../../utils/parseBody');
-jest.mock('../../../../services/SessionService');
-jest.mock('../../../../services/ApplicationService');
+jest.mock('../../../../../utils/parseBody');
+jest.mock('../../../../../services/SessionService');
+jest.mock('../../../../../services/ApplicationService');
 
 describe('Question type', () => {
   describe('Question type page', () => {
