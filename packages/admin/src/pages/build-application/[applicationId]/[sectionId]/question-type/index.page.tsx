@@ -94,18 +94,14 @@ export const getServerSideProps: GetServerSideProps = async ({
       const maxWords =
         WORD_LIMIT_MAP[body.responseType as keyof typeof WORD_LIMIT_MAP];
 
-      const obj = {
+      await postQuestion(sessionId, applicationId, sectionId, {
         ...restOfQuestionSummary,
         ...props,
         validation: {
           maxWords,
           mandatory: optional !== 'true',
         },
-      };
-
-      console.log(JSON.stringify({ obj }));
-
-      await postQuestion(sessionId, applicationId, sectionId, obj);
+      });
 
       return {
         data: 'QUESTION_SAVED',

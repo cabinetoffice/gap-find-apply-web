@@ -103,18 +103,13 @@ export default function AddWordCount({
           pageCaption={sectionTitle}
           csrfToken={csrfToken}
         >
-          <p className="govuk-body"></p>
-          <h1 className="govuk-heading-xl">
-            Briefly describe the project you will be carrying out
-          </h1>
-
-          <div className="govuk-grid-column-two-thirds">
+          <div className="govuk-grid-column-full">
             <div className="govuk-grid-row">
               <TextInput
                 fieldName="maxWords"
                 questionTitle="Limit response length"
-                titleSize="m"
-                TitleTag="h2"
+                titleSize="xl"
+                TitleTag="h1"
                 textInputSubtype="numeric"
                 fieldSuffix="words"
                 questionHintText="This will set the maximum number of words an applicant can use to answer this question. You can choose a limit of up to 5000 words."
