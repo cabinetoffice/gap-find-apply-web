@@ -217,6 +217,7 @@ describe('getServerSideProps', () => {
         csrfToken: 'testCSRFToken',
         hasSubmissionBeenSubmitted: false,
         mandatoryQuestionId: '87654321',
+        closedAndInProgress: false,
       },
     });
     expect(getSubmissionById).toHaveBeenCalled();
@@ -240,6 +241,7 @@ describe('getServerSideProps', () => {
         csrfToken: '',
         hasSubmissionBeenSubmitted: false,
         mandatoryQuestionId: '87654321',
+        closedAndInProgress: false,
       },
     });
     expect(getSubmissionById).toHaveBeenCalled();
@@ -263,6 +265,7 @@ describe('getServerSideProps', () => {
         csrfToken: 'testCSRFToken',
         hasSubmissionBeenSubmitted: true,
         mandatoryQuestionId: '87654321',
+        closedAndInProgress: false,
       },
     });
     expect(getSubmissionById).toHaveBeenCalled();
@@ -310,6 +313,7 @@ describe('SubmissionSummary', () => {
     applicationName: 'My Mock Application',
     hasSubmissionBeenSubmitted: false,
     csrfToken: 'abc123',
+    closedAndInProgress: false,
   };
 
   it('renders SubmissionSummary component correctly', () => {
@@ -325,6 +329,7 @@ describe('SubmissionSummary', () => {
     const submittedProps = {
       ...mockProps,
       hasSubmissionBeenSubmitted: true,
+      closedAndInProgress: false,
     };
 
     render(<SubmissionSummary {...submittedProps} />);
@@ -383,6 +388,22 @@ describe('SubmissionSummary', () => {
       'href',
       `http://localhost/submissions/${mockProps.grantSubmissionId}/submit`
     );
+  });
+
+  it('Renders Important Banner when grant is closed and application is IN PROGRESS', () => {
+    const closedAndInProgressProps = {
+      ...mockProps,
+      closedAndInProgress: true,
+    };
+
+    render(<SubmissionSummary {...closedAndInProgressProps} />);
+
+    expect(screen.getByText('Important')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'This grant has closed. You cannot submit your application.'
+      )
+    ).toBeInTheDocument();
   });
 });
 

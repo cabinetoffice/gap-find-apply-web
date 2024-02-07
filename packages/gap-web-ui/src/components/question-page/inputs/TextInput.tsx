@@ -13,8 +13,8 @@ export type TextInputComponentProps = InputComponentProps & {
   readOnly?: boolean;
   disabled?: boolean;
   newLineAccepted?: boolean;
-} & // GDS does not seem to support a limit and a prefix/suffix at the same time
-  (| {
+} & ( // GDS does not seem to support a limit and a prefix/suffix at the same time
+    | {
         limitWords?: boolean;
         limit: number;
         fieldPrefix?: undefined;
@@ -75,7 +75,7 @@ const TextInput = ({
     ? `govuk-label govuk-label--${titleSize}`
     : 'govuk-heading-l';
 
-  const InputElement = () => {
+  const InputComponent = () => {
     switch (textInputSubtype) {
       case 'email':
         return (
@@ -114,6 +114,50 @@ const TextInput = ({
     }
   };
 
+  const InputWithWrapperComponent = () => {
+    return (
+      <div className="govuk-input__wrapper">
+        {fieldPrefix && (
+          <div
+            className="govuk-input__prefix"
+            aria-hidden="true"
+            data-cy={`cy-${fieldName}-text-input-prefix`}
+          >
+            {fieldPrefix}
+          </div>
+        )}
+
+        <InputComponent />
+
+        {fieldSuffix && (
+          <div
+            className="govuk-input__suffix"
+            aria-hidden="true"
+            data-cy={`cy-${fieldName}-text-input-suffix`}
+          >
+            {fieldSuffix}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const LimitComponent = ({ limit }: { limit: number }) => {
+    return (
+      <div
+        id={`${fieldName}-info`}
+        className="govuk-hint govuk-character-count__message"
+        data-testid="character-limit-div"
+      >
+        {limitWords
+          ? `You can enter up to ${limit} ${
+              limit > HARD_CHAR_LIMIT ? 'characters' : 'words'
+            }`
+          : `You can enter up to ${limit} characters`}
+      </div>
+    );
+  };
+
   return (
     <div
       className="govuk-character-count"
@@ -149,7 +193,6 @@ const TextInput = ({
             </label>
           </TitleTag>
         )}
-
         {questionHintText && (
           <div
             id={`${fieldName}-hint`}
@@ -159,53 +202,13 @@ const TextInput = ({
             {questionHintText}
           </div>
         )}
-
         <ErrorMessage fieldErrors={fieldErrors} fieldName={fieldName} />
 
-        {limit ? (
-          <InputElement />
-        ) : (
-          <div className="govuk-input__wrapper">
-            {fieldPrefix && (
-              <div
-                className="govuk-input__prefix"
-                aria-hidden="true"
-                data-cy={`cy-${fieldName}-text-input-prefix`}
-              >
-                {fieldPrefix}
-              </div>
-            )}
-
-            <InputElement />
-
-            {fieldSuffix && (
-              <div
-                className="govuk-input__suffix"
-                aria-hidden="true"
-                data-cy={`cy-${fieldName}-text-input-suffix`}
-              >
-                {fieldSuffix}
-              </div>
-            )}
-          </div>
-        )}
-
+        {limit ? <InputWithWrapperComponent /> : <InputComponent />}
         {children}
       </div>
 
-      {limit && (
-        <div
-          id={`${fieldName}-info`}
-          className="govuk-hint govuk-character-count__message"
-          data-testid="character-limit-div"
-        >
-          {limitWords
-            ? `You can enter up to ${limit} ${
-                limit > HARD_CHAR_LIMIT ? 'characters' : 'words'
-              }`
-            : `You can enter up to ${limit} characters`}
-        </div>
-      )}
+      {limit && <LimitComponent limit={limit} />}
     </div>
   );
 };
