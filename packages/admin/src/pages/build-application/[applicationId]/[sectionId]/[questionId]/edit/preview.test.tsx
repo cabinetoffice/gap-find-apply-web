@@ -2,9 +2,9 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { merge } from 'lodash';
 import PreviewQuestion, { getServerSideProps } from './preview.page';
-import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
+import { getApplicationFormSummary } from '../../../../../../services/ApplicationService';
 import { GetServerSidePropsContext } from 'next';
-import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
+import NextGetServerSidePropsResponse from '../../../../../../types/NextGetServerSidePropsResponse';
 
 jest.mock('../../../../../services/ApplicationService');
 
@@ -39,53 +39,20 @@ describe('PreviewQuestion', () => {
         expect(document.title).toBe('Preview a question - Manage a grant');
       });
 
-      it('Should render a back button with correct link on it', () => {
-        expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
-          'href',
-          '/apply/testHref'
-        );
-      });
-
       it('Should render a preview page caption', () => {
-        screen.getByText('How this will look to the applicant');
+        screen.getByText('Question preview');
       });
 
       it('Should render the response of PreviewInputSwitch', () => {
         screen.getByRole('textbox');
       });
 
-      it('Should render a "Save and continue" button', () => {
-        screen.getByRole('button', { name: 'Save and continue' });
-      });
-
-      it('Should render a "Save and exit" button', () => {
-        screen.getByRole('button', { name: 'Save and exit' });
-      });
-
-      it('Should render a heading', () => {
-        screen.getByRole('heading', {
-          name: 'Would you like to change this question?',
-        });
-      });
-
-      it('Should render a description of the available actions', () => {
-        screen.getByText('You can edit the question title and description.');
-      });
-
-      it('Should render a "change" button', () => {
-        expect(screen.getByRole('button', { name: 'Change' })).toHaveAttribute(
+      it('Should render a "Exit preview" button', () => {
+        expect(
+          screen.getByRole('button', { name: 'Exit preview' })
+        ).toHaveAttribute(
           'href',
           '/apply/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content'
-        );
-      });
-
-      it('Should render an "Return to application form" link', () => {
-        const exitWithoutChangingButton = screen.getByRole('link', {
-          name: 'Return to application form',
-        });
-        expect(exitWithoutChangingButton).toHaveAttribute(
-          'href',
-          '/apply/testHref'
         );
       });
     });

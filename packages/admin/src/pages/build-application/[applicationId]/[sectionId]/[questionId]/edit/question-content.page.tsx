@@ -9,7 +9,6 @@ import {
 import { GetServerSideProps } from 'next';
 import CustomLink from '../../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../../components/layout/Meta';
-import ResponseTypeEnum from '../../../../../../enums/ResponseType';
 import { getApplicationFormSummary } from '../../../../../../services/ApplicationService';
 import {
   getQuestion,
@@ -127,6 +126,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       ...defaultInputValues,
       csrfToken: res.getHeader('x-csrf-token') as string,
       deleteConfirmationUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/delete-confirmation`,
+      previewPageUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/preview`,
     },
   };
 };
@@ -141,6 +141,7 @@ const QuestionContent = ({
   backButtonHref,
   backTo,
   deleteConfirmationUrl,
+  previewPageUrl,
 }: QuestionContentPageProps) => {
   return (
     <>
@@ -218,7 +219,7 @@ const QuestionContent = ({
           </p>
 
           <CustomLink
-            href={'#change-question-type'} //Implemented with GAP-2106
+            href={`${previewPageUrl}`} //Implemented with GAP-2106
             isSecondaryButton
             dataCy="cy_questionEdit_cancelChangesButton"
           >
