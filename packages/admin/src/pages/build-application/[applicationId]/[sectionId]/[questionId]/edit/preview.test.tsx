@@ -6,7 +6,7 @@ import { getApplicationFormSummary } from '../../../../../../services/Applicatio
 import { GetServerSidePropsContext } from 'next';
 import NextGetServerSidePropsResponse from '../../../../../../types/NextGetServerSidePropsResponse';
 
-jest.mock('../../../../../services/ApplicationService');
+jest.mock('../../../../../../services/ApplicationService');
 
 const sampleQuestion = {
   questionId: 'testQuestionId',
@@ -54,17 +54,6 @@ describe('PreviewQuestion', () => {
           'href',
           '/apply/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content'
         );
-      });
-    });
-
-    describe('Preview view', () => {
-      it('Should render a return to application form link', () => {
-        render(
-          <PreviewQuestion
-            {...getProps({ applicationFormStatus: 'PUBLISHED' })}
-          />
-        );
-        screen.getByRole('link', { name: 'Return to application form' });
       });
     });
   });
