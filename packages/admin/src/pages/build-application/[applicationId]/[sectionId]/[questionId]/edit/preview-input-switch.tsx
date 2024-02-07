@@ -36,7 +36,7 @@ const PreviewInputSwitch = (question: ApplicationFormQuestion) => {
     case ResponseTypeEnum.LongAnswer:
       return <TextArea {...textInputProps} />;
     case ResponseTypeEnum.Date:
-      return <DateInput {...inputProps} />;
+      return <DateInput {...inputProps} disabled={true} />;
     case ResponseTypeEnum.SingleFileUpload:
       return <DocumentUpload {...inputProps} disabled={true} />;
     case ResponseTypeEnum.Dropdown:
