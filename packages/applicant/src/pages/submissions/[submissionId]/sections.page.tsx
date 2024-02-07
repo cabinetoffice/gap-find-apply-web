@@ -145,6 +145,14 @@ export default function SubmissionSections({
                 </li>
               </ul>
 
+              <Link
+                href={routes.submissions.sectionOverview(grantSubmissionId)}
+                className="govuk-body govuk-link govuk-link--no-visited-state"
+                data-cy="cy-section-summary-link"
+              >
+                See an overview of the questions you will be asked
+              </Link>
+
               <dl className="govuk-summary-list">
                 {sections &&
                   sections.map((section: SectionData, index: number) => {
