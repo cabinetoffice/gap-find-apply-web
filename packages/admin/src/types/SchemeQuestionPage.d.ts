@@ -7,6 +7,7 @@ type SchemeQuestionPage = {
   pageCaption?: string;
   defaultValue?: string;
   deleteConfirmationUrl: string;
+  previewPageUrl: string;
   csrfToken: string;
   backTo?: string;
 };
