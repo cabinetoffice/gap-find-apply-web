@@ -48,6 +48,8 @@ function getRedirect(
   return REDIRECT_MAP[responseType as keyof typeof REDIRECT_MAP];
 }
 
+const SHORT_QUESTION_WORD_LIMIT = 300;
+
 function getRadio(responseType: ResponseType) {
   if (responseType === ResponseType.Dropdown) return 'Multiple choice';
   if (responseType === ResponseType.MultipleSelection) return 'Multiple select';
@@ -82,7 +84,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     )) as QuestionSummary;
     const { optional, ...restOfQuestionSummary } = questionSummary;
     const maxWords =
-      body.responseType === ResponseType.ShortAnswer ? 300 : undefined;
+      body.responseType === ResponseType.ShortAnswer
+        ? SHORT_QUESTION_WORD_LIMIT
+        : undefined;
 
     await postQuestion(sessionId, applicationId, sectionId, {
       ...restOfQuestionSummary,
