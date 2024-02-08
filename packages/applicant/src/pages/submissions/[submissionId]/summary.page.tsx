@@ -131,7 +131,7 @@ export default function SubmissionSummary({
                 {applicationName}
               </span>
               <h1 className="govuk-heading-l" data-cy="cy-page-header">
-                {hasSubmissionBeenSubmitted
+                {hasSubmissionBeenSubmitted || closedAndInProgress
                   ? 'Your application'
                   : 'Check your answers before submitting your application'}
               </h1>
