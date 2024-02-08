@@ -42,7 +42,7 @@ describe('getRedirectUrl()', () => {
     },
   ];
 
-  test.each(testCases)(
+  it.each(testCases)(
     'should return the correct redirect URL when $description',
     ({
       isFromCYAPage,
