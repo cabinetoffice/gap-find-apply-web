@@ -1,4 +1,4 @@
-import handler, { getRedirectUrl } from './upload-file.page';
+import { getRedirectUrl } from './upload-file.page';
 import { routes } from '../../../../../../../../../utils/routes';
 import { NextNavigation } from '../../../../../../../../../services/SubmissionService';
 

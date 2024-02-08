@@ -214,7 +214,7 @@ type GetRedirectUrlParams = {
   sectionId: string;
 };
 
-function getRedirectUrl({
+export function getRedirectUrl({
   isFromCYAPage,
   isFromSummaryPage,
   nextNavParams,
