@@ -71,7 +71,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   const handleRequest = async (body: RequestBody) => {
-    console.log('do we hit this');
     const { _csrf, ...props } = body;
 
     if (redirectQuestionType.includes(body.responseType)) {
