@@ -1,4 +1,4 @@
-import handler from './remove.page'; // Update the path accordingly
+import handler from './remove.page';
 import { routes } from '../../../../../../../../../../../utils/routes';
 import { deleteAttachmentByQuestionId } from '../../../../../../../../../../../services/SubmissionService';
 
