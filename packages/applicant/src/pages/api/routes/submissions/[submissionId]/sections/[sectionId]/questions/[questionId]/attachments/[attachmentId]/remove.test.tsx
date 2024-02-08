@@ -27,7 +27,7 @@ describe('handler', () => {
   ];
 
   test.each(testCases)(
-    'should call deleteAttachmentByQuestionId and redirect %s',
+    'should call deleteAttachmentByQuestionId and redirect $description',
     async ({ query, expectedQueryString }) => {
       const req = {
         query: {
