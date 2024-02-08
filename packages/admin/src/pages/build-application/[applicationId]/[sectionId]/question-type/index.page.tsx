@@ -71,6 +71,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   const handleRequest = async (body: RequestBody) => {
+    console.log('do we hit this');
     const { _csrf, ...props } = body;
 
     if (redirectQuestionType.includes(body.responseType)) {
@@ -118,14 +119,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const fetchPageData = async (sessionCookie: string) => {
     try {
+      const applicationFormSummary = await getApplicationFormSummary(
+        applicationId,
+        sessionCookie
+      );
       const responseType = await getValueFromSession(
         'newQuestion',
         'responseType',
-        sessionCookie
-      );
-
-      const applicationFormSummary = await getApplicationFormSummary(
-        applicationId,
         sessionCookie
       );
 
@@ -144,6 +144,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 
   return QuestionPageGetServerSideProps({
+    serviceErrorReturnUrl: `/build-application/${applicationId}/dashboard`,
     context,
     fetchPageData,
     onSuccessRedirectHref,
