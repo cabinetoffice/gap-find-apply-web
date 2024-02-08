@@ -83,11 +83,7 @@ export default function AddWordCount({
         }Add a question - Manage a grant`}
       />
 
-      <CustomLink
-        href={backButtonHref}
-        dataCy="cy_questionOptionsPage-backButton"
-        isBackButton
-      />
+      <CustomLink href={backButtonHref} isBackButton />
 
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
