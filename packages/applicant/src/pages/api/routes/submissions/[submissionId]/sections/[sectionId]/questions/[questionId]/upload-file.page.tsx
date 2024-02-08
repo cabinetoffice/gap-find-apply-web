@@ -4,6 +4,7 @@ import { ValidationError } from 'gap-web-ui';
 import {
   getNextNavigation,
   getQuestionById,
+  NextNavigation,
   postDocumentResponse,
   PostQuestionResponse,
   QuestionNavigation,
@@ -110,6 +111,10 @@ const handler = async (req, res) => {
       referer === routes.submissions.section(submissionId, sectionId) ||
       formData.fields?.hasOwnProperty('isRefererCheckYourAnswerScreen');
 
+    const isFromSummaryPage = referer.includes(
+      'fromSubmissionSummaryPage=true'
+    );
+
     const isCancel = formData.fields?.hasOwnProperty('cancel');
     //we want to make sure that there is a response to the question,
     //otherwise user could avoid answering this question
@@ -142,9 +147,13 @@ const handler = async (req, res) => {
         jwt
       );
 
-      const redirectUrl = isFromCYAPage
-        ? routes.submissions.section(submissionId, sectionId)
-        : nextNavigation(nextNavParams.nextNavigation, submissionId, sectionId);
+      const redirectUrl = getRedirectUrl({
+        isFromCYAPage,
+        isFromSummaryPage,
+        nextNavParams,
+        submissionId,
+        sectionId,
+      });
 
       return res.redirect(302, `${process.env.HOST}${redirectUrl}`);
     }
@@ -196,6 +205,26 @@ const handler = async (req, res) => {
     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
   }
 };
+
+type GetRedirectUrlParams = {
+  isFromCYAPage: boolean;
+  isFromSummaryPage: boolean;
+  nextNavParams: NextNavigation;
+  submissionId: string;
+  sectionId: string;
+};
+
+function getRedirectUrl({
+  isFromCYAPage,
+  isFromSummaryPage,
+  nextNavParams,
+  submissionId,
+  sectionId,
+}: GetRedirectUrlParams) {
+  if (isFromCYAPage) return routes.submissions.section(submissionId, sectionId);
+  if (isFromSummaryPage) return routes.submissions.summary(submissionId);
+  return nextNavigation(nextNavParams.nextNavigation, submissionId, sectionId);
+}
 
 const sanitizeFileName = (fileName: string) => {
   const regex = /[^a-zA-Z0-9()_,.-]/g;
