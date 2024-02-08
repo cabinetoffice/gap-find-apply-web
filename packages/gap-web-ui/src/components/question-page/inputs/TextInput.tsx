@@ -204,7 +204,7 @@ const TextInput = ({
         )}
         <ErrorMessage fieldErrors={fieldErrors} fieldName={fieldName} />
 
-        {limit ? <InputWithWrapperComponent /> : <InputComponent />}
+        {limit ? <InputComponent /> : <InputWithWrapperComponent />}
         {children}
       </div>
 
