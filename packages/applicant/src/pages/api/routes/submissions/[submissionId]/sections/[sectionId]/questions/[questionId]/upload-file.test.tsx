@@ -1,6 +1,6 @@
 import { getRedirectUrl } from './upload-file.page';
 import { routes } from '../../../../../../../../../utils/routes';
-import { NextNavigation } from '../../../../../../../../../services/SubmissionService';
+import { QuestionNavigation } from '../../../../../../../../../services/SubmissionService';
 
 describe('getRedirectUrl()', () => {
   const testCases = [
@@ -27,10 +27,8 @@ describe('getRedirectUrl()', () => {
       isFromCYAPage: false,
       isFromSummaryPage: false,
       nextNavParams: {
-        nextNavigation: {
-          sectionList: false,
-          questionId: 'nextQuestionId',
-        },
+        sectionList: false,
+        questionId: 'nextQuestionId',
       },
       submissionId: 'submissionId',
       sectionId: 'sectionId',
@@ -55,7 +53,7 @@ describe('getRedirectUrl()', () => {
       const redirectUrl = getRedirectUrl({
         isFromCYAPage,
         isFromSummaryPage,
-        nextNavParams: nextNavParams as NextNavigation,
+        nextNavParams: nextNavParams as QuestionNavigation,
         submissionId,
         sectionId,
       });

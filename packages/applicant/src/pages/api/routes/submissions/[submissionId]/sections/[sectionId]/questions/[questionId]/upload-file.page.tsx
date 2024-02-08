@@ -139,7 +139,7 @@ const handler = async (req, res) => {
     );
 
     if (userComingFromExistingFilePage || isEmptyAndNotMandatory) {
-      const nextNavParams = await getNextNavigation(
+      const { nextNavigation } = await getNextNavigation(
         submissionId,
         sectionId,
         questionId,
@@ -150,7 +150,7 @@ const handler = async (req, res) => {
       const redirectUrl = getRedirectUrl({
         isFromCYAPage,
         isFromSummaryPage,
-        nextNavParams,
+        nextNavParams: nextNavigation,
         submissionId,
         sectionId,
       });
@@ -179,9 +179,14 @@ const handler = async (req, res) => {
         redirectLocation = data.nextNavigation;
       }
 
-      const redirectUrl = isFromCYAPage
-        ? routes.submissions.section(submissionId, sectionId)
-        : nextNavigation(redirectLocation, submissionId, sectionId);
+      const redirectUrl = getRedirectUrl({
+        isFromCYAPage,
+        isFromSummaryPage,
+        nextNavParams: redirectLocation,
+        submissionId,
+        sectionId,
+      });
+
       return res.redirect(302, `${process.env.HOST}${redirectUrl}`);
     } catch (err: any) {
       if (err.response?.data) {
@@ -209,7 +214,7 @@ const handler = async (req, res) => {
 type GetRedirectUrlParams = {
   isFromCYAPage: boolean;
   isFromSummaryPage: boolean;
-  nextNavParams: NextNavigation;
+  nextNavParams: QuestionNavigation;
   submissionId: string;
   sectionId: string;
 };
@@ -223,7 +228,7 @@ export function getRedirectUrl({
 }: GetRedirectUrlParams) {
   if (isFromCYAPage) return routes.submissions.section(submissionId, sectionId);
   if (isFromSummaryPage) return routes.submissions.summary(submissionId);
-  return nextNavigation(nextNavParams.nextNavigation, submissionId, sectionId);
+  return nextNavigation(nextNavParams, submissionId, sectionId);
 }
 
 const sanitizeFileName = (fileName: string) => {
