@@ -55,6 +55,7 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
       backTo: backTo ?? '',
       backButtonHref: onSuccessRedirectHref(),
       deleteConfirmationUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/delete-confirmation`,
+      previewUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/preview`,
     };
   }
 
