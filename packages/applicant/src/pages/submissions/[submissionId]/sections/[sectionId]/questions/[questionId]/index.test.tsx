@@ -18,6 +18,7 @@ import QuestionPage, {
   getServerSideProps,
   getValidationErrorsFromQuery,
 } from './index.page';
+import { encode } from 'querystring';
 
 jest.mock('../../../../../../../services/SubmissionService');
 jest.mock('../../../../../../../utils/postQuestion');
@@ -1249,6 +1250,39 @@ describe('QuestionPage', () => {
       expect(form).toHaveAttribute(
         'action',
         '/api/routes/submissions/333333333/sections/ESSENTIAL/questions/UPLOAD/upload-file'
+      );
+      expect(form).toHaveAttribute('encType', 'multipart/form-data');
+    });
+
+    test('form should append a redirect to fromSubmissionSummaryPage', () => {
+      uploadProps.question.response = 'test123.zip';
+      render(
+        <RouterContext.Provider
+          value={createMockRouter({
+            pathname: `/submissions/${submissionId}/sections/${sectionId}/questions/${questionId}`,
+          })}
+        >
+          <QuestionPage
+            questionData={uploadProps}
+            grantName="Test Grant Application"
+            csrfToken="testCSRFToken"
+            isRefererCheckYourAnswerScreen={false}
+            queryParams={encode({ fromSubmissionSummaryPage: 'true' })}
+          />
+        </RouterContext.Provider>
+      );
+      screen.getByText(/uploaded file/i);
+      const removeButton = screen.getByRole('link', {
+        name: 'Remove File test123.zip',
+      });
+      const form = screen.getByTestId('question-page-form');
+      expect(removeButton).toHaveAttribute(
+        'href',
+        '/api/routes/submissions/333333333/sections/ESSENTIAL/questions/UPLOAD/attachments/attachmentId/remove?fromSubmissionSummaryPage=true'
+      );
+      expect(form).toHaveAttribute(
+        'action',
+        '/api/routes/submissions/333333333/sections/ESSENTIAL/questions/UPLOAD/upload-file?fromSubmissionSummaryPage=true'
       );
       expect(form).toHaveAttribute('encType', 'multipart/form-data');
     });
