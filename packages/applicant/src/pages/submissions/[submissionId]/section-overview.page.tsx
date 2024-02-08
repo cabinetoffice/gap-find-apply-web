@@ -14,8 +14,10 @@ export const getServerSideProps: GetServerSideProps = async ({
   const submissionId = params.submissionId.toString();
   const jwt = getJwtFromCookies(req);
 
-  const { sections, grantSubmissionId, applicationName, grantSchemeId } =
+  const { sections, grantSubmissionId, applicationName } =
     await getSubmissionById(submissionId, jwt);
+
+  //ADD ERROR HANDLING FOR INVALID SUBMISSION ID
 
   const hydratedSections = await Promise.all(
     sections.map(async (section) => {
@@ -34,6 +36,11 @@ export const getServerSideProps: GetServerSideProps = async ({
         ),
       };
     })
+  );
+
+  console.log(
+    'hydratedSections',
+    hydratedSections.map((s) => s.questions)
   );
 
   return {
