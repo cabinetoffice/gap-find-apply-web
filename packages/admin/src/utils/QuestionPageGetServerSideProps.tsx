@@ -106,13 +106,17 @@ async function postPagesResult<
   onErrorMessage,
   resolvedUrl,
   pageData,
+  serviceErrorReturnUrl,
 }: PostPageResultProps<T, K, V>) {
   return CallServiceMethod<T, V>(
     req,
     res,
     (body) => handleRequest(body, jwt, pageData),
     onSuccessRedirectHref,
-    generateServiceErrorProps(onErrorMessage, resolvedUrl),
+    generateServiceErrorProps(
+      onErrorMessage,
+      serviceErrorReturnUrl ?? resolvedUrl
+    ),
     fetchPageDataErrorHandler
   );
 }

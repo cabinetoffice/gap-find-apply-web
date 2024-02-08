@@ -145,6 +145,8 @@ describe('Question type', () => {
     const getContext = (overrides = {}) =>
       merge(
         {
+          resolvedUrl:
+            '/build-application/applicationId/sectionId/question-type',
           params: {
             applicationId: 'applicationId',
             sectionId: 'sectionId',
@@ -180,6 +182,7 @@ describe('Question type', () => {
         ],
       });
       process.env.SESSION_COOKIE_NAME = 'test-session-id';
+      process.env.SUB_PATH = '/apply';
     });
 
     describe('when handling a GET request', () => {
@@ -196,7 +199,9 @@ describe('Question type', () => {
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(result.props.sectionName).toStrictEqual('Custom section name');
+        expect(result.props.pageData.sectionName).toStrictEqual(
+          'Custom section name'
+        );
       });
 
       it('Should redirect to the error service page when fetching the section name fails', async () => {
@@ -214,7 +219,7 @@ describe('Question type', () => {
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(result.props.backButtonHref).toStrictEqual(
+        expect(result.props.pageData.backButtonHref).toStrictEqual(
           '/build-application/applicationId/sectionId/question-content'
         );
       });
@@ -256,7 +261,7 @@ describe('Question type', () => {
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(result.props.defaultRadio).toStrictEqual('');
+        expect(result.props.pageData.defaultRadio).toStrictEqual('');
       });
 
       it('Should return defaultChecked string of Multiple choice if responseType is Dropdown', async () => {
@@ -266,7 +271,9 @@ describe('Question type', () => {
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(result.props.defaultRadio).toStrictEqual('Multiple choice');
+        expect(result.props.pageData.defaultRadio).toStrictEqual(
+          'Multiple choice'
+        );
       });
 
       it('Should return defaultChecked string of Multiple select if responseType is MultipleSelection', async () => {
@@ -278,7 +285,9 @@ describe('Question type', () => {
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(result.props.defaultRadio).toStrictEqual('Multiple select');
+        expect(result.props.pageData.defaultRadio).toStrictEqual(
+          'Multiple select'
+        );
       });
     });
 
@@ -406,12 +415,14 @@ describe('Question type', () => {
           expect(result.props.fieldErrors).toStrictEqual(validationErrors);
         });
 
-        it('Should return a section name when posting fails due to validation errors', async () => {
+        it('Should return a section name', async () => {
           const result = (await getServerSideProps(
-            getPostContext({})
+            getPostContext()
           )) as NextGetServerSidePropsResponse;
 
-          expect(result.props.sectionName).toStrictEqual('Custom section name');
+          expect(result.props.pageData.sectionName).toStrictEqual(
+            'Custom section name'
+          );
         });
 
         it('Should return a back button href when posting fails due to validation errors', async () => {
@@ -419,7 +430,7 @@ describe('Question type', () => {
             getPostContext()
           )) as NextGetServerSidePropsResponse;
 
-          expect(result.props.backButtonHref).toStrictEqual(
+          expect(result.props.pageData.backButtonHref).toStrictEqual(
             '/build-application/applicationId/sectionId/question-content'
           );
         });

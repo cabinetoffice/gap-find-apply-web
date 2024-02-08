@@ -9,6 +9,7 @@ export type QuestionPageGetServerSidePropsType<
   K extends FetchPageData,
   V
 > = {
+  serviceErrorReturnUrl?: string;
   context: GetServerSidePropsContext;
   fetchPageData: (jwt: string) => Promise<K | NextRedirect>;
   handleRequest: (body: T, jwt: string, pageData: K) => Promise<V>;
@@ -30,6 +31,7 @@ export type PostPageResultProps<
   jwt: string;
   onErrorMessage: string;
   resolvedUrl: string;
+  serviceErrorReturnUrl?: string;
   pageData: K;
   fetchPageDataErrorHandler?: (err: unknown) => NextRedirect;
 };
