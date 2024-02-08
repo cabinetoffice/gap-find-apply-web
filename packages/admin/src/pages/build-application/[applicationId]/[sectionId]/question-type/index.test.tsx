@@ -24,8 +24,10 @@ describe('Question type', () => {
     const getProps = (overrides: any = {}) =>
       merge(
         {
-          sectionName: 'Custom section name',
-          backButtonHref: '/back',
+          pageData: {
+            sectionName: 'Custom section name',
+            backButtonHref: '/back',
+          },
           formAction: '#',
           fieldErrors: [],
         },
@@ -128,7 +130,9 @@ describe('Question type', () => {
 
     it('Should select a default radio if defaultRadio is provided', () => {
       render(
-        <QuestionType {...getProps({ defaultRadio: 'Multiple choice' })} />
+        <QuestionType
+          {...getProps({ pageData: { defaultRadio: 'Multiple choice' } })}
+        />
       );
       const defaultRadio = screen.getByRole('radio', {
         name: 'Multiple choice',
