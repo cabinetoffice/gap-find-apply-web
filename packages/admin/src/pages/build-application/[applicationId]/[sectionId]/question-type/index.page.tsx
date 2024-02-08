@@ -143,8 +143,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   };
 
-  // const { publicRuntimeConfig } = getConfig();
-
   return QuestionPageGetServerSideProps({
     context,
     fetchPageData,
@@ -153,16 +151,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     handleRequest,
     jwt: sessionCookie,
   });
-  // return {
-  //   props: {
-  //     sectionName: sectionName,
-  //     defaultRadio: selectedRadio,
-  //     backButtonHref: `/build-application/${applicationId}/${sectionId}/question-content`,
-  //     fieldErrors: fieldErrors,
-  //     formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/question-type`,
-  //     csrfToken: res.getHeader('x-csrf-token') as string,
-  //   },
-  // };
 };
 
 type QuestionTypeProps = {
