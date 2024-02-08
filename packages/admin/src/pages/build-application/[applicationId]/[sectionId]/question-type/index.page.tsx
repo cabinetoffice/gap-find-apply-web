@@ -35,10 +35,6 @@ const redirectQuestionType = [
   ResponseType.LongAnswer,
 ];
 
-const WORD_LIMIT_MAP = {
-  [ResponseType.ShortAnswer]: 300,
-};
-
 function getRedirect(
   responseType: ResponseType,
   applicationId: string,
@@ -86,7 +82,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     )) as QuestionSummary;
     const { optional, ...restOfQuestionSummary } = questionSummary;
     const maxWords =
-      WORD_LIMIT_MAP[body.responseType as keyof typeof WORD_LIMIT_MAP];
+      body.responseType === ResponseType.ShortAnswer ? 300 : undefined;
 
     await postQuestion(sessionId, applicationId, sectionId, {
       ...restOfQuestionSummary,
