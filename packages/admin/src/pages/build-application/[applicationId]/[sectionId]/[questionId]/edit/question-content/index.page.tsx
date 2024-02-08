@@ -17,7 +17,13 @@ const QuestionContent = ({
   fieldErrors,
   formAction,
   csrfToken,
-  pageData: { backButtonHref, questionData, deleteConfirmationUrl, backTo },
+  pageData: {
+    backButtonHref,
+    questionData,
+    deleteConfirmationUrl,
+    backTo,
+    previewUrl,
+  },
   previousValues,
 }: InferProps<typeof getServerSideProps>) => {
   const optionalRadioDefault = () => {
@@ -116,7 +122,7 @@ const QuestionContent = ({
           </p>
 
           <CustomLink
-            href={'#change-question-type'} //Implemented with GAP-2106
+            href={`${previewUrl}`}
             isSecondaryButton
             dataCy="cy_questionEdit_cancelChangesButton"
           >
