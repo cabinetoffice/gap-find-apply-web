@@ -53,7 +53,7 @@ export const getServerSideProps = async (
         },
       };
     } catch (err: unknown) {
-      return getRedirect(err) as NextRedirect;
+      return getRedirect(err);
     }
   };
   const handleRequest = async (body: SuperAdminDashboardFilterData) => body;
