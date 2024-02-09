@@ -32,7 +32,6 @@ export type PostPageResultProps<
   resolvedUrl: string;
   serviceErrorReturnUrl?: string;
   pageData: K;
-  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect;
 };
 
 export type generateValidationPropsType<T> =
