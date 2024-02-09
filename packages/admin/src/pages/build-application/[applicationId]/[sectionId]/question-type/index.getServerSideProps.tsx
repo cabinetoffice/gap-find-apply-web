@@ -1,7 +1,6 @@
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import ResponseType from '../../../../../enums/ResponseType';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
-import { questionErrorPageRedirect } from '../newQuestionServiceError';
 import {
   addFieldsToSession,
   getSummaryFromSession,
@@ -11,7 +10,6 @@ import { QuestionSummary } from '../../../../../types/QuestionSummary';
 import { postQuestion } from '../../../../../services/QuestionService';
 import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
 import QuestionPageGetServerSideProps from '../../../../../utils/QuestionPageGetServerSideProps';
-import ResponseTypeEnum from '../../../../../enums/ResponseType';
 
 type RequestBody = {
   responseType: ResponseType;
