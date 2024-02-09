@@ -6305,7 +6305,7 @@ __metadata:
     cypress-recurse: ^1.18.0
     fs-extra: 11.2.0
     gap-web-ui: "*"
-    govuk-frontend: 4.7.0
+    govuk-frontend: 4.8
     isomorphic-fetch: ^3.0.0
     moment: ^2.29.4
     next: 13.5.6
@@ -6533,7 +6533,7 @@ __metadata:
     form-data: ^4.0.0
     formidable: 2.1.0
     gap-web-ui: "*"
-    govuk-frontend: 4.2.0
+    govuk-frontend: 4.8
     imap-simple: ^5.1.0
     isomorphic-fetch: 3.0.0
     mailparser: ^3.4.0
@@ -10574,7 +10574,7 @@ __metadata:
     css-loader: ^6.7.1
     eslint: 8.44.0
     eslint-config-prettier: ^8.5.0
-    govuk-frontend: ^4.2.0
+    govuk-frontend: ^4.8
     postcss: 8.4.14
     prettier: ^2.7.1
     react: ^18.2.0
@@ -10887,24 +10887,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"govuk-frontend@npm:4.2.0":
-  version: 4.2.0
-  resolution: "govuk-frontend@npm:4.2.0"
-  checksum: cee95b6aee658b1434e220310a040c793e9cef52d093b5388f82b5e018d18302d6d462f889239a4948dc2f008f48ec642e8538d0cedfd4dec9a943dd03290c1a
-  languageName: node
-  linkType: hard
-
-"govuk-frontend@npm:4.7.0":
-  version: 4.7.0
-  resolution: "govuk-frontend@npm:4.7.0"
-  checksum: 0e246dd2c724e51fd14dd40fc31c66627df7d07ebe89e1a19b1e7da7e7a5eb86bc6560229e18a13e40651e6c953a67422d54e77e240d82efff7b2cbefaa8b88d
-  languageName: node
-  linkType: hard
-
-"govuk-frontend@npm:^4.2.0":
-  version: 4.6.0
-  resolution: "govuk-frontend@npm:4.6.0"
-  checksum: 025a5b99f59aa84586a221b227c66c9ccf48d1b71e6df69ebd39e055b181328dd59ba392cef9f6a38b108c0b1276ba888619cc51343b2e2f35c668772f2ec472
+"govuk-frontend@npm:4.8, govuk-frontend@npm:^4.8":
+  version: 4.8.0
+  resolution: "govuk-frontend@npm:4.8.0"
+  checksum: e255f924f399319e109347ec4993e0441fc5847a6a73ba44a465b1599c7d03e85c29212743b081ccd60e19224c6301143c77540b8e4bfe615fcb3e162b8663f4
   languageName: node
   linkType: hard
 
