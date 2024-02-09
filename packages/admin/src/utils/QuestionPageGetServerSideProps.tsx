@@ -100,7 +100,6 @@ async function postPagesResult<
   req,
   res,
   handleRequest,
-  fetchPageDataErrorHandler,
   jwt,
   onSuccessRedirectHref,
   onErrorMessage,
@@ -116,8 +115,7 @@ async function postPagesResult<
     generateServiceErrorProps(
       onErrorMessage,
       serviceErrorReturnUrl ?? resolvedUrl
-    ),
-    fetchPageDataErrorHandler
+    )
   );
 }
 

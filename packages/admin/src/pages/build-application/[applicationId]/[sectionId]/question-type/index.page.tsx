@@ -117,33 +117,30 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 
   const fetchPageData = async (sessionCookie: string) => {
-    try {
-      const applicationFormSummary = await getApplicationFormSummary(
-        applicationId,
-        sessionCookie
-      );
-      const responseType = await getValueFromSession(
-        'newQuestion',
-        'responseType',
-        sessionCookie
-      );
+    const applicationFormSummary = await getApplicationFormSummary(
+      applicationId,
+      sessionCookie
+    );
+    const responseType = await getValueFromSession(
+      'newQuestion',
+      'responseType',
+      sessionCookie
+    );
 
-      const sectionName = applicationFormSummary.sections.find(
-        (section) => section.sectionId === sectionId
-      )?.sectionTitle;
+    const sectionName = applicationFormSummary.sections.find(
+      (section) => section.sectionId === sectionId
+    )?.sectionTitle;
 
-      return {
-        sectionName,
-        defaultRadio: getRadio(responseType),
-        backButtonHref: `/build-application/${applicationId}/${sectionId}/question-content`,
-      };
-    } catch (err: unknown) {
-      return questionErrorPageRedirect(applicationId);
-    }
+    return {
+      sectionName,
+      defaultRadio: getRadio(responseType),
+      backButtonHref: `/build-application/${applicationId}/${sectionId}/question-content`,
+    };
   };
 
   return QuestionPageGetServerSideProps({
     serviceErrorReturnUrl: `/build-application/${applicationId}/dashboard`,
+    fetchPageDataErrorHandler: () => questionErrorPageRedirect(applicationId),
     context,
     fetchPageData,
     onSuccessRedirectHref,
