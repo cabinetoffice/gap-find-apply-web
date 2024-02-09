@@ -1,4 +1,4 @@
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import getConfig from 'next/config';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
@@ -21,7 +21,7 @@ import callServiceMethod from '../../../utils/callServiceMethod';
 import { generateErrorPageParams } from '../../../utils/serviceErrorHelpers';
 import { useLayoutEffect, useState, useRef } from 'react';
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps = async ({
   params,
   query,
   res,

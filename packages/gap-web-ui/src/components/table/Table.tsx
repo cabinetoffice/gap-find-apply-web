@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './Table.module.scss';
 
 export interface TableProps {
-  caption?: string;
+  caption?: string | JSX.Element;
   captionSize?: 's' | 'm' | 'l' | 'xl';
   captionClassName?: string;
   captionLabel?: string;
@@ -12,6 +12,7 @@ export interface TableProps {
   tableAttributes?: Record<string, unknown>;
   tableClassName?: string;
   alignLastCellToTheRight?: boolean;
+  disableBottomRowBorder?: boolean;
 }
 
 export interface TheadColumn {
