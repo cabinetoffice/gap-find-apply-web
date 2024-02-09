@@ -1,8 +1,11 @@
 import cookieParser from 'cookie-parser';
+import { v4 } from 'uuid';
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { verifyToken } from './services/JwtService';
 import { csrfMiddleware } from './utils/csrfMiddleware';
+import { HEADERS } from './utils/constants';
+import { logger } from './utils/logger';
 
 const BACKEND_HOST = process.env.BACKEND_HOST;
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
@@ -10,19 +13,19 @@ const HOST = process.env.HOST;
 const ONE_LOGIN_ENABLED = process.env.ONE_LOGIN_ENABLED === 'true';
 const GRANT_CLOSED_REDIRECT = '/grant-is-closed';
 
-// it will apply the middleware to all those paths
-export const config = {
-  matcher: [
-    '/applications/:path*',
-    '/dashboard/:path*',
-    '/organisation/:path*',
-    '/personal-details/:path*',
-    '/submissions/:path*',
-    '/grant-is-closed',
-    '/sign-in-details',
-    '/api/redirect-from-find',
-    '/mandatory-questions/:path*',
-  ],
+const patterns = {
+  newApplication: new URLPattern({
+    pathname: '/applications/:applicationId([0-9]+)',
+  }),
+  redirectFromFind: new URLPattern({ pathname: '/api/redirect-from-find' }),
+  signInDetails: new URLPattern({ pathname: '/sign-in-details' }),
+  mandatoryQuestionsStart: new URLPattern({
+    pathname: '/mandatory-questions/start',
+  }),
+  mandatoryQuestionsJourney: new URLPattern({
+    pathname: '/mandatory-questions/:questionUuid([0-9a-f-]+)/:path*',
+  }),
+  submissionJourney: new URLPattern({ pathname: '/submissions/:path*' }),
 };
 
 function isWithinNumberOfMinsOfExpiry(expiresAt: Date, numberOfMins: number) {
@@ -35,7 +38,9 @@ function isWithinNumberOfMinsOfExpiry(expiresAt: Date, numberOfMins: number) {
 
 export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
   const res = NextResponse.redirect(redirectUri);
-  if (mandatoryQuestionsStartPattern.test({ pathname: req.nextUrl.pathname })) {
+  if (
+    patterns.mandatoryQuestionsStart.test({ pathname: req.nextUrl.pathname })
+  ) {
     const url =
       redirectUri +
       '?redirectUrl=' +
@@ -44,10 +49,10 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
       req.nextUrl.search;
     return NextResponse.redirect(url);
   }
-  if (newApplicationPattern.test({ pathname: req.nextUrl.pathname })) {
+  if (patterns.newApplication.test({ pathname: req.nextUrl.pathname })) {
     res.cookies.set(
       process.env.APPLYING_FOR_REDIRECT_COOKIE,
-      newApplicationPattern.exec({ pathname: req.nextUrl.pathname }).pathname
+      patterns.newApplication.exec({ pathname: req.nextUrl.pathname }).pathname
         .groups.applicationId,
       {
         path: '/',
@@ -58,7 +63,7 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
     );
   } else if (
     process.env.MANDATORY_QUESTIONS_ENABLED === 'true' &&
-    redirectFromFindPattern.test({ pathname: req.nextUrl.pathname })
+    patterns.redirectFromFind.test({ pathname: req.nextUrl.pathname })
   ) {
     res.cookies.set(process.env.FIND_REDIRECT_COOKIE, req.nextUrl.search, {
       path: '/',
@@ -67,7 +72,8 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
       maxAge: 900,
     });
   }
-
+  const logResponse = getConditionalLogger(req, 'res');
+  logResponse(req, res);
   return res;
 }
 
@@ -95,62 +101,11 @@ export const getJwtFromMiddlewareCookies = (req: NextRequest) => {
   return unsignedCookie;
 };
 
-export const middleware = async (req: NextRequest) => {
-  try {
-    const res = NextResponse.next();
-
-    await csrfMiddleware(req, res);
-
-    if (signInDetailsPage.test({ pathname: req.nextUrl.pathname })) {
-      if (!ONE_LOGIN_ENABLED) {
-        const url = req.nextUrl.clone();
-        url.pathname = '/404';
-        return NextResponse.redirect(url);
-      } else {
-        return NextResponse.next();
-      }
-    }
-
-    const jwt = await getJwtFromMiddlewareCookies(req);
-
-    if (
-      submissionJourneyPattern.test({ pathname: req.nextUrl.pathname }) ||
-      mandatoryQuestionsJourneyPattern.test({ pathname: req.nextUrl.pathname })
-    ) {
-      const shouldRedirect = await shouldRedirectToClosedGrantPage(jwt, req);
-      if (shouldRedirect) {
-        return shouldRedirect;
-      }
-    }
-
-    const validJwtResponse = await verifyToken(jwt);
-    const expiresAt = new Date(validJwtResponse.expiresAt);
-
-    if (!validJwtResponse.valid) {
-      return buildMiddlewareResponse(req, HOST);
-    }
-
-    if (isWithinNumberOfMinsOfExpiry(expiresAt, 30)) {
-      return buildMiddlewareResponse(
-        req,
-        `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}${
-          req.nextUrl.pathname
-        }?${req.nextUrl.searchParams.toString()}`
-      );
-    }
-    return res;
-  } catch (err) {
-    console.error(err);
-    // redirect to homepage on any middleware error
-    return buildMiddlewareResponse(req, HOST);
-  }
-};
-
-async function getApplicationStatusBySubmissionId(
+const getApplicationStatusBySubmissionId = async (
   id: string,
   jwt: string,
   pathname: string
-) {
+) => {
   const url = pathname.includes('mandatory-questions')
     ? `${BACKEND_HOST}/grant-mandatory-questions/${id}/application/status`
     : `${BACKEND_HOST}/submissions/${id}/application/status`;
@@ -161,9 +116,12 @@ async function getApplicationStatusBySubmissionId(
     },
   });
   return await data.text();
-}
+};
 
-async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
+const shouldRedirectToClosedGrantPage = async (
+  jwt: string,
+  req: NextRequest
+) => {
   const { pathname } = req.nextUrl;
   const id = pathname.split('/')[2];
 
@@ -179,28 +137,111 @@ async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
   if (applicationStatus === 'REMOVED') {
     return NextResponse.redirect(process.env.HOST + GRANT_CLOSED_REDIRECT);
   }
-}
+};
 
-const newApplicationPattern = new URLPattern({
-  pathname: '/applications/:applicationId([0-9]+)',
-});
+const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
+  if (patterns.signInDetails.test({ pathname: req.nextUrl.pathname })) {
+    if (!ONE_LOGIN_ENABLED) {
+      const url = req.nextUrl.clone();
+      url.pathname = '/404';
+      return NextResponse.redirect(url);
+    } else {
+      return NextResponse.next();
+    }
+  }
 
-const redirectFromFindPattern = new URLPattern({
-  pathname: '/api/redirect-from-find',
-});
+  const jwt = await getJwtFromMiddlewareCookies(req);
 
-const signInDetailsPage = new URLPattern({
-  pathname: '/sign-in-details',
-});
+  if (
+    patterns.submissionJourney.test({ pathname: req.nextUrl.pathname }) ||
+    patterns.mandatoryQuestionsJourney.test({ pathname: req.nextUrl.pathname })
+  ) {
+    const shouldRedirect = await shouldRedirectToClosedGrantPage(jwt, req);
+    if (shouldRedirect) {
+      return shouldRedirect;
+    }
+  }
 
-const mandatoryQuestionsStartPattern = new URLPattern({
-  pathname: '/mandatory-questions/start',
-});
+  const validJwtResponse = await verifyToken(jwt);
+  const expiresAt = new Date(validJwtResponse.expiresAt);
 
-const mandatoryQuestionsJourneyPattern = new URLPattern({
-  pathname: '/mandatory-questions/:questionUuid([0-9a-f-]+)/:path*',
-});
+  if (!validJwtResponse.valid) {
+    return buildMiddlewareResponse(req, HOST);
+  }
 
-const submissionJourneyPattern = new URLPattern({
-  pathname: '/submissions/:path*',
-});
+  if (isWithinNumberOfMinsOfExpiry(expiresAt, 30)) {
+    return buildMiddlewareResponse(
+      req,
+      `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}${
+        req.nextUrl.pathname
+      }?${req.nextUrl.searchParams.toString()}`
+    );
+  }
+  return res;
+};
+
+const httpLoggers = {
+  req: (req: NextRequest) => {
+    const correlationId = v4();
+    req.headers.set(HEADERS.CORRELATION_ID, correlationId);
+    logger.http('Incoming request', {
+      ...logger.utils.formatRequest(req),
+      correlationId,
+    });
+  },
+  res: (req: NextRequest, res: NextResponse) =>
+    logger.http('Outgoing response', {
+      ...logger.utils.formatResponse(res),
+      correlationId: req.headers.get(HEADERS.CORRELATION_ID),
+    }),
+};
+
+type LoggerType = keyof typeof httpLoggers;
+
+const urlsToSkip = ['/_next/', '/assets/'];
+
+const getConditionalLogger = (req, type: LoggerType) => {
+  const userAgentHeader = req.headers.get('user-agent') || '';
+  return userAgentHeader.startsWith('ELB-HealthChecker') ||
+    urlsToSkip.some((url) => req.nextUrl.pathname.startsWith(url))
+    ? () => undefined
+    : httpLoggers[type];
+};
+
+const authenticatedPaths = [
+  '/applications/:path*',
+  '/dashboard/:path*',
+  '/organisation/:path*',
+  '/personal-details/:path*',
+  '/submissions/:path*',
+  '/grant-is-closed',
+  '/sign-in-details',
+  '/api/redirect-from-find',
+  '/mandatory-questions/:path*',
+].map((path) => new URLPattern({ pathname: path }));
+
+const isAuthenticatedPath = (pathname: string) =>
+  authenticatedPaths.some((authenticatedPath) =>
+    authenticatedPath.test({ pathname })
+  );
+
+export const middleware = async (req: NextRequest) => {
+  const logRequest = getConditionalLogger(req, 'req');
+  const logResponse = getConditionalLogger(req, 'res');
+  let res = NextResponse.next();
+  logRequest(req, res);
+
+  if (isAuthenticatedPath(req.nextUrl.pathname)) {
+    try {
+      await csrfMiddleware(req, res);
+      res = await authenticateRequest(req, res);
+    } catch (err) {
+      console.error(err);
+      // redirect to homepage on any middleware error
+      res = buildMiddlewareResponse(req, HOST);
+    }
+  }
+
+  logResponse(req, res);
+  return res;
+};

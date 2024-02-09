@@ -118,3 +118,7 @@ export const MQ_ORG_TYPES = {
   CHARITY: 'Charity',
   OTHER: 'Other',
 };
+
+export const HEADERS = {
+  CORRELATION_ID: 'x-correlation-id',
+} as const;
