@@ -179,6 +179,7 @@ async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
   const { pathname } = req.nextUrl;
   const id = pathname.split('/')[2];
 
+  if (pathname.includes('summary')) return;
   if (!id) return;
 
   const applicationStatus = await getApplicationStatusBySubmissionId(

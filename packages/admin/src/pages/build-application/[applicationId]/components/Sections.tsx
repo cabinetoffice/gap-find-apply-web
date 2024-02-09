@@ -1,4 +1,4 @@
-import { Table } from 'gap-web-ui';
+import { FlexibleQuestionPageLayout, Table } from 'gap-web-ui';
 import React from 'react';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import { ResponseTypeLabels } from '../../../../enums/ResponseType';
@@ -8,104 +8,44 @@ import {
 } from '../../../../types/ApplicationForm';
 import styles from './Sections.module.scss';
 
+interface SectionsProps {
+  sections: ApplicationFormSection[];
+  applicationId: string;
+  applicationStatus: ApplicationFormSummary['applicationStatus'];
+  formAction: string;
+  csrfToken: string;
+  formRef: React.RefObject<HTMLFormElement>;
+  setNewScrollPosition: (scrollPosition: number) => void;
+}
+
+const CUSTOM_SECTION_FIRST_INDEX = 2;
+
 const Sections = ({
   sections,
   applicationId,
   applicationStatus,
+  formAction,
+  csrfToken,
+  formRef,
+  setNewScrollPosition,
 }: SectionsProps) => {
+  function handleOnUpDownButtonClick() {
+    setNewScrollPosition(window.scrollY);
+    formRef?.current?.submit();
+  }
+
   return (
-    <>
+    <FlexibleQuestionPageLayout
+      formAction={formAction}
+      fieldErrors={[]}
+      csrfToken={csrfToken}
+      fullPageWidth={true}
+      formRef={formRef}
+    >
       {sections.map((section, sectionIndex) => {
         const isSectionEligibilityOrEssential =
           section.sectionId === 'ELIGIBILITY' ||
           section.sectionId === 'ESSENTIAL';
-
-        let tableRows = section.questions
-          ? section.questions.map((question) => {
-              let link = `/build-application/${applicationId}/${section.sectionId}/${question.questionId}/preview`;
-              // Eligibility is handled differently, so we explicitly
-              // direct to the eligibility-statement page here
-              if (section.sectionId === 'ELIGIBILITY') {
-                link = `/build-application/${applicationId}/${section.sectionId}/${question.questionId}/eligibility-statement`;
-              }
-              return {
-                cells: [
-                  { content: question.fieldTitle },
-                  {
-                    content: isSectionEligibilityOrEssential ? (
-                      <strong className="govuk-tag">
-                        {section.sectionStatus}
-                      </strong>
-                    ) : (
-                      ResponseTypeLabels[question.responseType]
-                    ),
-                  },
-                  {
-                    content: (
-                      <div className="govuk-!-text-align-right">
-                        <CustomLink
-                          href={link}
-                          ariaLabel={
-                            applicationStatus !== 'PUBLISHED'
-                              ? `View or change question "${question.fieldTitle}"`
-                              : `View question "${question.fieldTitle}"`
-                          }
-                          dataCy={`cy_Section-${question.fieldTitle}`}
-                        >
-                          {applicationStatus !== 'PUBLISHED'
-                            ? 'View or change'
-                            : 'View'}
-                        </CustomLink>
-
-                        <hr className="govuk-section-break" />
-
-                        {!isSectionEligibilityOrEssential &&
-                          applicationStatus !== 'PUBLISHED' && (
-                            <CustomLink
-                              href={`/build-application/${applicationId}/${section.sectionId}/${question.questionId}/delete-confirmation`}
-                              ariaLabel={`Delete question: ${question.fieldTitle}`}
-                              dataCy={`cy_deleteQuestion-Section-${section.sectionTitle}-${question.fieldTitle}`}
-                            >
-                              Delete
-                            </CustomLink>
-                          )}
-                      </div>
-                    ),
-                  },
-                ],
-              };
-            })
-          : [];
-
-        if (section.sectionId === 'ESSENTIAL') {
-          tableRows = [
-            {
-              cells: [
-                { content: 'Due-diligence checks' },
-                {
-                  content: (
-                    <strong className="govuk-tag">
-                      {section.sectionStatus}
-                    </strong>
-                  ),
-                },
-                {
-                  content: (
-                    <div className="govuk-!-text-align-right">
-                      <CustomLink
-                        href={`/build-application/${applicationId}/${section.sectionId}/due-diligence`}
-                        ariaLabel='View question "Due-diligence checks"'
-                        dataCy="cy_Section-due-diligence-checks"
-                      >
-                        View
-                      </CustomLink>
-                    </div>
-                  ),
-                },
-              ],
-            },
-          ];
-        }
 
         return (
           <React.Fragment key={section.sectionId}>
@@ -113,58 +53,89 @@ const Sections = ({
               <hr className="govuk-section-break govuk-!-margin-top-9" />
             )}
 
-            <Table
-              caption={`${sectionIndex + 1}. ${section.sectionTitle}`}
-              tHeadColumns={[
-                {
-                  name: 'Question title',
-                  isVisuallyHidden: true,
-                  width: 'one-half',
-                },
-                {
-                  name: isSectionEligibilityOrEssential
-                    ? 'Section status'
-                    : 'Response type',
-                  isVisuallyHidden: true,
-                  width: 'one-quarter',
-                },
-                {
-                  name: 'Action',
-                  isVisuallyHidden: true,
-                  width: 'one-quarter',
-                },
-              ]}
-              rows={tableRows}
-            />
+            <div className={`${styles['table']}`}>
+              <Table
+                caption={
+                  sectionIndex >= CUSTOM_SECTION_FIRST_INDEX &&
+                  applicationStatus != 'PUBLISHED' ? (
+                    <div className="govuk-grid-row govuk-!-padding-top-5 govuk-!-padding-bottom-3 govuk-!-padding-left-3 govuk-!-padding-right-3">
+                      <div className="govuk-grid-column-one-third">
+                        {sectionIndex + 1}. {section.sectionTitle}
+                      </div>
 
-            {!isSectionEligibilityOrEssential &&
-              applicationStatus !== 'PUBLISHED' && (
-                <>
-                  <div className={styles['sections-cta-margin-bottom']}>
-                    <CustomLink
-                      href={`/build-application/${applicationId}/${section.sectionId}/question-content`}
-                      isSecondaryButton
-                      dataCy={`cy_addAQuestion-${section.sectionTitle}`}
-                      ariaLabel={`Add a new question to ${section.sectionTitle}`}
-                    >
-                      Add a question
-                    </CustomLink>
-                    <CustomLink
-                      href={`/build-application/${applicationId}/${section.sectionId}/delete-confirmation`}
-                      dataCy={`cy_sections_deleteSectionBtn-${section.sectionTitle}`}
-                      ariaLabel={`Delete this section: ${section.sectionTitle}`}
-                      customStyle={
-                        styles['sections-delete-section-btn-mrg-left']
-                      }
-                      dataTestId={`sections_deleteSectionBtn`}
-                    >
-                      Delete this section
-                    </CustomLink>
-                  </div>
+                      <div className="govuk-grid-column-two-thirds govuk-!-text-align-right">
+                        <button
+                          className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
+                          data-module="govuk-button"
+                          data-cy="cyUpButton"
+                          name={`Up/${section.sectionId}`}
+                          disabled={sectionIndex === CUSTOM_SECTION_FIRST_INDEX}
+                          onClick={handleOnUpDownButtonClick}
+                          aria-label={`Move section ${section.sectionTitle} up`}
+                        >
+                          Up
+                        </button>
+                        <button
+                          className={`govuk-button govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
+                          data-module="govuk-button"
+                          data-cy="cyDownButton"
+                          name={`Down/${section.sectionId}`}
+                          disabled={sectionIndex === sections.length - 1}
+                          onClick={handleOnUpDownButtonClick}
+                          aria-label={`Move section ${section.sectionTitle} down`}
+                        >
+                          Down
+                        </button>
 
-                  <hr className="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
-                </>
-              )}
+                        <i className={styles['separator']} />
+
+                        <CustomLink
+                          href={`/build-application/${applicationId}/${section.sectionId}`}
+                        >
+                          Edit section
+                        </CustomLink>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="govuk-grid-row govuk-!-padding-top-5 govuk-!-padding-bottom-3 govuk-!-padding-left-3 govuk-!-padding-right-3">
+                      <div className="govuk-grid-column-two-thirds">
+                        {sectionIndex + 1}. {section.sectionTitle}
+                      </div>
+                    </div>
+                  )
+                }
+                captionClassName={styles['caption']}
+                captionLabel={`Section ${sectionIndex + 1}: ${
+                  section.sectionTitle
+                }`}
+                disableBottomRowBorder
+                tHeadColumns={[
+                  {
+                    name: 'Question title',
+                    isVisuallyHidden: true,
+                    width: 'one-half',
+                  },
+                  {
+                    name: isSectionEligibilityOrEssential
+                      ? 'Section status'
+                      : 'Response type',
+                    isVisuallyHidden: true,
+                    width: 'one-quarter',
+                  },
+                  {
+                    name: 'Action',
+                    isVisuallyHidden: true,
+                    width: 'one-quarter',
+                  },
+                ]}
+                rows={tableRows(
+                  section,
+                  applicationId,
+                  applicationStatus,
+                  isSectionEligibilityOrEssential
+                )}
+              />
+            </div>
           </React.Fragment>
         );
       })}
@@ -178,14 +149,105 @@ const Sections = ({
           Add new section
         </CustomLink>
       )}
-    </>
+    </FlexibleQuestionPageLayout>
   );
 };
 
-interface SectionsProps {
-  sections: ApplicationFormSection[];
-  applicationId: string;
-  applicationStatus: ApplicationFormSummary['applicationStatus'];
+function tableRows(
+  section: ApplicationFormSection,
+  applicationId: string,
+  applicationStatus: ApplicationFormSummary['applicationStatus'],
+  isSectionEligibilityOrEssential: boolean
+) {
+  let tableRows = section.questions
+    ? section.questions.map((question) => {
+        let link = `/build-application/${applicationId}/${section.sectionId}/${question.questionId}/edit/question-content?backTo=dashboard`;
+        // Eligibility is handled differently, so we explicitly direct to the eligibility-statement page here
+        if (section.sectionId === 'ELIGIBILITY') {
+          link = `/build-application/${applicationId}/${section.sectionId}/${question.questionId}/eligibility-statement`;
+        }
+        return {
+          cells: [
+            {
+              content: (
+                <div className="govuk-!-font-weight-bold">
+                  {question.fieldTitle}
+                </div>
+              ),
+              className: 'govuk-!-padding-3',
+            },
+            {
+              content: isSectionEligibilityOrEssential ? (
+                <strong className="govuk-tag">{section.sectionStatus}</strong>
+              ) : (
+                ResponseTypeLabels[question.responseType]
+              ),
+              className: 'govuk-!-padding-3',
+            },
+            {
+              content: (
+                <div className="govuk-!-text-align-right">
+                  <CustomLink
+                    href={link}
+                    ariaLabel={
+                      applicationStatus !== 'PUBLISHED'
+                        ? `View or change question "${question.fieldTitle}"`
+                        : `View question "${question.fieldTitle}"`
+                    }
+                    dataCy={`cy_Section-${question.fieldTitle}`}
+                  >
+                    {applicationStatus !== 'PUBLISHED' &&
+                    !isSectionEligibilityOrEssential
+                      ? 'Edit'
+                      : 'View'}
+                  </CustomLink>
+                </div>
+              ),
+              className: 'govuk-!-padding-3',
+            },
+          ],
+        };
+      })
+    : [];
+
+  if (section.sectionId === 'ESSENTIAL') {
+    tableRows = [
+      {
+        cells: [
+          {
+            content: (
+              <div className="govuk-!-font-weight-bold">
+                Due-diligence checks
+              </div>
+            ),
+            className: 'govuk-!-padding-3',
+          },
+          {
+            content: (
+              <strong className="govuk-tag">{section.sectionStatus}</strong>
+            ),
+            className: 'govuk-!-padding-3',
+          },
+          {
+            content: (
+              <div className="govuk-!-text-align-right">
+                <CustomLink
+                  href={`/build-application/${applicationId}/${section.sectionId}/due-diligence`}
+                  ariaLabel='View question "Due-diligence checks"'
+                  dataCy="cy_Section-due-diligence-checks"
+                >
+                  View
+                </CustomLink>
+              </div>
+            ),
+            className: 'govuk-!-padding-3',
+          },
+        ],
+      },
+    ];
+  }
+
+  return tableRows;
 }
 
 export default Sections;

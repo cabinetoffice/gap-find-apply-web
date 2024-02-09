@@ -17,7 +17,7 @@ const patchQuestion = (
     fieldTitle: string;
     displayText: string;
     hintText: string;
-    validation: { mandatory: boolean };
+    validation: { mandatory: boolean; maxWords?: string };
     options: string[];
   }>
 ): Promise<void> => {
@@ -39,7 +39,7 @@ const postQuestion = (
     hintText?: string;
     displayText?: string;
     questionSuffix?: string;
-    validation: { mandatory: boolean };
+    validation: { maxWords?: number; mandatory: boolean };
     options?: string[];
   }
 ): Promise<void> => {

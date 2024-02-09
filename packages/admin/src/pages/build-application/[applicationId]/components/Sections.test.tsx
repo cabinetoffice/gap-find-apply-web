@@ -52,6 +52,8 @@ const mockSectionParams = {
   ] as ApplicationFormSection[],
   applicationId: '87654321',
   applicationStatus: 'DRAFT' as ApplicationFormSummary['applicationStatus'],
+  resolvedUrl: '/build-application/87654321',
+  csrfToken: 'mockCsrfToken',
 };
 
 describe('Sections component', () => {
@@ -61,9 +63,11 @@ describe('Sections component', () => {
     });
 
     it('Should render section titles', () => {
-      screen.getByRole('table', { name: '1. Eligibility' });
-      screen.getByRole('table', { name: '2. Required checks' });
-      screen.getByRole('table', { name: '3. Custom section' });
+      screen.getByRole('table', { name: 'Section 1: Eligibility' });
+      screen.getByRole('table', { name: 'Section 2: Required checks' });
+      screen.getByRole('table', {
+        name: 'Section 3: Custom section',
+      });
     });
 
     it('Should render question titles & truncates them 50 chars (Except for when the section ID is "ESSENTIAL"', () => {
@@ -137,6 +141,11 @@ describe('Sections component', () => {
 
     it('Should render an "Delete this section" link', () => {
       screen.getByRole('link', { name: 'Delete this section: Custom section' });
+    });
+
+    it('Should render an "Up" and "Down" buttons', () => {
+      screen.getByRole('button', { name: 'Move section Custom section up' });
+      screen.getByRole('button', { name: 'Move section Custom section down' });
     });
   });
 

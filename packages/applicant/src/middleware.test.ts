@@ -150,15 +150,9 @@ describe('Middleware', () => {
     );
 
     req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
-    const mapUrlToResponse = {
-      'undefined/submissions/some-uuid/application/status': 'REMOVED',
-      'undefined/submissions/some-uuid/isSubmitted': 'false',
-    };
-    jest.spyOn(global, 'fetch').mockImplementation((url) => {
-      return {
-        text: jest.fn().mockResolvedValue(mapUrlToResponse[url as string]),
-      } as unknown as Promise<Response>;
-    });
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+      text: jest.fn().mockResolvedValue('REMOVED'),
+    } as unknown as Response);
     const res = await middleware(req);
     expect(res.status).toBe(307);
     expect(res.headers.get('Location')).toBe(

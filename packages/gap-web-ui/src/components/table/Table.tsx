@@ -4,6 +4,8 @@ import styles from './Table.module.scss';
 export interface TableProps {
   caption?: string;
   captionSize?: 's' | 'm' | 'l' | 'xl';
+  captionClassName?: string;
+  captionLabel?: string;
   forceCellTopBorder?: boolean;
   tHeadColumns: TheadColumn[]; //needed for accessibility
   rows: Row[];
@@ -39,6 +41,8 @@ interface Cell {
 const Table = ({
   caption,
   captionSize,
+  captionClassName,
+  captionLabel,
   forceCellTopBorder,
   tHeadColumns,
   rows,
@@ -55,6 +59,7 @@ const Table = ({
           }`}
           data-testid="table-caption"
           data-cy={`cy-table-caption-${caption}`}
+          aria-label={captionLabel}
         >
           {caption}
         </caption>

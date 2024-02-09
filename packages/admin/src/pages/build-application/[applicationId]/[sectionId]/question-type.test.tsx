@@ -87,13 +87,13 @@ describe('Question type', () => {
     it('Should have a short answer', () => {
       render(component);
       screen.getByRole('radio', { name: 'Short answer' });
-      screen.getByText('Can have a maximum of 250 characters entered.');
+      screen.getByText('Can have a maximum of 300 words entered.');
     });
 
     it('Should have a long answer', () => {
       render(component);
       screen.getByRole('radio', { name: 'Long answer' });
-      screen.getByText('Can have a maximum of 6000 characters entered.');
+      screen.getByText('Can have a maximum of 5000 words entered.');
     });
 
     it('Should have a radio answer', () => {

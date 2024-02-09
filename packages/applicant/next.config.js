@@ -34,4 +34,7 @@ module.exports = {
     }';`,
   },
   basePath: process.env.SUB_PATH || '/apply/applicant',
+  experimental: {
+    forceSwcTransforms: true,
+  },
 };

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, RefObject } from 'react';
 import { ValidationError } from '../../types/ValidationErrorType';
 import ErrorBanner from '../display-errors/ErrorBanner';
 
@@ -11,6 +11,7 @@ const FlexibleQuestionPageLayout = ({
   encType = 'application/x-www-form-urlencoded',
   sideBarContent,
   fullPageWidth,
+  formRef,
 }: FlexibleQuestionPageProps) => {
   if (typeof window !== 'undefined') {
     const errorSummary = window.document.getElementById('error-summary');
@@ -38,6 +39,7 @@ const FlexibleQuestionPageLayout = ({
             data-testid="question-page-form"
             id="form-main-content"
             encType={encType}
+            ref={formRef}
           >
             {pageCaption && (
               <span
@@ -72,6 +74,7 @@ export interface FlexibleQuestionPageProps {
   encType?: string; //can be optional as forms default to 'application/x-www-form-urlencoded' but needs to be set to 'multipart/form-data' for file uploads
   sideBarContent?: JSX.Element;
   fullPageWidth?: boolean;
+  formRef?: RefObject<HTMLFormElement>;
 }
 
 export default FlexibleQuestionPageLayout;

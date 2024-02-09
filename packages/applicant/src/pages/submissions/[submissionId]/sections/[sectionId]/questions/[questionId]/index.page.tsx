@@ -196,12 +196,22 @@ export default function QuestionPage({
     fieldErrors: error || [],
     titleSize: titleSizeType,
   };
+
+  const fromSubmissionSummaryPage =
+    new URLSearchParams(queryParams).get('fromSubmissionSummaryPage') ===
+    'true';
+
   switch (responseType) {
     case 'ShortAnswer':
       inputType = (
         <TextInput
           {...commonProps}
-          limit={question.validation.maxLength || undefined}
+          limitWords={Boolean(question.validation.maxWords)}
+          limit={
+            question.validation.maxWords ||
+            question.validation.maxLength ||
+            undefined
+          }
           defaultValue={
             error ? temporaryErrorInputValue[0] : response || undefined
           }
@@ -224,7 +234,12 @@ export default function QuestionPage({
       inputType = (
         <TextArea
           {...commonProps}
-          limit={question.validation.maxLength || undefined}
+          limitWords={Boolean(question.validation.maxWords)}
+          limit={
+            question.validation.maxWords ||
+            question.validation.maxLength ||
+            undefined
+          }
           defaultValue={
             error ? temporaryErrorInputValue[0] : response || undefined
           }
@@ -336,26 +351,30 @@ export default function QuestionPage({
                   grantSubmissionId,
                   sectionId,
                   questionId
-                )}/attachments/${attachmentId}/remove${
-                  isRefererCheckYourAnswerScreen ? '?fromCYAPage=true' : ''
-                }`
+                )}/attachments/${attachmentId}/remove${getFileQueryString()}`
               : undefined
           }
         />
       );
+
       encType = 'multipart/form-data';
       formAction =
         publicRuntimeConfig.subPath +
         '/api/routes' +
         routes.submissions.question(grantSubmissionId, sectionId, questionId) +
-        '/upload-file';
+        '/upload-file' +
+        getFileQueryString();
       break;
   }
 
+  function getFileQueryString() {
+    if (isRefererCheckYourAnswerScreen) return '?fromCYAPage=true';
+    if (fromSubmissionSummaryPage) return '?fromSubmissionSummaryPage=true';
+    return '';
+  }
+
   let backLinkUrl = routes.submissions.sections(grantSubmissionId);
-  const fromSubmissionSummaryPage =
-    new URLSearchParams(queryParams).get('fromSubmissionSummaryPage') ===
-    'true';
+
   if (isRefererCheckYourAnswerScreen) {
     backLinkUrl = routes.submissions.section(grantSubmissionId, sectionId);
   } else if (fromSubmissionSummaryPage) {

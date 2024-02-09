@@ -2,6 +2,31 @@ import React, { ReactNode } from 'react';
 import { TextInputSubtype } from '../../../types/InputType';
 import ErrorMessage from '../../display-errors/ErrorMessage';
 import { InputComponentProps } from './InputComponentProps';
+import { HARD_CHAR_LIMIT } from './constants';
+
+export type TextInputComponentProps = InputComponentProps & {
+  children?: ReactNode;
+  defaultValue?: string;
+  textInputSubtype?: TextInputSubtype;
+  width?: string;
+  fluidWidth?: string;
+  readOnly?: boolean;
+  disabled?: boolean;
+  newLineAccepted?: boolean;
+} & ( // GDS does not seem to support a limit and a prefix/suffix at the same time
+    | {
+        limitWords?: boolean;
+        limit: number;
+        fieldPrefix?: undefined;
+        fieldSuffix?: undefined;
+      }
+    | {
+        limitWords?: undefined;
+        limit?: undefined;
+        fieldPrefix?: string | null;
+        fieldSuffix?: string;
+      }
+  );
 
 const TextInput = ({
   children,
@@ -19,9 +44,11 @@ const TextInput = ({
   disabled = false,
   TitleTag = 'h1',
   newLineAccepted = false,
-  fieldPrefix = '£',
+  fieldPrefix,
+  fieldSuffix,
   multipleQuestionPage = true,
   limit,
+  limitWords = false,
 }: TextInputComponentProps) => {
   const ariaDescribedByText: string = fieldName + '-hint';
   const hasError = fieldErrors.some((fieldError) =>
@@ -48,7 +75,7 @@ const TextInput = ({
     ? `govuk-label govuk-label--${titleSize}`
     : 'govuk-heading-l';
 
-  const InputElement = () => {
+  const InputComponent = () => {
     switch (textInputSubtype) {
       case 'email':
         return (
@@ -70,22 +97,11 @@ const TextInput = ({
         );
       case 'numeric':
         return (
-          <div className="govuk-input__wrapper">
-            {fieldPrefix && (
-              <div
-                className="govuk-input__prefix"
-                aria-hidden="true"
-                data-cy={`cy-${fieldName}-text-input-prefix`}
-              >
-                {fieldPrefix}
-              </div>
-            )}
-            <input
-              {...requiredProps}
-              spellCheck="false"
-              data-cy={`cy-${fieldName}-text-input-numeric`}
-            />
-          </div>
+          <input
+            {...requiredProps}
+            spellCheck="false"
+            data-cy={`cy-${fieldName}-text-input-numeric`}
+          />
         );
       default:
         return (
@@ -98,11 +114,56 @@ const TextInput = ({
     }
   };
 
+  const InputWithWrapperComponent = () => {
+    return (
+      <div className="govuk-input__wrapper">
+        {fieldPrefix && (
+          <div
+            className="govuk-input__prefix"
+            aria-hidden="true"
+            data-cy={`cy-${fieldName}-text-input-prefix`}
+          >
+            {fieldPrefix}
+          </div>
+        )}
+
+        <InputComponent />
+
+        {fieldSuffix && (
+          <div
+            className="govuk-input__suffix"
+            aria-hidden="true"
+            data-cy={`cy-${fieldName}-text-input-suffix`}
+          >
+            {fieldSuffix}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const LimitComponent = ({ limit }: { limit: number }) => {
+    return (
+      <div
+        id={`${fieldName}-info`}
+        className="govuk-hint govuk-character-count__message"
+        data-testid="character-limit-div"
+      >
+        {limitWords
+          ? `You can enter up to ${limit} ${
+              limit > HARD_CHAR_LIMIT ? 'characters' : 'words'
+            }`
+          : `You can enter up to ${limit} characters`}
+      </div>
+    );
+  };
+
   return (
     <div
       className="govuk-character-count"
       data-module="govuk-character-count"
-      data-maxlength={limit}
+      data-maxlength={!limitWords ? limit : undefined}
+      data-maxwords={limitWords ? limit : undefined}
     >
       <div
         className={`govuk-form-group${
@@ -132,7 +193,6 @@ const TextInput = ({
             </label>
           </TitleTag>
         )}
-
         {questionHintText && (
           <div
             id={`${fieldName}-hint`}
@@ -142,36 +202,15 @@ const TextInput = ({
             {questionHintText}
           </div>
         )}
-
         <ErrorMessage fieldErrors={fieldErrors} fieldName={fieldName} />
 
-        <InputElement />
-        {limit && (
-          <div
-            id={`${fieldName}-info`}
-            className="govuk-hint govuk-character-count__message"
-            data-testid="character-limit-div"
-          >
-            You can enter up to {limit} characters
-          </div>
-        )}
+        {limit ? <InputComponent /> : <InputWithWrapperComponent />}
         {children}
       </div>
+
+      {limit && <LimitComponent limit={limit} />}
     </div>
   );
 };
-
-export interface TextInputComponentProps extends InputComponentProps {
-  children?: ReactNode;
-  defaultValue?: string;
-  textInputSubtype?: TextInputSubtype;
-  width?: string;
-  fluidWidth?: string;
-  readOnly?: boolean;
-  disabled?: boolean;
-  newLineAccepted?: boolean;
-  fieldPrefix?: string | null;
-  limit?: number;
-}
 
 export default TextInput;

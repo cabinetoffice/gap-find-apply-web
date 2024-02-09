@@ -86,6 +86,9 @@ describe('Dashboard', () => {
       grantSchemeId: '12345678',
       applicationStatus: 'DRAFT' as ApplicationFormSummary['applicationStatus'],
       recentlyUnpublished: false,
+      applyToApplicationUrl: '/applications/87654321',
+      resolvedUrl: '/build-application/87654321',
+      csrfToken: 'mockCsrfToken',
     };
     const component = <Dashboard {...mockDashboardParams} />;
 
@@ -197,6 +200,11 @@ describe('Dashboard', () => {
           req: {
             cookies: { 'gap-test': 'testSessionId' },
           } as any,
+          res: {
+            getHeader: jest.fn(),
+          } as any,
+          resolvedUrl: '/build-application/applicationId/dashboard',
+          csrfToken: 'mockCsrfToken',
         } as GetServerSidePropsContext,
         overrides
       );

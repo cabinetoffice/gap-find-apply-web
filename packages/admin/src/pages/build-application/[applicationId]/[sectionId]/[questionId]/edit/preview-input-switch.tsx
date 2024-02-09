@@ -7,8 +7,8 @@ import {
   SelectInput,
   Checkboxes,
 } from 'gap-web-ui';
-import ResponseTypeEnum from '../../../../../enums/ResponseType';
-import { ApplicationFormQuestion } from '../../../../../types/ApplicationForm';
+import ResponseTypeEnum from '../../../../../../enums/ResponseType';
+import { ApplicationFormQuestion } from '../../../../../../types/ApplicationForm';
 
 const PreviewInputSwitch = (question: ApplicationFormQuestion) => {
   const questionTitle = `${question.fieldTitle}${
@@ -22,15 +22,21 @@ const PreviewInputSwitch = (question: ApplicationFormQuestion) => {
     fieldErrors: [],
   };
 
+  const textInputProps = {
+    ...inputProps,
+    disabled: true,
+    defaultValue: 'Applicants will type their answer here',
+  };
+
   switch (question.responseType) {
     case ResponseTypeEnum.ShortAnswer:
-      return <TextInput {...inputProps} />;
+      return <TextInput {...textInputProps} />;
     case ResponseTypeEnum.YesNo:
       return <Radio {...inputProps} />;
     case ResponseTypeEnum.LongAnswer:
-      return <TextArea {...inputProps} />;
+      return <TextArea {...textInputProps} />;
     case ResponseTypeEnum.Date:
-      return <DateInput {...inputProps} />;
+      return <DateInput {...inputProps} disabled={true} />;
     case ResponseTypeEnum.SingleFileUpload:
       return <DocumentUpload {...inputProps} disabled={true} />;
     case ResponseTypeEnum.Dropdown:
