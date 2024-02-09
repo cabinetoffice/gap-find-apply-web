@@ -31,14 +31,13 @@ export default async function QuestionPageGetServerSideProps<
   K extends FetchPageData,
   V
 >(props: QuestionPageGetServerSidePropsType<T, K, V>) {
-  const { context, fetchPageData, jwt, fetchPageDataErrorHandler } = props;
+  const { context, fetchPageData, jwt } = props;
   const { res, resolvedUrl } = context;
 
   const pageData = await fetchAndHandlePageData(
     fetchPageData,
     jwt,
-    resolvedUrl,
-    fetchPageDataErrorHandler
+    props.serviceErrorReturnUrl ?? resolvedUrl
   );
 
   if (pageData instanceof Object && 'redirect' in pageData) {
@@ -72,26 +71,24 @@ async function fetchAndHandlePageData<K extends FetchPageData>(
   fetchPageData: (jwt: string) => Promise<K | NextRedirect>,
   jwt: string,
   resolvedUrl: string,
-  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect
+  serviceErrorReturnUrl?: string
 ) {
   try {
     return await fetchPageData(jwt);
   } catch (err: any) {
-    if (fetchPageDataErrorHandler) {
-      return fetchPageDataErrorHandler(err);
-    }
     if (err?.response?.data?.code) {
       return generateRedirect(
-        `/error-page/code/${err.response.data.code}?href=${resolvedUrl}`
+        `/error-page/code/${err.response.data.code}?href=${
+          serviceErrorReturnUrl ?? resolvedUrl
+        }`
       );
     }
     return generateServiceErrorRedirect(
       'Something went wrong while trying to load this page.',
-      resolvedUrl
+      serviceErrorReturnUrl ?? resolvedUrl
     );
   }
 }
-
 async function postPagesResult<
   T extends PageBodyResponse,
   K extends FetchPageData,
@@ -100,20 +97,22 @@ async function postPagesResult<
   req,
   res,
   handleRequest,
-  fetchPageDataErrorHandler,
   jwt,
   onSuccessRedirectHref,
   onErrorMessage,
   resolvedUrl,
   pageData,
+  serviceErrorReturnUrl,
 }: PostPageResultProps<T, K, V>) {
   return CallServiceMethod<T, V>(
     req,
     res,
     (body) => handleRequest(body, jwt, pageData),
     onSuccessRedirectHref,
-    generateServiceErrorProps(onErrorMessage, resolvedUrl),
-    fetchPageDataErrorHandler
+    generateServiceErrorProps(
+      onErrorMessage,
+      serviceErrorReturnUrl ?? resolvedUrl
+    )
   );
 }
 
