@@ -1,40 +1,32 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
-import {
-  QuestionSummary,
-  QuestionWithOptionsSummary,
-} from '../../../../../../types/QuestionSummary';
+import { QuestionWithOptionsSummary } from '../../../../../../types/QuestionSummary';
 import QuestionOptions, { getServerSideProps } from './question-options.page';
-import { merge } from 'lodash';
 import { Redirect } from 'next';
 import { getApplicationFormSummary } from '../../../../../../services/ApplicationService';
 import {
   getQuestion,
   patchQuestion,
 } from '../../../../../../services/QuestionService';
-import NextGetServerSidePropsResponse from '../../../../../../types/NextGetServerSidePropsResponse';
 import { parseBody } from '../../../../../../utils/parseBody';
-import { ValidationError } from 'gap-web-ui';
+import { Optional, ValidationError, getContext } from 'gap-web-ui';
 import ResponseTypeEnum from '../../../../../../enums/ResponseType';
+import { getPageProps } from '../../../../../../testUtils/unitTestHelpers';
+import InferProps from '../../../../../../types/InferProps';
+import InferGetServerSideProps from '../../../../../../types/InferGetServerSideProps';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
 jest.mock('../../../../../../services/ApplicationService');
 jest.mock('../../../../../../services/QuestionService');
 jest.mock('../../../../../../services/SessionService');
 jest.mock('../../../../../../utils/parseBody');
 
 const mockParseBody = jest.mocked(parseBody);
+const mockGetApplicationFormSummary = jest.mocked(getApplicationFormSummary);
+const mockGetQuestion = jest.mocked(getQuestion);
+const mockPatchQuestion = jest.mocked(patchQuestion);
+
+type GetServerSideProps = InferGetServerSideProps<typeof getServerSideProps>;
 
 describe('Question Options', () => {
   const parsedValidationErrors = [
@@ -49,26 +41,25 @@ describe('Question Options', () => {
   ] as ValidationError[];
 
   describe('UI', () => {
-    const questionSummary: QuestionSummary = {
+    const questionSummary: QuestionWithOptionsSummary = {
       fieldTitle: 'Mock Question With Options',
       hintText: 'This is a test question.',
       optional: 'no',
+      responseType: ResponseTypeEnum.Dropdown,
     };
 
-    const getProps = (overrides = {}) =>
-      merge(
-        {
-          sectionName: 'Test Section Name',
-          questionSummary: questionSummary,
-          backButtonHref: '/mockBackUrl',
-          formAction: '/mockSubmitUrl',
-          fieldErrors: [],
-          options: ['Option one', 'Option two'],
-        },
-        overrides
-      );
+    const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
+      questionSummary: questionSummary,
+      backButtonHref: '/mockBackUrl',
+      formAction: '/mockSubmitUrl',
+      fieldErrors: [],
+      options: ['Option one', 'Option two'],
+      pageCaption: 'testPageCaption',
+      cancelChangesHref: '/mockCancelUrl',
+      csrfToken: 'testCSRFToken',
+    });
 
-    const component = <QuestionOptions {...getProps()} />;
+    const component = <QuestionOptions {...getPageProps(getDefaultProps)} />;
 
     it('Should render a back button', () => {
       render(component);
@@ -116,7 +107,7 @@ describe('Question Options', () => {
     it('Should render "Delete" button for each option when there are 3 or more options present', () => {
       render(
         <QuestionOptions
-          {...getProps({
+          {...getPageProps(getDefaultProps, {
             options: ['Option one', 'Option two', 'Option three'],
           })}
         />
@@ -149,7 +140,9 @@ describe('Question Options', () => {
     it('Should render a meta title with "Error: " when fieldErrors is NOT empty', () => {
       render(
         <QuestionOptions
-          {...getProps({ fieldErrors: parsedValidationErrors })}
+          {...getPageProps(getDefaultProps, {
+            fieldErrors: parsedValidationErrors,
+          })}
         />
       );
       expect(document.title).toBe('Error: Edit a question - Manage a grant');
@@ -164,22 +157,16 @@ describe('Question Options', () => {
       } as Redirect,
     };
 
-    const getContext = (overrides = {}) =>
-      merge(
-        {
-          params: {
-            applicationId: 'testApplicationId',
-            sectionId: 'testSectionId',
-            questionId: 'testQuestionId',
-          } as Record<string, string>,
-          req: {
-            method: 'GET',
-            cookies: { session_id: '', 'gap-test': 'testSessionId' },
-          },
-          res: { getHeader: () => 'testCSRFToken' },
-        },
-        overrides
-      ) as unknown as GetServerSidePropsContext;
+    const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
+      params: {
+        applicationId: 'testApplicationId',
+        sectionId: 'testSectionId',
+        questionId: 'testQuestionId',
+      },
+      query: {
+        backTo: 'dashboard',
+      },
+    });
 
     const mockQuestionSummary: QuestionWithOptionsSummary = {
       fieldTitle: 'Test Section Field Title',
@@ -189,97 +176,107 @@ describe('Question Options', () => {
     };
 
     beforeEach(() => {
-      (getApplicationFormSummary as jest.Mock).mockResolvedValue({
+      mockGetApplicationFormSummary.mockResolvedValue({
         sections: [
           { sectionId: 'testSectionId', sectionTitle: 'Custom section name' },
         ],
         applicationStatus: 'DRAFT',
+        applicationName: 'Test Application Name',
+        audit: {
+          created: '2021-08-12T14:00:00.000Z',
+          lastUpdatedDate: '2021-08-12T14:00:00.000Z',
+          lastPublished: '2021-08-12T14:00:00.000Z',
+          lastUpdatedBy: 'Test User',
+          version: 1,
+        },
+        grantApplicationId: 'testGrantApplicationId',
+        grantSchemeId: 'testGrantSchemeId',
       });
 
       process.env.SESSION_COOKIE_NAME = 'gap-test';
 
-      (getQuestion as jest.Mock).mockResolvedValue({
+      mockGetQuestion.mockResolvedValue({
         fieldTitle: 'Test Section Field Title',
         hintText: 'Test hint text',
         validation: { mandatory: 'true' },
         responseType: ResponseTypeEnum.Dropdown,
         options: ['Option one', 'Option two', 'Option three'],
+        questionId: 'testQuestionId',
+        fieldPrefix: '',
+        questionSuffix: '',
+        profileField: '',
+        adminSummary: '',
+        displayText: '',
       });
     });
 
     it('Should return a page caption of the section title', async () => {
       const result = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
+        getContext(getDefaultContext)
+      )) as GetServerSideProps;
 
       expect(result.props.pageCaption).toStrictEqual('Custom section name');
     });
 
     it('Should return question summary', async () => {
       const result = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
+        getContext(getDefaultContext)
+      )) as GetServerSideProps;
 
       expect(result.props.questionSummary).toStrictEqual(mockQuestionSummary);
     });
 
     it('Should return a back button href', async () => {
       const result = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
+        getContext(getDefaultContext)
+      )) as GetServerSideProps;
 
       expect(result.props.backButtonHref).toStrictEqual(
-        '/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content'
+        '/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content?backTo=dashboard'
       );
     });
 
     it('Should return a form action', async () => {
       const result = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
+        getContext(getDefaultContext)
+      )) as GetServerSideProps;
 
       expect(result.props.formAction).toStrictEqual(
-        '/apply/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-options'
+        '/apply/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-options?backTo=dashboard'
       );
     });
 
     it('Should return a "Cancel changes" href', async () => {
       const result = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
+        getContext(getDefaultContext)
+      )) as GetServerSideProps;
 
       expect(result.props.cancelChangesHref).toStrictEqual(
-        '/build-application/testApplicationId/testSectionId/testQuestionId/preview'
+        '/build-application/testApplicationId/dashboard'
       );
     });
 
     it('Should redirect to the service error page when fetching the question data fails', async () => {
-      (getQuestion as jest.Mock).mockRejectedValue({});
+      mockGetQuestion.mockRejectedValue({});
 
-      const result = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
+      const result = await getServerSideProps(getContext(getDefaultContext));
 
       expect(result).toStrictEqual(serviceErrorPageRedirect);
     });
 
     it('Should redirect to the service error page when fetching the section title fails', async () => {
-      (getApplicationFormSummary as jest.Mock).mockRejectedValue({});
+      mockGetApplicationFormSummary.mockRejectedValue({});
 
-      const result = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
+      const result = await getServerSideProps(getContext(getDefaultContext));
 
       expect(result).toStrictEqual(serviceErrorPageRedirect);
     });
 
     it('Should redirect to question preview page if the application has been published', async () => {
-      (getApplicationFormSummary as jest.Mock).mockResolvedValueOnce({
+      mockGetApplicationFormSummary.mockResolvedValueOnce({
         applicationStatus: 'PUBLISHED',
       });
-      const value = (await getServerSideProps(
-        getContext()
-      )) as NextGetServerSidePropsResponse;
+      const value = await getServerSideProps(getContext(getDefaultContext));
 
       expect(value).toStrictEqual({
         redirect: {
@@ -293,8 +290,8 @@ describe('Question Options', () => {
     describe('When handling a GET request', () => {
       it('Should return option values using data from the database', async () => {
         const result = (await getServerSideProps(
-          getContext()
-        )) as NextGetServerSidePropsResponse;
+          getContext(getDefaultContext)
+        )) as GetServerSideProps;
 
         expect(result.props.options).toStrictEqual([
           'Option one',
@@ -305,9 +302,6 @@ describe('Question Options', () => {
     });
 
     describe('When handling a POST request', () => {
-      const postContext = (overrides: any = {}) =>
-        getContext(merge({ req: { method: 'POST' } }, overrides));
-
       const validationErrors = [
         {
           fieldName: 'options[0]',
@@ -321,14 +315,14 @@ describe('Question Options', () => {
 
       describe('Add another option', () => {
         it('Should return an array with current options and a new empty option when a "Add another option" is clicked', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
+          mockParseBody.mockResolvedValue({
             options: ['option one'],
             'add-another-option': '',
           });
 
           const result = (await getServerSideProps(
-            postContext()
-          )) as NextGetServerSidePropsResponse;
+            getContext(getDefaultContext, { req: { method: 'POST' } })
+          )) as GetServerSideProps;
 
           expect(result.props.options).toStrictEqual(['option one', '']);
           expect(patchQuestion).not.toHaveBeenCalled();
@@ -343,8 +337,8 @@ describe('Question Options', () => {
           });
 
           const result = (await getServerSideProps(
-            postContext()
-          )) as NextGetServerSidePropsResponse;
+            getContext(getDefaultContext, { req: { method: 'POST' } })
+          )) as GetServerSideProps;
 
           expect(result.props.options).toStrictEqual([
             'option two',
@@ -353,12 +347,14 @@ describe('Question Options', () => {
         });
 
         it('Should NOT try to update the question options when "Delete" button is clicked', async () => {
-          (parseBody as jest.Mock).mockResolvedValue({
+          mockParseBody.mockResolvedValue({
             options: ['option one', 'option two', 'option three'],
             delete_0: '',
           });
 
-          await getServerSideProps(postContext());
+          await getServerSideProps(
+            getContext(getDefaultContext, { req: { method: 'POST' } })
+          );
 
           expect(patchQuestion).not.toHaveBeenCalled();
         });
@@ -371,11 +367,11 @@ describe('Question Options', () => {
             'save-and-continue': '',
           });
 
-          (patchQuestion as jest.Mock).mockResolvedValue({});
+          mockPatchQuestion.mockResolvedValue({});
 
-          const result = (await getServerSideProps(
-            postContext()
-          )) as NextGetServerSidePropsResponse;
+          const result = await getServerSideProps(
+            getContext(getDefaultContext, { req: { method: 'POST' } })
+          );
 
           expect(patchQuestion).toBeCalledWith(
             'testSessionId',
@@ -399,11 +395,11 @@ describe('Question Options', () => {
             'save-and-continue': '',
           });
 
-          (patchQuestion as jest.Mock).mockRejectedValue({});
+          mockPatchQuestion.mockRejectedValue({});
 
-          const result = (await getServerSideProps(
-            postContext()
-          )) as NextGetServerSidePropsResponse;
+          const result = await getServerSideProps(
+            getContext(getDefaultContext, { req: { method: 'POST' } })
+          );
 
           expect(result).toStrictEqual(serviceErrorPageRedirect);
         });
@@ -414,13 +410,13 @@ describe('Question Options', () => {
             'save-and-continue': '',
           });
 
-          (patchQuestion as jest.Mock).mockRejectedValue({
+          mockPatchQuestion.mockRejectedValue({
             response: { data: { fieldErrors: validationErrors } },
           });
 
           const result = (await getServerSideProps(
-            postContext()
-          )) as NextGetServerSidePropsResponse;
+            getContext(getDefaultContext, { req: { method: 'POST' } })
+          )) as GetServerSideProps;
 
           expect(result.props.fieldErrors).toStrictEqual(
             parsedValidationErrors
@@ -432,13 +428,13 @@ describe('Question Options', () => {
             options: ['option one', 'option two'],
             'save-and-continue': '',
           });
-          (patchQuestion as jest.Mock).mockRejectedValue({
+          mockPatchQuestion.mockRejectedValue({
             response: { data: { fieldErrors: validationErrors } },
           });
 
           const result = (await getServerSideProps(
-            postContext()
-          )) as NextGetServerSidePropsResponse;
+            getContext(getDefaultContext, { req: { method: 'POST' } })
+          )) as GetServerSideProps;
 
           expect(result.props.fieldErrors).toStrictEqual(
             parsedValidationErrors

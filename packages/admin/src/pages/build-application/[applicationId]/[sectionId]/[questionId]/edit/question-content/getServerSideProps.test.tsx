@@ -19,7 +19,6 @@ import InferGetServerSideProps from '../../../../../../../types/InferGetServerSi
 jest.mock('../../../../../../../utils/parseBody');
 jest.mock('../../../../../../../services/ApplicationService');
 jest.mock('../../../../../../../services/QuestionService');
-
 const mockedGetApplicationFormSummary = jest.mocked(getApplicationFormSummary);
 const mockedGetQuestion = jest.mocked(getQuestion);
 const mockedPatchQuestion = jest.mocked(patchQuestion);

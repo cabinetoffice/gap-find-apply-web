@@ -4,7 +4,7 @@ import {
   TextInput,
   ValidationError,
 } from 'gap-web-ui';
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import getConfig from 'next/config';
 import { toWordsOrdinal } from 'number-to-words';
 import CustomLink from '../../../../../../components/custom-link/CustomLink';
@@ -26,17 +26,27 @@ import {
   getErrorPageParams,
   questionErrorPageRedirect,
 } from './editQuestionServiceError';
+import InferProps from '../../../../../../types/InferProps';
+import { NextRedirect } from '../../../../../../utils/QuestionPageGetServerSidePropsTypes';
 
-export const getServerSideProps: GetServerSideProps = async ({
+export const getServerSideProps = async ({
   params,
   req,
   res,
-}) => {
+  query,
+}: GetServerSidePropsContext) => {
   const sessionId = getSessionIdFromCookies(req);
   const { applicationId, sectionId, questionId } = params as Record<
     string,
     string
   >;
+  const { backTo } = query as Record<string, string>;
+
+  function getBackToRedirect() {
+    return backTo === 'dashboard'
+      ? `/build-application/${applicationId}/dashboard`
+      : `/build-application/${applicationId}/${sectionId}`;
+  }
 
   let fieldErrors: ValidationError[] = [];
   let options: string[] = [''];
@@ -56,7 +66,7 @@ export const getServerSideProps: GetServerSideProps = async ({
           destination: `/build-application/${applicationId}/${sectionId}/${questionId}/preview`,
           statusCode: 302,
         },
-      };
+      } as NextRedirect;
     }
     questionData = await getQuestion(
       sessionId,
@@ -119,9 +129,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       }
     },
     (response: { data: string }) => {
-      return response.data === 'QUESTION_SAVED'
-        ? `/build-application/${applicationId}/dashboard`
-        : '';
+      return response.data === 'QUESTION_SAVED' ? getBackToRedirect() : '';
     },
     getErrorPageParams(applicationId)
   );
@@ -166,10 +174,10 @@ export const getServerSideProps: GetServerSideProps = async ({
     props: {
       pageCaption: sectionName,
       questionSummary,
-      backButtonHref: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content`,
-      formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-options`,
+      backButtonHref: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content?backTo=${backTo}`,
+      formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-options?backTo=${backTo}`,
       fieldErrors,
-      cancelChangesHref: `/build-application/${applicationId}/${sectionId}/${questionId}/preview`,
+      cancelChangesHref: getBackToRedirect(),
       options,
       csrfToken: res.getHeader('x-csrf-token') as string,
     },
@@ -185,7 +193,7 @@ const QuestionOptions = ({
   fieldErrors,
   options,
   csrfToken,
-}: QuestionOptionProps) => {
+}: InferProps<typeof getServerSideProps>) => {
   return (
     <>
       <Meta
@@ -264,17 +272,6 @@ const QuestionOptions = ({
       </div>
     </>
   );
-};
-
-type QuestionOptionProps = {
-  pageCaption: string;
-  questionSummary: QuestionWithOptionsSummary;
-  backButtonHref: string;
-  formAction: string;
-  cancelChangesHref: string;
-  fieldErrors: ValidationError[];
-  options: string[];
-  csrfToken: string;
 };
 
 export default QuestionOptions;
