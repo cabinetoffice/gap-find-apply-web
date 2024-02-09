@@ -16,7 +16,6 @@ export type QuestionPageGetServerSidePropsType<
   jwt: string;
   onSuccessRedirectHref: string | ((result: V) => string);
   onErrorMessage: string;
-  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect;
 };
 
 export type PostPageResultProps<

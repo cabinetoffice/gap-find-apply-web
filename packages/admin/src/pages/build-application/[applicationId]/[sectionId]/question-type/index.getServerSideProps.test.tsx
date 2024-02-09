@@ -37,10 +37,11 @@ describe('getServerSideProps', () => {
       overrides
     ) as unknown as GetServerSidePropsContext;
 
-  const serviceErrorRedirect = {
+  const getServiceErrorRedirect = (errorInformation?: string) => ({
     redirect: {
       destination: `/service-error?serviceErrorProps=${JSON.stringify({
         errorInformation:
+          errorInformation ??
           'Something went wrong while trying to create the question.',
         linkAttributes: {
           href: '/build-application/applicationId/dashboard',
@@ -50,7 +51,7 @@ describe('getServerSideProps', () => {
       })}`,
       statusCode: 302,
     },
-  };
+  });
 
   beforeEach(() => {
     (getApplicationFormSummary as jest.Mock).mockResolvedValue({
@@ -63,14 +64,6 @@ describe('getServerSideProps', () => {
   });
 
   describe('when handling a GET request', () => {
-    it('Should redirect to the service error page when session id isnt found', async () => {
-      const result = (await getServerSideProps(
-        getContext({ req: { cookies: { session_id: '' } } })
-      )) as NextGetServerSidePropsResponse;
-
-      expect(result).toStrictEqual(serviceErrorRedirect);
-    });
-
     it('Should return a section name', async () => {
       const result = (await getServerSideProps(
         getContext()
@@ -88,7 +81,11 @@ describe('getServerSideProps', () => {
         getContext()
       )) as NextGetServerSidePropsResponse;
 
-      expect(result).toStrictEqual(serviceErrorRedirect);
+      expect(result).toStrictEqual(
+        getServiceErrorRedirect(
+          'Something went wrong while trying to load this page.'
+        )
+      );
     });
 
     it('Should return a back button href', async () => {
@@ -194,7 +191,7 @@ describe('getServerSideProps', () => {
         getPostContext({})
       )) as NextGetServerSidePropsResponse;
 
-      expect(result).toStrictEqual(serviceErrorRedirect);
+      expect(result).toStrictEqual(getServiceErrorRedirect());
     });
 
     it('Should redirect to the dashboard when posting succeeds', async () => {
@@ -217,7 +214,7 @@ describe('getServerSideProps', () => {
         getPostContext({})
       )) as NextGetServerSidePropsResponse;
 
-      expect(result).toStrictEqual(serviceErrorRedirect);
+      expect(result).toStrictEqual(getServiceErrorRedirect());
     });
 
     describe('question type with options', () => {
@@ -263,7 +260,7 @@ describe('getServerSideProps', () => {
           getPostContext({})
         )) as NextGetServerSidePropsResponse;
 
-        expect(result).toStrictEqual(serviceErrorRedirect);
+        expect(result).toStrictEqual(getServiceErrorRedirect());
       });
     });
 

@@ -51,19 +51,13 @@ export const getServerSideProps = async (
   const { params, req } = context;
   const { applicationId, sectionId } = params as Record<string, string>;
 
-  const sessionId = req.cookies.session_id;
-  const sessionCookie = getSessionIdFromCookies(req);
-
-  if (!sessionId) {
-    // We expect the session ID to be present in order to get to this page
-    return questionErrorPageRedirect(applicationId);
-  }
+  const sessionId = getSessionIdFromCookies(req);
 
   const handleRequest = async (body: RequestBody) => {
     const { _csrf, ...props } = body;
 
     if (redirectQuestionType.includes(body.responseType)) {
-      await addFieldsToSession('newQuestion', props, sessionCookie);
+      await addFieldsToSession('newQuestion', props, sessionId);
       return {
         redirectQuestionType: body.responseType,
       };
@@ -71,7 +65,7 @@ export const getServerSideProps = async (
 
     const questionSummary = (await getSummaryFromSession(
       'newQuestion',
-      sessionCookie
+      sessionId
     )) as QuestionSummary;
     const { optional, ...restOfQuestionSummary } = questionSummary;
     const maxWords =
@@ -131,12 +125,11 @@ export const getServerSideProps = async (
 
   return QuestionPageGetServerSideProps({
     serviceErrorReturnUrl: `/build-application/${applicationId}/dashboard`,
-    fetchPageDataErrorHandler: () => questionErrorPageRedirect(applicationId),
     context,
     fetchPageData,
     onSuccessRedirectHref,
     onErrorMessage: 'Something went wrong while trying to create the question.',
     handleRequest,
-    jwt: sessionCookie,
+    jwt: sessionId,
   });
 };

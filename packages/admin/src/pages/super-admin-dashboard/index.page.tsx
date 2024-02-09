@@ -18,6 +18,7 @@ import { getUserTokenFromCookies } from '../../utils/session';
 import Navigation from './Navigation';
 import styles from './superadmin-dashboard.module.scss';
 import { SuperAdminDashboardFilterData, User } from './types';
+import { NextRedirect } from '../../utils/QuestionPageGetServerSidePropsTypes';
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -30,28 +31,31 @@ export const getServerSideProps = async (
   };
 
   const fetchPageData = async (userToken: string) => {
-    const filterData = {
-      departments: (query.departments as string) ?? '',
-      roles: (query.roles as string) ?? '',
-      searchTerm: (query.searchTerm as string) ?? '',
-    };
+    try {
+      const filterData = {
+        departments: (query.departments as string) ?? '',
+        roles: (query.roles as string) ?? '',
+        searchTerm: (query.searchTerm as string) ?? '',
+      };
 
-    const data = await getSuperAdminDashboard({
-      pagination,
-      filterData,
-      userToken,
-    });
+      const data = await getSuperAdminDashboard({
+        pagination,
+        filterData,
+        userToken,
+      });
 
-    return {
-      ...data,
-      queryParams: {
-        roles: filterData.roles.split(','),
-        departments: filterData.departments.split(','),
-        searchTerm: filterData.searchTerm,
-      },
-    };
+      return {
+        ...data,
+        queryParams: {
+          roles: filterData.roles.split(','),
+          departments: filterData.departments.split(','),
+          searchTerm: filterData.searchTerm,
+        },
+      };
+    } catch (err: unknown) {
+      return getRedirect(err) as NextRedirect;
+    }
   };
-
   const handleRequest = async (body: SuperAdminDashboardFilterData) => body;
 
   return QuestionPageGetServerSideProps({
@@ -59,7 +63,6 @@ export const getServerSideProps = async (
     fetchPageData,
     handleRequest,
     jwt: getUserTokenFromCookies(req),
-    fetchPageDataErrorHandler: (err: unknown) => getRedirect(err),
     onErrorMessage: 'Failed to filter users, please try again later.',
     onSuccessRedirectHref: (body) => {
       if ('clear-all-filters' in body) return `/super-admin-dashboard`;
