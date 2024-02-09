@@ -22,16 +22,16 @@ export const getServerSideProps = async (
   const { applicationId, sectionId } = context.params as Record<string, string>;
   const sessionCookie = getSessionIdFromCookies(context.req);
 
-  const applicationFormSummary = await getApplicationFormSummary(
-    applicationId,
-    sessionCookie
-  );
-
-  const { sectionTitle } = applicationFormSummary.sections.find(
-    (section) => section.sectionId === sectionId
-  ) as ApplicationFormSection;
-
   async function fetchPageData() {
+    const applicationFormSummary = await getApplicationFormSummary(
+      applicationId,
+      sessionCookie
+    );
+
+    const { sectionTitle } = applicationFormSummary.sections.find(
+      (section) => section.sectionId === sectionId
+    ) as ApplicationFormSection;
+
     return {
       backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type`,
       sectionTitle,
@@ -108,10 +108,7 @@ export default function AddWordCount({
               />
             </div>
             <div className="govuk-grid-row govuk-button-group">
-              <Button
-                text="Save and continue"
-                data-cy="cy_questionOptions-SaveAndContinueButton"
-              />
+              <Button text="Save and continue" />
             </div>
           </div>
         </FlexibleQuestionPageLayout>
