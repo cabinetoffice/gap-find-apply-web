@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
 import { getLoginUrl } from './general';
 import { Redirect } from 'next';
+import { NextRedirect } from './QuestionPageGetServerSidePropsTypes';
 
 async function fetchDataOrGetRedirect<T>(
   fetchData: (...args: unknown[]) => Promise<T>
@@ -12,7 +13,7 @@ async function fetchDataOrGetRedirect<T>(
   }
 }
 
-const getRedirect = (error: unknown) => {
+const getRedirect = (error: unknown): NextRedirect => {
   if (error instanceof AxiosError) {
     const forbidden = error?.response?.status === 403;
     if (forbidden) {
