@@ -3,7 +3,10 @@ import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import ExportStatusEnum from '../../../enums/ExportStatus';
-import { findApplicationFormFromScheme } from '../../../services/SchemeService';
+import {
+  findApplicationFormFromScheme,
+  getGrantScheme,
+} from '../../../services/SchemeService';
 import {
   getApplicationExportStatus,
   requestSubmissionsExport,
@@ -28,6 +31,8 @@ export const getServerSideProps = async ({
     submissionCount: number;
   }[];
   let applicationId: string;
+  let submissionsCount: number;
+  let schemeName: string;
 
   const errorPageRedirect = generateErrorPageRedirect(
     'Something went wrong while trying to export submissions.',
@@ -41,6 +46,10 @@ export const getServerSideProps = async ({
       sessionCookie
     );
     applicationId = applicationFormsStatus[0].applicationId;
+    submissionsCount = applicationFormsStatus[0].submissionCount;
+
+    const scheme = await getGrantScheme(schemeId, sessionCookie);
+    schemeName = scheme.name;
 
     const hasSubmissions = applicationFormsStatus.some(
       (appForm) => appForm.submissionCount > 0
@@ -84,7 +93,10 @@ export const getServerSideProps = async ({
   return {
     props: {
       backButtonHref: `/scheme/${schemeId}`,
+      individualApplicationsHref: `/scheme/${schemeId}/${applicationId}`,
+      schemeName,
       exportStatus,
+      submissionsCount,
       requested: requested || null,
       emailAddress: userDetails.emailAddress,
       formAction: process.env.SUB_PATH + resolvedUrl,
@@ -95,7 +107,10 @@ export const getServerSideProps = async ({
 
 const DownloadSubmissions = ({
   backButtonHref,
+  individualApplicationsHref,
+  schemeName,
   exportStatus,
+  submissionsCount,
   requested,
   emailAddress,
   formAction,
@@ -147,29 +162,37 @@ const DownloadSubmissions = ({
             exportStatus == ExportStatusEnum.COMPLETE) &&
             requested != 'true' && (
               <>
-                <h1 className="govuk-heading-l">View your applications</h1>
+                <h1 className="govuk-heading-l">{schemeName}</h1>
+
+                <h2 className="govuk-heading-m">
+                  Applications available to download
+                </h2>
+
                 <p
                   className="govuk-body"
                   data-cy="cy_Download-submissions-page-text-1"
                 >
-                  To see who has applied for your grant, you need to view and
-                  download your submitted applications.
-                </p>
-                <p
-                  className="govuk-body"
-                  data-cy="cy_Download-submissions-page-text-2"
-                >
-                  Get started by requesting a list of applications.
+                  Your grant has{' '}
+                  <b>
+                    {submissionsCount}{' '}
+                    {submissionsCount === 1 ? 'application' : 'applications'}
+                  </b>{' '}
+                  available to download.
                 </p>
                 <FlexibleQuestionPageLayout
                   fieldErrors={[]}
                   formAction={formAction}
                   csrfToken={csrfToken}
                 >
-                  <Button
-                    text="Download submitted applications"
-                    addNameAttribute
-                  />
+                  <div className="govuk-button-group">
+                    <Button text="Download all applications" addNameAttribute />
+                    <CustomLink
+                      href={individualApplicationsHref}
+                      isSecondaryButton
+                    >
+                      View individual applications
+                    </CustomLink>
+                  </div>
                 </FlexibleQuestionPageLayout>
               </>
             )}

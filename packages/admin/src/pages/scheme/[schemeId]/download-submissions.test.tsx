@@ -33,7 +33,10 @@ const mockedRequestSubmissionsExport = requestSubmissionsExport as jest.Mock;
 
 const customProps = {
   backButtonHref: '/back',
+  individualApplicationsHref: '/applications',
+  schemeName: 'Scheme',
   exportStatus: ExportStatusEnum.NOT_STARTED,
+  submissionsCount: 1,
   emailAddress: '',
   csrfToken: '',
   formAction: '',
