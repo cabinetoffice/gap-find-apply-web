@@ -118,10 +118,19 @@ const getApplicationStatusBySubmissionId = async (
   return await data.text();
 };
 
-const shouldRedirectToClosedGrantPage = async (
-  jwt: string,
-  req: NextRequest
-) => {
+async function getIsSubmissionSubmitted(id: string, jwt: string) {
+  const url = `${BACKEND_HOST}/submissions/${id}/isSubmitted`;
+  const data = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      Accept: 'application/json',
+    },
+  });
+  const result = await data.text();
+  return result === 'true';
+}
+
+async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
   const { pathname } = req.nextUrl;
   const id = pathname.split('/')[2];
 
@@ -134,10 +143,12 @@ const shouldRedirectToClosedGrantPage = async (
     pathname
   );
 
-  if (applicationStatus === 'REMOVED') {
+  const isSubmissionSubmitted = await getIsSubmissionSubmitted(id, jwt);
+
+  if (applicationStatus === 'REMOVED' && !isSubmissionSubmitted) {
     return NextResponse.redirect(process.env.HOST + GRANT_CLOSED_REDIRECT);
   }
-};
+}
 
 const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
   if (patterns.signInDetails.test({ pathname: req.nextUrl.pathname })) {
