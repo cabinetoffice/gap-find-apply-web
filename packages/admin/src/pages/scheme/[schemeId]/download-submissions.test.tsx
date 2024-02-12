@@ -5,7 +5,10 @@ import DownloadSubmissions, {
   getServerSideProps,
 } from './download-submissions.page';
 import { merge } from 'lodash';
-import { findApplicationFormFromScheme } from '../../../services/SchemeService';
+import {
+  findApplicationFormFromScheme,
+  getGrantScheme,
+} from '../../../services/SchemeService';
 import { getLoggedInUsersDetails } from '../../../services/UserService';
 import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
 import ExportStatusEnum from '../../../enums/ExportStatus';
@@ -30,6 +33,8 @@ const mockedGetLoggedInUsersDetails = getLoggedInUsersDetails as jest.Mock;
 const mockedGetApplicationExportStatus =
   getApplicationExportStatus as jest.Mock;
 const mockedRequestSubmissionsExport = requestSubmissionsExport as jest.Mock;
+
+const mockedGetGrantScheme = getGrantScheme as jest.Mock;
 
 const customProps = {
   backButtonHref: '/back',
@@ -87,18 +92,15 @@ describe('Download submissions page', () => {
       });
 
       it('Should display correct page title', () => {
-        screen.getByRole('heading', { name: 'View your applications' });
+        screen.getByRole('heading', { name: 'Scheme' });
       });
 
       it('Should display main text body', () => {
-        screen.getByText(
-          'To see who has applied for your grant, you need to view and download your submitted applications.'
-        );
-        screen.getByText('Get started by requesting a list of applications.');
+        screen.getByText('Applications available to download');
       });
 
       it('Should display the download button', () => {
-        screen.getByRole('button', { name: 'Download submitted applications' });
+        screen.getByRole('button', { name: 'Download all applications' });
       });
     });
 
@@ -145,6 +147,17 @@ describe('Download submissions page', () => {
       mockedGetApplicationExportStatus.mockResolvedValue(
         ExportStatusEnum.PROCESSING
       );
+      mockedGetGrantScheme.mockResolvedValue({
+        name: 'Scheme',
+        schemeId: '1',
+        ggisReference: 'ggis',
+        funderId: 'funder',
+        createdDate: '2022-02-02',
+        description: 'Downloads grants scheme.',
+        contactEmail: 'email@email.com',
+        applicationFormId: 'uuid-uuid-uuid-uuid',
+        version: '1',
+      });
       (parseBody as jest.Mock).mockResolvedValue({ testBody: true });
     });
 
