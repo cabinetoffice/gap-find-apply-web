@@ -68,7 +68,9 @@ describe('Question type page', () => {
   it('Should have a long answer', () => {
     render(component);
     screen.getByRole('radio', { name: 'Long answer' });
-    screen.getByText('Can have a maximum of 5000 words entered.');
+    screen.getByText(
+      'Can have a maximum of 5000 words entered. You can set a custom word limit.'
+    );
   });
 
   it('Should have a radio answer', () => {
