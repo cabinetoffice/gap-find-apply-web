@@ -4,6 +4,7 @@ import { ValidationError } from 'gap-web-ui';
 import {
   getNextNavigation,
   getQuestionById,
+  NextNavigation,
   postDocumentResponse,
   PostQuestionResponse,
   QuestionNavigation,
@@ -110,6 +111,10 @@ const handler = async (req, res) => {
       referer === routes.submissions.section(submissionId, sectionId) ||
       formData.fields?.hasOwnProperty('isRefererCheckYourAnswerScreen');
 
+    const isFromSummaryPage = referer.includes(
+      'fromSubmissionSummaryPage=true'
+    );
+
     const isCancel = formData.fields?.hasOwnProperty('cancel');
     //we want to make sure that there is a response to the question,
     //otherwise user could avoid answering this question
@@ -134,7 +139,7 @@ const handler = async (req, res) => {
     );
 
     if (userComingFromExistingFilePage || isEmptyAndNotMandatory) {
-      const nextNavParams = await getNextNavigation(
+      const { nextNavigation } = await getNextNavigation(
         submissionId,
         sectionId,
         questionId,
@@ -142,9 +147,13 @@ const handler = async (req, res) => {
         jwt
       );
 
-      const redirectUrl = isFromCYAPage
-        ? routes.submissions.section(submissionId, sectionId)
-        : nextNavigation(nextNavParams.nextNavigation, submissionId, sectionId);
+      const redirectUrl = getRedirectUrl({
+        isFromCYAPage,
+        isFromSummaryPage,
+        nextNavParams: nextNavigation,
+        submissionId,
+        sectionId,
+      });
 
       return res.redirect(302, `${process.env.HOST}${redirectUrl}`);
     }
@@ -170,9 +179,14 @@ const handler = async (req, res) => {
         redirectLocation = data.nextNavigation;
       }
 
-      const redirectUrl = isFromCYAPage
-        ? routes.submissions.section(submissionId, sectionId)
-        : nextNavigation(redirectLocation, submissionId, sectionId);
+      const redirectUrl = getRedirectUrl({
+        isFromCYAPage,
+        isFromSummaryPage,
+        nextNavParams: redirectLocation,
+        submissionId,
+        sectionId,
+      });
+
       return res.redirect(302, `${process.env.HOST}${redirectUrl}`);
     } catch (err: any) {
       if (err.response?.data) {
@@ -196,6 +210,26 @@ const handler = async (req, res) => {
     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
   }
 };
+
+type GetRedirectUrlParams = {
+  isFromCYAPage: boolean;
+  isFromSummaryPage: boolean;
+  nextNavParams: QuestionNavigation;
+  submissionId: string;
+  sectionId: string;
+};
+
+export function getRedirectUrl({
+  isFromCYAPage,
+  isFromSummaryPage,
+  nextNavParams,
+  submissionId,
+  sectionId,
+}: GetRedirectUrlParams) {
+  if (isFromCYAPage) return routes.submissions.section(submissionId, sectionId);
+  if (isFromSummaryPage) return routes.submissions.summary(submissionId);
+  return nextNavigation(nextNavParams, submissionId, sectionId);
+}
 
 const sanitizeFileName = (fileName: string) => {
   const regex = /[^a-zA-Z0-9()_,.-]/g;

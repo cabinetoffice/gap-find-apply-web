@@ -13,6 +13,8 @@ const handler = async (req, res) => {
   const isFromCYAPage =
     referer.includes('fromCYAPage=true') || req.query?.fromCYAPage;
 
+  const isFromSummaryPage = referer.includes('fromSubmissionSummaryPage=true');
+
   await deleteAttachmentByQuestionId(
     submissionId,
     sectionId,
@@ -27,8 +29,14 @@ const handler = async (req, res) => {
       submissionId,
       sectionId,
       questionId
-    )}${isFromCYAPage ? '?fromCYAPage=true' : ''}`
+    )}${getQueryString(isFromCYAPage, isFromSummaryPage)}`
   );
 };
+
+function getQueryString(isFromCYAPage: boolean, isFromSummaryPage: boolean) {
+  if (isFromCYAPage) return '?fromCYAPage=true';
+  if (isFromSummaryPage) return '?fromSubmissionSummaryPage=true';
+  return '';
+}
 
 export default handler;

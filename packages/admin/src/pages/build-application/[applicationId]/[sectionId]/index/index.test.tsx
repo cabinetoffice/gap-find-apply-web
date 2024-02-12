@@ -295,7 +295,14 @@ describe('Edit section page', () => {
       ).toBeDisabled();
     });
 
-    it('Should render multiple up and down buttons', () => {
+    it.each([
+      { name: 'Move question some-question-title up', disabled: true },
+      { name: 'Move question some-question-title down', disabled: false },
+      { name: 'Move question some-question-title-1 up', disabled: false },
+      { name: 'Move question some-question-title-1 down', disabled: false },
+      { name: 'Move question some-question-title-2 up', disabled: false },
+      { name: 'Move question some-question-title-2 down', disabled: true },
+    ])('Should render up and down buttons', ({ name, disabled }) => {
       render(
         <EditSectionPage
           {...getPageProps(getDefaultProps, {
@@ -333,37 +340,12 @@ describe('Edit section page', () => {
         />
       );
 
-      expect(
-        screen.getByRole('button', {
-          name: 'Move question some-question-title up',
-        })
-      ).toBeDisabled();
-      expect(
-        screen.getByRole('button', {
-          name: 'Move question some-question-title-1 up',
-        })
-      ).not.toBeDisabled();
-      expect(
-        screen.getByRole('button', {
-          name: 'Move question some-question-title-2 up',
-        })
-      ).not.toBeDisabled();
-
-      expect(
-        screen.getByRole('button', {
-          name: 'Move question some-question-title down',
-        })
-      ).not.toBeDisabled();
-      expect(
-        screen.getByRole('button', {
-          name: 'Move question some-question-title-1 down',
-        })
-      ).not.toBeDisabled();
-      expect(
-        screen.getByRole('button', {
-          name: 'Move question some-question-title-2 down',
-        })
-      ).toBeDisabled();
+      const button = screen.getByRole('button', { name });
+      if (disabled) {
+        expect(button).toBeDisabled();
+      } else {
+        expect(button).not.toBeDisabled();
+      }
     });
   });
 });

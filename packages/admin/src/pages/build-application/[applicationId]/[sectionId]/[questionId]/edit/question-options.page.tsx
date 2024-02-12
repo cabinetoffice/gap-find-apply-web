@@ -21,7 +21,7 @@ import {
 import { QuestionWithOptionsSummary } from '../../../../../../types/QuestionSummary';
 import callServiceMethod from '../../../../../../utils/callServiceMethod';
 import { getSessionIdFromCookies } from '../../../../../../utils/session';
-import OptionsQuestionSummary from './../../components/OptionsQuestionSummary';
+import OptionsQuestionSummary from '../../components/OptionsQuestionSummary';
 import {
   getErrorPageParams,
   questionErrorPageRedirect,

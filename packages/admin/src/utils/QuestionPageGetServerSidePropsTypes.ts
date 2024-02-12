@@ -9,13 +9,13 @@ export type QuestionPageGetServerSidePropsType<
   K extends FetchPageData,
   V
 > = {
+  serviceErrorReturnUrl?: string;
   context: GetServerSidePropsContext;
-  fetchPageData: (jwt: string) => Promise<K>;
+  fetchPageData: (jwt: string) => Promise<K | NextRedirect>;
   handleRequest: (body: T, jwt: string, pageData: K) => Promise<V>;
   jwt: string;
   onSuccessRedirectHref: string | ((result: V) => string);
   onErrorMessage: string;
-  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect;
 };
 
 export type PostPageResultProps<
@@ -30,8 +30,8 @@ export type PostPageResultProps<
   jwt: string;
   onErrorMessage: string;
   resolvedUrl: string;
+  serviceErrorReturnUrl?: string;
   pageData: K;
-  fetchPageDataErrorHandler?: (err: unknown) => NextRedirect;
 };
 
 export type generateValidationPropsType<T> =

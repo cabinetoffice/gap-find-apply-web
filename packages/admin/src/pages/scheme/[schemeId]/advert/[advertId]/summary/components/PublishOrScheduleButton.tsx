@@ -1,4 +1,5 @@
 import { Button, FlexibleQuestionPageLayout } from 'gap-web-ui';
+import { useRef, useState } from 'react';
 import CustomLink from '../../../../../../../components/custom-link/CustomLink';
 
 type PublishOrScheduleButtonProps = {
@@ -18,11 +19,20 @@ const PublishOrScheduleButton = ({
   advertId,
   advertName,
 }: PublishOrScheduleButtonProps) => {
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmit = () => {
+    if (formRef.current) {
+      formRef.current.submit();
+    }
+  };
   return (
     <FlexibleQuestionPageLayout
       formAction={resolvedUrl}
       fieldErrors={[]}
       csrfToken={csrfToken}
+      formRef={formRef}
     >
       {futurePublishingDate ? (
         <div
@@ -54,6 +64,11 @@ const PublishOrScheduleButton = ({
               : `Publish my advert - ${advertName}`
           }
           data-cy="cy-advert-confirm-and-publish"
+          disabled={isButtonDisabled}
+          onClick={() => {
+            setIsButtonDisabled(true);
+            handleSubmit();
+          }}
         />
 
         <CustomLink
