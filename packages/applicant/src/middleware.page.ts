@@ -201,10 +201,13 @@ const httpLoggers = {
     });
   },
   res: (req: NextRequest, res: NextResponse) =>
-    logger.http('Outgoing response', {
-      ...logger.utils.formatResponse(res),
-      correlationId: req.headers.get(HEADERS.CORRELATION_ID),
-    }),
+    logger.http(
+      'Outgoing response - PLEASE NOTE: this represents a snapshot of the response as it exits the middleware, changes made by other server code (eg getServerSideProps) will not be shown',
+      {
+        ...logger.utils.formatResponse(res),
+        correlationId: req.headers.get(HEADERS.CORRELATION_ID),
+      }
+    ),
 };
 
 type LoggerType = keyof typeof httpLoggers;
