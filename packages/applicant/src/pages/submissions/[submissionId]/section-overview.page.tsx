@@ -13,11 +13,30 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
   const submissionId = params.submissionId.toString();
   const jwt = getJwtFromCookies(req);
+  let submission;
 
-  const { sections, grantSubmissionId, applicationName } =
-    await getSubmissionById(submissionId, jwt);
-
-  //ADD ERROR HANDLING FOR INVALID SUBMISSION ID
+  try {
+    submission = await getSubmissionById(submissionId, jwt);
+  } catch (error) {
+    const errorPageParams = {
+      errorInformation:
+        'Something went wrong while trying to view the application overview.',
+      linkAttributes: {
+        href: `/submissions/${submissionId}/section-overview`,
+        linkText: 'Please return',
+        linkInformation: ' and try again.',
+      },
+    };
+    return {
+      redirect: {
+        destination: `/service-error?serviceErrorProps=${JSON.stringify(
+          errorPageParams
+        )}`,
+        statusCode: 302,
+      },
+    };
+  }
+  const { sections, grantSubmissionId, applicationName } = submission;
 
   const hydratedSections = await Promise.all(
     sections.map(async (section) => {
@@ -36,11 +55,6 @@ export const getServerSideProps: GetServerSideProps = async ({
         ),
       };
     })
-  );
-
-  console.log(
-    'hydratedSections',
-    hydratedSections.map((s) => s.questions)
   );
 
   return {
@@ -70,26 +84,12 @@ export default function SectionOverview({
               Overview of application questions
             </h1>
             <ul className="govuk-list" data-cy="cy-section-list">
-              {sections.map(({ sectionId, sectionTitle, questions }) => {
-                return (
-                  <li key={`section-${sectionId}`}>
-                    <h2 className="govuk-heading-m">{sectionTitle}</h2>
-                    <p className="govuk-body" data-cy="cy-will-be-asked">
-                      In this section, you will be asked:
-                    </p>
-                    <ul
-                      className="govuk-list--bullet govuk-!-padding-bottom-3"
-                      data-cy="cy-question-list"
-                    >
-                      {questions.map(({ questionId, fieldTitle }) => {
-                        return (
-                          <li key={`question-${questionId}`}>{fieldTitle}</li>
-                        );
-                      })}
-                    </ul>
-                  </li>
-                );
-              })}
+              {sections.map((section) => (
+                <SingleSection
+                  key={`section-${section.sectionId}`}
+                  {...section}
+                />
+              ))}
             </ul>
             <Link
               href={routes.submissions.sections(grantSubmissionId)}
@@ -104,3 +104,22 @@ export default function SectionOverview({
     </>
   );
 }
+
+export const SingleSection = ({ sectionId, sectionTitle, questions }) => {
+  return (
+    <li key={`section-${sectionId}`}>
+      <h2 className="govuk-heading-m">{sectionTitle}</h2>
+      <p className="govuk-body" data-cy="cy-will-be-asked">
+        In this section, you will be asked:
+      </p>
+      <ul
+        className="govuk-list--bullet govuk-!-padding-bottom-3"
+        data-cy="cy-question-list"
+      >
+        {questions.map(({ questionId, fieldTitle }) => {
+          return <li key={`question-${questionId}`}>{fieldTitle}</li>;
+        })}
+      </ul>
+    </li>
+  );
+};
