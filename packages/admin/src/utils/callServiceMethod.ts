@@ -34,8 +34,7 @@ export default async function callServiceMethod<
   res: GetServerSidePropsContext['res'],
   serviceFunc: (body: B) => Promise<R>,
   redirectTo: string | ((result: R) => string),
-  errorPageParams: ServiceError | string,
-  handleRequestError?: (err: unknown) => NextRedirect
+  errorPageParams: ServiceError | string
 ): Promise<
   | { body: B; fieldErrors: ValidationError[] }
   | { redirect: Redirect }
@@ -62,10 +61,6 @@ export default async function callServiceMethod<
     };
   } catch (err: any) {
     console.log(err);
-
-    if (handleRequestError) {
-      return handleRequestError(err);
-    }
     // If we encounter an error that conforms to the old way of handling form validation errors
     const data = err?.response?.data;
     const fieldErrors = data?.errors || data?.fieldErrors;
