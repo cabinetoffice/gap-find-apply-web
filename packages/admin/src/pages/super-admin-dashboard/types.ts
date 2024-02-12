@@ -5,7 +5,7 @@ export type Department = {
 };
 
 export type ChangeDepartmentDto = {
-  departmentId: string;
+  departmentId: number;
 };
 
 export type Role = {

@@ -3,8 +3,6 @@ import { FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import {
   getChangeDepartmentPage,
-  getUserFromJwt,
-  getUserRoles,
   updateDepartment,
   updateUserRoles,
 } from '../../../../services/SuperAdminService';
@@ -14,7 +12,7 @@ import CustomLink from '../../../../components/custom-link/CustomLink';
 import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
 
 type PageBodyResponse = {
-  department: string;
+  department: number;
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -25,7 +23,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const newUserRoles = newUserRolesParam?.split?.(',');
 
     if (newUserRoles && newRolesAreAdminRoles(newUserRoles)) {
-      await updateUserRoles(userId, newUserRoles, jwt);
+      await updateUserRoles(userId, newUserRoles, jwt, body.department);
     }
     return await updateDepartment(userId, body.department, jwt);
   }

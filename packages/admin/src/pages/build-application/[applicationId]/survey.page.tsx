@@ -109,8 +109,6 @@ const Survey = ({
           <h2 className="govuk-heading-m" tabIndex={-1}>
             Satisfaction survey
           </h2>
-          <ErrorBanner fieldErrors={fieldErrors} />
-
           <FlexibleQuestionPageLayout
             formAction={formAction}
             fieldErrors={fieldErrors}
@@ -122,7 +120,6 @@ const Survey = ({
               fieldName="satisfaction"
               questionTitle="Overall, how did you feel about the service you received today?"
               titleSize="s"
-              defaultChecked="Neither satisfied nor dissatisfied"
               radioOptions={[
                 {
                   label: 'Very satisfied',
