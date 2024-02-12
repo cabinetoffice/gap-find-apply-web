@@ -212,7 +212,7 @@ const httpLoggers = {
 
 type LoggerType = keyof typeof httpLoggers;
 
-const urlsToSkip = ['/_next/', '/assets/'];
+const urlsToSkip = ['/_next/', '/assets/', '/javascript/'];
 
 const getConditionalLogger = (req, type: LoggerType) => {
   const userAgentHeader = req.headers.get('user-agent') || '';

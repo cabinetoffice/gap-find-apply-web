@@ -1,12 +1,12 @@
 import { ValidationError } from 'gap-web-ui';
-import { IncomingMessage } from 'http';
-import { GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext, NextApiRequest } from 'next';
 import {
   PostQuestionResponse,
   QuestionPostBody,
 } from '../services/SubmissionService';
 import { routes } from './routes';
 import { parseBody } from './parseBody';
+import { logger } from './logger';
 
 export function removeAllCarriageReturns<T>(obj: T) {
   // This needs some explaining... New lines are encoded as CR + LF characters
@@ -21,7 +21,7 @@ export function removeAllCarriageReturns<T>(obj: T) {
       acc[key] = typeof value === 'string' ? value.replaceAll('\r', '') : value;
       return acc;
     },
-    {} as any
+    {}
   ) as T;
 }
 
@@ -121,8 +121,11 @@ export default async function postQuestion<B, _R>(
         },
       };
     }
-  } catch (err: any) {
-    console.log('postQuestion', submissionId, err);
+  } catch (err) {
+    logger.error(
+      'Error in postQuestion',
+      logger.utils.addErrorInfo(err, req as NextApiRequest)
+    );
     if (err.response?.data?.errors) {
       const errorsArray: ValidationError[] = [];
       const { errors } = err.response.data;

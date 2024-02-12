@@ -91,9 +91,9 @@ const asObject = (
   entries: IterableIterator<[string, string]>,
   keysToExclude: string[] = []
 ) =>
-  Array.from(entries)
-    .filter(([key]) => !keysToExclude.includes(key))
-    .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {} as object);
+  Object.fromEntries(
+    Array.from(entries).filter(([key]) => !keysToExclude.includes(key))
+  );
 
 const formatRequest = (req: NextRequest) => ({
   url: req.url,
