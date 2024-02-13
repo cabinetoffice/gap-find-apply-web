@@ -42,6 +42,8 @@ const customProps = {
   schemeName: 'Scheme',
   exportStatus: ExportStatusEnum.NOT_STARTED,
   submissionsCount: 1,
+  applicationsUnavailableForDownload: [1, 2, 3],
+  pageNumber: '1',
   emailAddress: '',
   csrfToken: '',
   formAction: '',

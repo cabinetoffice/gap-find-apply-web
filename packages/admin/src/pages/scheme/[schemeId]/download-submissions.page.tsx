@@ -16,6 +16,7 @@ import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../utils/session';
 import { parseBody } from '../../../utils/parseBody';
 import InferProps from '../../../types/InferProps';
+import { DownloadMessage } from '../../../components/notification-banner/DownloadMessage';
 
 export const getServerSideProps = async ({
   req,
@@ -24,7 +25,9 @@ export const getServerSideProps = async ({
   resolvedUrl,
 }: GetServerSidePropsContext) => {
   const sessionCookie = getSessionIdFromCookies(req);
-  const { schemeId, requested } = query as Record<string, string>;
+  const { schemeId, requested, pageNumber } = query as Record<string, string>;
+
+  //const pageNumber = 1;
 
   let applicationFormsStatus: {
     applicationId: string;
@@ -33,6 +36,7 @@ export const getServerSideProps = async ({
   let applicationId: string;
   let submissionsCount: number;
   let schemeName: string;
+  const applicationsUnavailableForDownload: number[] = [1, 2, 3];
 
   const errorPageRedirect = generateErrorPageRedirect(
     'Something went wrong while trying to export submissions.',
@@ -97,6 +101,8 @@ export const getServerSideProps = async ({
       schemeName,
       exportStatus,
       submissionsCount,
+      applicationsUnavailableForDownload,
+      pageNumber: pageNumber || null,
       requested: requested || null,
       emailAddress: userDetails.emailAddress,
       formAction: process.env.SUB_PATH + resolvedUrl,
@@ -111,6 +117,8 @@ const DownloadSubmissions = ({
   schemeName,
   exportStatus,
   submissionsCount,
+  applicationsUnavailableForDownload,
+  pageNumber,
   requested,
   emailAddress,
   formAction,
@@ -129,6 +137,10 @@ const DownloadSubmissions = ({
       />
 
       <CustomLink href={backButtonHref} isBackButton />
+
+      {applicationsUnavailableForDownload.length > 0 && (
+        <DownloadMessage count={applicationsUnavailableForDownload.length} />
+      )}
 
       <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-bottom-6">
         <div className="govuk-grid-column-full">
@@ -188,7 +200,7 @@ const DownloadSubmissions = ({
               </>
             )}
 
-          {exportStatus == ExportStatusEnum.COMPLETE && requested != 'true' && (
+          {exportStatus == ExportStatusEnum.COMPLETE && (
             <>
               <h1 className="govuk-heading-l">{schemeName}</h1>
 
@@ -222,6 +234,26 @@ const DownloadSubmissions = ({
                   </CustomLink>
                 </div>
               </FlexibleQuestionPageLayout>
+
+              {applicationsUnavailableForDownload.length > 0 && (
+                // Paginated view goes here
+                // Page number will be a param
+                <>
+                  {/* <p>You are on page {pageNumber} right now</p>
+                  <CustomLink
+                    href={`/scheme/1/download-submissions?pageNumber=2`}
+                    isSecondaryButton
+                  >
+                    Page 2
+                  </CustomLink>
+                  <CustomLink
+                    href={`/scheme/1/download-submissions?pageNumber=3`}
+                    isSecondaryButton
+                  >
+                    Page 3
+                  </CustomLink> */}
+                </>
+              )}
             </>
           )}
         </div>
