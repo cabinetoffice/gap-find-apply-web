@@ -71,6 +71,9 @@ export default function SectionOverview({
   applicationName,
   grantSubmissionId,
 }) {
+  console.log(
+    sections.map((s) => console.log(`Section: ${s.sectionTitle}: `, s))
+  );
   return (
     <>
       <Meta title="My application - Question overview" />
@@ -106,6 +109,18 @@ export default function SectionOverview({
 }
 
 export const SingleSection = ({ sectionId, sectionTitle, questions }) => {
+  console.log(
+    'questions: ',
+    questions.map((q) => q.questionSuffix + q.adminSummary)
+  );
+  const isEligibility = sectionId === 'ELIGIBILITY';
+  const isAdminSummary = (questionId: string) => {
+    return [
+      'APPLICANT_ORG_CHARITY_NUMBER',
+      'APPLICANT_ORG_COMPANIES_HOUSE',
+    ].includes(questionId);
+  };
+
   return (
     <li key={`section-${sectionId}`}>
       <h2 className="govuk-heading-m">{sectionTitle}</h2>
@@ -116,9 +131,19 @@ export const SingleSection = ({ sectionId, sectionTitle, questions }) => {
         className="govuk-list--bullet govuk-!-padding-bottom-3"
         data-cy="cy-question-list"
       >
-        {questions.map(({ questionId, fieldTitle }) => {
-          return <li key={`question-${questionId}`}>{fieldTitle}</li>;
-        })}
+        {questions.map(
+          ({ questionId, fieldTitle, questionSuffix, adminSummary }) => {
+            return (
+              <li key={`question-${questionId}`}>
+                {isEligibility
+                  ? questionSuffix
+                  : isAdminSummary(questionId)
+                  ? adminSummary
+                  : fieldTitle}
+              </li>
+            );
+          }
+        )}
       </ul>
     </li>
   );

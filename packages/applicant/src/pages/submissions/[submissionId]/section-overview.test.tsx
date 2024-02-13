@@ -1,4 +1,4 @@
-import next, { GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import {
   getSubmissionById,
   getQuestionById,
@@ -10,7 +10,6 @@ import SectionOverview, {
   SingleSection,
   getServerSideProps,
 } from './section-overview.page';
-import { routes } from '../../../utils/routes';
 
 jest.mock('../../../utils/jwt');
 const mockGetJwtFromCookies = jest.mocked(getJwtFromCookies);
@@ -24,117 +23,6 @@ const context = {
   },
   req: {},
   res: { getHeader: () => 'testCSRFToken' },
-} as unknown as GetServerSidePropsContext;
-//   [
-//     [
-//       {
-//         questionId: 'ELIGIBILITY',
-//         fieldTitle: 'Eligibility Statement',
-//         responseType: 'YesNo',
-//         validation: null,
-//       },
-//     ],
-//     [
-//       {
-//         questionId: 'APPLICANT_TYPE',
-//         fieldTitle: 'Type of organisation',
-//         responseType: 'Dropdown',
-//         validation: null,
-//       },
-//       {
-//         questionId: 'APPLICANT_ORG_NAME',
-//         fieldTitle: 'Name',
-//         responseType: 'ShortAnswer',
-//         validation: null,
-//       },
-//       {
-//         questionId: 'APPLICANT_ORG_ADDRESS',
-//         fieldTitle: 'Address',
-//         responseType: 'AddressInput',
-//         validation: null,
-//       },
-//       {
-//         questionId: 'APPLICANT_ORG_CHARITY_NUMBER',
-//         fieldTitle: 'Enter your Charity Commission number',
-//         responseType: 'ShortAnswer',
-//         validation: null,
-//       },
-//       {
-//         questionId: 'APPLICANT_ORG_COMPANIES_HOUSE',
-//         fieldTitle: 'Enter your Companies House number',
-//         responseType: 'ShortAnswer',
-//         validation: null,
-//       },
-//     ],
-//     [
-//       {
-//         questionId: 'APPLICANT_AMOUNT',
-//         fieldTitle: 'How much does your organisation require as a grant?',
-//         responseType: 'Numeric',
-//         validation: null,
-//       },
-//       {
-//         questionId: 'BENEFITIARY_LOCATION',
-//         fieldTitle: 'Where will this funding be spent?',
-//         responseType: 'MultipleSelection',
-//         validation: null,
-//       },
-//     ],
-//     [
-//       {
-//         questionId: '81c761d7-4174-4594-b747-df606d2a582c',
-//         fieldTitle: 'Test q',
-//         responseType: 'ShortAnswer',
-//         validation: null,
-//       },
-//     ],
-//   ];
-// };
-// const mockSectionData = [
-//   {
-//     sectionId: 'ELIGIBILITY',
-//     sectionTitle: 'Eligibility',
-//     sectionStatus: 'COMPLETED',
-//     questionIds: ['ELIGIBILITY'],
-//     questions: getMockQuestionData()[0],
-//   },
-//   {
-//     sectionId: 'ORGANISATION_DETAILS',
-//     sectionTitle: 'Your organisation',
-//     sectionStatus: 'COMPLETED',
-//     questionIds: [
-//       'APPLICANT_TYPE',
-//       'APPLICANT_ORG_NAME',
-//       'APPLICANT_ORG_ADDRESS',
-//       'APPLICANT_ORG_CHARITY_NUMBER',
-//       'APPLICANT_ORG_COMPANIES_HOUSE',
-//     ],
-//     questions: getMockQuestionData()[1],
-//   },
-//   {
-//     sectionId: 'FUNDING_DETAILS',
-//     sectionTitle: 'Funding',
-//     sectionStatus: 'IN_PROGRESS',
-//     questionIds: ['APPLICANT_AMOUNT', 'BENEFITIARY_LOCATION'],
-//     questions: getMockQuestionData()[2],
-//   },
-//   {
-//     sectionId: 'TEST_SECTION',
-//     sectionTitle: 'Test Q',
-//     sectionStatus: 'IN_PROGRESS',
-//     questionIds: ['81c761d7-4174-4594-b747-df606d2a582c'],
-//     questions: getMockQuestionData()[3],
-//   },
-// ];
-
-const contextNoToken = {
-  params: {
-    submissionId: '12345678',
-  },
-  req: {},
-  res: {
-    getHeader: () => '',
-  },
 } as unknown as GetServerSidePropsContext;
 
 const shortAnswer: QuestionType = {
@@ -150,6 +38,7 @@ const numeric: QuestionType = {
 const eligibility: QuestionType = {
   questionId: 'ELIGIBILITY',
   fieldTitle: 'Enter the amount',
+  questionSuffix: 'Test question suffix for eligibility',
 };
 
 const propsWithAllValues: ApplicationDetailsInterface = {
@@ -209,7 +98,6 @@ describe('getServerSideProps', () => {
   });
 
   it('Should return error (or something suitable) if submissionId is INVALID', async () => {
-    //mock getSubmissionById (WITH INVALID MOCK SUBMISSION ID)
     mockGetSubmissionById.mockRejectedValue({});
     mockGetJwtFromCookies.mockReturnValue('testJwt');
 
@@ -245,7 +133,10 @@ describe('Renders the section summary correctly', () => {
     ).toHaveLength(2);
 
     //check questions rendering
-    expect(screen.getAllByText('Enter the amount')).toHaveLength(2);
+    expect(
+      screen.getAllByText('Test question suffix for eligibility')
+    ).toHaveLength(1);
+    expect(screen.getAllByText('Enter the amount')).toHaveLength(1);
 
     expect(
       screen.getByText('Enter the name of your organisation')
@@ -270,11 +161,12 @@ describe('Renders a single section', () => {
     render(<SingleSection {...propsWithAllValues.sections[0]} />);
 
     expect(screen.getByText('Eligibility')).toBeInTheDocument();
-    expect(screen.getByText('Enter the amount')).toBeInTheDocument();
+    expect(
+      screen.getByText('Test question suffix for eligibility')
+    ).toBeInTheDocument();
 
-    //assert that data from NON-ESSENTIAL section does not render
     expect(screen.queryByText('Non Essential Information')).toBeNull();
-    expect(screen.getAllByText('Enter the amount')).not.toHaveLength(2);
+    expect(screen.queryByText('Enter the amount')).toBeNull();
     expect(
       screen.queryByText('Enter the name of your organisation')
     ).toBeNull();
@@ -288,8 +180,9 @@ describe('Renders a single section', () => {
       screen.getByText('Enter the name of your organisation')
     ).toBeInTheDocument();
 
-    //assert that data from NON-ESSENTIAL section does not render
     expect(screen.queryByText('Eligibility')).toBeNull();
-    expect(screen.getAllByText('Enter the amount')).not.toHaveLength(2);
+    expect(
+      screen.queryByText('Test question suffix for eligibility')
+    ).toBeNull();
   });
 });
