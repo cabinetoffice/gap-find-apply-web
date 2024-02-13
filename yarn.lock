@@ -6541,7 +6541,7 @@ __metadata:
     moment-timezone: ^0.5.37
     next: 13.5.6
     next-logger: ^3.0.1
-    nodemailer: ^6.7.3
+    nodemailer: ^6.9.9
     nookies: ^2.5.2
     react: 18.2.0
     react-device-detect: ^2.1.2
@@ -14255,10 +14255,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^6.7.3":
-  version: 6.9.3
-  resolution: "nodemailer@npm:6.9.3"
-  checksum: 3bea8316652c0578515d9146d2f24660e4855807520153f061d39af76b440a4f61b4e70f10fed35f8f12f115f6aea1aeb483ea7ba0337c0e3e675f117c41c611
+"nodemailer@npm:^6.9.9":
+  version: 6.9.9
+  resolution: "nodemailer@npm:6.9.9"
+  checksum: 9af862b497273796ad6ba7ca9eac23a7d69737554f6dd51cfd3557f60902c56344158192672f1208daf00340a47a9e1805bd809965edc191011b35dd98a74be1
   languageName: node
   linkType: hard
 
