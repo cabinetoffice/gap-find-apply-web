@@ -87,6 +87,7 @@ describe('Sex page', () => {
           } as Record<string, string>,
           req: {
             method: 'GET',
+            headers: {},
           },
           res: {
             getHeader: () => 'testCSRFToken',
@@ -224,7 +225,7 @@ describe('Sex page', () => {
       });
 
       const getPostContext = (overrides: any = {}) =>
-        getContext(merge({ req: { method: 'POST' } }, overrides));
+        getContext(merge({ req: { method: 'POST', headers: {} } }, overrides));
 
       it('Should call postGrantBeneficiaryResponse when the response contains "sex", CASE: 1', async () => {
         mockParseBody.mockResolvedValue({

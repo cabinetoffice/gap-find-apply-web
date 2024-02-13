@@ -60,7 +60,7 @@ describe('getServerSideProps', () => {
 
   describe('when handling a GET request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
-      req: {},
+      req: { headers: {} },
       res: { getHeader: () => 'testCSRFToken' },
       params: { mandatoryQuestionId: 'mandatoryQuestionId' },
       query: {},
@@ -188,7 +188,7 @@ describe('getServerSideProps', () => {
 
     it('Should redirect to the submission page after successfully updating if query parameter fromSubmissionPage is true', async () => {
       const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
-        req: { method: 'POST' },
+        req: { method: 'POST', headers: {} },
         params: {
           mandatoryQuestionId: 'mandatoryQuestionId',
         },
@@ -210,7 +210,7 @@ describe('getServerSideProps', () => {
 
     it('Should redirect to the next page after successfully updating if query parameter fromSummaryPage and fromSubmissionPage are false', async () => {
       const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
-        req: { method: 'POST' },
+        req: { method: 'POST', headers: {} },
         params: { mandatoryQuestionId: 'mandatoryQuestionId' },
         query: { fromSummaryPage: 'false', fromSubmissionPage: 'false' },
         resolvedUrl: routes.mandatoryQuestions.namePage('mandatoryQuestionId'),
@@ -228,9 +228,9 @@ describe('getServerSideProps', () => {
       );
     });
 
-    it('Should redirect to the error service page if there is an error when updating', async () => {
+    it('Should redirect to the service error page if there is an error when updating', async () => {
       spiedGrantMandatoryQuestionServiceUpdateMandatoryQuestion.mockRejectedValueOnce(
-        'Error'
+        new Error()
       );
 
       const response = await getServerSideProps(getContext(getDefaultContext));
@@ -411,7 +411,7 @@ describe('getServerSideProps', () => {
         getDefaultGrantMandatoryQuestion
       );
       const getSubmissionContext = (): Optional<GetServerSidePropsContext> => ({
-        req: {},
+        req: { headers: {} },
         params: { mandatoryQuestionId: 'mandatoryQuestionId' },
         query: {
           fromSubmissionPage: 'true',
@@ -441,7 +441,7 @@ describe('getServerSideProps', () => {
         getDefaultGrantMandatoryQuestion
       );
       const getSubmissionContext = (): Optional<GetServerSidePropsContext> => ({
-        req: {},
+        req: { headers: {} },
         params: { mandatoryQuestionId: 'mandatoryQuestionId' },
         query: {
           fromSubmissionSummaryPage: 'true',
