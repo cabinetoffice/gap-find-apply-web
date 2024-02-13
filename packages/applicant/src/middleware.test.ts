@@ -10,10 +10,14 @@ jest.mock('./services/JwtService');
 jest.mock('next/server', () => ({
   ...jest.requireActual('next/server'),
   NextResponse: {
-    next: jest.fn(() => ({ cookies: { set: jest.fn() } })),
+    next: jest.fn(() => ({
+      cookies: { set: jest.fn() },
+      headers: { get: () => '', entries: () => [] },
+      status: 200,
+    })),
     redirect: jest.fn((url) => ({
       cookies: { set: jest.fn() },
-      headers: { get: () => url },
+      headers: { get: () => url, entries: () => [] },
       status: 307,
     })),
   },
@@ -34,6 +38,7 @@ const getMockRequest = (url: string) =>
     },
     headers: {
       get: (key) => headerStore[key],
+      entries: () => [],
       set: (key, value) => (headerStore[key] = value),
     },
     url,
@@ -49,7 +54,7 @@ describe('Middleware', () => {
   });
 
   it('redirects to host if no JWT in cookies ', async () => {
-    const req = getMockRequest('https://www.website.com/page');
+    const req = getMockRequest('https://www.website.com/applications');
     const res = await middleware(req);
 
     expect(res.status).toBe(307);
@@ -59,7 +64,7 @@ describe('Middleware', () => {
   it('redirects to host if JWT is not valid', async () => {
     mockedVerifyToken.mockResolvedValueOnce({ valid: false });
 
-    const req = getMockRequest('https://some.website.com/page');
+    const req = getMockRequest('https://some.website.com/applications');
     req.cookies.set(process.env.USER_TOKEN_NAME, 'invalid');
 
     const res = await middleware(req);
@@ -78,14 +83,16 @@ describe('Middleware', () => {
       expiresAt: expiresAt.toISOString(),
     });
 
-    const req = getMockRequest('https://some.website.com/test?scheme=1');
+    const req = getMockRequest(
+      'https://some.website.com/applications?scheme=1'
+    );
 
     req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
     const res = await middleware(req);
 
     expect(res.status).toBe(307);
     expect(res.headers.get('Location')).toBe(
-      `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}/test?scheme=1`
+      `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}/applications?scheme=1`
     );
   });
 

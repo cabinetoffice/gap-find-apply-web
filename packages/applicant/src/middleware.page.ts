@@ -163,6 +163,8 @@ const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
 
   const jwt = await getJwtFromMiddlewareCookies(req);
 
+  console.log({ jwt });
+
   if (
     patterns.submissionJourney.test({ pathname: req.nextUrl.pathname }) ||
     patterns.mandatoryQuestionsJourney.test({ pathname: req.nextUrl.pathname })
@@ -175,8 +177,9 @@ const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
 
   const validJwtResponse = await verifyToken(jwt);
   const expiresAt = new Date(validJwtResponse.expiresAt);
-
+  console.log(validJwtResponse);
   if (!validJwtResponse.valid) {
+    console.log('jwt invalid');
     return buildMiddlewareResponse(req, HOST);
   }
 
