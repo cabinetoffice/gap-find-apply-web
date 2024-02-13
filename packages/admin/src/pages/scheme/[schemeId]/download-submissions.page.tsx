@@ -158,44 +158,72 @@ const DownloadSubmissions = ({
             </>
           )}
 
-          {(exportStatus == ExportStatusEnum.NOT_STARTED ||
-            exportStatus == ExportStatusEnum.COMPLETE) &&
+          {exportStatus == ExportStatusEnum.NOT_STARTED &&
             requested != 'true' && (
               <>
-                <h1 className="govuk-heading-l">{schemeName}</h1>
-
-                <h2 className="govuk-heading-m">
-                  Applications available to download
-                </h2>
-
+                <h1 className="govuk-heading-l">View your applications</h1>
                 <p
                   className="govuk-body"
                   data-cy="cy_Download-submissions-page-text-1"
                 >
-                  Your grant has{' '}
-                  <b>
-                    {submissionsCount}{' '}
-                    {submissionsCount === 1 ? 'application' : 'applications'}
-                  </b>{' '}
-                  available to download.
+                  To see who has applied for your grant, you need to view and
+                  download your submitted applications.
+                </p>
+                <p
+                  className="govuk-body"
+                  data-cy="cy_Download-submissions-page-text-2"
+                >
+                  Get started by requesting a list of applications.
                 </p>
                 <FlexibleQuestionPageLayout
                   fieldErrors={[]}
                   formAction={formAction}
                   csrfToken={csrfToken}
                 >
-                  <div className="govuk-button-group">
-                    <Button text="Download all applications" addNameAttribute />
-                    <CustomLink
-                      href={individualApplicationsHref}
-                      isSecondaryButton
-                    >
-                      View individual applications
-                    </CustomLink>
-                  </div>
+                  <Button
+                    text="Download submitted applications"
+                    addNameAttribute
+                  />
                 </FlexibleQuestionPageLayout>
               </>
             )}
+
+          {exportStatus == ExportStatusEnum.COMPLETE && requested != 'true' && (
+            <>
+              <h1 className="govuk-heading-l">{schemeName}</h1>
+
+              <h2 className="govuk-heading-m">
+                Applications available to download
+              </h2>
+
+              <p
+                className="govuk-body"
+                data-cy="cy_Download-submissions-page-text-1"
+              >
+                Your grant has{' '}
+                <b>
+                  {submissionsCount}{' '}
+                  {submissionsCount === 1 ? 'application' : 'applications'}
+                </b>{' '}
+                available to download.
+              </p>
+              <FlexibleQuestionPageLayout
+                fieldErrors={[]}
+                formAction={formAction}
+                csrfToken={csrfToken}
+              >
+                <div className="govuk-button-group">
+                  <Button text="Download all applications" addNameAttribute />
+                  <CustomLink
+                    href={individualApplicationsHref}
+                    isSecondaryButton
+                  >
+                    View individual applications
+                  </CustomLink>
+                </div>
+              </FlexibleQuestionPageLayout>
+            </>
+          )}
         </div>
       </div>
     </>

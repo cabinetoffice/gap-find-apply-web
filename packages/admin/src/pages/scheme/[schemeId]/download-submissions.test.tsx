@@ -86,21 +86,23 @@ describe('Download submissions page', () => {
       );
     });
 
-    describe('Export is NOT in progress', () => {
+    describe('Export has NOT been requested', () => {
       beforeEach(() => {
         render(component);
       });
 
       it('Should display correct page title', () => {
-        screen.getByRole('heading', { name: 'Scheme' });
+        screen.getByRole('heading', { name: 'View your applications' });
       });
 
       it('Should display main text body', () => {
-        screen.getByText('Applications available to download');
+        screen.getByText(
+          'To see who has applied for your grant, you need to view and download your submitted applications.'
+        );
       });
 
       it('Should display the download button', () => {
-        screen.getByRole('button', { name: 'Download all applications' });
+        screen.getByRole('button', { name: 'Download submitted applications' });
       });
     });
 
@@ -132,6 +134,31 @@ describe('Download submissions page', () => {
           'You do not need to wait here. We will email when the information is ready.'
         );
         screen.getByText('test@email.com');
+      });
+    });
+
+    describe('Export is completed', () => {
+      beforeEach(() => {
+        render(
+          <DownloadSubmissions
+            {...customProps}
+            exportStatus={ExportStatusEnum.COMPLETE}
+          />
+        );
+      });
+      it('Should render the scheme name as a title', async () => {
+        screen.getByRole('heading', {
+          name: 'Scheme',
+        });
+      });
+
+      it('Should display main text body', () => {
+        screen.getByText('Applications available to download');
+      });
+
+      it('Should render the two buttons', async () => {
+        screen.getByRole('button', { name: 'Download all applications' });
+        screen.getByText('View individual applications');
       });
     });
   });
