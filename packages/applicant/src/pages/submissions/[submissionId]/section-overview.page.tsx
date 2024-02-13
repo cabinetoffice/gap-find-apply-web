@@ -71,9 +71,6 @@ export default function SectionOverview({
   applicationName,
   grantSubmissionId,
 }) {
-  console.log(
-    sections.map((s) => console.log(`Section: ${s.sectionTitle}: `, s))
-  );
   return (
     <>
       <Meta title="My application - Question overview" />
@@ -109,18 +106,7 @@ export default function SectionOverview({
 }
 
 export const SingleSection = ({ sectionId, sectionTitle, questions }) => {
-  console.log(
-    'questions: ',
-    questions.map((q) => q.questionSuffix + q.adminSummary)
-  );
   const isEligibility = sectionId === 'ELIGIBILITY';
-  const isAdminSummary = (questionId: string) => {
-    return [
-      'APPLICANT_ORG_CHARITY_NUMBER',
-      'APPLICANT_ORG_COMPANIES_HOUSE',
-    ].includes(questionId);
-  };
-
   return (
     <li key={`section-${sectionId}`}>
       <h2 className="govuk-heading-m">{sectionTitle}</h2>
@@ -133,18 +119,38 @@ export const SingleSection = ({ sectionId, sectionTitle, questions }) => {
       >
         {questions.map(
           ({ questionId, fieldTitle, questionSuffix, adminSummary }) => {
-            return (
-              <li key={`question-${questionId}`}>
-                {isEligibility
-                  ? questionSuffix
-                  : isAdminSummary(questionId)
-                  ? adminSummary
-                  : fieldTitle}
-              </li>
+            returnSummaryText(
+              questionId,
+              isEligibility,
+              fieldTitle,
+              questionSuffix,
+              adminSummary
             );
           }
         )}
       </ul>
+    </li>
+  );
+};
+
+const returnSummaryText = (
+  questionId: string,
+  eligibility,
+  fieldTitle,
+  questionSuffix,
+  adminSummary
+) => {
+  const isAdminSummary = (questionId: string) =>
+    ['APPLICANT_ORG_CHARITY_NUMBER', 'APPLICANT_ORG_COMPANIES_HOUSE'].includes(
+      questionId
+    );
+  return (
+    <li key={`question-${questionId}`}>
+      {eligibility
+        ? questionSuffix
+        : isAdminSummary(questionId)
+        ? adminSummary
+        : fieldTitle}
     </li>
   );
 };
