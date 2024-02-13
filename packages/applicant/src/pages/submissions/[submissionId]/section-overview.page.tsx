@@ -119,7 +119,7 @@ export const SingleSection = ({ sectionId, sectionTitle, questions }) => {
       >
         {questions.map(
           ({ questionId, fieldTitle, questionSuffix, adminSummary }) => {
-            returnSummaryText(
+            return summaryTextListItem(
               questionId,
               isEligibility,
               fieldTitle,
@@ -133,7 +133,7 @@ export const SingleSection = ({ sectionId, sectionTitle, questions }) => {
   );
 };
 
-const returnSummaryText = (
+const summaryTextListItem = (
   questionId: string,
   eligibility,
   fieldTitle,
