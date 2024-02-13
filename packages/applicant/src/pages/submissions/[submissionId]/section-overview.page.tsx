@@ -121,10 +121,10 @@ export const SingleSection = ({ sectionId, sectionTitle, questions }) => {
           ({ questionId, fieldTitle, questionSuffix, adminSummary }) => {
             return summaryTextListItem(
               questionId,
-              isEligibility,
               fieldTitle,
               questionSuffix,
-              adminSummary
+              adminSummary,
+              isEligibility
             );
           }
         )}
@@ -133,24 +133,26 @@ export const SingleSection = ({ sectionId, sectionTitle, questions }) => {
   );
 };
 
+// Returns list item with correct text (based on the questionId)
 const summaryTextListItem = (
   questionId: string,
-  eligibility,
   fieldTitle,
   questionSuffix,
-  adminSummary
+  adminSummary,
+  eligibility: boolean
 ) => {
-  const isAdminSummary = (questionId: string) =>
-    ['APPLICANT_ORG_CHARITY_NUMBER', 'APPLICANT_ORG_COMPANIES_HOUSE'].includes(
-      questionId
-    );
+  const isAdminSummary = (questionId: string) => {
+    const hasAdminSummary = [
+      'APPLICANT_ORG_CHARITY_NUMBER',
+      'APPLICANT_ORG_COMPANIES_HOUSE',
+    ].includes(questionId);
+
+    return hasAdminSummary ? adminSummary : fieldTitle;
+  };
+  // ternary decides whether to display the questionSuffix, adminSummary or the fieldTitle
   return (
     <li key={`question-${questionId}`}>
-      {eligibility
-        ? questionSuffix
-        : isAdminSummary(questionId)
-        ? adminSummary
-        : fieldTitle}
+      {eligibility ? questionSuffix : isAdminSummary(questionId)}
     </li>
   );
 };
