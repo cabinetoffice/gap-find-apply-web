@@ -27,8 +27,6 @@ export const getServerSideProps = async ({
   const sessionCookie = getSessionIdFromCookies(req);
   const { schemeId, requested, pageNumber } = query as Record<string, string>;
 
-  //const pageNumber = 1;
-
   let applicationFormsStatus: {
     applicationId: string;
     submissionCount: number;
@@ -36,7 +34,7 @@ export const getServerSideProps = async ({
   let applicationId: string;
   let submissionsCount: number;
   let schemeName: string;
-  const applicationsUnavailableForDownload: number[] = [1, 2, 3];
+  const applicationsUnavailableForDownload: number[] = []; // TODO Placeholder storage for info about downloads
 
   const errorPageRedirect = generateErrorPageRedirect(
     'Something went wrong while trying to export submissions.',
