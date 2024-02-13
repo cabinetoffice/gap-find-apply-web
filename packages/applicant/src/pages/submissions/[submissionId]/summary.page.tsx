@@ -155,10 +155,9 @@ export default function SubmissionSummary({
                   href={routes.api.submissions.downloadSummary(
                     grantSubmissionId
                   )}
+                  className="govuk-link govuk-link--no-visited-state"
                 >
-                  <a className="govuk-link govuk-link--no-visited-state">
-                    download a copy of your answers (ZIP)
-                  </a>
+                  download a copy of your answers (ZIP)
                 </Link>{' '}
                 for future reference.
               </p>

@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext, Redirect } from 'next';
 import { ValidationError } from 'gap-web-ui';
 
-export type PageBodyResponse = Record<string, string | string[]>;
+export type PageBodyResponse = Record<string, string | string[] | number>;
 export type FetchPageData = Record<string, any>;
 
 export type QuestionPageGetServerSidePropsType<

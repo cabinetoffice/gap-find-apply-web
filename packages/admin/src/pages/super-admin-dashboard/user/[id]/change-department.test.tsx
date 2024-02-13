@@ -103,7 +103,7 @@ describe('Change department page', () => {
           fieldErrors={[
             { fieldName: 'department', errorMessage: 'Select a department' },
           ]}
-          previousValues={{ department: '1' }}
+          previousValues={{ department: 1 }}
         />
       );
       render(component);
@@ -122,7 +122,7 @@ describe('Change department page', () => {
         user: getMockUser(),
         departments: [{ id: '4', name: 'hello world' }],
       });
-      mockParseBody.mockResolvedValueOnce({ department: 'fake department' });
+      mockParseBody.mockResolvedValueOnce({ department: 1 });
       const getDepartmentSelectedContext = () => ({
         params: { id: 'someId' },
         req: { method: 'POST' },
@@ -143,7 +143,7 @@ describe('Change department page', () => {
         user: getMockUser([getMockRoles()[0], getMockRoles()[1]]),
         departments: [{ id: '4', name: 'hello world' }],
       });
-      mockParseBody.mockResolvedValueOnce({ department: 'fake department' });
+      mockParseBody.mockResolvedValueOnce({ department: 1 });
       const getDepartmentSelectedContext = () => ({
         params: { id: 'someId' },
         query: { newRoles: '3, 4' },
@@ -158,7 +158,12 @@ describe('Change department page', () => {
           statusCode: 302,
         },
       });
-      expect(updateUserRoles).toHaveBeenCalledWith('someId', ['3', ' 4'], '');
+      expect(updateUserRoles).toHaveBeenCalledWith(
+        'someId',
+        ['3', ' 4'],
+        '',
+        1
+      );
     });
   });
 });
