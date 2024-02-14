@@ -2,10 +2,12 @@ import Image from 'next/image';
 import { isIE } from 'react-device-detect';
 import getConfig from 'next/config';
 import CustomLink from '../custom-link/CustomLink';
+import { useAdminAuth } from '../../pages/_app.page';
 
 const Header = () => {
   const feedbackContent = `https://docs.google.com/forms/d/e/1FAIpQLSd2V0IqOMpb2_yQnz_Ges0WCYFnDOTxZpF299gePV1j8kMdLA/viewform`;
   const { publicRuntimeConfig } = getConfig();
+  const { isSuperAdmin } = useAdminAuth();
   return (
     <>
       <header className="govuk-header" role="banner" data-module="govuk-header">
@@ -69,11 +71,16 @@ const Header = () => {
                 Manage a grant
               </a>
             </div>
-            <div className="govuk-!-padding-top-2">
-              <a className="govuk-header__link  govuk-!-margin-left-9 govuk-!-font-weight-bold">
-                Superadmin Dashboard
-              </a>
-            </div>
+            {isSuperAdmin && (
+              <div className="govuk-!-padding-top-2">
+                <a
+                  href={`${process.env.SUB_PATH}/super-admin-dashboard`}
+                  className="govuk-header__link  govuk-!-margin-left-9 govuk-!-font-weight-bold"
+                >
+                  Superadmin Dashboard
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </header>

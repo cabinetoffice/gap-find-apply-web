@@ -5,6 +5,8 @@ import { isIE } from 'react-device-detect';
 import styles from './Header.module.scss';
 import { getLoginUrl } from '../../utils/general';
 import { MobileNavigationBar } from './navigation';
+import { useAuth } from '../../pages/_app.page';
+
 interface HeaderProps {
   isUserLoggedIn?: boolean;
   oneLoginEnabledInFind?: string;
@@ -12,6 +14,7 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({ isUserLoggedIn, oneLoginEnabledInFind }) => {
   const feedbackContent = `https://docs.google.com/forms/d/e/1FAIpQLSeZnNVCqmtnzfZQJSBW_k9CklS2Y_ym2GRt-z0-1wf9pDEgPw/viewform`;
+  const { isSuperAdmin } = useAuth();
 
   return (
     <>
@@ -78,14 +81,28 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn, oneLoginEnabledInFind }) => {
             </Link>
           </div>
 
-          <div className="govuk-header__content">
-            <a
-              href="/"
-              className="govuk-header__link govuk-header__link--service-name"
-            >
-              Find a grant
-            </a>
-          </div>
+          {isSuperAdmin && (
+            <div className="govuk-header__content">
+              <div className="govuk-header__content">
+                <a
+                  href="/"
+                  className="govuk-header__link govuk-header__link--service-name"
+                >
+                  Find a grant
+                </a>
+              </div>
+              <div
+                className={`${styles['d-none-mobile']} d-none-mobile govuk-!-padding-top-2`}
+              >
+                <a
+                  href={`${process.env.ADMIN_FRONTEND_URL}/super-admin-dashboard`}
+                  className="govuk-header__link   govuk-!-font-weight-bold"
+                >
+                  Superadmin Dashboard
+                </a>
+              </div>
+            </div>
+          )}
         </div>
       </header>
       {isUserLoggedIn && oneLoginEnabledInFind === 'true' && (

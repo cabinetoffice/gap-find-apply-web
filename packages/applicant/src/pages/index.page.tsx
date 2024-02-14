@@ -4,6 +4,8 @@ import Layout from '../components/partials/Layout';
 import Meta from '../components/partials/Meta';
 import { getLoginUrl } from '../utils/general';
 import getConfig from 'next/config';
+import styles from '../components/partials/Header.module.scss';
+import { useAuth } from './_app.page';
 
 export const getServerSideProps: GetServerSideProps = (req) => {
   let loginUrl = getLoginUrl();
@@ -32,6 +34,7 @@ type HomePageProps = {
 
 function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
   const { publicRuntimeConfig } = getConfig();
+  const { isSuperAdmin } = useAuth();
   return (
     <>
       <Meta title="Register to apply - Apply for a grant" />
@@ -41,6 +44,18 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
             <h1 className="govuk-heading-l" data-cy="cy-apply-header">
               Find a Grant
             </h1>
+            {isSuperAdmin && (
+              <div
+                className={`${styles['d-none-mobile']} d-none-mobile govuk-!-padding-top-2`}
+              >
+                <a
+                  href={`${process.env.ADMIN_FRONTEND_URL}/super-admin-dashboard`}
+                  className="govuk-header__link   govuk-!-font-weight-bold"
+                >
+                  Superadmin Dashboard
+                </a>
+              </div>
+            )}
             <p className="govuk-body" data-cy="cy-apply-description">
               Use this service to apply for a government grant.
             </p>

@@ -1,6 +1,19 @@
 @import '~govuk-frontend/govuk/base';
 @import '~govuk-frontend/govuk/core/global-styles.scss';
 
-.float-right{
-    float: right;
+.float-right {
+  float: right;
+}
+
+.d-none-mobile {
+  display: block;
+  white-space: pre;
+  position: absolute;
+  right: 0;
+}
+
+@media (max-width: 768px) {
+  .d-none-mobile {
+    display: none;
   }
+}
