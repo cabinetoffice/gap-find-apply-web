@@ -274,7 +274,7 @@ describe('No data for existing applications', () => {
     expect(
       screen.getAllByRole('link', {
         name: /find a grant/i,
-      })[1]
+      })[0]
     ).toHaveAttribute(
       'href',
       'https://www.find-government-grants.service.gov.uk'
