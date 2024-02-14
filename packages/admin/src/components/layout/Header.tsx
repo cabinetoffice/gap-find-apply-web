@@ -61,16 +61,22 @@ const Header = () => {
             </a>
           </div>
           <div className="govuk-header__content">
-            <a
-              href={`${publicRuntimeConfig.SUB_PATH}/dashboard`}
-              className="govuk-header__link govuk-header__link--service-name"
-            >
-              Manage a grant
-            </a>
+            <div className="govuk-header__content">
+              <a
+                href={`${publicRuntimeConfig.SUB_PATH}/dashboard`}
+                className="govuk-header__link govuk-header__link--service-name"
+              >
+                Manage a grant
+              </a>
+            </div>
+            <div className="govuk-!-padding-top-2">
+              <a className="govuk-header__link  govuk-!-margin-left-9 govuk-!-font-weight-bold">
+                Superadmin Dashboard
+              </a>
+            </div>
           </div>
         </div>
       </header>
-
       <nav>
         <div className="govuk-width-container">
           <div className="govuk-phase-banner">
