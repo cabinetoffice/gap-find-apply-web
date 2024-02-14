@@ -123,7 +123,7 @@ export default async function postQuestion<B, _R>(
     }
   } catch (err) {
     logger.error(
-      'Error in postQuestion',
+      `Error in postQuestion while processing submission with ID: ${submissionId}`,
       logger.utils.addErrorInfo(err, req as NextApiRequest)
     );
     if (err.response?.data?.errors) {

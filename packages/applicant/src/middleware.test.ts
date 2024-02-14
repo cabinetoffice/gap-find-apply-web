@@ -33,8 +33,8 @@ const getMockRequest = (url: string) =>
     cookies: {
       get: (key) => cookieStore[key],
       getAll: () =>
-        Object.entries(cookieStore).map(([name, value]) => ({ [name]: value })),
-      set: (key, value) => (cookieStore[key] = { key, value }),
+        Object.entries(cookieStore).map(([name, value]) => ({ name, value })),
+      set: (name, value) => (cookieStore[name] = { name, value }),
     },
     headers: {
       get: (key) => headerStore[key],
