@@ -216,10 +216,10 @@ const urlsToSkip = ['/_next/', '/assets/', '/javascript/'];
 
 const getConditionalLogger = (req, type: LoggerType) => {
   const userAgentHeader = req.headers.get('user-agent') || '';
-  return userAgentHeader.startsWith('ELB-HealthChecker') ||
-    urlsToSkip.some((url) => req.nextUrl.pathname.startsWith(url))
-    ? () => undefined
-    : httpLoggers[type];
+  const shouldSkipLogging =
+    userAgentHeader.startsWith('ELB-HealthChecker') ||
+    urlsToSkip.some((url) => req.nextUrl.pathname.startsWith(url));
+  return shouldSkipLogging ? () => undefined : httpLoggers[type];
 };
 
 const authenticatedPaths = [
