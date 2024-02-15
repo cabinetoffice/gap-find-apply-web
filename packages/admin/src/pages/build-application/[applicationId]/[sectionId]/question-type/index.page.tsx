@@ -1,177 +1,20 @@
-import {
-  Button,
-  FlexibleQuestionPageLayout,
-  Radio,
-  ValidationError,
-} from 'gap-web-ui';
-import { GetServerSideProps } from 'next';
-import getConfig from 'next/config';
-import CustomLink from '../../../../components/custom-link/CustomLink';
-import Meta from '../../../../components/layout/Meta';
+import { Button, FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
+import CustomLink from '../../../../../components/custom-link/CustomLink';
+import Meta from '../../../../../components/layout/Meta';
 import ResponseType, {
   ResponseTypeLabels,
-} from '../../../../enums/ResponseType';
-import { getApplicationFormSummary } from '../../../../services/ApplicationService';
-import { postQuestion } from '../../../../services/QuestionService';
-import {
-  addFieldsToSession,
-  getSummaryFromSession,
-  getValueFromSession,
-} from '../../../../services/SessionService';
-import { QuestionSummary } from '../../../../types/QuestionSummary';
-import callServiceMethod from '../../../../utils/callServiceMethod';
-import { getSessionIdFromCookies } from '../../../../utils/session';
-import QuestionTypeHint from './components/QuestionTypeHint';
-import {
-  getErrorPageParams,
-  questionErrorPageRedirect,
-} from './newQuestionServiceError';
+} from '../../../../../enums/ResponseType';
+import QuestionTypeHint from '../components/QuestionTypeHint';
 
-type RequestBody = {
-  responseType: ResponseType;
-  _csrf?: string;
-};
-
-const WORD_LIMIT_MAP = {
-  [ResponseType.ShortAnswer]: 300,
-  [ResponseType.LongAnswer]: 5000,
-};
-
-export const getServerSideProps: GetServerSideProps = async ({
-  params,
-  req,
-  res,
-}) => {
-  const { applicationId, sectionId } = params as Record<string, string>;
-  const sessionId = req.cookies.session_id;
-  const sessionCookie = getSessionIdFromCookies(req);
-
-  if (!sessionId) {
-    // We expect the session ID to be present in order to get to this page
-    return questionErrorPageRedirect(applicationId);
-  }
-
-  let fieldErrors = [] as ValidationError[];
-  const result = await callServiceMethod(
-    req,
-    res,
-    async (body: RequestBody) => {
-      const { _csrf, ...props } = body;
-      if (
-        body.responseType === ResponseType.Dropdown ||
-        body.responseType === ResponseType.MultipleSelection
-      ) {
-        return addFieldsToSession(
-          'newQuestion',
-          props as RequestBody,
-          sessionCookie
-        );
-      } else {
-        const questionSummary = (await getSummaryFromSession(
-          'newQuestion',
-          sessionCookie
-        )) as QuestionSummary;
-        const { optional, ...restOfQuestionSummary } = questionSummary;
-        const maxWords =
-          WORD_LIMIT_MAP[body.responseType as keyof typeof WORD_LIMIT_MAP];
-
-        await postQuestion(sessionId, applicationId, sectionId, {
-          ...restOfQuestionSummary,
-          ...props,
-          validation: {
-            maxWords,
-            mandatory: optional !== 'true',
-          },
-        });
-
-        return {
-          data: 'QUESTION_SAVED',
-          sessionId,
-        };
-      }
-    },
-    (response: { data: any }) => {
-      if (response.data === 'QUESTION_SAVED') {
-        return `/build-application/${applicationId}/${sectionId}`;
-      } else {
-        return `/build-application/${applicationId}/${sectionId}/question-options`;
-      }
-    },
-    getErrorPageParams(applicationId)
-  );
-
-  if ('redirect' in result) {
-    // If we successfully posted the new question, delete sessionId and redirect back to the dashboard
-    // If posting failed, and the cause was NOT a validation error, redirect to the service error page
-    return result;
-  } else if ('body' in result) {
-    // If posting failed due to a validation error, pass these errors to the page
-    fieldErrors = result.fieldErrors;
-  }
-
-  let applicationFormSummary;
-  let responseType;
-  try {
-    applicationFormSummary = await getApplicationFormSummary(
-      applicationId,
-      sessionCookie
-    );
-    responseType = await getValueFromSession(
-      'newQuestion',
-      'responseType',
-      sessionCookie
-    );
-  } catch (err) {
-    // If we can't fetch the section name from the application form summary, redirect to the service error page
-    return questionErrorPageRedirect(applicationId);
-  }
-
-  let selectedRadio = '';
-  switch (responseType) {
-    case ResponseType.Dropdown: {
-      selectedRadio = 'Multiple choice';
-      break;
-    }
-    case ResponseType.MultipleSelection: {
-      selectedRadio = 'Multiple select';
-      break;
-    }
-  }
-
-  const sectionName = applicationFormSummary.sections.find(
-    (section) => section.sectionId === sectionId
-  )?.sectionTitle;
-
-  const { publicRuntimeConfig } = getConfig();
-  return {
-    props: {
-      sectionName: sectionName,
-      defaultRadio: selectedRadio,
-      backButtonHref: `/build-application/${applicationId}/${sectionId}/question-content`,
-      fieldErrors: fieldErrors,
-      formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/question-type`,
-      csrfToken: res.getHeader('x-csrf-token') as string,
-    },
-  };
-};
-
-type QuestionTypeProps = {
-  sectionName: string;
-  defaultRadio?: string;
-  backButtonHref: string;
-  formAction: string;
-  fieldErrors: ValidationError[];
-  csrfToken: string;
-};
+import { getServerSideProps } from './index.getServerSideProps';
+import InferProps from '../../../../../types/InferProps';
 
 const QuestionType = ({
-  sectionName,
-  defaultRadio,
-  backButtonHref,
+  pageData: { sectionName, defaultRadio, backButtonHref },
   formAction,
   fieldErrors,
   csrfToken,
-}: QuestionTypeProps) => {
+}: InferProps<typeof getServerSideProps>) => {
   return (
     <>
       <Meta
@@ -216,7 +59,8 @@ const QuestionType = ({
                 label: ResponseTypeLabels[ResponseType.LongAnswer],
                 hint: (
                   <QuestionTypeHint
-                    description="Can have a maximum of 5000 words entered."
+                    noDescriptionLineBreak
+                    description="Can have a maximum of 5000 words entered. You can set a custom word limit."
                     questionType="long-answer"
                     imageFileName="text-area"
                     imageAlt="A screenshot of a long text area input, along with a title and description"
@@ -297,3 +141,4 @@ const QuestionType = ({
 };
 
 export default QuestionType;
+export { getServerSideProps };

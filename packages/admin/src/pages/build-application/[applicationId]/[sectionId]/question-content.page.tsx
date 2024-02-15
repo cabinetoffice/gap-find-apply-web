@@ -122,8 +122,8 @@ const QuestionContent = ({
         }Add a question - Manage a grant`}
       />
 
-      <Link href={backButtonHref}>
-        <a className="govuk-back-link">Back</a>
+      <Link customStyle="govuk-back-link" href={backButtonHref}>
+        Back
       </Link>
 
       <div className="govuk-!-padding-top-7">
