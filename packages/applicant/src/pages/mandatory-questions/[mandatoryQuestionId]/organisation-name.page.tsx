@@ -19,8 +19,23 @@ export default function MandatoryQuestionOrganisationNamePage({
   backButtonUrl,
   mandatoryQuestion,
 }: InferProps<typeof getServerSideProps>) {
-  const isUserIndividual =
-    mandatoryQuestion.orgType === MQ_ORG_TYPES.INDIVIDUAL;
+  let questionTitle, questionHintText;
+
+  switch (mandatoryQuestion.orgType) {
+    case MQ_ORG_TYPES.INDIVIDUAL:
+      questionTitle = 'Enter your full name';
+      questionHintText = 'Your name will appear on your application.';
+      break;
+    case MQ_ORG_TYPES.LOCAL_AUTHORITY:
+      questionTitle = 'Enter the name of your local authority';
+      questionHintText =
+        'Enter the full name of your local authority. For example "Essex County Council" rather than "Essex"';
+      break;
+    default:
+      questionTitle = 'Enter the name of your organisation';
+      break;
+  }
+
   return (
     <>
       <Meta
@@ -36,16 +51,8 @@ export default function MandatoryQuestionOrganisationNamePage({
           csrfToken={csrfToken}
         >
           <TextInput
-            questionTitle={
-              isUserIndividual
-                ? 'Enter your full name'
-                : 'Enter the name of your organisation'
-            }
-            questionHintText={
-              isUserIndividual
-                ? 'Your name will appear on your application.'
-                : 'This is the official name of your organisation. It could be the name that is registered with Companies House or the Charities Commission'
-            }
+            questionTitle={questionTitle}
+            questionHintText={questionHintText}
             fieldName="name"
             defaultValue={defaultFields.name}
             fieldErrors={fieldErrors}
