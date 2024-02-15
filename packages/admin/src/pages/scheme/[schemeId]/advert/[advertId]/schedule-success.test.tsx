@@ -13,7 +13,7 @@ import {
 import InferProps from '../../../../../types/InferProps';
 
 const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
-  backToAccountLink: `/scheme/schemeId`,
+  backToAccountLink: `/scheme/schemeId/advert/advertId/survey`,
 });
 
 describe('Advert - Schedule Success Page', () => {
@@ -28,7 +28,7 @@ describe('Advert - Schedule Success Page', () => {
     it('Should return the link to advert as a prop when slug is provided', async () => {
       const result = await getServerSideProps(getContext(getDefaultContext));
       expectObjectEquals(result, {
-        props: { backToAccountLink: '/scheme/schemeId' },
+        props: { backToAccountLink: `/scheme/schemeId/advert/advertId/survey` },
       });
     });
   });
@@ -41,7 +41,10 @@ describe('Advert - Schedule Success Page', () => {
     it("Should render 'Back to my account' button", () => {
       expect(
         screen.getByRole('button', { name: 'Back to my account' })
-      ).toHaveAttribute('href', '/apply/scheme/schemeId');
+      ).toHaveAttribute(
+        'href',
+        '/apply/scheme/schemeId/advert/advertId/survey'
+      );
     });
   });
 });

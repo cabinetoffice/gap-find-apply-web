@@ -59,7 +59,8 @@ const QuestionType = ({
                 label: ResponseTypeLabels[ResponseType.LongAnswer],
                 hint: (
                   <QuestionTypeHint
-                    description="Can have a maximum of 5000 words entered."
+                    noDescriptionLineBreak
+                    description="Can have a maximum of 5000 words entered. You can set a custom word limit."
                     questionType="long-answer"
                     imageFileName="text-area"
                     imageAlt="A screenshot of a long text area input, along with a title and description"
