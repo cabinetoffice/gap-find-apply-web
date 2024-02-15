@@ -7,6 +7,7 @@ const QuestionTypeHint = ({
   questionType,
   imageFileName,
   imageAlt,
+  noDescriptionLineBreak,
   detailsTitle,
 }: QuestionTypeHintProps) => {
   const { publicRuntimeConfig } = getConfig();
@@ -16,7 +17,11 @@ const QuestionTypeHint = ({
 
   return (
     <>
-      {description}
+      <span
+        className={noDescriptionLineBreak ? styles['sm-whitespace-pre'] : ''}
+      >
+        {description}
+      </span>
       <details
         className="govuk-details"
         data-module="govuk-details"
@@ -44,6 +49,7 @@ const QuestionTypeHint = ({
 };
 
 interface QuestionTypeHintProps {
+  noDescriptionLineBreak?: boolean;
   description: string;
   questionType: string;
   imageFileName: string;

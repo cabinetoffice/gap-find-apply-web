@@ -131,7 +131,7 @@ export default function SubmissionSummary({
                 {applicationName}
               </span>
               <h1 className="govuk-heading-l" data-cy="cy-page-header">
-                {hasSubmissionBeenSubmitted
+                {hasSubmissionBeenSubmitted || closedAndInProgress
                   ? 'Your application'
                   : 'Check your answers before submitting your application'}
               </h1>
@@ -155,10 +155,9 @@ export default function SubmissionSummary({
                   href={routes.api.submissions.downloadSummary(
                     grantSubmissionId
                   )}
+                  className="govuk-link govuk-link--no-visited-state"
                 >
-                  <a className="govuk-link govuk-link--no-visited-state">
-                    download a copy of your answers (ZIP)
-                  </a>
+                  download a copy of your answers (ZIP)
                 </Link>{' '}
                 for future reference.
               </p>
