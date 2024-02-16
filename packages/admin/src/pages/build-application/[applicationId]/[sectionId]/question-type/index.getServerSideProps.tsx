@@ -1,5 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
-import ResponseType from '../../../../../enums/ResponseType';
+import ResponseType, {
+  ResponseTypeLabels,
+} from '../../../../../enums/ResponseType';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 import {
   addFieldsToSession,
@@ -7,7 +9,11 @@ import {
   getValueFromSession,
 } from '../../../../../services/SessionService';
 import { QuestionSummary } from '../../../../../types/QuestionSummary';
-import { postQuestion } from '../../../../../services/QuestionService';
+import {
+  getQuestion,
+  patchQuestion,
+  postQuestion,
+} from '../../../../../services/QuestionService';
 import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
 import QuestionPageGetServerSideProps from '../../../../../utils/QuestionPageGetServerSideProps';
 
@@ -25,12 +31,13 @@ const redirectQuestionType = [
 function getRedirect(
   responseType: ResponseType,
   applicationId: string,
-  sectionId: string
+  sectionId: string,
+  queryString = ''
 ) {
   const REDIRECT_MAP = {
-    [ResponseType.Dropdown]: `/build-application/${applicationId}/${sectionId}/question-options`,
-    [ResponseType.MultipleSelection]: `/build-application/${applicationId}/${sectionId}/question-options`,
-    [ResponseType.LongAnswer]: `/build-application/${applicationId}/${sectionId}/question-type/add-word-count`,
+    [ResponseType.Dropdown]: `/build-application/${applicationId}/${sectionId}/question-options${queryString}`,
+    [ResponseType.MultipleSelection]: `/build-application/${applicationId}/${sectionId}/question-options${queryString}`,
+    [ResponseType.LongAnswer]: `/build-application/${applicationId}/${sectionId}/question-type/add-word-count${queryString}`,
   };
   return REDIRECT_MAP[responseType as keyof typeof REDIRECT_MAP];
 }
@@ -46,56 +53,94 @@ function getRadio(responseType: ResponseType) {
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
-  const { params, req } = context;
+  const { params, req, query } = context;
   const { applicationId, sectionId } = params as Record<string, string>;
+  const { questionId, backTo } = query;
 
   const sessionId = getSessionIdFromCookies(req);
 
   const handleRequest = async (body: RequestBody) => {
     const { _csrf, ...props } = body;
 
-    if (redirectQuestionType.includes(body.responseType)) {
-      await addFieldsToSession('newQuestion', props, sessionId);
-      return {
-        redirectQuestionType: body.responseType,
-      };
-    }
-
     const questionSummary = (await getSummaryFromSession(
       'newQuestion',
       sessionId
     )) as QuestionSummary;
     const { optional, ...restOfQuestionSummary } = questionSummary;
-    const maxWords =
-      body.responseType === ResponseType.ShortAnswer
-        ? SHORT_QUESTION_WORD_LIMIT
-        : undefined;
 
-    await postQuestion(sessionId, applicationId, sectionId, {
-      ...restOfQuestionSummary,
-      ...props,
-      validation: {
-        maxWords,
-        mandatory: optional !== 'true',
-      },
-    });
+    if (questionId) {
+      if (redirectQuestionType.includes(body.responseType)) {
+        await addFieldsToSession('updatedQuestion', props, sessionId);
+        return {
+          redirectQuestionType: body.responseType,
+        };
+      }
 
-    return {
-      data: 'QUESTION_SAVED',
-      sessionId,
-    };
+      return patchQuestion(
+        sessionId,
+        applicationId,
+        sectionId,
+        questionId.toString(),
+        {
+          ...body,
+          ...props,
+          validation: {
+            mandatory: optional !== 'true',
+          },
+        }
+      );
+    } else {
+      if (redirectQuestionType.includes(body.responseType)) {
+        await addFieldsToSession('newQuestion', props, sessionId);
+        return {
+          redirectQuestionType: body.responseType,
+        };
+      }
+
+      await postQuestion(sessionId, applicationId, sectionId, {
+        ...restOfQuestionSummary,
+        ...props,
+      });
+
+      return {
+        data: 'QUESTION_SAVED',
+        sessionId,
+      };
+    }
   };
 
   const onSuccessRedirectHref = (
     response: Awaited<ReturnType<typeof handleRequest>>
   ) => {
     if (response.redirectQuestionType) {
+      const queryString = query
+        ? `?${new URLSearchParams({ ...(query as object) })}`
+        : '';
       return getRedirect(
         response.redirectQuestionType,
         applicationId,
-        sectionId
+        sectionId,
+        queryString
       );
     }
+    // TODO rip it out?
+    // if (questionId) {
+    //   const shouldRedirectToOptionSelection = [
+    //     ResponseType.Dropdown,
+    //     ResponseType.MultipleSelection,
+    //   ].includes(response.data.responseType);
+    //   const shouldRedirectToMaxWords =
+    //     ResponseType.LongAnswer === response.data.responseType;
+    //   const queryString = query
+    //     ? `?${new URLSearchParams({ ...(query as object) })}`
+    //     : '';
+    //   if (shouldRedirectToOptionSelection) {
+    //     return `/build-application/${applicationId}/${sectionId}/question-options${queryString}`;
+    //   } else if (shouldRedirectToMaxWords) {
+    //     return `/build-application/${applicationId}/${sectionId}/question-type/add-word-count${queryString}`;
+    //   }
+    //   return `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content`;
+    // }
     return `/build-application/${applicationId}/${sectionId}`;
   };
 
@@ -104,20 +149,40 @@ export const getServerSideProps = async (
       applicationId,
       sessionCookie
     );
+
     const responseType = await getValueFromSession(
       'newQuestion',
       'responseType',
       sessionCookie
     );
+    let defaultRadio = getRadio(responseType);
+
+    if (questionId) {
+      const questionData = await getQuestion(
+        sessionId,
+        applicationId,
+        sectionId,
+        questionId.toString()
+      );
+      if (questionData?.responseType) {
+        defaultRadio = ResponseTypeLabels[questionData.responseType];
+      }
+    }
 
     const sectionName = applicationFormSummary.sections.find(
       (section) => section.sectionId === sectionId
     )?.sectionTitle;
 
+    const queryString = backTo
+      ? `?${new URLSearchParams({ backTo: backTo.toString() })}`
+      : '';
+
     return {
       sectionName,
-      defaultRadio: getRadio(responseType),
-      backButtonHref: `/build-application/${applicationId}/${sectionId}/question-content`,
+      defaultRadio,
+      backButtonHref: questionId
+        ? `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`
+        : `/build-application/${applicationId}/${sectionId}/question-content`,
     };
   };
 
@@ -129,5 +194,6 @@ export const getServerSideProps = async (
     onErrorMessage: 'Something went wrong while trying to create the question.',
     handleRequest,
     jwt: sessionId,
+    isEdit: questionId !== undefined,
   });
 };

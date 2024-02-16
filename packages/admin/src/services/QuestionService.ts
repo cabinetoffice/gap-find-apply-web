@@ -3,6 +3,8 @@ import ResponseType from '../enums/ResponseType';
 import { ApplicationFormQuestion } from '../types/ApplicationForm';
 import getConfig from 'next/config';
 import { axiosSessionConfig } from '../utils/session';
+import { QuestionData } from 'applicant/src/services/SubmissionService';
+import { Response } from 'next/dist/compiled/@edge-runtime/primitives';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -17,10 +19,11 @@ const patchQuestion = (
     fieldTitle: string;
     displayText: string;
     hintText: string;
-    validation: { mandatory: boolean; maxWords?: string };
+    validation: { mandatory: boolean; maxWords?: string | number };
     options: string[];
+    responseType: ResponseType;
   }>
-): Promise<void> => {
+): Promise<Response> => {
   return axios.patch(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}`,
     values,
@@ -39,7 +42,7 @@ const postQuestion = (
     hintText?: string;
     displayText?: string;
     questionSuffix?: string;
-    validation: { maxWords?: string | number; mandatory: boolean };
+    validation?: { maxWords?: string | number; mandatory: boolean };
     options?: string[];
   }
 ): Promise<void> => {

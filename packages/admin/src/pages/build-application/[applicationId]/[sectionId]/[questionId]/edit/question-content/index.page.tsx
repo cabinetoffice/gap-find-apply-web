@@ -23,6 +23,7 @@ const QuestionContent = ({
     deleteConfirmationUrl,
     backTo,
     previewUrl,
+    editQuestionTypeUrl,
   },
   previousValues,
 }: InferProps<typeof getServerSideProps>) => {
@@ -103,7 +104,7 @@ const QuestionContent = ({
               data-cy="cy_questionEdit_saveAndContinueButton"
             />
             <CustomLink
-              href={'#change-question-type'} //Implemented with GAP-2105
+              href={editQuestionTypeUrl}
               isSecondaryButton
               dataCy="cy_questionEdit_cancelChangesButton"
             >
@@ -126,7 +127,7 @@ const QuestionContent = ({
             isSecondaryButton
             dataCy="cy_questionEdit_cancelChangesButton"
           >
-            Preview Question
+            Preview question
           </CustomLink>
 
           <hr className="govuk-section-break govuk-section-break--visible govuk-section-break--xl" />

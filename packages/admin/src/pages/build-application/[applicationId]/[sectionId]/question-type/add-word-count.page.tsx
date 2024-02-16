@@ -6,7 +6,10 @@ import Meta from '../../../../../components/layout/Meta';
 import CustomLink from '../../../../../components/custom-link/CustomLink';
 import { Button, FlexibleQuestionPageLayout, TextInput } from 'gap-web-ui';
 import { ApplicationFormSection } from '../../../../../types/ApplicationForm';
-import { postQuestion } from '../../../../../services/QuestionService';
+import {
+  patchQuestion,
+  postQuestion,
+} from '../../../../../services/QuestionService';
 import { getSummaryFromSession } from '../../../../../services/SessionService';
 import { QuestionWithOptionsSummary } from '../../../../../types/QuestionSummary';
 import ResponseTypeEnum from '../../../../../enums/ResponseType';
@@ -20,6 +23,7 @@ export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
   const { applicationId, sectionId } = context.params as Record<string, string>;
+  const { questionId } = context.query;
   const sessionCookie = getSessionIdFromCookies(context.req);
 
   async function fetchPageData() {
@@ -39,23 +43,53 @@ export const getServerSideProps = async (
   }
 
   async function handleRequest(body: RequestBody, jwt: string) {
-    const questionSummary = (await getSummaryFromSession(
-      'newQuestion',
-      sessionCookie
-    )) as QuestionWithOptionsSummary;
+    if (questionId) {
+      const questionSummary = (await getSummaryFromSession(
+        'updatedQuestion',
+        sessionCookie
+      )) as unknown as QuestionWithOptionsSummary;
+      const { optional, ...restOfQuestionSummary } = questionSummary;
+      const { maxWords: _, ...restOfBody } = body;
+      const bodyToPatch = {
+        ...restOfQuestionSummary,
+        ...restOfBody,
+        validation: {
+          maxWords: body.maxWords,
+          mandatory: optional !== 'true',
+        },
+      };
+      const response = await patchQuestion(
+        sessionCookie,
+        applicationId,
+        sectionId,
+        questionId.toString(),
+        bodyToPatch
+      );
+      // const editQueryString = query.backTo
+      //   ? `?${new URLSearchParams({ backTo: query.backTo.toString() })}`
+      //   : '';
+      // return {
+      //   data: `/build-application/${applicationId}/${sectionId}/${body.questionId}/edit/question-content${editQueryString}`,
+      // };
+    } else {
+      const questionSummary = (await getSummaryFromSession(
+        'newQuestion',
+        sessionCookie
+      )) as unknown as QuestionWithOptionsSummary;
 
-    const { optional, ...restOfQuestionSummary } = questionSummary;
-    const { maxWords: _, ...restOfBody } = body;
+      const { optional, ...restOfQuestionSummary } = questionSummary;
+      const { maxWords: _, ...restOfBody } = body;
 
-    await postQuestion(jwt, applicationId, sectionId, {
-      ...restOfQuestionSummary,
-      ...restOfBody,
-      responseType: ResponseTypeEnum.LongAnswer,
-      validation: {
-        maxWords: body.maxWords,
-        mandatory: optional !== 'true',
-      },
-    });
+      await postQuestion(jwt, applicationId, sectionId, {
+        ...restOfQuestionSummary,
+        ...restOfBody,
+        responseType: ResponseTypeEnum.LongAnswer,
+        validation: {
+          maxWords: body.maxWords,
+          mandatory: optional !== 'true',
+        },
+      });
+    }
   }
 
   return QuestionPageGetServerSideProps({
@@ -65,6 +99,7 @@ export const getServerSideProps = async (
     jwt: sessionCookie,
     onErrorMessage: 'Something went wrong while trying to load this page.',
     handleRequest,
+    isEdit: !!questionId,
   });
 };
 
