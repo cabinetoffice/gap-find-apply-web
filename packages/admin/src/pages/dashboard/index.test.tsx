@@ -33,7 +33,7 @@ const mockUserDetails: UserDetails = {
   firstName: 'Test',
   lastName: 'User',
   emailAddress: 'test@email.com',
-  roles: [{ id: '1', name: 'APPLY', description: 'desc' }],
+  roles: '[FIND, APPLICANT, ADMIN]',
   organisationName: 'Testing Org',
   created: '2003-01-13T00:00:00',
 };
@@ -62,6 +62,7 @@ describe('Dashboard', () => {
           schemes: mockSchemeList,
           userDetails: mockUserDetails,
           bannerProps: null,
+          isTechSupportUser: false,
         },
       });
     });
