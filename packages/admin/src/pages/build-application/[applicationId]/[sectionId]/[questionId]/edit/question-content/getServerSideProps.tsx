@@ -7,6 +7,7 @@ import {
 import { getSessionIdFromCookies } from '../../../../../../../utils/session';
 import QuestionPageGetServerSideProps from '../../../../../../../utils/QuestionPageGetServerSideProps';
 import { NextRedirect } from '../../../../../../../utils/QuestionPageGetServerSidePropsTypes';
+import ResponseTypeEnum from '../../../../../../../enums/ResponseType';
 
 type RequestBody = {
   fieldTitle: string;
@@ -22,7 +23,7 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
   >;
   const { backTo } = context.query as Record<string, string>;
 
-  function onSuccessRedirectHref() {
+  function getBackToRedirect() {
     return backTo === 'dashboard'
       ? `/build-application/${applicationId}/dashboard`
       : `/build-application/${applicationId}/${sectionId}`;
@@ -53,22 +54,37 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
     return {
       questionData,
       backTo: backTo ?? '',
-      backButtonHref: onSuccessRedirectHref(),
+      backButtonHref: getBackToRedirect(),
       deleteConfirmationUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/delete-confirmation`,
       previewUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/preview`,
     };
   }
 
-  async function handleRequest(body: RequestBody, jwt: string) {
+  async function handleRequest(
+    body: RequestBody,
+    jwt: string,
+    pageData: Exclude<Awaited<ReturnType<typeof fetchPageData>>, NextRedirect>
+  ) {
     const { optional, maxWords, ...restOfBody } = body;
 
-    return patchQuestion(jwt, applicationId, sectionId, questionId, {
+    await patchQuestion(jwt, applicationId, sectionId, questionId, {
       ...restOfBody,
       validation: {
         mandatory: optional !== 'true',
         maxWords,
       },
     });
+
+    return pageData.questionData.responseType;
+  }
+
+  function onSuccessRedirectHref(
+    responseType: Awaited<ReturnType<typeof handleRequest>>
+  ) {
+    return responseType === ResponseTypeEnum.MultipleSelection ||
+      responseType === ResponseTypeEnum.Dropdown
+      ? `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-options?backTo=${backTo}`
+      : getBackToRedirect();
   }
 
   return QuestionPageGetServerSideProps({
