@@ -16,13 +16,24 @@ export default function MandatoryQuestionOrganisationAddressPage({
   backButtonUrl,
   mandatoryQuestion,
 }: InferProps<typeof getServerSideProps>) {
-  const isUserIndividual =
-    mandatoryQuestion.orgType === MQ_ORG_TYPES.INDIVIDUAL;
   const commonAddressInputProps = {
     boldHeading: false,
     titleSize: 's',
     fieldErrors: fieldErrors,
   } as const;
+
+  let questionTitle;
+
+  switch (mandatoryQuestion.orgType) {
+    case MQ_ORG_TYPES.INDIVIDUAL:
+      questionTitle = 'Enter your address';
+      break;
+    case MQ_ORG_TYPES.LOCAL_AUTHORITY:
+      questionTitle = 'Enter your local authority address';
+      break;
+    default:
+      questionTitle = "Enter your organisation's address";
+  }
 
   return (
     <>
@@ -42,9 +53,7 @@ export default function MandatoryQuestionOrganisationAddressPage({
             className="govuk-heading-l"
             data-cy="cy-addressInput-question-title"
           >
-            {isUserIndividual
-              ? 'Enter your address'
-              : "Enter your organisation's address"}
+            {questionTitle}
           </h1>
 
           <TextInput
