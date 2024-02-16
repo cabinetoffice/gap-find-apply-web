@@ -43,11 +43,14 @@ export const getServerSideProps = async ({ req }) => {
   const isIndividual = organisationData?.type === MQ_ORG_TYPES.INDIVIDUAL;
   const isNonLimitedCompany =
     organisationData?.type === MQ_ORG_TYPES.NON_LIMITED_COMPANY;
+  const isLocalAuthority =
+    organisationData?.type === MQ_ORG_TYPES.LOCAL_AUTHORITY;
 
   const { generalOrganisationRows, typeOfOrganisationRow } =
     getOrganisationData(organisationData, {
       isIndividual,
       isNonLimitedCompany,
+      isLocalAuthority,
     });
 
   return {
@@ -176,7 +179,11 @@ type OrganisationData = {
 
 export const getOrganisationData = (
   organisationData: GrantApplicantOrganisationProfile,
-  { isIndividual, isNonLimitedCompany }: Record<string, boolean>
+  {
+    isIndividual,
+    isNonLimitedCompany,
+    isLocalAuthority,
+  }: Record<string, boolean>
 ): OrganisationData => {
   const typeOfOrganisationRow = {
     id: 'organisationType',
@@ -229,7 +236,7 @@ export const getOrganisationData = (
     },
   ];
 
-  if (isNonLimitedCompany || isIndividual) {
+  if (isNonLimitedCompany || isIndividual || isLocalAuthority) {
     generalOrganisationRows.splice(2, 3);
   }
 
