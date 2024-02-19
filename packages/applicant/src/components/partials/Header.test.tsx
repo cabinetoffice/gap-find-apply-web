@@ -73,7 +73,9 @@ describe('Testing SuperAdmin Dashboard link', () => {
         <Header isUserLoggedIn={true} oneLoginEnabledInFind="true" />
       </RouterContext.Provider>
     );
-    expect(screen.getByText('Superadmin Dashboard')).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: 'Superadmin Dashboard' })
+    ).toHaveLength(1);
     expect(
       screen.getByRole('link', { name: 'Superadmin Dashboard' })
     ).toBeDefined();

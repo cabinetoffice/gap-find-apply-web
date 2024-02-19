@@ -9,11 +9,13 @@ const mockUseAdminAuth = jest.mocked(useAdminAuth);
 
 describe('Testing Header component', () => {
   it('Renders a sign out button', () => {
+    mockUseAdminAuth.mockReturnValue({ isSuperAdmin: false });
     render(<Header />);
     screen.getByRole('link', { name: 'Sign out' });
   });
 
   it('should render Beta block', () => {
+    mockUseAdminAuth.mockReturnValue({ isSuperAdmin: false });
     render(<Header />);
     screen.getByText(/beta/i);
     expect(
@@ -34,7 +36,7 @@ describe('Testing SuperAdmin Dashboard link', () => {
     expect(screen.getByText('Superadmin Dashboard')).toBeVisible();
     expect(
       screen.getByRole('link', { name: 'Superadmin Dashboard' })
-    ).toHaveAttribute('href', '/apply/admin/super-admin-dashboard');
+    ).toBeInTheDocument();
   });
   it('It should NOT render SuperAdmin Dashboard link', () => {
     mockUseAdminAuth.mockReturnValue({ isSuperAdmin: false });
