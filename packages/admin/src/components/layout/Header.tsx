@@ -72,7 +72,7 @@ const Header = () => {
               </a>
             </div>
             {isSuperAdmin && (
-              <div className="govuk-!-padding-top-2">
+              <div className="super-admin-link govuk-!-padding-top-2">
                 <a
                   href={`${process.env.SUB_PATH}/super-admin-dashboard`}
                   className="govuk-header__link  govuk-!-margin-left-9 govuk-!-font-weight-bold"

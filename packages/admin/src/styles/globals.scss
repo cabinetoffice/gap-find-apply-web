@@ -96,3 +96,16 @@ html {
 .tox-tbtn--enabled svg {
   fill: govuk-colour('white') !important;
 }
+
+.super-admin-link {
+  display: block;
+  white-space: pre;
+  position: absolute;
+  right: 0;
+}
+
+@media (max-width: 768px) {
+  .super-admin-link {
+    display: none;
+  }
+}
