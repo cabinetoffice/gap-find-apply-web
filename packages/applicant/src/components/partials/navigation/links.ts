@@ -1,7 +1,7 @@
 import getConfig from 'next/config';
 
 const {
-  publicRuntimeConfig: { FIND_A_GRANT_URL, ADMIN_FRONTEND_URL },
+  publicRuntimeConfig: { FIND_A_GRANT_URL },
 } = getConfig();
 
 export const links = [
@@ -35,8 +35,8 @@ export const authMobileLinks = [
   ...links,
   {
     pageId: 'Superadmin Dashboard',
-    link: `${ADMIN_FRONTEND_URL}/super-admin-dashboard`,
-    as: `${ADMIN_FRONTEND_URL}/super-admin-dashboard`,
+    link: `${process.env.ADMIN_FRONTEND_URL}/super-admin-dashboard`,
+    as: `${process.env.ADMIN_FRONTEND_URL}/super-admin-dashboard`,
     title: 'Superadmin Dashboard',
   },
 ];
