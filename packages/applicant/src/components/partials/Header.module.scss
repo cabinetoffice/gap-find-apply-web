@@ -5,7 +5,7 @@
   float: right;
 }
 
-.d-none-mobile {
+.super-admin-link {
   display: block;
   white-space: pre;
   position: absolute;
@@ -13,7 +13,7 @@
 }
 
 @media (max-width: 768px) {
-  .d-none-mobile {
+  .super-admin-link {
     display: none;
   }
 }

@@ -81,18 +81,18 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn, oneLoginEnabledInFind }) => {
             </Link>
           </div>
 
-          {isSuperAdmin && (
+          <div className="govuk-header__content">
             <div className="govuk-header__content">
-              <div className="govuk-header__content">
-                <a
-                  href="/"
-                  className="govuk-header__link govuk-header__link--service-name"
-                >
-                  Find a grant
-                </a>
-              </div>
+              <a
+                href="/"
+                className="govuk-header__link govuk-header__link--service-name"
+              >
+                Find a grant
+              </a>
+            </div>
+            {isSuperAdmin && (
               <div
-                className={`${styles['d-none-mobile']} d-none-mobile govuk-!-padding-top-2`}
+                className={`${styles['super-admin-link']} super-admin-link govuk-!-padding-top-2`}
               >
                 <a
                   href={`${process.env.ADMIN_FRONTEND_URL}/super-admin-dashboard`}
@@ -101,12 +101,12 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn, oneLoginEnabledInFind }) => {
                   Superadmin Dashboard
                 </a>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </header>
       {isUserLoggedIn && oneLoginEnabledInFind === 'true' && (
-        <MobileNavigationBar />
+        <MobileNavigationBar isSuperAdmin={isSuperAdmin} />
       )}
       {/* SIGN IN/OUT */}
       <div className="govuk-width-container govuk-!-text-align-right">
