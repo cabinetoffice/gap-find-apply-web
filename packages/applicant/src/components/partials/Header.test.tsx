@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import { createMockRouter } from '../../testUtils/createMockRouter';
 import Header from './Header';
+import { useAuth } from '../../pages/_app.page';
 
 describe('Header Component', () => {
   describe('should render header', () => {
@@ -54,5 +55,40 @@ describe('Header Component', () => {
       'href',
       process.env.NEXT_PUBLIC_LOGIN_URL
     );
+  });
+});
+
+jest.mock('../../pages/_app.page');
+const mockUseAuth = jest.mocked(useAuth);
+
+describe('Testing SuperAdmin Dashboard link', () => {
+  it('It should render SuperAdmin Dashboard link', () => {
+    mockUseAuth.mockReturnValue({
+      oneLoginEnabledInFind: true,
+      isUserLoggedIn: true,
+      isSuperAdmin: true,
+    });
+    render(
+      <RouterContext.Provider value={createMockRouter({ pathname: '/header' })}>
+        <Header isUserLoggedIn={true} oneLoginEnabledInFind="true" />
+      </RouterContext.Provider>
+    );
+    expect(screen.getByText('Superadmin Dashboard')).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: 'Superadmin Dashboard' })
+    ).toBeDefined();
+  });
+  it('It should NOT render SuperAdmin Dashboard link', () => {
+    mockUseAuth.mockReturnValue({
+      oneLoginEnabledInFind: true,
+      isUserLoggedIn: true,
+      isSuperAdmin: false,
+    });
+    render(
+      <RouterContext.Provider value={createMockRouter({ pathname: '/header' })}>
+        <Header isUserLoggedIn={true} oneLoginEnabledInFind="true" />
+      </RouterContext.Provider>
+    );
+    expect(screen.queryByText('Superdmin Dashboard')).toBeNull();
   });
 });
