@@ -301,6 +301,11 @@ describe('getServerSideProps', () => {
       [
         routes.mandatoryQuestions.addressPage('mandatoryQuestionId'),
         routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
+        MQ_ORG_TYPES.LOCAL_AUTHORITY,
+      ],
+      [
+        routes.mandatoryQuestions.addressPage('mandatoryQuestionId'),
+        routes.mandatoryQuestions.fundingAmountPage('mandatoryQuestionId'),
         MQ_ORG_TYPES.NON_LIMITED_COMPANY,
       ],
       [

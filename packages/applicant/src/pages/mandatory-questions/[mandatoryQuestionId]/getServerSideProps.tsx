@@ -12,8 +12,12 @@ import { routes, serviceErrorPropType } from '../../../utils/routes';
 import { MQ_ORG_TYPES } from '../../../utils/constants';
 import { GrantApplicantOrganisationProfileService } from '../../../services/GrantApplicantOrganisationProfileService';
 
-const isIndividualOrNonLimitedCompany = (orgType: string) =>
-  [MQ_ORG_TYPES.INDIVIDUAL, MQ_ORG_TYPES.NON_LIMITED_COMPANY].includes(orgType);
+const isIndividualOrNonLimitedCompanyOrLocalAuthority = (orgType: string) =>
+  [
+    MQ_ORG_TYPES.INDIVIDUAL,
+    MQ_ORG_TYPES.NON_LIMITED_COMPANY,
+    MQ_ORG_TYPES.LOCAL_AUTHORITY,
+  ].includes(orgType);
 
 const getRelatedOrgTypePages = ({
   orgType,
@@ -26,7 +30,7 @@ const getRelatedOrgTypePages = ({
   const companiesHouseNumberPage =
     routes.mandatoryQuestions.companiesHouseNumberPage(mandatoryQuestionId);
 
-  return isIndividualOrNonLimitedCompany(orgType)
+  return isIndividualOrNonLimitedCompanyOrLocalAuthority(orgType)
     ? {
         [fundingAmountPage]: addressPage,
       }
