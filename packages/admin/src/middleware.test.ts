@@ -16,7 +16,7 @@ jest.mock('./services/UserService', () => ({
 }));
 
 describe('middleware', () => {
-  const req = new NextRequest('http://localhost:3000/apply/test/destination');
+  const req = new NextRequest('http://localhost:3000/dashboard');
 
   beforeEach(() => {
     process.env.MAX_COOKIE_AGE = '21600';

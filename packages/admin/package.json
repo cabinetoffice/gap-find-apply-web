@@ -49,7 +49,7 @@
     "isomorphic-fetch": "^3.0.0",
     "sass": "1.62.1",
     "typescript": "^4.6.3",
-    "urlpattern-polyfill": "^9.0.0"
+    "urlpattern-polyfill": "^10.0.0"
   },
   "browserslist": {
     "production": [
