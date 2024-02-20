@@ -6,6 +6,7 @@ import styles from './Header.module.scss';
 import { getLoginUrl } from '../../utils/general';
 import { MobileNavigationBar } from './navigation';
 import { useAuth } from '../../pages/_app.page';
+import getConfig from 'next/config';
 
 interface HeaderProps {
   isUserLoggedIn?: boolean;
@@ -15,6 +16,9 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = ({ isUserLoggedIn, oneLoginEnabledInFind }) => {
   const feedbackContent = `https://docs.google.com/forms/d/e/1FAIpQLSeZnNVCqmtnzfZQJSBW_k9CklS2Y_ym2GRt-z0-1wf9pDEgPw/viewform`;
   const { isSuperAdmin } = useAuth();
+  const {
+    publicRuntimeConfig: { ADMIN_FRONTEND_URL },
+  } = getConfig();
 
   return (
     <>
@@ -95,7 +99,7 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn, oneLoginEnabledInFind }) => {
                 className={`${styles['super-admin-link']} super-admin-link govuk-!-padding-top-2`}
               >
                 <a
-                  href={`${process.env.ADMIN_FRONTEND_URL}/super-admin-dashboard`}
+                  href={`${ADMIN_FRONTEND_URL}/super-admin-dashboard`}
                   className="govuk-header__link   govuk-!-font-weight-bold"
                 >
                   Superadmin Dashboard

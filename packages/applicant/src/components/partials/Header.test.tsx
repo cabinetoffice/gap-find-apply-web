@@ -5,9 +5,17 @@ import { createMockRouter } from '../../testUtils/createMockRouter';
 import Header from './Header';
 import { useAuth } from '../../pages/_app.page';
 
+jest.mock('../../pages/_app.page');
+const mockUseAuth = jest.mocked(useAuth);
+
 describe('Header Component', () => {
   describe('should render header', () => {
     beforeEach(() => {
+      mockUseAuth.mockReturnValue({
+        oneLoginEnabledInFind: true,
+        isUserLoggedIn: true,
+        isSuperAdmin: false,
+      });
       render(
         <RouterContext.Provider
           value={createMockRouter({ pathname: '/header' })}
@@ -58,9 +66,6 @@ describe('Header Component', () => {
   });
 });
 
-jest.mock('../../pages/_app.page');
-const mockUseAuth = jest.mocked(useAuth);
-
 describe('Testing SuperAdmin Dashboard link', () => {
   it('It should render SuperAdmin Dashboard link', () => {
     mockUseAuth.mockReturnValue({
@@ -73,12 +78,15 @@ describe('Testing SuperAdmin Dashboard link', () => {
         <Header isUserLoggedIn={true} oneLoginEnabledInFind="true" />
       </RouterContext.Provider>
     );
-    expect(
-      screen.getByRole('link', { name: 'Superadmin Dashboard' })
-    ).toHaveLength(1);
-    expect(
-      screen.getByRole('link', { name: 'Superadmin Dashboard' })
-    ).toBeDefined();
+    const saLink = screen.getAllByText(
+      'Superadmin Dashboard'
+    )[0] as HTMLAnchorElement;
+    expect(saLink).toBeInTheDocument();
+    expect(saLink).toBeDefined();
+    expect(saLink).toHaveAttribute(
+      'href',
+      'http://localhost:3000/apply/admin/super-admin-dashboard'
+    );
   });
   it('It should NOT render SuperAdmin Dashboard link', () => {
     mockUseAuth.mockReturnValue({
