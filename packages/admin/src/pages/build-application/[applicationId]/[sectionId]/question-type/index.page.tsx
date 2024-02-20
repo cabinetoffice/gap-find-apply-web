@@ -9,6 +9,11 @@ import QuestionTypeHint from '../components/QuestionTypeHint';
 import { getServerSideProps } from './index.getServerSideProps';
 import InferProps from '../../../../../types/InferProps';
 
+const getPageTitle = (fieldErrors: string | any[], isEdit: boolean) =>
+  `${fieldErrors.length > 0 ? 'Error: ' : ''}${
+    isEdit ? 'Change question type' : 'Add a question'
+  } - Manage a grant`;
+
 const QuestionType = ({
   pageData: { sectionName, defaultRadio, backButtonHref },
   formAction,
@@ -18,11 +23,7 @@ const QuestionType = ({
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
-      <Meta
-        title={`${fieldErrors.length > 0 ? 'Error: ' : ''}${
-          isEdit ? 'Change question type' : 'Add a question'
-        } - Manage a grant`}
-      />
+      <Meta title={getPageTitle(fieldErrors, isEdit)} />
 
       <CustomLink
         isBackButton

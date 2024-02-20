@@ -5,7 +5,6 @@ import ResponseType, {
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 import {
   addFieldsToSession,
-  deleteSummaryFromSession,
   getSummaryFromSession,
   getValueFromSession,
 } from '../../../../../services/SessionService';
@@ -125,7 +124,7 @@ export const getServerSideProps = async (
     if (response.redirectQuestionType) {
       const queryString =
         Object.keys(query).length > 0
-          ? `?${new URLSearchParams({ ...(query as object) })}`
+          ? '?' + new URLSearchParams(query as Record<string, string>)
           : '';
       return getRedirect(
         response.redirectQuestionType,

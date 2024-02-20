@@ -15,10 +15,7 @@ import {
   patchQuestion,
   postQuestion,
 } from '../../../../services/QuestionService';
-import {
-  deleteSummaryFromSession,
-  getSummaryFromSession,
-} from '../../../../services/SessionService';
+import { getSummaryFromSession } from '../../../../services/SessionService';
 import { ApplicationFormSummary } from '../../../../types/ApplicationForm';
 import { QuestionWithOptionsSummary } from '../../../../types/QuestionSummary';
 import callServiceMethod from '../../../../utils/callServiceMethod';
@@ -41,13 +38,13 @@ export const getServerSideProps: GetServerSideProps = async ({
   const sessionCookie = getSessionIdFromCookies(req);
 
   let fieldErrors: ValidationError[] = [];
-  let options: string[] | undefined = [''];
+  let options: string[] = [''];
   let applicationFormSummary: ApplicationFormSummary;
   let questionSummary: QuestionWithOptionsSummary;
 
   const queryString =
     Object.keys(query).length > 0
-      ? '?' + new URLSearchParams({ ...(query as object) })
+      ? '?' + new URLSearchParams(query as Record<string, string>)
       : '';
 
   if (!sessionId) {
@@ -81,7 +78,7 @@ export const getServerSideProps: GetServerSideProps = async ({
         options: questionData.options,
         fieldTitle: questionData.fieldTitle,
       };
-      options = questionSummary.options;
+      options = questionSummary.options || [''];
     }
   }
 

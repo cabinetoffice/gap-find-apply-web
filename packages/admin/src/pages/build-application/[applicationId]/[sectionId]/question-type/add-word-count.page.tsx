@@ -1,4 +1,4 @@
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
 import QuestionPageGetServerSideProps from '../../../../../utils/QuestionPageGetServerSideProps';
@@ -39,7 +39,7 @@ export const getServerSideProps = async (
 
     const queryString =
       Object.keys(context.query).length > 0
-        ? `?${new URLSearchParams({ ...(context.query as object) })}`
+        ? '?' + new URLSearchParams(context.query as Record<string, string>)
         : '';
 
     return {
