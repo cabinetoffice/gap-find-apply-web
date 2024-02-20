@@ -1,13 +1,7 @@
 import { ImportantBanner } from 'gap-web-ui';
 import { DashboardPageProps } from './page.page';
 
-type DashboardBannerProps = {
-  searchParams: DashboardPageProps['searchParams'];
-};
-
-export default function DashboardBanner({
-  searchParams,
-}: DashboardBannerProps) {
+export default function DashboardBanner({ searchParams }: DashboardPageProps) {
   const FAILED = 'FAILED';
   const SUCCEEDED = 'SUCCEEDED';
 
