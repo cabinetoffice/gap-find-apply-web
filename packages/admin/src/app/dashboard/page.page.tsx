@@ -3,7 +3,7 @@ import { getUserSchemes } from '../../services/SchemeService';
 import Pagination from '../../types/Pagination';
 import { getLoggedInUsersDetails } from '../../services/UserService';
 import { Metadata } from 'next';
-import Navigation from '../../pages/super-admin-dashboard/Navigation';
+import Navigation from './Navigation';
 import AccountDetails from './AccountDetails';
 import ManageGrantSchemes from './ManageGrantSchemes';
 import DashboardBanner from './DashboardBanner';
@@ -35,7 +35,7 @@ export default async function Page({ searchParams }: DashboardPageProps) {
 
   return (
     <>
-      {isTechSupportUser && <Navigation isSuperAdminNav={false} />}
+      {isTechSupportUser && <Navigation />}
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">

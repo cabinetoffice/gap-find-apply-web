@@ -18,7 +18,6 @@ import { getUserTokenFromCookies } from '../../utils/session';
 import Navigation from './Navigation';
 import styles from './superadmin-dashboard.module.scss';
 import { SuperAdminDashboardFilterData, User } from './types';
-import { NextRedirect } from '../../utils/QuestionPageGetServerSidePropsTypes';
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
