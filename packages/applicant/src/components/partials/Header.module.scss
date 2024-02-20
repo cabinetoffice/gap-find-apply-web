@@ -10,10 +10,7 @@
   white-space: pre;
   position: absolute;
   right: 0;
-}
-
-@media (max-width: 768px) {
-  .super-admin-link {
+  @media (max-width: 768px) {
     display: none;
   }
 }

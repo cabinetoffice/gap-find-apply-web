@@ -10,7 +10,6 @@ import '../lib/ie11_nodelist_polyfill';
 import '../styles/globals.scss';
 import { getUserRoles } from '../services/UserService';
 
-//setup context and user token for authenticating super admin users (see _app.page.js in applicant app for similar implementation)
 const USER_TOKEN_NAME = process.env.JWT_COOKIE_NAME;
 export const AuthContext = createContext({
   isSuperAdmin: false,
