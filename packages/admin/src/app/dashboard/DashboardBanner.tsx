@@ -2,7 +2,7 @@ import { ImportantBanner } from 'gap-web-ui';
 import { DashboardPageProps } from './page.page';
 
 export default function DashboardBanner({ searchParams }: DashboardPageProps) {
-  if (process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED !== 'true') return;
+  if (process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED !== 'true') return null;
 
   const statusArray = Object.values(searchParams);
   if (statusArray.includes('FAILED')) {
@@ -34,4 +34,6 @@ export default function DashboardBanner({ searchParams }: DashboardPageProps) {
       />
     );
   }
+
+  return null;
 }
