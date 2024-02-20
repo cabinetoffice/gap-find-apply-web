@@ -1,7 +1,11 @@
-import CustomLink from '../../components/custom-link/CustomLink';
 import Table from '../../components/table/Table';
 import Scheme from '../../types/Scheme';
-import { generateSchemeTableRows } from '../scheme-list/index.page';
+import { generateSchemeTableRows } from '../../pages/scheme-list/index.page';
+import Link from 'next/link';
+
+type ManageGrantSchemesProps = {
+  schemes: Scheme[];
+};
 
 const ManageGrantSchemes = ({ schemes }: ManageGrantSchemesProps) => {
   const schemeTableRows = generateSchemeTableRows({ schemes });
@@ -19,13 +23,9 @@ const ManageGrantSchemes = ({ schemes }: ManageGrantSchemesProps) => {
         rows={schemeTableRows}
       />
 
-      <CustomLink
-        href="/scheme-list"
-        customStyle="govuk-!-font-size-19"
-        dataCy="cy_SchemeListButton"
-      >
+      <Link href="/scheme-list" className="govuk-link govuk-!-font-size-19">
         View all grants
-      </CustomLink>
+      </Link>
     </div>
   ) : (
     <div data-testid="create-new-grant-scheme-section">
@@ -34,9 +34,5 @@ const ManageGrantSchemes = ({ schemes }: ManageGrantSchemesProps) => {
     </div>
   );
 };
-
-interface ManageGrantSchemesProps {
-  schemes: Scheme[];
-}
 
 export default ManageGrantSchemes;

@@ -1,3 +1,5 @@
+'use client';
+
 import getConfig from 'next/config';
 import Link from 'next/link';
 import { useRouter } from 'next/router';

@@ -8880,10 +8880,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"domino@npm:^2.1.6":
-  version: 2.1.6
-  resolution: "domino@npm:2.1.6"
-  checksum: 9b1b6d2661efd8bf942b70d5e11ac0de6a63f17e49b7eb227d9a612fa7b7c12b7775520d64f498988a8ee334ea9c59a463c84ea510b0af17dd3e13fdce120410
+"domino@Haringat/domino#2721294c75334ece635dfc72cad0a3dede7391fb":
+  version: 2.1.6+git
+  resolution: "domino@https://github.com/Haringat/domino.git#commit=2721294c75334ece635dfc72cad0a3dede7391fb"
+  checksum: c504b012486ebed6667d158505c050efb2b6d8bf9cdea32528df8c567e209c0cf657a7ce926e53ceea54735fe0832918dfc24b5f036aa39c691ebe9cf1726b25
   languageName: node
   linkType: hard
 
@@ -10587,7 +10587,7 @@ __metadata:
     storybook: 7.4.6
     style-loader: ^3.3.1
     tslib: ^2.4.0
-    turndown: ^7.1.1
+    turndown: ^7.1.2
     typescript: ^4.7.4
   languageName: unknown
   linkType: soft
@@ -18037,7 +18037,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turndown@npm:^7.1.1":
+"turndown@npm:^7.1.2":
   version: 7.1.2
   resolution: "turndown@npm:7.1.2"
   dependencies:
