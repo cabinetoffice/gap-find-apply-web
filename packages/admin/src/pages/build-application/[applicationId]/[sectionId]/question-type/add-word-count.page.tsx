@@ -7,6 +7,7 @@ import CustomLink from '../../../../../components/custom-link/CustomLink';
 import { Button, FlexibleQuestionPageLayout, TextInput } from 'gap-web-ui';
 import { ApplicationFormSection } from '../../../../../types/ApplicationForm';
 import {
+  getQuestion,
   patchQuestion,
   postQuestion,
 } from '../../../../../services/QuestionService';
@@ -23,7 +24,7 @@ export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
   const { applicationId, sectionId } = context.params as Record<string, string>;
-  const { questionId } = context.query;
+  const { questionId, backTo } = context.query;
   const sessionCookie = getSessionIdFromCookies(context.req);
 
   async function fetchPageData() {
@@ -36,8 +37,12 @@ export const getServerSideProps = async (
       (section) => section.sectionId === sectionId
     ) as ApplicationFormSection;
 
+    const queryString = context.query
+      ? `?${new URLSearchParams({ ...(context.query as object) })}`
+      : '';
+
     return {
-      backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type`,
+      backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type${queryString}`,
       sectionTitle,
     };
   }
@@ -58,19 +63,13 @@ export const getServerSideProps = async (
           mandatory: optional !== 'true',
         },
       };
-      const response = await patchQuestion(
+      await patchQuestion(
         sessionCookie,
         applicationId,
         sectionId,
         questionId.toString(),
         bodyToPatch
       );
-      // const editQueryString = query.backTo
-      //   ? `?${new URLSearchParams({ backTo: query.backTo.toString() })}`
-      //   : '';
-      // return {
-      //   data: `/build-application/${applicationId}/${sectionId}/${body.questionId}/edit/question-content${editQueryString}`,
-      // };
     } else {
       const questionSummary = (await getSummaryFromSession(
         'newQuestion',
@@ -92,15 +91,40 @@ export const getServerSideProps = async (
     }
   }
 
-  return QuestionPageGetServerSideProps({
+  let onSuccessRedirectHref = `/build-application/${applicationId}/${sectionId}`;
+  if (questionId) {
+    const queryString = backTo
+      ? `?${new URLSearchParams({ backTo: backTo.toString() })}`
+      : '';
+    onSuccessRedirectHref = `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`;
+  }
+
+  const serverSideProps = await QuestionPageGetServerSideProps({
     context,
     fetchPageData,
-    onSuccessRedirectHref: `/build-application/${applicationId}/${sectionId}`,
+    onSuccessRedirectHref,
     jwt: sessionCookie,
     onErrorMessage: 'Something went wrong while trying to load this page.',
     handleRequest,
     isEdit: !!questionId,
   });
+
+  if (questionId && serverSideProps.props) {
+    const questionData = await getQuestion(
+      sessionCookie,
+      applicationId,
+      sectionId,
+      questionId.toString()
+    );
+    if (questionData.validation.maxWords) {
+      serverSideProps.props.previousValues = {
+        ...serverSideProps.props.previousValues,
+        maxWords: questionData.validation.maxWords,
+      };
+    }
+  }
+
+  return serverSideProps;
 };
 
 export default function AddWordCount({

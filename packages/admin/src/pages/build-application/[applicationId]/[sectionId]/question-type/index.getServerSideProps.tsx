@@ -5,6 +5,7 @@ import ResponseType, {
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 import {
   addFieldsToSession,
+  deleteSummaryFromSession,
   getSummaryFromSession,
   getValueFromSession,
 } from '../../../../../services/SessionService';
@@ -86,6 +87,7 @@ export const getServerSideProps = async (
           ...props,
           validation: {
             mandatory: optional !== 'true',
+            maxWords: '',
           },
         }
       );
@@ -123,24 +125,6 @@ export const getServerSideProps = async (
         queryString
       );
     }
-    // TODO rip it out?
-    // if (questionId) {
-    //   const shouldRedirectToOptionSelection = [
-    //     ResponseType.Dropdown,
-    //     ResponseType.MultipleSelection,
-    //   ].includes(response.data.responseType);
-    //   const shouldRedirectToMaxWords =
-    //     ResponseType.LongAnswer === response.data.responseType;
-    //   const queryString = query
-    //     ? `?${new URLSearchParams({ ...(query as object) })}`
-    //     : '';
-    //   if (shouldRedirectToOptionSelection) {
-    //     return `/build-application/${applicationId}/${sectionId}/question-options${queryString}`;
-    //   } else if (shouldRedirectToMaxWords) {
-    //     return `/build-application/${applicationId}/${sectionId}/question-type/add-word-count${queryString}`;
-    //   }
-    //   return `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content`;
-    // }
     return `/build-application/${applicationId}/${sectionId}`;
   };
 

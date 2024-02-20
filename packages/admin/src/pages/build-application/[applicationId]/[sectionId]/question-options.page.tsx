@@ -15,7 +15,10 @@ import {
   patchQuestion,
   postQuestion,
 } from '../../../../services/QuestionService';
-import { getSummaryFromSession } from '../../../../services/SessionService';
+import {
+  deleteSummaryFromSession,
+  getSummaryFromSession,
+} from '../../../../services/SessionService';
 import { ApplicationFormSummary } from '../../../../types/ApplicationForm';
 import { QuestionWithOptionsSummary } from '../../../../types/QuestionSummary';
 import callServiceMethod from '../../../../utils/callServiceMethod';
@@ -42,8 +45,6 @@ export const getServerSideProps: GetServerSideProps = async ({
   let applicationFormSummary: ApplicationFormSummary;
   let questionSummary: QuestionWithOptionsSummary;
 
-  console.log('q', query, questionId);
-
   const queryString = '?' + new URLSearchParams({ ...(query as object) });
 
   if (!sessionId) {
@@ -55,7 +56,6 @@ export const getServerSideProps: GetServerSideProps = async ({
       applicationId,
       getSessionIdFromCookies(req)
     );
-    // TODO grab updatedQuestion from session
     questionSummary = (await getSummaryFromSession(
       questionId ? 'updatedQuestion' : 'newQuestion',
       sessionCookie
@@ -72,7 +72,6 @@ export const getServerSideProps: GetServerSideProps = async ({
       sectionId,
       questionId.toString()
     );
-    console.log('grabbing q', questionData, questionSummary);
     if (questionData?.options) {
       questionSummary = {
         ...questionSummary,
@@ -82,7 +81,6 @@ export const getServerSideProps: GetServerSideProps = async ({
       options = questionSummary.options;
     }
   }
-  console.log('summary now', questionSummary);
 
   const sectionName = applicationFormSummary.sections.find(
     (section) => section.sectionId === sectionId
@@ -95,7 +93,6 @@ export const getServerSideProps: GetServerSideProps = async ({
       options = body.options;
       const { optional, ...restOfQuestionSummary } = questionSummary;
 
-      console.log('submitting', questionId, body.questionId);
       if ('add-another-option' in body) {
         options.push('');
 
@@ -103,21 +100,21 @@ export const getServerSideProps: GetServerSideProps = async ({
           data: '',
         };
       } else if (body.questionId) {
-        console.log('patching', body, restOfQuestionSummary);
-        const response = await patchQuestion(
+        await patchQuestion(
           sessionId,
           applicationId,
           sectionId,
           body.questionId,
           {
             ...restOfQuestionSummary,
-            ...body,
+            options,
             validation: {
               mandatory: optional !== 'true',
+              maxWords: '',
             },
           }
         );
-        console.log('patching it', response.data);
+
         const editQueryString = query.backTo
           ? `?${new URLSearchParams({ backTo: query.backTo.toString() })}`
           : '';
@@ -125,7 +122,6 @@ export const getServerSideProps: GetServerSideProps = async ({
           data: `/build-application/${applicationId}/${sectionId}/${body.questionId}/edit/question-content${editQueryString}`,
         };
       } else {
-        console.log('posting');
         await postQuestion(
           getSessionIdFromCookies(req),
           applicationId,
@@ -133,7 +129,9 @@ export const getServerSideProps: GetServerSideProps = async ({
           {
             options,
             ...restOfQuestionSummary,
-            validation: { mandatory: optional !== 'true' },
+            validation: {
+              mandatory: optional !== 'true',
+            },
           }
         );
 
@@ -143,7 +141,6 @@ export const getServerSideProps: GetServerSideProps = async ({
       }
     },
     (response: { data: string }) => {
-      console.log('redirect to ', response.data);
       return response.data;
     },
     getErrorPageParams(applicationId)
