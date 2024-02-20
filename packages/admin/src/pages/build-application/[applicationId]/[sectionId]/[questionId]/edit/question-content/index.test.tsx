@@ -80,7 +80,7 @@ describe('Question content page', () => {
       render(
         <QuestionContent
           {...getPageProps(getDefaultProps, {
-            previousValues: { optional: 'Yes' },
+            previousValues: { optional: 'true' },
             pageData: {
               questionData: {
                 ...getDefaultProps().pageData.questionData,

@@ -28,10 +28,12 @@ const QuestionContent = ({
   previousValues,
 }: InferProps<typeof getServerSideProps>) => {
   const optionalRadioDefault = () => {
-    if (previousValues?.optional) return previousValues?.optional;
-    if (questionData.validation.mandatory !== undefined) {
-      return questionData.validation.mandatory === 'false' ? 'Yes' : 'No';
-    }
+    if (previousValues?.optional)
+      return previousValues?.optional === 'true' ? 'Yes' : 'No';
+    if (questionData.validation.mandatory !== undefined)
+      return Boolean(questionData.validation.mandatory) === false
+        ? 'Yes'
+        : 'No';
     return undefined;
   };
 

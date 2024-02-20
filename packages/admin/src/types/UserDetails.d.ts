@@ -3,7 +3,7 @@ type UserDetails = {
   lastName: string;
   organisationName: string;
   emailAddress: string;
-  roles: Role[];
+  roles: string;
   created: string;
 };
 

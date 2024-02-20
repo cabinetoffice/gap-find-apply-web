@@ -47,6 +47,10 @@ export default function MandatoryQuestionOrganisationTypePage({
                 label: MQ_ORG_TYPES.INDIVIDUAL,
                 value: MQ_ORG_TYPES.INDIVIDUAL,
               },
+              {
+                label: MQ_ORG_TYPES.LOCAL_AUTHORITY,
+                value: MQ_ORG_TYPES.LOCAL_AUTHORITY,
+              },
               { label: MQ_ORG_TYPES.OTHER, value: MQ_ORG_TYPES.OTHER },
             ]}
             defaultChecked={defaultFields.orgType}

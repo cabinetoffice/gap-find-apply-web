@@ -42,6 +42,24 @@ describe('Organisation address page', () => {
     });
   });
 
+  it('should display a heading for local authorities', () => {
+    renderWithRouter(
+      <MandatoryQuestionOrganisationAddressPage
+        {...getPageProps(getDefaultProps, {
+          mandatoryQuestion: {
+            schemeId: 1,
+            orgType: MQ_ORG_TYPES.LOCAL_AUTHORITY,
+          },
+        })}
+      />
+    );
+
+    screen.getByRole('heading', {
+      name: 'Enter your local authority address',
+      level: 1,
+    });
+  });
+
   it('should display a heading for organisations', () => {
     renderWithRouter(
       <MandatoryQuestionOrganisationAddressPage
