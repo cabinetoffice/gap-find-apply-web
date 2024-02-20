@@ -49,7 +49,7 @@ function HomePage({ loginUrl, registerUrl, oneLoginEnabled }: HomePageProps) {
                 className={`${styles['d-none-mobile']} d-none-mobile govuk-!-padding-top-2`}
               >
                 <a
-                  href={`${process.env.ADMIN_FRONTEND_URL}/super-admin-dashboard`}
+                  href={`${publicRuntimeConfig.ADMIN_FRONTEND_URL}/super-admin-dashboard`}
                   className="govuk-header__link   govuk-!-font-weight-bold"
                 >
                   Superadmin Dashboard

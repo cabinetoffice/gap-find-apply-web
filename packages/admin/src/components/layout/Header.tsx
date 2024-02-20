@@ -74,7 +74,7 @@ const Header = () => {
             {isSuperAdmin && (
               <div className="super-admin-link govuk-!-padding-top-2">
                 <a
-                  href={`${process.env.SUB_PATH}/super-admin-dashboard`}
+                  href={`${publicRuntimeConfig.SUB_PATH}/super-admin-dashboard`}
                   className="govuk-header__link  govuk-!-margin-left-9 govuk-!-font-weight-bold"
                 >
                   Superadmin Dashboard
