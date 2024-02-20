@@ -1,13 +1,20 @@
 import Table from '../../components/table/Table';
-import Scheme from '../../types/Scheme';
 import { generateSchemeTableRows } from '../../pages/scheme-list/index.page';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
+import { getUserSchemes } from '../../services/SchemeService';
+import Pagination from '../../types/Pagination';
 
-type ManageGrantSchemesProps = {
-  schemes: Scheme[];
-};
+export default async function PaginatedSchemeList() {
+  const paginationParams: Pagination = {
+    paginate: true,
+    page: 0,
+    size: 2,
+    sort: 'createdDate,DESC',
+  };
+  const sessionCookie = cookies().get(process.env.SESSION_COOKIE_NAME)!.value;
+  const schemes = await getUserSchemes(paginationParams, sessionCookie);
 
-const ManageGrantSchemes = ({ schemes }: ManageGrantSchemesProps) => {
   const schemeTableRows = generateSchemeTableRows({ schemes });
   return schemeTableRows.length > 0 ? (
     <div className="govuk-!-margin-bottom-7">
@@ -33,6 +40,4 @@ const ManageGrantSchemes = ({ schemes }: ManageGrantSchemesProps) => {
       <p className="govuk-body">Start by adding the details of your grant.</p>
     </div>
   );
-};
-
-export default ManageGrantSchemes;
+}
