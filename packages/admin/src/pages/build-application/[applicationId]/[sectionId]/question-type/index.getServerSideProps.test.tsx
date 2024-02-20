@@ -33,6 +33,7 @@ describe('getServerSideProps', () => {
           cookies: { session_id: 'test-session-id' },
         },
         res: { getHeader: () => 'testCSRFToken' },
+        query: {},
       },
       overrides
     ) as unknown as GetServerSidePropsContext;

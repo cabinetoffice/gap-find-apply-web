@@ -37,9 +37,10 @@ export const getServerSideProps = async (
       (section) => section.sectionId === sectionId
     ) as ApplicationFormSection;
 
-    const queryString = context.query
-      ? `?${new URLSearchParams({ ...(context.query as object) })}`
-      : '';
+    const queryString =
+      Object.keys(context.query).length > 0
+        ? `?${new URLSearchParams({ ...(context.query as object) })}`
+        : '';
 
     return {
       backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type${queryString}`,

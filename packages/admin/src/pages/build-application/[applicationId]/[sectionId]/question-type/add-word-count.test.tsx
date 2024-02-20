@@ -34,6 +34,7 @@ const getMockContext = ({ method } = { method: 'POST' }) =>
     res: { getHeader: () => 'token' },
     params: { applicationId: 'appId', sectionId: 'sectionId' },
     req: { cookies: { sessionId: 'token' }, method },
+    query: {},
   } as unknown as GetServerSidePropsContext);
 
 describe('getServerSideProps()', () => {

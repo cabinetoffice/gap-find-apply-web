@@ -57,6 +57,9 @@ export const getServerSideProps = async (
   const { params, req, query } = context;
   const { applicationId, sectionId } = params as Record<string, string>;
   const { questionId, backTo } = query;
+  const queryString = backTo
+    ? `?${new URLSearchParams({ backTo: backTo.toString() })}`
+    : '';
 
   const sessionId = getSessionIdFromCookies(req);
 
@@ -77,7 +80,7 @@ export const getServerSideProps = async (
         };
       }
 
-      return patchQuestion(
+      await patchQuestion(
         sessionId,
         applicationId,
         sectionId,
@@ -91,6 +94,11 @@ export const getServerSideProps = async (
           },
         }
       );
+
+      return {
+        data: 'QUESTION_UPDATED',
+        sessionId,
+      };
     } else {
       if (redirectQuestionType.includes(body.responseType)) {
         await addFieldsToSession('newQuestion', props, sessionId);
@@ -115,9 +123,10 @@ export const getServerSideProps = async (
     response: Awaited<ReturnType<typeof handleRequest>>
   ) => {
     if (response.redirectQuestionType) {
-      const queryString = query
-        ? `?${new URLSearchParams({ ...(query as object) })}`
-        : '';
+      const queryString =
+        Object.keys(query).length > 0
+          ? `?${new URLSearchParams({ ...(query as object) })}`
+          : '';
       return getRedirect(
         response.redirectQuestionType,
         applicationId,
@@ -125,7 +134,9 @@ export const getServerSideProps = async (
         queryString
       );
     }
-    return `/build-application/${applicationId}/${sectionId}`;
+    return response.data === 'QUESTION_SAVED'
+      ? `/build-application/${applicationId}/${sectionId}`
+      : `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`;
   };
 
   const fetchPageData = async (sessionCookie: string) => {
@@ -156,10 +167,6 @@ export const getServerSideProps = async (
     const sectionName = applicationFormSummary.sections.find(
       (section) => section.sectionId === sectionId
     )?.sectionTitle;
-
-    const queryString = backTo
-      ? `?${new URLSearchParams({ backTo: backTo.toString() })}`
-      : '';
 
     return {
       sectionName,

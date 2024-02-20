@@ -45,7 +45,10 @@ export const getServerSideProps: GetServerSideProps = async ({
   let applicationFormSummary: ApplicationFormSummary;
   let questionSummary: QuestionWithOptionsSummary;
 
-  const queryString = '?' + new URLSearchParams({ ...(query as object) });
+  const queryString =
+    Object.keys(query).length > 0
+      ? '?' + new URLSearchParams({ ...(query as object) })
+      : '';
 
   if (!sessionId) {
     return questionErrorPageRedirect(applicationId);
