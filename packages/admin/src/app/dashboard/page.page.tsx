@@ -6,6 +6,8 @@ import AccountDetails from './AccountDetails';
 import PaginatedSchemeList from './PaginatedSchemeList';
 import DashboardBanner from './DashboardBanner';
 import Link from 'next/link';
+import { getUserSchemes } from '../../services/SchemeService';
+import Pagination from '../../types/Pagination';
 
 export type DashboardPageProps = {
   searchParams: {
@@ -19,8 +21,15 @@ export const metadata: Metadata = {
 };
 
 export default async function Page({ searchParams }: DashboardPageProps) {
+  const paginationParams: Pagination = {
+    paginate: true,
+    page: 0,
+    size: 2,
+    sort: 'createdDate,DESC',
+  };
   const sessionCookie = cookies().get(process.env.SESSION_COOKIE_NAME)!.value;
   const userDetails = await getLoggedInUsersDetails(sessionCookie);
+  const schemes = await getUserSchemes(paginationParams, sessionCookie);
 
   const isTechSupportUser = userDetails.roles.includes('TECHNICAL_SUPPORT');
 
@@ -34,7 +43,7 @@ export default async function Page({ searchParams }: DashboardPageProps) {
 
           <AccountDetails userDetails={userDetails} />
 
-          <PaginatedSchemeList />
+          <PaginatedSchemeList schemes={schemes} />
 
           <Link className="govuk-button" href="/new-scheme/name">
             Add a grant
