@@ -12,10 +12,10 @@ import {
   requestSubmissionsExport,
 } from '../../../services/SubmissionsService';
 import { getLoggedInUsersDetails } from '../../../services/UserService';
+import InferProps from '../../../types/InferProps';
+import { parseBody } from '../../../utils/parseBody';
 import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../utils/session';
-import { parseBody } from '../../../utils/parseBody';
-import InferProps from '../../../types/InferProps';
 import { DownloadMessage } from '../../../components/notification-banner/DownloadMessage';
 
 export const getServerSideProps = async ({
@@ -168,35 +168,36 @@ const DownloadSubmissions = ({
             </>
           )}
 
-          {exportStatus == ExportStatusEnum.NOT_STARTED &&
-            requested != 'true' && (
-              <>
-                <h1 className="govuk-heading-l">View your applications</h1>
-                <p
-                  className="govuk-body"
-                  data-cy="cy_Download-submissions-page-text-1"
-                >
-                  To see who has applied for your grant, you need to view and
-                  download your submitted applications.
-                </p>
-                <p
-                  className="govuk-body"
-                  data-cy="cy_Download-submissions-page-text-2"
-                >
-                  Get started by requesting a list of applications.
-                </p>
-                <FlexibleQuestionPageLayout
-                  fieldErrors={[]}
-                  formAction={formAction}
-                  csrfToken={csrfToken}
-                >
-                  <Button
-                    text="Download submitted applications"
-                    addNameAttribute
-                  />
-                </FlexibleQuestionPageLayout>
-              </>
-            )}
+          {exportStatus == ExportStatusEnum.FAILED ||
+            (exportStatus == ExportStatusEnum.NOT_STARTED &&
+              requested != 'true' && (
+                <>
+                  <h1 className="govuk-heading-l">View your applications</h1>
+                  <p
+                    className="govuk-body"
+                    data-cy="cy_Download-submissions-page-text-1"
+                  >
+                    To see who has applied for your grant, you need to view and
+                    download your submitted applications.
+                  </p>
+                  <p
+                    className="govuk-body"
+                    data-cy="cy_Download-submissions-page-text-2"
+                  >
+                    Get started by requesting a list of applications.
+                  </p>
+                  <FlexibleQuestionPageLayout
+                    fieldErrors={[]}
+                    formAction={formAction}
+                    csrfToken={csrfToken}
+                  >
+                    <Button
+                      text="Download submitted applications"
+                      addNameAttribute
+                    />
+                  </FlexibleQuestionPageLayout>
+                </>
+              ))}
 
           {exportStatus == ExportStatusEnum.COMPLETE && (
             <>
