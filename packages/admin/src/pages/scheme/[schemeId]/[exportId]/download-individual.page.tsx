@@ -2,13 +2,14 @@ import { FlexibleQuestionPageLayout, Table } from 'gap-web-ui';
 import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import React, { useState } from 'react';
-import CustomLink from '../../../components/custom-link/CustomLink';
-import Meta from '../../../components/layout/Meta';
-import { getGrantScheme } from '../../../services/SchemeService';
-import { getCompletedSubmissionExportList } from '../../../services/SubmissionsService';
-import { downloadFile } from '../../../utils/general';
-import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
-import { getSessionIdFromCookies } from '../../../utils/session';
+import CustomLink from '../../../../components/custom-link/CustomLink';
+import Meta from '../../../../components/layout/Meta';
+import { getGrantScheme } from '../../../../services/SchemeService';
+import { getCompletedSubmissionExportList } from '../../../../services/SubmissionsService';
+import { downloadFile } from '../../../../utils/general';
+import { generateErrorPageRedirect } from '../../../../utils/serviceErrorHelpers';
+import { getSessionIdFromCookies } from '../../../../utils/session';
+import { Pagination } from '../../../../components/pagination/Pagination';
 
 export const getServerSideProps = async ({
   req,
@@ -197,15 +198,26 @@ export const CompletedSubmissions = ({
           formAction={formAction}
           csrfToken={csrfToken}
         >
-          <h1 className="govuk-heading-l">{schemeName}</h1>
+          <span className="govuk-caption-l" data-cy="cyApplicationTitle">
+            {schemeName}
+          </span>
+          <h1 className="govuk-heading-l" tabIndex={-1}>
+            Download individual applications
+          </h1>
 
           <div className="submissions-download-table">
             <Table
               tableClassName="table-thead-bottom-border"
-              caption="Applications submitted"
+              caption="Submitted applications"
               captionSize="m"
               tHeadColumns={tableHeadColumns}
               rows={tableRows}
+            />
+
+            <Pagination
+              additionalQueryData={{}}
+              itemsPerPage={10}
+              totalItems={submissionList.length} // TODO: Count of the total individual applications
             />
 
             {/* Temporarily disabling multidownload */}
@@ -221,6 +233,15 @@ export const CompletedSubmissions = ({
                 Download selected
               </button>
             )}
+          </div>
+
+          <div className="govuk-!-margin-top-6">
+            <CustomLink
+              href="/dashboard" // change scheme id from 1 to the real deal
+              isSecondaryButton
+            >
+              Return to overview
+            </CustomLink>
           </div>
         </FlexibleQuestionPageLayout>
       </div>

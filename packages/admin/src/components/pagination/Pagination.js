@@ -109,8 +109,9 @@ const Pagination = ({
           <ul className="govuk-pagination__list">{paginationElements}</ul>
         </>
       )}
+      {/* TODO: Is this margin what we want? */}
       <p
-        className="moj-pagination__results"
+        className="moj-pagination__results govuk-!-margin-top-9"
         data-cy="cyPaginationShowingGrants"
         style={{
           paddingTop: '0.6rem',
