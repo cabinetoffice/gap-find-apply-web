@@ -1,20 +1,19 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  GetServerSidePropsResult,
-} from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { getSummaryFromSession } from '../../../../../services/SessionService';
 import ResponseTypeEnum from '../../../../../enums/ResponseType';
 import AddWordCount, { getServerSideProps } from './add-word-count.page';
-import { postQuestion } from '../../../../../services/QuestionService';
+import {
+  patchQuestion,
+  postQuestion,
+} from '../../../../../services/QuestionService';
 import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
 import { parseBody } from '../../../../../utils/parseBody';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
 import { getPageProps } from '../../../../../testUtils/unitTestHelpers';
-import { getDepartment } from '../../../../../services/SuperAdminService';
 import InferProps from '../../../../../types/InferProps';
+import * as QuestionService from '../../../../../services/QuestionService';
 
 jest.mock('../../../../../services/SessionService');
 jest.mock('../../../../../services/QuestionService');
@@ -29,16 +28,19 @@ const getMockQuestionSummary = () => ({
   responseType: ResponseTypeEnum.LongAnswer,
 });
 
-const getMockContext = ({ method } = { method: 'POST' }) =>
+const getMockContext = (
+  { method, query = {} } = { method: 'POST', query: {} }
+) =>
   ({
     res: { getHeader: () => 'token' },
     params: { applicationId: 'appId', sectionId: 'sectionId' },
     req: { cookies: { sessionId: 'token' }, method },
-    query: {},
+    query,
   } as unknown as GetServerSidePropsContext);
 
 describe('getServerSideProps()', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     process.env.SESSION_COOKIE_NAME = 'sessionId';
     (parseBody as jest.Mock).mockResolvedValue(getMockQuestionSummary());
     (getApplicationFormSummary as jest.Mock).mockResolvedValue({
@@ -67,7 +69,7 @@ describe('getServerSideProps()', () => {
     });
   });
 
-  it('should call postQuestion service with a POST request', async () => {
+  it.only('should call postQuestion service with a POST request', async () => {
     (getSummaryFromSession as jest.Mock).mockResolvedValueOnce({});
     (postQuestion as jest.Mock).mockResolvedValueOnce(getMockQuestionSummary());
 
@@ -78,6 +80,48 @@ describe('getServerSideProps()', () => {
       'token',
       'appId',
       'sectionId',
+      expect.objectContaining({
+        responseType: ResponseTypeEnum.LongAnswer,
+        validation: {
+          maxWords: 20,
+          mandatory: true,
+        },
+      })
+    );
+  });
+
+  it.only('should call patchQuestion service with a PATCH request', async () => {
+    (getSummaryFromSession as jest.Mock).mockResolvedValueOnce({});
+    (parseBody as jest.Mock).mockResolvedValue({
+      responseType: 'LongAnswer',
+      maxWords: 20,
+    });
+    (patchQuestion as jest.Mock).mockResolvedValueOnce(
+      getMockQuestionSummary()
+    );
+    jest.spyOn(QuestionService, 'getQuestion').mockResolvedValue({
+      responseType: ResponseTypeEnum.YesNo,
+      questionId: 'questionId',
+      profileField: '',
+      fieldPrefix: '',
+      fieldTitle: '',
+      hintText: '',
+      adminSummary: '',
+      displayText: '',
+      questionSuffix: '',
+      optional: 'false',
+      validation: {},
+    });
+    await getServerSideProps(
+      getMockContext({ method: 'POST', query: { questionId: 'questionId' } })
+    );
+
+    expect(patchQuestion).toBeCalledTimes(1);
+    expect(patchQuestion).toBeCalledWith(
+      'token',
+      'appId',
+      'sectionId',
+      'questionId',
       expect.objectContaining({
         responseType: ResponseTypeEnum.LongAnswer,
         validation: {
@@ -112,12 +156,13 @@ const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
   pageData: {
     backButtonHref: '/some-back-href',
     sectionTitle: 'section-title',
+    maxWords: '',
   },
   previousValues: {
     fieldTitle: 'Test 2 Section Field Title',
     hintText: 'Test 2 hint text',
     optional: '',
-    maxWords: undefined,
+    maxWords: '',
   },
   formAction: '',
   csrfToken: '',
@@ -159,6 +204,18 @@ describe('Add word count page', () => {
       <AddWordCount
         {...getPageProps(getDefaultProps, {
           previousValues: { maxWords: '303' },
+        })}
+      />
+    );
+
+    expect(screen.getByRole('textbox')).toHaveValue('303');
+  });
+
+  it('Has a default of the saved value prop when it exists', () => {
+    render(
+      <AddWordCount
+        {...getPageProps(getDefaultProps, {
+          pageData: { maxWords: '303' },
         })}
       />
     );

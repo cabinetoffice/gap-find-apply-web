@@ -429,8 +429,6 @@ describe('getServerSideProps', () => {
           getPatchContext({})
         )) as NextGetServerSidePropsResponse;
 
-        console.log('Should redirect to the question options page.', result);
-
         expect(result).toStrictEqual({
           redirect: {
             destination:

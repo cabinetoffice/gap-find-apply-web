@@ -61,13 +61,9 @@ export const getServerSideProps = async (
     : '';
 
   const sessionId = getSessionIdFromCookies(req);
-  console.log('start ', questionId, backTo, sessionId);
 
   const handleRequest = async (body: RequestBody) => {
-    console.log('request start', questionId);
     const { _csrf, ...props } = body;
-
-    console.log('request qid', questionId, body);
 
     const questionSummary = (await getSummaryFromSession(
       'newQuestion',
@@ -75,18 +71,15 @@ export const getServerSideProps = async (
     )) as QuestionSummary;
     const { optional, ...restOfQuestionSummary } = questionSummary;
 
-    console.log('request picking', questionId, body, questionSummary);
     if (questionId) {
       if (redirectQuestionType.includes(body.responseType)) {
-        console.log('adding fields to session', body);
         await addFieldsToSession('updatedQuestion', props, sessionId);
         return {
           redirectQuestionType: body.responseType,
         };
       }
-      console.log('patching q');
 
-      const patchres = await patchQuestion(
+      await patchQuestion(
         sessionId,
         applicationId,
         sectionId,
@@ -100,7 +93,6 @@ export const getServerSideProps = async (
           },
         }
       );
-      console.log('patchres', patchres);
 
       return {
         data: 'QUESTION_UPDATED',

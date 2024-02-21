@@ -44,7 +44,6 @@ export default async function QuestionPageGetServerSideProps<
     ...context,
     pageData,
   });
-  console.log('postresponse', postResponse);
 
   if (postResponse && 'redirect' in postResponse) {
     return postResponse;
