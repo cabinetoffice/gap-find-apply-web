@@ -42,9 +42,23 @@ export const getServerSideProps = async (
         ? '?' + new URLSearchParams(context.query as Record<string, string>)
         : '';
 
+    let maxWords = '';
+    if (questionId) {
+      const questionData = await getQuestion(
+        sessionCookie,
+        applicationId,
+        sectionId,
+        questionId.toString()
+      );
+      if (questionData.validation.maxWords) {
+        maxWords = questionData.validation.maxWords;
+      }
+    }
+
     return {
       backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type${queryString}`,
       sectionTitle,
+      maxWords,
     };
   }
 
@@ -100,7 +114,7 @@ export const getServerSideProps = async (
     onSuccessRedirectHref = `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`;
   }
 
-  const serverSideProps = await QuestionPageGetServerSideProps({
+  return await QuestionPageGetServerSideProps({
     context,
     fetchPageData,
     onSuccessRedirectHref,
@@ -109,30 +123,13 @@ export const getServerSideProps = async (
     handleRequest,
     isEdit: !!questionId,
   });
-
-  if (questionId && serverSideProps.props) {
-    const questionData = await getQuestion(
-      sessionCookie,
-      applicationId,
-      sectionId,
-      questionId.toString()
-    );
-    if (questionData.validation.maxWords) {
-      serverSideProps.props.previousValues = {
-        ...serverSideProps.props.previousValues,
-        maxWords: questionData.validation.maxWords,
-      };
-    }
-  }
-
-  return serverSideProps;
 };
 
 export default function AddWordCount({
   fieldErrors,
   formAction,
   previousValues,
-  pageData: { sectionTitle, backButtonHref },
+  pageData: { sectionTitle, backButtonHref, maxWords },
   csrfToken,
 }: InferProps<typeof getServerSideProps>) {
   return (
@@ -164,7 +161,9 @@ export default function AddWordCount({
                 questionHintText="This will set the maximum number of words an applicant can use to answer this question. You can choose a limit of up to 5000 words."
                 width="4"
                 fieldErrors={fieldErrors}
-                defaultValue={(previousValues?.maxWords as string) || ''}
+                defaultValue={
+                  (previousValues?.maxWords as string) || maxWords || ''
+                }
               />
             </div>
             <div className="govuk-grid-row govuk-button-group">
