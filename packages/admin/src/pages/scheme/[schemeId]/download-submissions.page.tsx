@@ -3,7 +3,10 @@ import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import ExportStatusEnum from '../../../enums/ExportStatus';
-import { findApplicationFormFromScheme } from '../../../services/SchemeService';
+import {
+  findApplicationFormFromScheme,
+  getGrantScheme,
+} from '../../../services/SchemeService';
 import {
   getApplicationExportStatus,
   requestSubmissionsExport,
@@ -13,6 +16,7 @@ import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../utils/session';
 import { parseBody } from '../../../utils/parseBody';
 import InferProps from '../../../types/InferProps';
+import { DownloadMessage } from '../../../components/notification-banner/DownloadMessage';
 
 export const getServerSideProps = async ({
   req,
@@ -21,13 +25,16 @@ export const getServerSideProps = async ({
   resolvedUrl,
 }: GetServerSidePropsContext) => {
   const sessionCookie = getSessionIdFromCookies(req);
-  const { schemeId, requested } = query as Record<string, string>;
+  const { schemeId, requested, pageNumber } = query as Record<string, string>;
 
   let applicationFormsStatus: {
     applicationId: string;
     submissionCount: number;
   }[];
   let applicationId: string;
+  let submissionsCount: number;
+  let schemeName: string;
+  const applicationsUnavailableForDownload: number[] = []; // TODO Placeholder storage for info about downloads
 
   const errorPageRedirect = generateErrorPageRedirect(
     'Something went wrong while trying to export submissions.',
@@ -41,6 +48,10 @@ export const getServerSideProps = async ({
       sessionCookie
     );
     applicationId = applicationFormsStatus[0].applicationId;
+    submissionsCount = applicationFormsStatus[0].submissionCount;
+
+    const scheme = await getGrantScheme(schemeId, sessionCookie);
+    schemeName = scheme.name;
 
     const hasSubmissions = applicationFormsStatus.some(
       (appForm) => appForm.submissionCount > 0
@@ -84,7 +95,12 @@ export const getServerSideProps = async ({
   return {
     props: {
       backButtonHref: `/scheme/${schemeId}`,
+      individualApplicationsHref: `/scheme/${schemeId}/${applicationId}`,
+      schemeName,
       exportStatus,
+      submissionsCount,
+      applicationsUnavailableForDownload,
+      pageNumber: pageNumber || null,
       requested: requested || null,
       emailAddress: userDetails.emailAddress,
       formAction: process.env.SUB_PATH + resolvedUrl,
@@ -95,7 +111,12 @@ export const getServerSideProps = async ({
 
 const DownloadSubmissions = ({
   backButtonHref,
+  individualApplicationsHref,
+  schemeName,
   exportStatus,
+  submissionsCount,
+  applicationsUnavailableForDownload,
+  pageNumber,
   requested,
   emailAddress,
   formAction,
@@ -114,6 +135,10 @@ const DownloadSubmissions = ({
       />
 
       <CustomLink href={backButtonHref} isBackButton />
+
+      {applicationsUnavailableForDownload.length > 0 && (
+        <DownloadMessage count={applicationsUnavailableForDownload.length} />
+      )}
 
       <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-bottom-6">
         <div className="govuk-grid-column-full">
@@ -143,8 +168,7 @@ const DownloadSubmissions = ({
             </>
           )}
 
-          {(exportStatus == ExportStatusEnum.NOT_STARTED ||
-            exportStatus == ExportStatusEnum.COMPLETE) &&
+          {exportStatus == ExportStatusEnum.NOT_STARTED &&
             requested != 'true' && (
               <>
                 <h1 className="govuk-heading-l">View your applications</h1>
@@ -173,6 +197,63 @@ const DownloadSubmissions = ({
                 </FlexibleQuestionPageLayout>
               </>
             )}
+
+          {exportStatus == ExportStatusEnum.COMPLETE && (
+            <>
+              <h1 className="govuk-heading-l">{schemeName}</h1>
+
+              <h2 className="govuk-heading-m">
+                Applications available to download
+              </h2>
+
+              <p
+                className="govuk-body"
+                data-cy="cy_Download-submissions-page-text-1"
+              >
+                Your grant has{' '}
+                <b>
+                  {submissionsCount}{' '}
+                  {submissionsCount === 1 ? 'application' : 'applications'}
+                </b>{' '}
+                available to download.
+              </p>
+              <FlexibleQuestionPageLayout
+                fieldErrors={[]}
+                formAction={formAction}
+                csrfToken={csrfToken}
+              >
+                <div className="govuk-button-group">
+                  <Button text="Download all applications" addNameAttribute />
+                  <CustomLink
+                    href={individualApplicationsHref}
+                    isSecondaryButton
+                  >
+                    View individual applications
+                  </CustomLink>
+                </div>
+              </FlexibleQuestionPageLayout>
+
+              {applicationsUnavailableForDownload.length > 0 && (
+                // Paginated view goes here
+                // Page number will be a param
+                <>
+                  {/* <p>You are on page {pageNumber} right now</p>
+                  <CustomLink
+                    href={`/scheme/1/download-submissions?pageNumber=2`}
+                    isSecondaryButton
+                  >
+                    Page 2
+                  </CustomLink>
+                  <CustomLink
+                    href={`/scheme/1/download-submissions?pageNumber=3`}
+                    isSecondaryButton
+                  >
+                    Page 3
+                  </CustomLink> */}
+                </>
+              )}
+            </>
+          )}
         </div>
       </div>
     </>
