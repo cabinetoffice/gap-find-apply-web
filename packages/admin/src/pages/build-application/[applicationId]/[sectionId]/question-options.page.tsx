@@ -10,11 +10,7 @@ import { toWordsOrdinal } from 'number-to-words';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';
 import { getApplicationFormSummary } from '../../../../services/ApplicationService';
-import {
-  getQuestion,
-  patchQuestion,
-  postQuestion,
-} from '../../../../services/QuestionService';
+import { postQuestion } from '../../../../services/QuestionService';
 import { getSummaryFromSession } from '../../../../services/SessionService';
 import { ApplicationFormSummary } from '../../../../types/ApplicationForm';
 import { QuestionWithOptionsSummary } from '../../../../types/QuestionSummary';
@@ -30,10 +26,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   params,
   req,
   res,
-  query,
 }) => {
   const { applicationId, sectionId } = params as Record<string, string>;
-  const { questionId = null } = query;
   const sessionId = req.cookies.session_id;
   const sessionCookie = getSessionIdFromCookies(req);
 
@@ -41,11 +35,6 @@ export const getServerSideProps: GetServerSideProps = async ({
   let options: string[] = [''];
   let applicationFormSummary: ApplicationFormSummary;
   let questionSummary: QuestionWithOptionsSummary;
-
-  const queryString =
-    Object.keys(query).length > 0
-      ? '?' + new URLSearchParams(query as Record<string, string>)
-      : '';
 
   if (!sessionId) {
     return questionErrorPageRedirect(applicationId);
@@ -57,31 +46,12 @@ export const getServerSideProps: GetServerSideProps = async ({
       getSessionIdFromCookies(req)
     );
     questionSummary = (await getSummaryFromSession(
-      questionId ? 'updatedQuestion' : 'newQuestion',
+      'newQuestion',
       sessionCookie
-    )) as unknown as QuestionWithOptionsSummary;
+    )) as QuestionWithOptionsSummary;
   } catch (err) {
     return questionErrorPageRedirect(applicationId);
   }
-
-  // Have to grab questionData from API to populate the form as we can't store the options array in session
-  if (questionId) {
-    const questionData = await getQuestion(
-      sessionCookie,
-      applicationId,
-      sectionId,
-      questionId.toString()
-    );
-    if (questionData?.options) {
-      questionSummary = {
-        ...questionSummary,
-        options: questionData.options,
-        fieldTitle: questionData.fieldTitle,
-      };
-      options = questionSummary.options || [''];
-    }
-  }
-
   const sectionName = applicationFormSummary.sections.find(
     (section) => section.sectionId === sectionId
   )?.sectionTitle;
@@ -91,37 +61,16 @@ export const getServerSideProps: GetServerSideProps = async ({
     res,
     async (body: any) => {
       options = body.options;
-      const { optional, ...restOfQuestionSummary } = questionSummary;
 
       if ('add-another-option' in body) {
         options.push('');
 
         return {
-          data: '',
-        };
-      } else if (body.questionId) {
-        await patchQuestion(
-          sessionId,
-          applicationId,
-          sectionId,
-          body.questionId,
-          {
-            ...restOfQuestionSummary,
-            options,
-            validation: {
-              mandatory: optional !== 'true',
-              maxWords: '',
-            },
-          }
-        );
-
-        const editQueryString = query.backTo
-          ? `?${new URLSearchParams({ backTo: query.backTo.toString() })}`
-          : '';
-        return {
-          data: `/build-application/${applicationId}/${sectionId}/${body.questionId}/edit/question-content${editQueryString}`,
+          data: 'OPTION_ADDED',
         };
       } else {
+        const { optional, ...restOfQuestionSummary } = questionSummary;
+
         await postQuestion(
           getSessionIdFromCookies(req),
           applicationId,
@@ -129,19 +78,19 @@ export const getServerSideProps: GetServerSideProps = async ({
           {
             options,
             ...restOfQuestionSummary,
-            validation: {
-              mandatory: optional !== 'true',
-            },
+            validation: { mandatory: optional !== 'true' },
           }
         );
 
         return {
-          data: `/build-application/${applicationId}/${sectionId}`,
+          data: 'QUESTION_SAVED',
         };
       }
     },
     (response: { data: string }) => {
-      return response.data;
+      return response.data === 'QUESTION_SAVED'
+        ? `/build-application/${applicationId}/${sectionId}`
+        : '';
     },
     getErrorPageParams(applicationId)
   );
@@ -184,10 +133,9 @@ export const getServerSideProps: GetServerSideProps = async ({
     props: {
       sectionName,
       questionSummary,
-      questionId,
-      backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type${queryString}`,
+      backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type`,
       fieldErrors,
-      formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/question-options${queryString}`,
+      formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/question-options`,
       options,
       csrfToken: res.getHeader('x-csrf-token') as string,
     },
@@ -202,7 +150,6 @@ const QuestionOptions = ({
   fieldErrors,
   options,
   csrfToken,
-  questionId,
 }: QuestionOptionProps) => {
   return (
     <>
@@ -241,8 +188,6 @@ const QuestionOptions = ({
             );
           })}
 
-          <input type="hidden" name="questionId" value={questionId} />
-
           <div className="govuk-grid-column-two-thirds">
             <div className="govuk-grid-row">
               <Button
@@ -269,7 +214,6 @@ type QuestionOptionProps = {
   fieldErrors: ValidationError[];
   options: string[];
   csrfToken: string;
-  questionId?: string;
 };
 
 export default QuestionOptions;

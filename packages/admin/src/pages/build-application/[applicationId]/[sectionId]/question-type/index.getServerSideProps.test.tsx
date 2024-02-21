@@ -250,7 +250,7 @@ describe('getServerSideProps', () => {
         expect(result).toStrictEqual({
           redirect: {
             destination:
-              '/build-application/applicationId/sectionId/question-options',
+              '/build-application/applicationId/sectionId/question-options?from=question-type',
             statusCode: 302,
           },
         });
@@ -432,7 +432,7 @@ describe('getServerSideProps', () => {
         expect(result).toStrictEqual({
           redirect: {
             destination:
-              '/build-application/applicationId/sectionId/question-options?questionId=questionId',
+              '/build-application/applicationId/sectionId/questionId/edit/question-options?questionId=questionId&from=question-type',
             statusCode: 302,
           },
         });
@@ -486,7 +486,7 @@ describe('getServerSideProps', () => {
         expect(result).toStrictEqual({
           redirect: {
             destination:
-              '/build-application/applicationId/sectionId/question-type/add-word-count?questionId=questionId',
+              '/build-application/applicationId/sectionId/question-type/add-word-count?questionId=questionId&from=question-type',
             statusCode: 302,
           },
         });
