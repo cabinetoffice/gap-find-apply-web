@@ -9,10 +9,10 @@ import {
   requestSubmissionsExport,
 } from '../../../services/SubmissionsService';
 import { getLoggedInUsersDetails } from '../../../services/UserService';
+import InferProps from '../../../types/InferProps';
+import { parseBody } from '../../../utils/parseBody';
 import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../utils/session';
-import { parseBody } from '../../../utils/parseBody';
-import InferProps from '../../../types/InferProps';
 
 export const getServerSideProps = async ({
   req,
@@ -143,7 +143,8 @@ const DownloadSubmissions = ({
             </>
           )}
 
-          {(exportStatus == ExportStatusEnum.NOT_STARTED ||
+          {(exportStatus == ExportStatusEnum.FAILED ||
+            exportStatus == ExportStatusEnum.NOT_STARTED ||
             exportStatus == ExportStatusEnum.COMPLETE) &&
             requested != 'true' && (
               <>
