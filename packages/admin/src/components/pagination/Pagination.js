@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import {
   buildPaginationArr,
   buildPaginationListItems,
@@ -15,13 +14,10 @@ const Pagination = ({
   itemsPerPage = 10,
   totalItems = 0,
   itemType = 'items',
+  searchParams,
+  route,
 }) => {
-  const router = useRouter();
-
-  const { query = {} } = router;
-
-  const { page } = query;
-
+  const { page } = searchParams;
   const currentPage = page ? parseInt(page) : 1;
 
   const totalPage = Math.ceil(totalItems / itemsPerPage);
@@ -36,7 +32,8 @@ const Pagination = ({
   if (totalPage > 1 && currentPage > 1) {
     paginationElements.push(
       buildPaginationListItems({
-        router,
+        route,
+        searchParams,
         currentPage,
         itemsPerPage,
         paginationElementType: PAGINATION_PREVIOUS_ELEMENT,
@@ -50,7 +47,8 @@ const Pagination = ({
     if (pageIndexArr[i] === PAGINATION_ELLIPSIS_ELEMENT) {
       paginationElements.push(
         buildPaginationListItems({
-          router,
+          route,
+          searchParams,
           currentPage: i,
           itemsPerPage,
           paginationElementType: PAGINATION_ELLIPSIS_ELEMENT,
@@ -63,7 +61,8 @@ const Pagination = ({
       if (currentPage === pageIndexArr[i]) {
         paginationElements.push(
           buildPaginationListItems({
-            router,
+            route,
+            searchParams,
             currentPage: pageIndexArr[i],
             itemsPerPage,
             paginationElementType: PAGINATION_ACTIVE_ELEMENT,
@@ -73,7 +72,8 @@ const Pagination = ({
       } else {
         paginationElements.push(
           buildPaginationListItems({
-            router,
+            route,
+            searchParams,
             currentPage: pageIndexArr[i],
             itemsPerPage,
             paginationElementType: PAGINATION_NUMERIC_ELEMENT,
@@ -88,7 +88,8 @@ const Pagination = ({
   if (totalPage > 1 && currentPage < totalPage) {
     paginationElements.push(
       buildPaginationListItems({
-        router,
+        route,
+        searchParams,
         currentPage,
         itemsPerPage,
         paginationElementType: PAGINATION_NEXT_ELEMENT,

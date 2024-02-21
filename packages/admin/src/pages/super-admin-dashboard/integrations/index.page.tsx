@@ -6,7 +6,7 @@ import { getIntegrations } from '../../../services/SuperAdminService';
 import InferProps from '../../../types/InferProps';
 import { fetchDataOrGetRedirect } from '../../../utils/fetchDataOrGetRedirect';
 import { getUserTokenFromCookies } from '../../../utils/session';
-import Navigation from '../Navigation';
+import Navigation from '../../../app/super-admin-dashboard/Navigation';
 import styles from '../superadmin-dashboard.module.scss';
 import moment from 'moment';
 

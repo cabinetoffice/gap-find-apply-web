@@ -1,13 +1,13 @@
 import { cookies } from 'next/headers';
 import { getLoggedInUsersDetails } from '../../services/UserService';
 import { Metadata } from 'next';
-import Navigation from './Navigation';
 import AccountDetails from './AccountDetails';
 import PaginatedSchemeList from './PaginatedSchemeList';
 import DashboardBanner from './DashboardBanner';
 import Link from 'next/link';
 import { getUserSchemes } from '../../services/SchemeService';
 import Pagination from '../../types/Pagination';
+import Navigation from '../super-admin-dashboard/Navigation';
 
 export type DashboardPageProps = {
   searchParams: {
@@ -35,7 +35,7 @@ export default async function Page({ searchParams }: DashboardPageProps) {
 
   return (
     <>
-      {isTechSupportUser && <Navigation />}
+      {isTechSupportUser && <Navigation isSuperAdminNav={false} />}
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">

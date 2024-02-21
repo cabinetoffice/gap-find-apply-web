@@ -1,9 +1,8 @@
 import getConfig from 'next/config';
+import { headers } from 'next/headers';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 const Navigation = ({ isSuperAdminNav = true }) => {
-  const router = useRouter();
   const { publicRuntimeConfig } = getConfig();
   const navItems = isSuperAdminNav
     ? [
@@ -16,7 +15,6 @@ const Navigation = ({ isSuperAdminNav = true }) => {
           pageId: 'manageUsers',
           href: publicRuntimeConfig.SUPER_ADMIN_DASHBOARD_URL,
           title: 'Manage users',
-          routerPathname: '/super-admin-dashboard',
         },
         {
           pageId: 'adminDash',
@@ -38,7 +36,6 @@ const Navigation = ({ isSuperAdminNav = true }) => {
           pageId: 'integrations',
           href: `${publicRuntimeConfig.SUPER_ADMIN_DASHBOARD_URL}/integrations`,
           title: 'Integrations',
-          routerPathname: '/super-admin-dashboard/integrations',
         },
       ]
     : [
@@ -53,43 +50,28 @@ const Navigation = ({ isSuperAdminNav = true }) => {
   return (
     <nav className="app-navigation govuk-clearfix g2_navigation govuk-width-container super-admin-navbar">
       <ul className="app-navigation__list app-width-container g2_navigation__menu gap_nav-wrapper">
-        {navItems.map(
-          (
-            {
-              href,
-              title,
-              pageId,
-              routerPathname,
-            }: {
-              href: string;
-              title: string;
-              pageId: string;
-              routerPathname?: string;
-            },
-            index
-          ) => (
-            <li
-              data-value="parent"
-              key={index}
-              className={`app-navigation__list-item ${
-                routerPathname === router.pathname
-                  ? 'app-navigation__list-item--current'
-                  : ''
-              }`}
-              id={`${pageId}DesktopLink`}
-              data-cy={`cy${pageId}PageLink`}
+        {navItems.map(({ href, title, pageId }, index) => (
+          <li
+            data-value="parent"
+            key={index}
+            className={`app-navigation__list-item ${
+              headers().get('referer')?.includes(href)
+                ? 'app-navigation__list-item--current'
+                : ''
+            }`}
+            id={`${pageId}DesktopLink`}
+            data-cy={`cy${pageId}PageLink`}
+          >
+            <Link
+              href={href}
+              as={href}
+              className="govuk-link govuk-link--no-visited-state app-navigation__link"
+              data-topnav={title}
             >
-              <Link
-                href={href}
-                as={href}
-                className="govuk-link govuk-link--no-visited-state app-navigation__link"
-                data-topnav={title}
-              >
-                {title}
-              </Link>
-            </li>
-          )
-        )}
+              {title}
+            </Link>
+          </li>
+        ))}
       </ul>
     </nav>
   );

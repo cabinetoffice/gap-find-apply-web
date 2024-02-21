@@ -1,0 +1,55 @@
+.sidebar > *:not(:first-child) {
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #b1b4b6;
+}
+
+.top-controls {
+  height: 3rem;
+  margin-bottom: 1rem;
+}
+
+.bottom-controls {
+  padding: 0;
+  margin-bottom: 1rem;
+
+  button {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  &button:first-child {
+    margin-top: 2rem;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.search-container {
+  display: 'flex';
+  flex-wrap: 'nowrap';
+  justify-content: 'space-between';
+  gap: '1rem';
+}
+
+.fw-bold {
+  font-weight: bold;
+}
+
+@media (max-width: 40.0625em) {
+  .d-none-mobile {
+    display: none;
+  }
+}
+
+@media (min-width: 40.0625em) {
+  .d-none-desktop {
+    display: none;
+  }
+
+  .mb-md-15px {
+    margin-bottom: 15px;
+  }
+}

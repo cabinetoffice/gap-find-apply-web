@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function Error() {
   return (
-    <div className="govuk-grid-row">
+    <div className="govuk-grid-row govuk-!-padding-top-7">
       <div className="govuk-grid-column-two-thirds">
         <h1 className="govuk-heading-l">
           Sorry, there is a problem with the service
@@ -24,6 +24,7 @@ export default function Error() {
           >
             findagrant@cabinetoffice.gov.uk
           </a>
+          {'.'}
         </p>
       </div>
     </div>

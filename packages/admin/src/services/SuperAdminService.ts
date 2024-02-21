@@ -2,7 +2,6 @@ import {
   ChangeDepartmentDto,
   SuperAdminDashboardResponse,
 } from './../pages/super-admin-dashboard/types';
-import getConfig from 'next/config';
 import axios from 'axios';
 import { axiosUserServiceConfig } from '../utils/session';
 import {
@@ -13,8 +12,6 @@ import {
 } from '../pages/super-admin-dashboard/types';
 import PaginationType from '../types/Pagination';
 import { Integration } from '../pages/super-admin-dashboard/integrations/index.page';
-
-const { serverRuntimeConfig } = getConfig();
 
 type GetSuperAdminDashboardParams = {
   pagination: PaginationType;
@@ -36,7 +33,7 @@ export const getSuperAdminDashboard = async ({
   };
 
   const response = await axios.get(
-    `${serverRuntimeConfig.userServiceHost}/super-admin-dashboard`,
+    `${process.env.USER_SERVICE_URL}/super-admin-dashboard`,
     {
       params,
       ...axiosUserServiceConfig(userToken),
@@ -47,7 +44,7 @@ export const getSuperAdminDashboard = async ({
 
 export const checkUserIsSuperAdmin = async (userToken: string) => {
   const response = await axios.get(
-    `${serverRuntimeConfig.userServiceHost}/isSuperAdmin`,
+    `${process.env.userServiceHost}/isSuperAdmin`,
     axiosUserServiceConfig(userToken)
   );
   return response.data;
@@ -55,7 +52,7 @@ export const checkUserIsSuperAdmin = async (userToken: string) => {
 
 export const getUserById = async (id: string, userToken: string) => {
   const response = await axios.get<User>(
-    `${serverRuntimeConfig.userServiceHost}/user/${id}`,
+    `${process.env.userServiceHost}/user/${id}`,
     axiosUserServiceConfig(userToken)
   );
   return response.data;
@@ -63,7 +60,7 @@ export const getUserById = async (id: string, userToken: string) => {
 
 export const getUserFromJwt = async (userToken: string) => {
   const response = await axios.get<User>(
-    `${serverRuntimeConfig.userServiceHost}/userFromJwt`,
+    `${process.env.userServiceHost}/userFromJwt`,
     axiosUserServiceConfig(userToken)
   );
   return response.data;
@@ -77,7 +74,7 @@ export const getChangeDepartmentPage = async (
   departments: Department[];
 }> => {
   const response = await axios.get(
-    `${serverRuntimeConfig.userServiceHost}/page/user/${userId}/change-department`,
+    `${process.env.userServiceHost}/page/user/${userId}/change-department`,
     axiosUserServiceConfig(userToken)
   );
   return response.data;
@@ -92,7 +89,7 @@ export const updateDepartment = async (
     departmentId: departmentId,
   };
   await axios.patch(
-    `${serverRuntimeConfig.userServiceHost}/user/${userId}/department`,
+    `${process.env.userServiceHost}/user/${userId}/department`,
     changeDepartmentDto,
     {
       ...axiosUserServiceConfig(userToken),
@@ -102,7 +99,7 @@ export const updateDepartment = async (
 
 export const getAllRoles = async (userToken: string) => {
   const response = await axios.get<Role[]>(
-    `${serverRuntimeConfig.userServiceHost}/role`,
+    `${process.env.userServiceHost}/role`,
     axiosUserServiceConfig(userToken)
   );
   return response.data;
@@ -110,7 +107,7 @@ export const getAllRoles = async (userToken: string) => {
 
 export const getAllDepartments = async (userToken: string) => {
   const response = await axios.get<Department[]>(
-    `${serverRuntimeConfig.userServiceHost}/department`,
+    `${process.env.userServiceHost}/department`,
     axiosUserServiceConfig(userToken)
   );
   return response.data;
@@ -200,7 +197,7 @@ const getSpotlightIntegration = async (userToken: string) => {
   );
   return {
     ...integration.data,
-    connectionUrl: `${serverRuntimeConfig.userServiceHost}/spotlight/oauth/authorize`,
+    connectionUrl: `${process.env.userServiceHost}/spotlight/oauth/authorize`,
   };
 };
 
