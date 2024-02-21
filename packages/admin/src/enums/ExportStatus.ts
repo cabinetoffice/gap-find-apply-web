@@ -5,6 +5,7 @@ enum ExportStatusEnum {
   ERROR = 'ERROR',
   REQUESTED = 'REQUESTED',
   EXPIRED = 'EXPIRED',
+  FAILED = 'FAILED',
 }
 
 export default ExportStatusEnum;

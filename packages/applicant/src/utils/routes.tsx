@@ -62,6 +62,8 @@ export const routes = {
       `/submissions/${grantSubmissionId}/submit`,
     submissionConfirmation: (grantSubmissionId: string) =>
       `/submissions/${grantSubmissionId}/submission-confirmation`,
+    sectionOverview: (grantSubmissionId: string) =>
+      `/submissions/${grantSubmissionId}/section-overview`,
   },
   findAGrant: publicRuntimeConfig.FIND_A_GRANT_URL,
   serviceError: (serviceErrorProps: serviceErrorPropType): string =>

@@ -479,4 +479,36 @@ describe('builds org data rows properly', () => {
       },
     });
   });
+  it('should not return Companies House or Charity Commission rows for local authority', () => {
+    const response = getOrganisationData(profile, {
+      isIndividual: false,
+      isNonLimitedCompany: false,
+      isLocalAuthority: true,
+    });
+    expect(response).toStrictEqual({
+      generalOrganisationRows: [
+        {
+          id: 'organisationName',
+          label: 'Name',
+          status: 'Change',
+          url: '/organisation/name',
+          value: 'name',
+        },
+        {
+          id: 'organisationAddress',
+          label: 'Address',
+          status: 'Change',
+          url: '/organisation/address',
+          value: ['addressline1', 'addressline1', 'town', 'county', 'postcode'],
+        },
+      ],
+      typeOfOrganisationRow: {
+        id: 'organisationType',
+        label: 'Type of organisation',
+        status: 'Change',
+        url: '/organisation/type',
+        value: 'type',
+      },
+    });
+  });
 });

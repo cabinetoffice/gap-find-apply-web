@@ -10,6 +10,7 @@ import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../components/custom-link/CustomLink';
 import InferProps from '../../types/InferProps';
 import { ImportantBanner } from 'gap-web-ui';
+import Navigation from '../super-admin-dashboard/Navigation';
 
 const FAILED = 'FAILED';
 const SUCCEEDED = 'SUCCEEDED';
@@ -28,6 +29,8 @@ export const getServerSideProps = async ({
   const schemes = await getUserSchemes(paginationParams, sessionCookie);
   const userDetails: UserDetails = await getLoggedInUsersDetails(sessionCookie);
 
+  const isTechSupportUser = userDetails.roles.includes('TECHNICAL_SUPPORT');
+
   const { applyMigrationStatus, findMigrationStatus } = (query || {}) as Record<
     string,
     string
@@ -42,6 +45,7 @@ export const getServerSideProps = async ({
       schemes: schemes,
       userDetails,
       bannerProps,
+      isTechSupportUser,
     },
   };
 };
@@ -67,27 +71,31 @@ const Dashboard = ({
   schemes,
   userDetails,
   bannerProps,
+  isTechSupportUser,
 }: InferProps<typeof getServerSideProps>) => {
   const formattedBannerProps =
     bannerProps === FAILED
       ? errorBannerProps
       : (bannerProps as { bannerHeading: string; isSuccess: boolean });
   return (
-    <div className="govuk-grid-row govuk-!-padding-top-7">
-      <Meta title="Dashboard - Manage a grant" />
-      <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-        {bannerProps && <ImportantBanner {...formattedBannerProps} />}
-        <AccountDetails userDetails={userDetails} />
-        <ManageGrantSchemes schemes={schemes} />
-        <CustomLink
-          href="/new-scheme/name"
-          isButton
-          dataCy="cy_addAGrantButton"
-        >
-          Add a grant
-        </CustomLink>
+    <>
+      {isTechSupportUser && <Navigation isSuperAdminNav={false}></Navigation>}
+      <div className="govuk-grid-row govuk-!-padding-top-7">
+        <Meta title="Dashboard - Manage a grant" />
+        <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+          {bannerProps && <ImportantBanner {...formattedBannerProps} />}
+          <AccountDetails userDetails={userDetails} />
+          <ManageGrantSchemes schemes={schemes} />
+          <CustomLink
+            href="/new-scheme/name"
+            isButton
+            dataCy="cy_addAGrantButton"
+          >
+            Add a grant
+          </CustomLink>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
