@@ -45,15 +45,17 @@ export const getServerSideProps = async ({
       formAction: process.env.SUB_PATH + resolvedUrl,
       schemeName: grantScheme.name,
       submissionList,
+      backBtnUrl: `/scheme/${schemeId}/${exportId}`,
       csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };
 
-export const CompletedSubmissions = ({
+export const DownloadIndividualSubmissions = ({
   formAction,
   schemeName,
   submissionList,
+  backBtnUrl,
   csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [isSelectAll, setIsSelectAll] = useState(false);
@@ -127,6 +129,8 @@ export const CompletedSubmissions = ({
               {/* {isJSEnabled() && ( */}
               {false && (
                 // TODO eventually refactor checkbox component to support the additional props
+                // TODO get the paginated list from backend
+                // TODO get the org name from backend
                 <div
                   className="govuk-checkboxes"
                   data-module="govuk-checkboxes"
@@ -192,6 +196,8 @@ export const CompletedSubmissions = ({
     <>
       <Meta title={`Download applications - Manage a grant`} />
 
+      <CustomLink href={backBtnUrl} isBackButton />
+
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
           fieldErrors={[]}
@@ -237,10 +243,7 @@ export const CompletedSubmissions = ({
           </div>
 
           <div className="govuk-!-margin-top-6">
-            <CustomLink
-              href="/dashboard" // change scheme id from 1 to the real deal
-              isSecondaryButton
-            >
+            <CustomLink href={backBtnUrl} isSecondaryButton>
               Return to overview
             </CustomLink>
           </div>
@@ -250,4 +253,4 @@ export const CompletedSubmissions = ({
   );
 };
 
-export default CompletedSubmissions;
+export default DownloadIndividualSubmissions;
