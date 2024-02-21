@@ -23,12 +23,15 @@ const patchQuestion = (
     options: string[];
     responseType: ResponseType;
   }>
-): Promise<Response> => {
-  return axios.patch(
+): Promise<void> => {
+  console.log('calling patch');
+  const response = axios.patch(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}`,
     values,
     axiosSessionConfig(sessionId)
   );
+  console.log('response', response);
+  return response;
 };
 
 const postQuestion = (
@@ -46,6 +49,7 @@ const postQuestion = (
     options?: string[];
   }
 ): Promise<void> => {
+  console.log('calling post');
   return axios.post(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions`,
     body,

@@ -102,6 +102,7 @@ describe('getServerSideProps()', () => {
     expect(pageData).toEqual({
       backButtonHref: '/build-application/appId/sectionId/question-type',
       sectionTitle: 'Custom section name',
+      maxWords: '',
     });
   });
 });

@@ -1,6 +1,5 @@
 import { merge } from 'lodash';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
 import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
 import { getServerSideProps } from './index.getServerSideProps';
@@ -13,11 +12,14 @@ import {
 } from '../../../../../services/SessionService';
 import { parseBody } from '../../../../../utils/parseBody';
 import { ValidationError } from 'gap-web-ui';
+import { getQuestion } from '../../../../../services/QuestionService';
+import ResponseTypeEnum from '../../../../../enums/ResponseType';
+import * as QuestionService from '../../../../../services/QuestionService';
 
-jest.mock('../../../../../services/ApplicationService');
 jest.mock('axios');
 jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/SessionService');
+jest.mock('../../../../../services/ApplicationService');
 
 describe('getServerSideProps', () => {
   const getContext = (overrides = {}) =>
@@ -315,6 +317,194 @@ describe('getServerSideProps', () => {
 
         expect(result.props.formAction).toStrictEqual(
           '/apply/build-application/applicationId/sectionId/question-type'
+        );
+      });
+    });
+  });
+
+  describe('when handling a PATCH request', () => {
+    const getPatchContext = (overrides: any = {}) =>
+      getContext(
+        merge(
+          {
+            req: { method: 'POST', cookies: { session_id: 'ssessionId' } },
+            query: { questionId: 'questionId' },
+          },
+          overrides
+        )
+      );
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      (parseBody as jest.Mock).mockResolvedValue({
+        responseType: 'ShortAnswer',
+      });
+      (getSummaryFromSession as jest.Mock).mockResolvedValue({
+        fieldTitle: 'Field title',
+        hintField: 'Hint field',
+        displayText: 'Display text',
+        mandatory: 'true',
+      });
+      jest.spyOn(QuestionService, 'getQuestion').mockResolvedValue({
+        responseType: ResponseTypeEnum.YesNo,
+        questionId: 'questionId',
+        profileField: '',
+        fieldPrefix: '',
+        fieldTitle: '',
+        hintText: '',
+        adminSummary: '',
+        displayText: '',
+        questionSuffix: '',
+        optional: 'false',
+        validation: {},
+      });
+    });
+
+    it('Should redirect to the service error page when fetching from the session fails', async () => {
+      (getSummaryFromSession as jest.Mock).mockRejectedValueOnce({});
+
+      const result = (await getServerSideProps(
+        getPatchContext({})
+      )) as NextGetServerSidePropsResponse;
+
+      expect(result).toStrictEqual(
+        getServiceErrorRedirect(
+          'Something went wrong while trying to edit the question.'
+        )
+      );
+    });
+
+    it('Should redirect to question edit page when patching succeeds', async () => {
+      const result = (await getServerSideProps(
+        getPatchContext({})
+      )) as NextGetServerSidePropsResponse;
+
+      expect(result).toStrictEqual({
+        redirect: {
+          destination:
+            '/build-application/applicationId/sectionId/questionId/edit/question-content',
+          statusCode: 302,
+        },
+      });
+    });
+
+    it('Should redirect to the error service page when patching fails (and it is not a validation error)', async () => {
+      (axios.patch as jest.Mock).mockRejectedValueOnce({});
+
+      const result = (await getServerSideProps(
+        getPatchContext({})
+      )) as NextGetServerSidePropsResponse;
+
+      expect(result).toStrictEqual(
+        getServiceErrorRedirect(
+          'Something went wrong while trying to edit the question.'
+        )
+      );
+    });
+
+    describe('question type with options', () => {
+      beforeEach(() => {
+        (parseBody as jest.Mock).mockResolvedValue({
+          responseType: 'Dropdown',
+        });
+        (addFieldsToSession as jest.Mock).mockResolvedValue({
+          data: '',
+          sessionId: 'mock-session-id',
+        });
+      });
+
+      it('Should add responseType to session if options are needed', async () => {
+        await getServerSideProps(getPatchContext({}));
+
+        expect(addFieldsToSession).toBeCalled();
+      });
+
+      it('Should redirect to the question options page.', async () => {
+        (addFieldsToSession as jest.Mock).mockResolvedValue({
+          data: '',
+          sessionId: 'mock-session-id',
+        });
+
+        const result = (await getServerSideProps(
+          getPatchContext({})
+        )) as NextGetServerSidePropsResponse;
+
+        console.log('Should redirect to the question options page.', result);
+
+        expect(result).toStrictEqual({
+          redirect: {
+            destination:
+              '/build-application/applicationId/sectionId/question-options?questionId=questionId',
+            statusCode: 302,
+          },
+        });
+      });
+
+      it('Should redirect to the error service page when adding to session fails', async () => {
+        (addFieldsToSession as jest.Mock).mockRejectedValue({});
+
+        const result = (await getServerSideProps(
+          getPatchContext({})
+        )) as NextGetServerSidePropsResponse;
+
+        expect(result).toStrictEqual(
+          getServiceErrorRedirect(
+            'Something went wrong while trying to edit the question.'
+          )
+        );
+      });
+    });
+
+    describe('question type with word count', () => {
+      beforeEach(() => {
+        (parseBody as jest.Mock).mockResolvedValue({
+          responseType: 'LongAnswer',
+        });
+        (addFieldsToSession as jest.Mock).mockResolvedValue({
+          data: '',
+          sessionId: 'mock-session-id',
+        });
+        (getQuestion as jest.Mock).mockResolvedValue({
+          responseType: ResponseTypeEnum.YesNo,
+        });
+      });
+
+      it('Should add responseType to session if word count is needed', async () => {
+        await getServerSideProps(getPatchContext({}));
+
+        expect(addFieldsToSession).toBeCalled();
+      });
+
+      it('Should redirect to the word count page.', async () => {
+        (addFieldsToSession as jest.Mock).mockResolvedValue({
+          data: '',
+          sessionId: 'mock-session-id',
+        });
+
+        const result = (await getServerSideProps(
+          getPatchContext({})
+        )) as NextGetServerSidePropsResponse;
+
+        expect(result).toStrictEqual({
+          redirect: {
+            destination:
+              '/build-application/applicationId/sectionId/question-type/add-word-count?questionId=questionId',
+            statusCode: 302,
+          },
+        });
+      });
+
+      it('Should redirect to the error service page when adding to session fails', async () => {
+        (addFieldsToSession as jest.Mock).mockRejectedValue({});
+
+        const result = (await getServerSideProps(
+          getPatchContext({})
+        )) as NextGetServerSidePropsResponse;
+
+        expect(result).toStrictEqual(
+          getServiceErrorRedirect(
+            'Something went wrong while trying to edit the question.'
+          )
         );
       });
     });
