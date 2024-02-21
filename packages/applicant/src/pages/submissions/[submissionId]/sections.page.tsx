@@ -144,7 +144,14 @@ export default function SubmissionSections({
                   you can save your application and come back to it later
                 </li>
               </ul>
-
+              <Link
+                href={routes.submissions.sectionOverview(grantSubmissionId)}
+                className="govuk-body govuk-link govuk-link--no-visited-state "
+                data-cy="cy-section-summary-link"
+              >
+                See an overview of the questions you will be asked
+              </Link>
+              <div className="govuk-!-padding-bottom-5" />
               <dl className="govuk-summary-list">
                 {sections &&
                   sections.map((section: SectionData, index: number) => {
@@ -190,9 +197,7 @@ export default function SubmissionSections({
                     );
                   })}
               </dl>
-
               <input type="hidden" name="_csrf" value={csrfToken} />
-
               <div className="govuk-button-group">
                 {!isSubmissionReady || hasSubmissionBeenSubmitted ? (
                   <button
