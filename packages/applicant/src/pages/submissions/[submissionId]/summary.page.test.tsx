@@ -187,6 +187,7 @@ mockServiceMethod(
   spiedGetMandatoryQuestionBySubmissionId,
   mockMandatoryQuestionDto
 );
+
 (getQuestionById as jest.Mock).mockImplementation(
   async (_submissionId, _sectionId, questionId, _jwt) => {
     return {
