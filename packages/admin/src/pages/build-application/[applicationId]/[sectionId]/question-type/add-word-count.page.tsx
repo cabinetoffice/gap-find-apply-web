@@ -15,6 +15,7 @@ import { getSummaryFromSession } from '../../../../../services/SessionService';
 import { QuestionWithOptionsSummary } from '../../../../../types/QuestionSummary';
 import ResponseTypeEnum from '../../../../../enums/ResponseType';
 import InferProps from '../../../../../types/InferProps';
+import { buildQueryStringWithoutUndefinedValues } from '../../../../../utils/general';
 
 type RequestBody = {
   maxWords: string;
@@ -37,10 +38,7 @@ export const getServerSideProps = async (
       (section) => section.sectionId === sectionId
     ) as ApplicationFormSection;
 
-    const queryString =
-      Object.keys(context.query).length > 0
-        ? '?' + new URLSearchParams(context.query as Record<string, string>)
-        : '';
+    const queryString = buildQueryStringWithoutUndefinedValues(context.query);
 
     let maxWords = '';
     if (questionId) {
@@ -108,9 +106,7 @@ export const getServerSideProps = async (
 
   let onSuccessRedirectHref = `/build-application/${applicationId}/${sectionId}`;
   if (questionId) {
-    const queryString = backTo
-      ? `?${new URLSearchParams({ backTo: backTo.toString() })}`
-      : '';
+    const queryString = buildQueryStringWithoutUndefinedValues({ backTo });
     onSuccessRedirectHref = `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`;
   }
 

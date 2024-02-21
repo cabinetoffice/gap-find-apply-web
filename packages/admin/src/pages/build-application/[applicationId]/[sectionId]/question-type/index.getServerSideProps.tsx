@@ -16,6 +16,7 @@ import {
 } from '../../../../../services/QuestionService';
 import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
 import QuestionPageGetServerSideProps from '../../../../../utils/QuestionPageGetServerSideProps';
+import { buildQueryStringWithoutUndefinedValues } from '../../../../../utils/general';
 
 type RequestBody = {
   responseType: ResponseType;
@@ -28,7 +29,7 @@ const redirectQuestionType = [
   ResponseType.LongAnswer,
 ];
 
-function getRedirect(
+function getRedirectForCreate(
   responseType: ResponseType,
   applicationId: string,
   sectionId: string,
@@ -40,6 +41,39 @@ function getRedirect(
     [ResponseType.LongAnswer]: `/build-application/${applicationId}/${sectionId}/question-type/add-word-count${queryString}`,
   };
   return REDIRECT_MAP[responseType as keyof typeof REDIRECT_MAP];
+}
+
+function getRedirectForEdit(
+  responseType: ResponseType,
+  applicationId: string,
+  sectionId: string,
+  questionId: string,
+  queryString = ''
+) {
+  const REDIRECT_MAP = {
+    [ResponseType.Dropdown]: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-options${queryString}`,
+    [ResponseType.MultipleSelection]: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-options${queryString}`,
+    [ResponseType.LongAnswer]: `/build-application/${applicationId}/${sectionId}/question-type/add-word-count${queryString}`,
+  };
+  return REDIRECT_MAP[responseType as keyof typeof REDIRECT_MAP];
+}
+
+function getRedirect(
+  responseType: ResponseType,
+  applicationId: string,
+  sectionId: string,
+  questionId: string,
+  queryString = ''
+) {
+  return questionId
+    ? getRedirectForEdit(
+        responseType,
+        applicationId,
+        sectionId,
+        questionId,
+        queryString
+      )
+    : getRedirectForCreate(responseType, applicationId, sectionId, queryString);
 }
 
 const SHORT_QUESTION_WORD_LIMIT = 300;
@@ -56,9 +90,7 @@ export const getServerSideProps = async (
   const { params, req, query } = context;
   const { applicationId, sectionId } = params as Record<string, string>;
   const { questionId, backTo } = query;
-  const queryString = backTo
-    ? `?${new URLSearchParams({ backTo: backTo.toString() })}`
-    : '';
+  const queryString = buildQueryStringWithoutUndefinedValues({ backTo });
 
   const sessionId = getSessionIdFromCookies(req);
 
@@ -122,14 +154,15 @@ export const getServerSideProps = async (
     response: Awaited<ReturnType<typeof handleRequest>>
   ) => {
     if (response.redirectQuestionType) {
-      const queryString =
-        Object.keys(query).length > 0
-          ? '?' + new URLSearchParams(query as Record<string, string>)
-          : '';
+      const queryString = buildQueryStringWithoutUndefinedValues({
+        ...query,
+        from: 'question-type',
+      });
       return getRedirect(
         response.redirectQuestionType,
         applicationId,
         sectionId,
+        questionId as string,
         queryString
       );
     }

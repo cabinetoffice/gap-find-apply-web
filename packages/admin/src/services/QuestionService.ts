@@ -3,8 +3,6 @@ import ResponseType from '../enums/ResponseType';
 import { ApplicationFormQuestion } from '../types/ApplicationForm';
 import getConfig from 'next/config';
 import { axiosSessionConfig } from '../utils/session';
-import { QuestionData } from 'applicant/src/services/SubmissionService';
-import { Response } from 'next/dist/compiled/@edge-runtime/primitives';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
