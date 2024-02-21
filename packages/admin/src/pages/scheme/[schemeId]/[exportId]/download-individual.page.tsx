@@ -217,7 +217,8 @@ export const CompletedSubmissions = ({
             <Pagination
               additionalQueryData={{}}
               itemsPerPage={10}
-              totalItems={submissionList.length} // TODO: Count of the total individual applications
+              totalItems={submissionList.length}
+              itemCountMargin={true}
             />
 
             {/* Temporarily disabling multidownload */}
