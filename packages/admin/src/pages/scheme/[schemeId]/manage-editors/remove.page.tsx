@@ -28,7 +28,6 @@ export const getServerSideProps = async (
     jwt: getUserTokenFromCookies(context.req),
     onErrorMessage: 'ruh roh',
     onSuccessRedirectHref: `/scheme/${schemeId}/manager-editors`,
-    isEdit: false, //TODO FIX THIS
   });
 };
 
