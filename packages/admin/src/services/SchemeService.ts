@@ -125,11 +125,11 @@ export const addSchemeEditor = async (
   schemeId: string,
   sessionId: string,
   userToken: string,
-  emailAddress: string
+  editorEmailAddress: string
 ) => {
   const response = await axios.post(
-    `${BASE_SCHEME_URL}/${schemeId}/editors/add`,
-    { emailAddress },
+    `${BASE_SCHEME_URL}/${schemeId}/editors`,
+    { editorEmailAddress },
     {
       withCredentials: true,
       headers: {

@@ -1,24 +1,21 @@
 import { Button, FlexibleQuestionPageLayout, TextInput } from 'gap-web-ui';
-import CustomLink from '../../../../../components/custom-link/CustomLink';
-import Meta from '../../../../../components/layout/Meta';
-import InferProps from '../../../../../types/InferProps';
+import CustomLink from '../../../../components/custom-link/CustomLink';
+import Meta from '../../../../components/layout/Meta';
+import InferProps from '../../../../types/InferProps';
 import { GetServerSidePropsContext } from 'next';
 import {
   getSessionIdFromCookies,
   getUserTokenFromCookies,
-} from '../../../../../utils/session';
-import QuestionPageGetServerSideProps from '../../../../../utils/QuestionPageGetServerSideProps';
-import { addSchemeEditor } from '../../../../../services/SchemeService';
+} from '../../../../utils/session';
+import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
+import { addSchemeEditor } from '../../../../services/SchemeService';
 
 type PageBodyResponse = {
-  emailAddress: string;
+  editorEmailAddress: string;
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { schemeId } = context.params as Record<string, string>;
-  const oldEmailAddress = decodeURIComponent(
-    context.query.oldEmailAddress as string
-  );
   const newEmailAddress = context.query.newEmailAddress
     ? decodeURIComponent(context.query.newEmailAddress as string)
     : null;
@@ -29,9 +26,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       schemeId,
       jwt,
       getUserTokenFromCookies(context.req),
-      body.emailAddress
+      body.editorEmailAddress
     );
-    return body.emailAddress;
+    return body.editorEmailAddress;
   }
 
   async function fetchPageData() {
@@ -55,7 +52,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     onSuccessRedirectHref: (newEmailAddress) => {
       const queryParams = new URLSearchParams({
         newEmailAddress,
-        oldEmailAddress,
       }).toString();
       return `/schemes/${schemeId}/manage-editors/add-editor?${queryParams}`;
     },
@@ -95,14 +91,15 @@ const ChangeOwnerPage = ({
             Enter the email address of editor you would like to add.
           </h2>
           <p className="govuk-body">
-            Only those with an &aposAdministrator&apos account can edit a grant.
+            Only those with an &apos;Administrator&apos; account can edit a
+            grant.
           </p>
 
           <TextInput
-            fieldName="emailAddress"
+            fieldName="editorEmailAddress"
             fieldErrors={fieldErrors}
             defaultValue={
-              previousValues?.emailAddress ??
+              previousValues?.editorEmailAddress ??
               pageData.prevEmailAddress ??
               undefined
             }
