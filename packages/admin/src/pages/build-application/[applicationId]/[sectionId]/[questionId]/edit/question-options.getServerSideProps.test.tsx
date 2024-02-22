@@ -51,9 +51,7 @@ describe('Question Options', () => {
         sectionId: 'testSectionId',
         questionId: 'testQuestionId',
       },
-      query: {
-        backTo: 'dashboard',
-      },
+      query: {},
     });
 
     const mockQuestionSummary: QuestionWithOptionsSummary = {
@@ -120,7 +118,7 @@ describe('Question Options', () => {
       )) as GetServerSideProps;
 
       expect(result.props.backButtonHref).toStrictEqual(
-        '/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content?backTo=dashboard'
+        '/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content'
       );
     });
 
@@ -130,7 +128,7 @@ describe('Question Options', () => {
       )) as GetServerSideProps;
 
       expect(result.props.formAction).toStrictEqual(
-        '/apply/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-options?backTo=dashboard'
+        '/apply/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-options'
       );
     });
 
@@ -140,7 +138,7 @@ describe('Question Options', () => {
       )) as GetServerSideProps;
 
       expect(result.props.cancelChangesHref).toStrictEqual(
-        '/build-application/testApplicationId/dashboard'
+        '/build-application/testApplicationId/testSectionId'
       );
     });
 
@@ -186,6 +184,51 @@ describe('Question Options', () => {
           'Option two',
           'Option three',
         ]);
+        expect(result.props.cancelChangesHref).toStrictEqual(
+          '/build-application/testApplicationId/testSectionId'
+        );
+        expect(result.props.backButtonHref).toStrictEqual(
+          '/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content'
+        );
+      });
+
+      it('Should return correct button links when "backTo" passed in query', async () => {
+        const result = (await getServerSideProps(
+          getContext(getDefaultContext, { query: { backTo: 'dashboard' } })
+        )) as GetServerSideProps;
+
+        expect(result.props.cancelChangesHref).toStrictEqual(
+          '/build-application/testApplicationId/dashboard'
+        );
+        expect(result.props.backButtonHref).toStrictEqual(
+          '/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content?backTo=dashboard'
+        );
+      });
+
+      it('Should return correct button links when "from" passed in query', async () => {
+        const result = (await getServerSideProps(
+          getContext(getDefaultContext, {
+            query: { from: 'question-type' },
+          })
+        )) as GetServerSideProps;
+
+        expect(result.props.cancelChangesHref).toStrictEqual('');
+        expect(result.props.backButtonHref).toStrictEqual(
+          '/build-application/testApplicationId/testSectionId/question-type?questionId=testQuestionId&sectionId=testSectionId'
+        );
+      });
+
+      it('Should return correct button links when "backTo" and "from" passed in query', async () => {
+        const result = (await getServerSideProps(
+          getContext(getDefaultContext, {
+            query: { backTo: 'dashboard', from: 'question-type' },
+          })
+        )) as GetServerSideProps;
+
+        expect(result.props.cancelChangesHref).toStrictEqual('');
+        expect(result.props.backButtonHref).toStrictEqual(
+          '/build-application/testApplicationId/testSectionId/question-type?backTo=dashboard&questionId=testQuestionId&sectionId=testSectionId'
+        );
       });
     });
 
@@ -258,7 +301,10 @@ describe('Question Options', () => {
           mockPatchQuestion.mockResolvedValue({});
 
           const result = await getServerSideProps(
-            getContext(getDefaultContext, { req: { method: 'POST' } })
+            getContext(getDefaultContext, {
+              req: { method: 'POST' },
+              query: { backTo: 'dashboard' },
+            })
           );
 
           expect(patchQuestion).toBeCalledWith(
@@ -272,6 +318,70 @@ describe('Question Options', () => {
           expect(result).toStrictEqual({
             redirect: {
               destination: '/build-application/testApplicationId/dashboard',
+              statusCode: 302,
+            },
+          });
+        });
+
+        it('Should redirect to edit question page after successfully saving the options', async () => {
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
+            'save-and-continue': '',
+          });
+
+          mockPatchQuestion.mockResolvedValue({});
+
+          const result = await getServerSideProps(
+            getContext(getDefaultContext, {
+              req: { method: 'POST' },
+              query: { from: 'question-type' },
+            })
+          );
+
+          expect(patchQuestion).toBeCalledWith(
+            'testSessionId',
+            'testApplicationId',
+            'testSectionId',
+            'testQuestionId',
+            expect.objectContaining({ options: ['option one', 'option two'] })
+          );
+
+          expect(result).toStrictEqual({
+            redirect: {
+              destination:
+                '/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content',
+              statusCode: 302,
+            },
+          });
+        });
+
+        it('Should redirect to edit question page with dashboard param after successfully saving the options', async () => {
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two'],
+            'save-and-continue': '',
+          });
+
+          mockPatchQuestion.mockResolvedValue({});
+
+          const result = await getServerSideProps(
+            getContext(getDefaultContext, {
+              req: { method: 'POST' },
+              query: { from: 'question-type', backTo: 'dashboard' },
+            })
+          );
+
+          expect(patchQuestion).toBeCalledWith(
+            'testSessionId',
+            'testApplicationId',
+            'testSectionId',
+            'testQuestionId',
+            expect.objectContaining({ options: ['option one', 'option two'] })
+          );
+
+          expect(result).toStrictEqual({
+            redirect: {
+              destination:
+                '/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content?backTo=dashboard',
               statusCode: 302,
             },
           });

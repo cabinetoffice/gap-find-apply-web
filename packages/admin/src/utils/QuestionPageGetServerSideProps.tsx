@@ -16,13 +16,8 @@ import {
  * @template K - The response of the 'fetchPageData' function
  * @template V - The response of the 'handleRequest' function
  *
- * @param context - GetServerSidePropsContext
- * @param fetchPageData - A function that takes in a jwt and returns data asynchronously
- * @param handleRequest - A function that takes in a jwt and the body the page returns, then updates/posts this data
- * @param jwt - A JWT needed for calls to the backend
- * @param onSuccessRedirectHref - Where to redirect to after successfully updating data
- * @param onErrorMessage - An error message to display if getting/updating data fails
  *
+ * @param props
  * @returns A redirect to the relevant location, or a set of props needed to load a page
  */
 
@@ -31,7 +26,7 @@ export default async function QuestionPageGetServerSideProps<
   K extends FetchPageData,
   V
 >(props: QuestionPageGetServerSidePropsType<T, K, V>) {
-  const { context, fetchPageData, jwt } = props;
+  const { context, fetchPageData, jwt, isEdit = false } = props;
   const { res, resolvedUrl } = context;
 
   const pageData = await fetchAndHandlePageData(
@@ -63,6 +58,7 @@ export default async function QuestionPageGetServerSideProps<
       fieldErrors,
       pageData,
       previousValues,
+      isEdit,
     },
   };
 }

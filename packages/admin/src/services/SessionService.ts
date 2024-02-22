@@ -7,7 +7,7 @@ const BACKEND_HOST = serverRuntimeConfig.backendHost;
 
 const BASE_URL = `${BACKEND_HOST}/sessions`;
 
-export type SessionKey = 'newScheme' | 'newQuestion';
+export type SessionKey = 'newScheme' | 'newQuestion' | 'updatedQuestion';
 
 const addToSession = async (
   sessionKey: SessionKey,
@@ -32,7 +32,7 @@ const addToSession = async (
 
 const addFieldsToSession = async (
   sessionKey: string,
-  fields: Record<string, string>,
+  fields: Record<string, string | string[] | undefined>,
   sessionCookie: string
 ) => {
   const config = {

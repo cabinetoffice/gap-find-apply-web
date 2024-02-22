@@ -11,6 +11,7 @@ type QuestionWithOptionsSummary = {
   hintText: string;
   optional: string;
   responseType: ResponseTypeEnum;
+  options?: string[];
 };
 
 export type { QuestionSummary, QuestionWithOptionsSummary };

@@ -51,12 +51,18 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
       questionId
     );
 
+    const editQuestionSearchParams = new URLSearchParams({
+      ...context.query,
+      questionId,
+    });
+
     return {
       questionData,
       backTo: backTo ?? '',
       backButtonHref: getBackToRedirect(),
       deleteConfirmationUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/delete-confirmation`,
       previewUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/preview`,
+      editQuestionTypeUrl: `/build-application/${applicationId}/${sectionId}/question-type?${editQuestionSearchParams}`,
     };
   }
 
@@ -94,6 +100,7 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
     jwt: getSessionIdFromCookies(context.req),
     onSuccessRedirectHref,
     onErrorMessage: 'Something went wrong while trying to update the question.',
+    isEdit: true,
   });
 };
 
