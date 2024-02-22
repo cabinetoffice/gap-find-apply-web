@@ -63,6 +63,7 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
       deleteConfirmationUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/delete-confirmation`,
       previewUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/preview`,
       editQuestionTypeUrl: `/build-application/${applicationId}/${sectionId}/question-type?${editQuestionSearchParams}`,
+      isEdit: true,
     };
   }
 
@@ -100,7 +101,6 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
     jwt: getSessionIdFromCookies(context.req),
     onSuccessRedirectHref,
     onErrorMessage: 'Something went wrong while trying to update the question.',
-    isEdit: true,
   });
 };
 
