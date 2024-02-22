@@ -12,11 +12,12 @@ import {
   requestSubmissionsExport,
 } from '../../../services/SubmissionsService';
 import { getLoggedInUsersDetails } from '../../../services/UserService';
+import InferProps from '../../../types/InferProps';
+import { parseBody } from '../../../utils/parseBody';
 import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../utils/session';
-import { parseBody } from '../../../utils/parseBody';
-import InferProps from '../../../types/InferProps';
 import { DownloadMessage } from '../../../components/notification-banner/DownloadMessage';
+import { getExportBatch } from '../../../services/ExportBatchService';
 
 export const getServerSideProps = async ({
   req,
@@ -25,7 +26,10 @@ export const getServerSideProps = async ({
   resolvedUrl,
 }: GetServerSidePropsContext) => {
   const sessionCookie = getSessionIdFromCookies(req);
-  const { schemeId, requested, pageNumber } = query as Record<string, string>;
+  const { schemeId, requested, exportId, pageNumber } = query as Record<
+    string,
+    string
+  >;
 
   let applicationFormsStatus: {
     applicationId: string;
@@ -34,6 +38,7 @@ export const getServerSideProps = async ({
   let applicationId: string;
   let submissionsCount: number;
   let schemeName: string;
+  let downloadAllZipLocation = '';
   const applicationsUnavailableForDownload: number[] = []; // TODO Placeholder storage for info about downloads
 
   const errorPageRedirect = generateErrorPageRedirect(
@@ -85,6 +90,13 @@ export const getServerSideProps = async ({
     applicationId
   );
 
+  if (exportStatus == ExportStatusEnum.COMPLETE && exportId) {
+    const exportBatch = await getExportBatch(sessionCookie, exportId);
+    downloadAllZipLocation = `/apply/admin/api/signed-url?key=${encodeURIComponent(
+      exportBatch.location
+    )}`;
+  }
+
   let userDetails;
   try {
     userDetails = await getLoggedInUsersDetails(sessionCookie);
@@ -96,6 +108,7 @@ export const getServerSideProps = async ({
     props: {
       backButtonHref: `/scheme/${schemeId}`,
       individualApplicationsHref: `/scheme/${schemeId}/${applicationId}`,
+      allApplicationsHref: downloadAllZipLocation,
       schemeName,
       exportStatus,
       submissionsCount,
@@ -112,6 +125,7 @@ export const getServerSideProps = async ({
 const DownloadSubmissions = ({
   backButtonHref,
   individualApplicationsHref,
+  allApplicationsHref,
   schemeName,
   exportStatus,
   submissionsCount,
@@ -168,35 +182,36 @@ const DownloadSubmissions = ({
             </>
           )}
 
-          {exportStatus == ExportStatusEnum.NOT_STARTED &&
-            requested != 'true' && (
-              <>
-                <h1 className="govuk-heading-l">View your applications</h1>
-                <p
-                  className="govuk-body"
-                  data-cy="cy_Download-submissions-page-text-1"
-                >
-                  To see who has applied for your grant, you need to view and
-                  download your submitted applications.
-                </p>
-                <p
-                  className="govuk-body"
-                  data-cy="cy_Download-submissions-page-text-2"
-                >
-                  Get started by requesting a list of applications.
-                </p>
-                <FlexibleQuestionPageLayout
-                  fieldErrors={[]}
-                  formAction={formAction}
-                  csrfToken={csrfToken}
-                >
-                  <Button
-                    text="Download submitted applications"
-                    addNameAttribute
-                  />
-                </FlexibleQuestionPageLayout>
-              </>
-            )}
+          {exportStatus == ExportStatusEnum.FAILED ||
+            (exportStatus == ExportStatusEnum.NOT_STARTED &&
+              requested != 'true' && (
+                <>
+                  <h1 className="govuk-heading-l">View your applications</h1>
+                  <p
+                    className="govuk-body"
+                    data-cy="cy_Download-submissions-page-text-1"
+                  >
+                    To see who has applied for your grant, you need to view and
+                    download your submitted applications.
+                  </p>
+                  <p
+                    className="govuk-body"
+                    data-cy="cy_Download-submissions-page-text-2"
+                  >
+                    Get started by requesting a list of applications.
+                  </p>
+                  <FlexibleQuestionPageLayout
+                    fieldErrors={[]}
+                    formAction={formAction}
+                    csrfToken={csrfToken}
+                  >
+                    <Button
+                      text="Download submitted applications"
+                      addNameAttribute
+                    />
+                  </FlexibleQuestionPageLayout>
+                </>
+              ))}
 
           {exportStatus == ExportStatusEnum.COMPLETE && (
             <>
@@ -223,7 +238,14 @@ const DownloadSubmissions = ({
                 csrfToken={csrfToken}
               >
                 <div className="govuk-button-group">
-                  <Button text="Download all applications" addNameAttribute />
+                  <CustomLink
+                    href={allApplicationsHref}
+                    isButton
+                    excludeSubPath
+                  >
+                    Download all applications
+                  </CustomLink>
+
                   <CustomLink
                     href={individualApplicationsHref}
                     isSecondaryButton
