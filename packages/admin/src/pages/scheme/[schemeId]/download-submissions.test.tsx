@@ -39,6 +39,7 @@ const mockedGetGrantScheme = getGrantScheme as jest.Mock;
 const customProps = {
   backButtonHref: '/back',
   individualApplicationsHref: '/applications',
+  allApplicationsHref: '/all-applications',
   schemeName: 'Scheme',
   exportStatus: ExportStatusEnum.NOT_STARTED,
   submissionsCount: 1,
