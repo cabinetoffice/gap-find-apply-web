@@ -92,13 +92,10 @@ export const getServerSideProps = async ({
 
   if (exportStatus == ExportStatusEnum.COMPLETE && exportId) {
     const exportBatch = await getExportBatch(sessionCookie, exportId);
-    downloadAllZipLocation = exportBatch.location;
     downloadAllZipLocation = `/apply/admin/api/signed-url?key=${encodeURIComponent(
       exportBatch.location
     )}`;
   }
-
-  console.log('Download all zips: ' + downloadAllZipLocation);
 
   let userDetails;
   try {
