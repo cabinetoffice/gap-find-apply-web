@@ -192,7 +192,7 @@ describe('Question Options', () => {
         );
       });
 
-      it('Should return correct button links', async () => {
+      it('Should return correct button links when "backTo" passed in query', async () => {
         const result = (await getServerSideProps(
           getContext(getDefaultContext, { query: { backTo: 'dashboard' } })
         )) as GetServerSideProps;
@@ -205,7 +205,7 @@ describe('Question Options', () => {
         );
       });
 
-      it('Should return correct button links', async () => {
+      it('Should return correct button links when "from" passed in query', async () => {
         const result = (await getServerSideProps(
           getContext(getDefaultContext, {
             query: { from: 'question-type' },
@@ -218,7 +218,7 @@ describe('Question Options', () => {
         );
       });
 
-      it('Should return correct button links', async () => {
+      it('Should return correct button links when "backTo" and "from" passed in query', async () => {
         const result = (await getServerSideProps(
           getContext(getDefaultContext, {
             query: { backTo: 'dashboard', from: 'question-type' },

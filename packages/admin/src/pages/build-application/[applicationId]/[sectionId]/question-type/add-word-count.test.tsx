@@ -69,7 +69,7 @@ describe('getServerSideProps()', () => {
     });
   });
 
-  it.only('should call postQuestion service with a POST request', async () => {
+  it('should call postQuestion service with a POST request', async () => {
     (getSummaryFromSession as jest.Mock).mockResolvedValueOnce({});
     (postQuestion as jest.Mock).mockResolvedValueOnce(getMockQuestionSummary());
 
@@ -90,7 +90,7 @@ describe('getServerSideProps()', () => {
     );
   });
 
-  it.only('should call patchQuestion service with a PATCH request', async () => {
+  it('should call patchQuestion service with a PATCH request', async () => {
     (getSummaryFromSession as jest.Mock).mockResolvedValueOnce({});
     (parseBody as jest.Mock).mockResolvedValue({
       responseType: 'LongAnswer',
