@@ -28,7 +28,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       getUserTokenFromCookies(context.req),
       body.editorEmailAddress
     );
-    return body.editorEmailAddress;
   }
 
   async function fetchPageData() {
@@ -48,13 +47,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     fetchPageData,
     handleRequest,
     jwt: getSessionIdFromCookies(context.req),
-    onErrorMessage: 'Failed add new editor.',
-    onSuccessRedirectHref: (newEmailAddress) => {
-      const queryParams = new URLSearchParams({
-        newEmailAddress,
-      }).toString();
-      return `/schemes/${schemeId}/manage-editors/add-editor?${queryParams}`;
-    },
+    onErrorMessage: 'Failed adding new editor.',
+    onSuccessRedirectHref: `/schemes/${schemeId}/manage-editors/`,
   });
 }
 
