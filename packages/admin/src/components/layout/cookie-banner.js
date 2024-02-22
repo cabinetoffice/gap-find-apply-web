@@ -1,10 +1,10 @@
+'use client';
+
 import nookies from 'nookies';
 import { useState } from 'react';
 import TagManager from 'react-gtm-module';
-import getConfig from 'next/config';
 
 const CookieBanner = () => {
-  const { publicRuntimeConfig } = getConfig();
   let cookies = nookies.get({});
 
   const [showCookiesContainer, setShowCookiesContainer] = useState(true);
@@ -106,7 +106,7 @@ const CookieBanner = () => {
             Reject analytics cookies
           </button>
           <a
-            href={publicRuntimeConfig.FIND_A_GRANT_URL + '/info/cookies'}
+            href={process.env.FIND_A_GRANT_URL + '/info/cookies'}
             target="_blank"
             rel="noreferrer noopener"
             className="govuk-link"
@@ -128,7 +128,7 @@ const CookieBanner = () => {
               <p className="govuk-body">
                 You’ve accepted analytics cookies. You can{' '}
                 <a
-                  href={publicRuntimeConfig.FIND_A_GRANT_URL + '/info/cookies'}
+                  href={process.env.FIND_A_GRANT_URL + '/info/cookies'}
                   target="_blank"
                   rel="noreferrer"
                   className="govuk-link"
@@ -164,7 +164,7 @@ const CookieBanner = () => {
               <p className="govuk-body">
                 You’ve rejected analytics cookies. You can{' '}
                 <a
-                  href={publicRuntimeConfig.FIND_A_GRANT_URL + '/info/cookies'}
+                  href={process.env.FIND_A_GRANT_URL + '/info/cookies'}
                   target="_blank"
                   rel="noreferrer"
                   className="govuk-link"
