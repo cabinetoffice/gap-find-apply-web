@@ -62,7 +62,7 @@ describe('Publish confirmation page', () => {
     render(<PublishConfirmationPage {...getProps()} />);
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
       'href',
-      '/apply/testBack'
+      '/apply/admin/testBack'
     );
   });
 

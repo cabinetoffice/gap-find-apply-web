@@ -1,7 +1,11 @@
 import '@testing-library/jest-dom';
 import { getContext } from 'gap-web-ui';
 import UserPage, { getServerSideProps } from './change-department.page';
-import { Department, Role, User } from '../../types';
+import {
+  Department,
+  Role,
+  User,
+} from '../../../../app/super-admin-dashboard/types';
 import { render, screen } from '@testing-library/react';
 import { parseBody } from '../../../../utils/parseBody';
 import {

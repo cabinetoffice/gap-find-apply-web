@@ -235,14 +235,17 @@ describe('section-overview', () => {
 
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/scheme/schemeId'
+        '/apply/admin/scheme/schemeId'
       );
     });
 
     it('Should render back button', () => {
       render(<SectionOverview {...getProps()} />);
       const backButton = screen.getByRole('link', { name: 'Back' });
-      expect(backButton).toHaveAttribute('href', '/apply/scheme/schemeId');
+      expect(backButton).toHaveAttribute(
+        'href',
+        '/apply/admin/scheme/schemeId'
+      );
     });
 
     it('Should render a "Create an advert" heading', () => {
@@ -299,7 +302,10 @@ describe('section-overview', () => {
         const exitLink = screen.getByRole('link', {
           name: /Go back to view Scheme page/i,
         });
-        expect(exitLink).toHaveAttribute('href', '/apply/scheme/schemeId');
+        expect(exitLink).toHaveAttribute(
+          'href',
+          '/apply/admin/scheme/schemeId'
+        );
       });
 
       describe('Advert status is "DRAFT"', () => {
@@ -328,7 +334,7 @@ describe('section-overview', () => {
 
           expect(publishButton).toHaveAttribute(
             'href',
-            '/apply/scheme/schemeId/advert/advertId/summary'
+            '/apply/admin/scheme/schemeId/advert/advertId/summary'
           );
         });
 
@@ -389,7 +395,7 @@ describe('section-overview', () => {
 
           expect(publishButton).toHaveAttribute(
             'href',
-            '/apply/scheme/schemeId/advert/advertId/summary'
+            '/apply/admin/scheme/schemeId/advert/advertId/summary'
           );
         });
 

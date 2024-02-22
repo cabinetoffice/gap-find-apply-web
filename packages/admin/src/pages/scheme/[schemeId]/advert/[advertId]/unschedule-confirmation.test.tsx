@@ -84,7 +84,7 @@ describe('Unschedule confirmation page', () => {
 
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/testBackLink'
+        '/apply/admin/testBackLink'
       );
     });
 

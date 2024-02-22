@@ -52,7 +52,7 @@ describe('Question content page', () => {
 
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
       'href',
-      '/apply/back'
+      '/apply/admin/back'
     );
   });
 

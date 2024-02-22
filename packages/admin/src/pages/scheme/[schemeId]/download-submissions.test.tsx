@@ -74,7 +74,7 @@ describe('Download submissions page', () => {
       render(component);
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/back'
+        '/apply/admin/back'
       );
     });
 

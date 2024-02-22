@@ -112,7 +112,7 @@ describe('Sections component', () => {
       });
       expect(link).toHaveProperty(
         'href',
-        'http://localhost/apply/build-application/87654321/ELIGIBILITY/testEligibilityQuestionId/eligibility-statement'
+        'http://localhost/apply/admin/build-application/87654321/ELIGIBILITY/testEligibilityQuestionId/eligibility-statement'
       );
     });
 
@@ -125,7 +125,7 @@ describe('Sections component', () => {
         screen.getByRole('link', { name: 'Edit section' })
       ).toHaveAttribute(
         'href',
-        '/apply/build-application/87654321/testCustomSectionId'
+        '/apply/admin/build-application/87654321/testCustomSectionId'
       );
     });
 
@@ -146,7 +146,7 @@ describe('Sections component', () => {
       });
       expect(link).toHaveProperty(
         'href',
-        'http://localhost/apply/build-application/87654321/ELIGIBILITY/testEligibilityQuestionId/eligibility-statement'
+        'http://localhost/apply/admin/build-application/87654321/ELIGIBILITY/testEligibilityQuestionId/eligibility-statement'
       );
     });
 

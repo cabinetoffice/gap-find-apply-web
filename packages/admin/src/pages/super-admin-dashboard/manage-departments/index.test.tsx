@@ -21,7 +21,7 @@ describe('Edit department information page', () => {
       <ManageDepartmentsPage departments={getMockDepartmentData()} userId="1" />
     );
     expect(screen.getByText('Back').getAttribute('href')).toBe(
-      '/apply/super-admin-dashboard/user/1/change-department'
+      '/apply/admin/super-admin-dashboard/user/1/change-department'
     );
   });
   test('Should navigate to dashboard when not provided a userId', async () => {
@@ -29,7 +29,7 @@ describe('Edit department information page', () => {
       <ManageDepartmentsPage departments={getMockDepartmentData()} userId="" />
     );
     expect(screen.getByText('Back').getAttribute('href')).toBe(
-      '/apply/super-admin-dashboard/'
+      '/apply/admin/super-admin-dashboard/'
     );
   });
 });

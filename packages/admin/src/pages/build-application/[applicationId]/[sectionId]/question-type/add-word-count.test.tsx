@@ -148,7 +148,7 @@ describe('Add word count page', () => {
 
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
       'href',
-      '/apply/some-back-href'
+      '/apply/admin/some-back-href'
     );
   });
 

@@ -19,7 +19,7 @@ describe('ReviewAndPublishButtonGroup', () => {
     const exitLink = screen.getByRole('link', {
       name: /Go back to view Scheme page/i,
     });
-    expect(exitLink).toHaveAttribute('href', '/apply/scheme/schemeId');
+    expect(exitLink).toHaveAttribute('href', '/apply/admin/scheme/schemeId');
   });
 
   it('Should render "Review and publish" button with the right href', () => {
@@ -31,7 +31,7 @@ describe('ReviewAndPublishButtonGroup', () => {
 
     expect(publishButton).toHaveAttribute(
       'href',
-      '/apply/scheme/schemeId/advert/advertId/summary'
+      '/apply/admin/scheme/schemeId/advert/advertId/summary'
     );
   });
 

@@ -48,7 +48,7 @@ describe('advert-error ', () => {
       const link = screen.getByRole('link', {
         name: /please return/i,
       });
-      expect(link).toHaveAttribute('href', '/apply/test/redirect');
+      expect(link).toHaveAttribute('href', '/apply/admin/test/redirect');
       screen.getByText(/and try again\./i);
     });
   });

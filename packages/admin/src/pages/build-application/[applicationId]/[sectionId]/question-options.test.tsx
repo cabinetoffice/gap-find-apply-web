@@ -54,7 +54,7 @@ describe('Question Options', () => {
       render(component);
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/mockBackUrl'
+        '/apply/admin/mockBackUrl'
       );
     });
 

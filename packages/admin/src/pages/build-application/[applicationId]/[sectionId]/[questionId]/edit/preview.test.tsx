@@ -52,7 +52,7 @@ describe('PreviewQuestion', () => {
           screen.getByRole('button', { name: 'Exit preview' })
         ).toHaveAttribute(
           'href',
-          '/apply/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content'
+          '/apply/admin/build-application/testApplicationId/testSectionId/testQuestionId/edit/question-content'
         );
       });
     });

@@ -1,4 +1,3 @@
-import getConfig from 'next/config';
 import React from 'react';
 
 const CustomLink = ({
@@ -14,8 +13,6 @@ const CustomLink = ({
   disabled = false,
   excludeSubPath = false,
 }: CustomLinkProps) => {
-  const { publicRuntimeConfig } = getConfig();
-
   const buttonProps = {
     role: 'button',
     draggable: false,
@@ -41,7 +38,7 @@ const CustomLink = ({
           ? undefined
           : excludeSubPath
           ? href
-          : `${publicRuntimeConfig.SUB_PATH}${href}`
+          : `${process.env.SUB_PATH}${href}`
       }
       data-cy={dataCy}
       data-testid={dataTestId}

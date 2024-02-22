@@ -34,7 +34,7 @@ const section: GrantAdvertSummaryPageSection = {
   pages: [page],
 };
 
-const actionLink = `/apply/scheme/${schemeId}/advert/${advertId}/grantDetails/${page.id}`;
+const actionLink = `/apply/admin/scheme/${schemeId}/advert/${advertId}/grantDetails/${page.id}`;
 
 describe('Date component', () => {
   const getDefaultProps = (): Parameters<typeof Date>[0] => ({

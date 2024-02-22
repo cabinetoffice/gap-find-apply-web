@@ -1,4 +1,3 @@
-import getConfig from 'next/config';
 import Image from 'next/image';
 import styles from './QuestionTypeHint.module.scss';
 
@@ -10,9 +9,8 @@ const QuestionTypeHint = ({
   noDescriptionLineBreak,
   detailsTitle,
 }: QuestionTypeHintProps) => {
-  const { publicRuntimeConfig } = getConfig();
   const inputImageLoader = (imageProps: { src: any }) => {
-    return `${publicRuntimeConfig.SUB_PATH}/assets/images/inputs/${imageProps.src}`;
+    return `${process.env.SUB_PATH}/assets/images/inputs/${imageProps.src}`;
   };
 
   return (

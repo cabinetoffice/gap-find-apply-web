@@ -32,14 +32,14 @@ describe('UnpublishSummary component', () => {
     screen.getByRole('heading', { name: 'Unpublish this application form?' });
     expect(screen.getByRole('button', { name: 'Unpublish' })).toHaveAttribute(
       'href',
-      '/apply/build-application/testApplicationId/unpublish-confirmation'
+      '/apply/admin/build-application/testApplicationId/unpublish-confirmation'
     );
   });
 
   it('Should render an exit button', () => {
     expect(screen.getByRole('link', { name: 'Exit' })).toHaveAttribute(
       'href',
-      '/apply/scheme/testGrantSchemeId'
+      '/apply/admin/scheme/testGrantSchemeId'
     );
   });
 

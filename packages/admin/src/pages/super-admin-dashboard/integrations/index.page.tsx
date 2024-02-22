@@ -31,7 +31,9 @@ const Integrations = ({
 }: InferProps<typeof getServerSideProps>) => (
   <>
     <Meta title="Integrations" />
+
     <Navigation />
+
     <div className="govuk-grid-row govuk-!-padding-top-7">
       <div className="govuk-grid-column-full">
         <div className={`${styles.sidebar} govuk-grid-column-one-third`}>

@@ -271,7 +271,7 @@ describe('scheme/[schemeId]', () => {
       );
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/dashboard'
+        '/apply/admin/dashboard'
       );
     });
 
@@ -415,7 +415,7 @@ describe('scheme/[schemeId]', () => {
         screen.getByRole('button', { name: 'Manage due diligence checks' })
       ).toHaveAttribute(
         'href',
-        `/apply/scheme/${mockScheme.schemeId}/manage-due-diligence-checks`
+        `/apply/admin/scheme/${mockScheme.schemeId}/manage-due-diligence-checks`
       );
     });
 
@@ -437,7 +437,7 @@ describe('scheme/[schemeId]', () => {
         screen.getByRole('button', { name: 'Manage due diligence checks' })
       ).toHaveAttribute(
         'href',
-        `/apply/scheme/${mockScheme.schemeId}/manage-due-diligence-checks`
+        `/apply/admin/scheme/${mockScheme.schemeId}/manage-due-diligence-checks`
       );
     });
 

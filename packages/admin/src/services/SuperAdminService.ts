@@ -1,7 +1,7 @@
 import {
   ChangeDepartmentDto,
   SuperAdminDashboardResponse,
-} from './../pages/super-admin-dashboard/types';
+} from '../app/super-admin-dashboard/types';
 import axios from 'axios';
 import { axiosUserServiceConfig } from '../utils/session';
 import {
@@ -9,7 +9,7 @@ import {
   Role,
   SuperAdminDashboardFilterData,
   User,
-} from '../pages/super-admin-dashboard/types';
+} from '../app/super-admin-dashboard/types';
 import PaginationType from '../types/Pagination';
 import { Integration } from '../pages/super-admin-dashboard/integrations/index.page';
 

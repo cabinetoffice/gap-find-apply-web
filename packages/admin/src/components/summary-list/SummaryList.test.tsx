@@ -59,11 +59,11 @@ describe('Summary List component', () => {
   it('Renders the row actions', () => {
     expect(screen.getByRole('link', { name: 'Change' })).toHaveAttribute(
       'href',
-      '/apply/edit/name'
+      '/apply/admin/edit/name'
     );
     expect(
       screen.getByRole('link', { name: 'Change scheme address' })
-    ).toHaveAttribute('href', '/apply/edit/address');
+    ).toHaveAttribute('href', '/apply/admin/edit/address');
   });
 
   it('Should default the aria label to the action label', () => {

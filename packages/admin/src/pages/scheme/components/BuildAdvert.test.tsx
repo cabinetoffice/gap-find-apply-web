@@ -50,7 +50,7 @@ describe('BuildAdvert', () => {
     it('Should render a "Create advert" button', () => {
       expect(
         screen.getByRole('button', { name: 'Create advert' })
-      ).toHaveAttribute('href', '/apply/scheme/12345/advert/name');
+      ).toHaveAttribute('href', '/apply/admin/scheme/12345/advert/name');
     });
   });
 

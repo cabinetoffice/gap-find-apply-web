@@ -147,10 +147,10 @@ describe('Dashboard', () => {
 
     expect(
       screen.getByRole('link', { name: 'View scheme Scheme name 1' })
-    ).toHaveAttribute('href', '/apply/scheme/123');
+    ).toHaveAttribute('href', '/apply/admin/scheme/123');
     expect(
       screen.getByRole('link', { name: 'View scheme Scheme name 2' })
-    ).toHaveAttribute('href', '/apply/scheme/456');
+    ).toHaveAttribute('href', '/apply/admin/scheme/456');
   });
 
   it('Should render a View all schemes link to the schemes page when there are schemes', async () => {

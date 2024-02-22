@@ -35,7 +35,7 @@ const section: GrantAdvertSummaryPageSection = {
   pages: [page],
 };
 
-const actionLink = `/apply/scheme/${schemeId}/advert/${advertId}/furtherInformation/${page.id}`;
+const actionLink = `/apply/admin/scheme/${schemeId}/advert/${advertId}/furtherInformation/${page.id}`;
 
 describe('RichText component', () => {
   const getDefaultProps = (): Parameters<typeof RichText>[0] => ({

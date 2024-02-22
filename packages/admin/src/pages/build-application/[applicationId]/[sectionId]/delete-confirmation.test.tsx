@@ -75,7 +75,7 @@ describe('Delete section page', () => {
       render(component);
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/dashboard'
+        '/apply/admin/dashboard'
       );
     });
 

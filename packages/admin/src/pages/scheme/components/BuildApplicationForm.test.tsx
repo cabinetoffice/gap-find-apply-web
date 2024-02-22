@@ -12,7 +12,7 @@ describe('BuildApplicationForm', () => {
       screen.getByRole('button', { name: 'Build application form' })
     ).toHaveAttribute(
       'href',
-      '/apply/build-application/name?grantSchemeId=12345'
+      '/apply/admin/build-application/name?grantSchemeId=12345'
     );
   });
 });

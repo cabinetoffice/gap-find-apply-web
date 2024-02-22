@@ -17,17 +17,6 @@ const mockSchemeParams = {
   disabled: false,
 };
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
 jest.mock('axios');
 jest.mock('../../../../utils/parseBody');
 jest.mock('../../../../services/SectionService');
@@ -95,7 +84,7 @@ describe('Due diligence page', () => {
       renderComponent();
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply'
+        '/apply/admin'
       );
     });
 

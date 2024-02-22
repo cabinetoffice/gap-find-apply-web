@@ -7,17 +7,6 @@ import DeleteQuestion, { getServerSideProps } from './delete-confirmation.page';
 import { deleteQuestion } from '../../../../../services/QuestionService';
 import { parseBody } from '../../../../../utils/parseBody';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
 jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/QuestionService');
 
@@ -88,7 +77,7 @@ describe('Delete question page', () => {
       expect(document.title).toBe('Delete a question - Manage a grant');
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/dashboard'
+        '/apply/admin/dashboard'
       );
     });
   });

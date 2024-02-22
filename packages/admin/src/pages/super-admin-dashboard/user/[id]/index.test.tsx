@@ -8,7 +8,7 @@ import {
   getUserById,
   getUserFromJwt,
 } from '../../../../services/SuperAdminService';
-import { User } from '../../types';
+import { User } from '../../../../app/super-admin-dashboard/types';
 import { getAdminsSchemes } from '../../../../services/SchemeService';
 import moment from 'moment';
 
@@ -197,7 +197,7 @@ describe('Super admin - Edit user page', () => {
 
       expect(deleteUserButton).toHaveAttribute(
         'href',
-        '/apply/super-admin-dashboard/user/1/delete-user'
+        '/apply/admin/super-admin-dashboard/user/1/delete-user'
       );
       expect(deleteUserButton).toBeEnabled();
     });
@@ -231,7 +231,7 @@ describe('Super admin - Edit user page', () => {
 
       expect(
         screen.getByRole('link', { name: 'Unblock user' })
-      ).toHaveAttribute('href', '/apply/api/unblockUser?id=1');
+      ).toHaveAttribute('href', '/apply/admin/api/unblockUser?id=1');
       expect(screen.queryByRole('link', { name: 'Block user' })).toBeNull();
     });
 
@@ -240,7 +240,7 @@ describe('Super admin - Edit user page', () => {
 
       expect(screen.getByRole('link', { name: 'Block user' })).toHaveAttribute(
         'href',
-        '/apply/super-admin-dashboard/user/1/block-user'
+        '/apply/admin/super-admin-dashboard/user/1/block-user'
       );
       expect(screen.queryByRole('link', { name: 'Unblock user' })).toBeNull();
     });

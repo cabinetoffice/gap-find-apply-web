@@ -53,7 +53,7 @@ describe('Super admin - Change owner page', () => {
 
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/super-admin-dashboard/user/testUserId'
+        '/apply/admin/super-admin-dashboard/user/testUserId'
       );
     });
 

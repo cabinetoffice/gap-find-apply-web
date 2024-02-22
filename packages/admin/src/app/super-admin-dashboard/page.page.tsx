@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import styles from './superadmin-dashboard.module.scss';
 import { getSuperAdminDashboard } from '../../services/SuperAdminService';
 import { cookies, headers } from 'next/headers';
-import { User } from '../../pages/super-admin-dashboard/types';
+import { User } from './types';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Navigation from './Navigation';
@@ -37,7 +37,7 @@ export default async function SuperAdminDashboard({
     'use server';
 
     if (formData.has('clear-all-filters') || formData.has('clearAllFilters')) {
-      redirect(`${process.env.SUB_PATH}/super-admin-dashboard`);
+      redirect('/super-admin-dashboard');
     } else {
       const searchParams = new URLSearchParams({
         roles: formData.getAll('roles').join(',') ?? '',
@@ -45,11 +45,7 @@ export default async function SuperAdminDashboard({
         searchTerm: (formData.get('searchTerm') as string) ?? '',
       });
 
-      redirect(
-        `${
-          process.env.SUB_PATH
-        }/super-admin-dashboard?${searchParams.toString()}`
-      );
+      redirect(`/super-admin-dashboard?${searchParams.toString()}`);
     }
   }
 

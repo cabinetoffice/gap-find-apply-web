@@ -5,7 +5,7 @@ import InferProps from '../../../types/InferProps';
 import Meta from '../../../components/layout/Meta';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import { GetServerSidePropsContext } from 'next';
-import { Department } from '../types';
+import { Department } from '../../../app/super-admin-dashboard/types';
 import { Row } from 'gap-web-ui/dist/cjs/components/summary-list/SummaryList';
 import styles from './manage-departments.module.scss';
 import { fetchDataOrGetRedirect } from '../../../utils/fetchDataOrGetRedirect';
