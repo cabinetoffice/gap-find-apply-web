@@ -76,8 +76,6 @@ function getRedirect(
     : getRedirectForCreate(responseType, applicationId, sectionId, queryString);
 }
 
-const SHORT_QUESTION_WORD_LIMIT = 300;
-
 function getRadio(responseType: ResponseType) {
   if (responseType === ResponseType.Dropdown) return 'Multiple choice';
   if (responseType === ResponseType.MultipleSelection) return 'Multiple select';
@@ -137,6 +135,10 @@ export const getServerSideProps = async (
       await postQuestion(sessionId, applicationId, sectionId, {
         ...restOfQuestionSummary,
         ...props,
+        validation: {
+          mandatory: optional !== 'true',
+          maxWords: '',
+        },
       });
 
       return {
