@@ -37,7 +37,6 @@ const getServerSideProps = async ({
   function getBackToRedirect() {
     if (from === 'question-type') {
       const queryString = buildQueryStringWithoutUndefinedValues({ backTo });
-      console.log(queryString);
       return `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`;
     }
     return backTo === 'dashboard'

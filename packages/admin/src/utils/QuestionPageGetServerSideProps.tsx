@@ -17,8 +17,8 @@ import {
  * @template V - The response of the 'handleRequest' function
  *
  *
- * @returns A redirect to the relevant location, or a set of props needed to load a page
  * @param props
+ * @returns A redirect to the relevant location, or a set of props needed to load a page
  */
 
 export default async function QuestionPageGetServerSideProps<

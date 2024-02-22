@@ -103,14 +103,17 @@ export const getServerSideProps = async (
     )) as QuestionSummary;
     const { optional, ...restOfQuestionSummary } = questionSummary;
 
+    if (redirectQuestionType.includes(body.responseType)) {
+      await addFieldsToSession(
+        questionId ? 'updatedQuestion' : 'newQuestion',
+        props,
+        sessionId
+      );
+      return {
+        redirectQuestionType: body.responseType,
+      };
+    }
     if (questionId) {
-      if (redirectQuestionType.includes(body.responseType)) {
-        await addFieldsToSession('updatedQuestion', props, sessionId);
-        return {
-          redirectQuestionType: body.responseType,
-        };
-      }
-
       await patchQuestion(
         sessionId,
         applicationId,
@@ -131,13 +134,6 @@ export const getServerSideProps = async (
         sessionId,
       };
     } else {
-      if (redirectQuestionType.includes(body.responseType)) {
-        await addFieldsToSession('newQuestion', props, sessionId);
-        return {
-          redirectQuestionType: body.responseType,
-        };
-      }
-
       await postQuestion(sessionId, applicationId, sectionId, {
         ...restOfQuestionSummary,
         ...props,
