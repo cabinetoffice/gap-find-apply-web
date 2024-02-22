@@ -16,6 +16,7 @@ export type QuestionPageGetServerSidePropsType<
   jwt: string;
   onSuccessRedirectHref: string | ((result: V) => string);
   onErrorMessage: string;
+  isEdit?: boolean;
 };
 
 export type PostPageResultProps<

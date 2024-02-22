@@ -38,6 +38,7 @@ describe('QuestionPageGetServerSideProps', () => {
           formAction: process.env.SUB_PATH + '/testResolvedURL',
           previousValues: null,
           pageData: { '1': 'testResponse' },
+          isEdit: false,
         },
       });
     });
@@ -208,6 +209,7 @@ describe('QuestionPageGetServerSideProps', () => {
           formAction: process.env.SUB_PATH + '/testResolvedURL',
           previousValues: { '1': 'testNewResponse' },
           pageData: { '1': 'testResponse' },
+          isEdit: false,
         },
       });
     });

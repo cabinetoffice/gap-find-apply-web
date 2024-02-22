@@ -17,6 +17,7 @@ module.exports = {
     ONE_LOGIN_SECURITY_URL:
       process.env.ONE_LOGIN_SECURITY_URL ||
       'https://home.integration.account.gov.uk/security',
+    ADMIN_FRONTEND_URL: process.env.ADMIN_FRONTEND_URL,
   },
   i18n: {
     locales: ['en'],

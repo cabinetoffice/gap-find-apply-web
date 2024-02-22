@@ -9,12 +9,14 @@ import '../lib/ie11_nodelist_polyfill';
 import '../styles/globals.scss';
 import '../../../../node_modules/gap-web-ui/dist/cjs/index.css';
 import { verifyToken } from '../services/JwtService';
+import { getUserRoles } from '../services/UserRolesService';
 
 const USER_TOKEN_NAME = process.env.USER_TOKEN_NAME;
 
 export const AuthContext = createContext({
   oneLoginEnabledInFind: null,
   isUserLoggedIn: false,
+  isSuperAdmin: false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -25,6 +27,7 @@ const MyApp = ({
   cookies,
   isUserLoggedIn,
   oneLoginEnabledInFind,
+  isSuperAdmin,
 }) => {
   const { publicRuntimeConfig } = getConfig();
 
@@ -58,7 +61,9 @@ const MyApp = ({
         strategy="beforeInteractive"
       />
       {showCookieBanner && <CookieBanner />}
-      <AuthContext.Provider value={{ isUserLoggedIn, oneLoginEnabledInFind }}>
+      <AuthContext.Provider
+        value={{ isUserLoggedIn, oneLoginEnabledInFind, isSuperAdmin }}
+      >
         <Component {...pageProps} />
       </AuthContext.Provider>
     </>
@@ -79,9 +84,11 @@ MyApp.getInitialProps = async (appContext) => {
 
   try {
     const { valid } = await verifyToken(userServiceToken);
+    const isSuperAdmin = (await getUserRoles(userServiceToken)).isSuperAdmin;
     return {
       ...appProps,
       isUserLoggedIn: valid || false,
+      isSuperAdmin,
       cookies,
       oneLoginEnabledInFind,
     };

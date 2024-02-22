@@ -9,19 +9,21 @@ import QuestionTypeHint from '../components/QuestionTypeHint';
 import { getServerSideProps } from './index.getServerSideProps';
 import InferProps from '../../../../../types/InferProps';
 
+const getPageTitle = (fieldErrors: string | any[], isEdit: boolean) =>
+  `${fieldErrors.length > 0 ? 'Error: ' : ''}${
+    isEdit ? 'Change question type' : 'Add a question'
+  } - Manage a grant`;
+
 const QuestionType = ({
   pageData: { sectionName, defaultRadio, backButtonHref },
   formAction,
   fieldErrors,
   csrfToken,
+  isEdit,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
-      <Meta
-        title={`${
-          fieldErrors.length > 0 ? 'Error: ' : ''
-        }Add a question - Manage a grant`}
-      />
+      <Meta title={getPageTitle(fieldErrors, isEdit)} />
 
       <CustomLink
         isBackButton
@@ -38,7 +40,11 @@ const QuestionType = ({
         >
           <Radio
             questionTitle="How would you like this question to be answered?"
-            questionHintText="Choose how you would like your question to be answered?"
+            questionHintText={
+              isEdit
+                ? "If you change the way that applicants answer this question, you will lose any changes you have made to the question's settings. The question's title and description will be kept."
+                : 'Choose how you would like your question to be answered?'
+            }
             fieldName="responseType"
             fieldErrors={fieldErrors}
             defaultChecked={defaultRadio}

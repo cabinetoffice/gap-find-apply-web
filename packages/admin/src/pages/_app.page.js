@@ -4,14 +4,21 @@ import App from 'next/app';
 import getConfig from 'next/config';
 import Script from 'next/script';
 import nookies from 'nookies';
-import { useEffect } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import TagManager from 'react-gtm-module';
 import '../../../../node_modules/gap-web-ui/dist/cjs/index.css';
 import Layout from '../components/layout/Layout';
 import '../lib/ie11_nodelist_polyfill';
 import '../styles/globals.scss';
+import { getUserRoles } from '../services/UserService';
 
-const MyApp = ({ Component, pageProps, cookies }) => {
+const USER_TOKEN_NAME = process.env.JWT_COOKIE_NAME;
+export const AuthContext = createContext({
+  isSuperAdmin: false,
+});
+export const useAdminAuth = () => useContext(AuthContext);
+
+const MyApp = ({ Component, pageProps, cookies, isSuperAdmin }) => {
   const { publicRuntimeConfig } = getConfig();
 
   const showCookieBanner = !cookies.design_system_cookies_policy;
@@ -42,20 +49,30 @@ const MyApp = ({ Component, pageProps, cookies }) => {
         src={`${publicRuntimeConfig.SUB_PATH}/javascript/govuk.js`}
         strategy="beforeInteractive"
       />
-      <Layout showCookieBanner={showCookieBanner}>
-        <Component {...pageProps} />
-      </Layout>
+      <AuthContext.Provider value={{ isSuperAdmin }}>
+        <Layout showCookieBanner={showCookieBanner}>
+          <Component {...pageProps} />
+        </Layout>
+      </AuthContext.Provider>
     </>
   );
 };
 
 MyApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext);
+  const { req } = appContext.ctx;
+  const userServiceToken = req.cookies[USER_TOKEN_NAME];
   const cookies =
     typeof window === 'undefined'
       ? appContext.ctx.req.cookies
       : nookies.get({});
-  return { ...appProps, cookies };
+
+  try {
+    const isSuperAdmin = (await getUserRoles(userServiceToken)).isSuperAdmin;
+    return { ...appProps, cookies, isSuperAdmin };
+  } catch (e) {
+    return { ...appProps, cookies, isSuperAdmin: false };
+  }
 };
 
 export default MyApp;
