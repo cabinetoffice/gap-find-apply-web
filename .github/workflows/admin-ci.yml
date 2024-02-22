@@ -4,8 +4,8 @@ on:
   pull_request:
     branches:
       - develop
-      - feat
-      - feature
+      - feat/**
+      - feature/**
     paths:
       - "packages/admin/**"
       - "packages/gap-web-ui/**"
