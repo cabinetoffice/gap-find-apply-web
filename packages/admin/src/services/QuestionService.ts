@@ -35,7 +35,7 @@ const postQuestion = (
   sectionId: string,
   body: {
     fieldTitle: string;
-    responseType?: ResponseType;
+    responseType: ResponseType;
     profileField?: string;
     hintText?: string;
     displayText?: string;
