@@ -54,10 +54,22 @@ const validateRedirectUrl = (redirectUrl: string) => {
   }
 };
 
+const buildQueryStringWithoutUndefinedValues = (obj: { [x: string]: any }) => {
+  const strippedObj = Object.keys(obj).reduce(
+    (acc, key) =>
+      obj[key] === undefined ? { ...acc } : { ...acc, [key]: obj[key] },
+    {}
+  );
+  return Object.keys(strippedObj).length > 0
+    ? '?' + new URLSearchParams(strippedObj)
+    : '';
+};
+
 export {
   validateRedirectUrl,
   isJSEnabled,
   downloadFile,
   getObjEntriesByKeySubstr,
   getLoginUrl,
+  buildQueryStringWithoutUndefinedValues,
 };

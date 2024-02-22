@@ -84,12 +84,14 @@ const QuestionOptions = ({
                 addNameAttribute={true}
                 data-cy="cy_questionOptions-SaveAndContinueButton"
               />
-              <CustomLink
-                href={cancelChangesHref}
-                dataCy="cy_questionOptions-cancelLink"
-              >
-                Cancel
-              </CustomLink>
+              {cancelChangesHref && (
+                <CustomLink
+                  href={cancelChangesHref}
+                  dataCy="cy_questionOptions-cancelLink"
+                >
+                  Cancel
+                </CustomLink>
+              )}
             </div>
           </div>
         </FlexibleQuestionPageLayout>

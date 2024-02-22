@@ -48,7 +48,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     questionSummary = (await getSummaryFromSession(
       'newQuestion',
       sessionCookie
-    )) as QuestionWithOptionsSummary;
+    )) as unknown as QuestionWithOptionsSummary;
   } catch (err) {
     return questionErrorPageRedirect(applicationId);
   }

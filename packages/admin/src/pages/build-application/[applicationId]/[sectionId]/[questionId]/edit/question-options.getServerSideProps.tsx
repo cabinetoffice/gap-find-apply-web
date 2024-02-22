@@ -18,6 +18,8 @@ import {
 } from './editQuestionServiceError';
 import callServiceMethod from '../../../../../../utils/callServiceMethod';
 import getConfig from 'next/config';
+import { getSummaryFromSession } from '../../../../../../services/SessionService';
+import { buildQueryStringWithoutUndefinedValues } from '../../../../../../utils/general';
 
 const getServerSideProps = async ({
   params,
@@ -30,12 +32,31 @@ const getServerSideProps = async ({
     string,
     string
   >;
-  const { backTo } = query as Record<string, string>;
+  const { backTo, from } = query as Record<string, string>;
 
   function getBackToRedirect() {
+    if (from === 'question-type') {
+      const queryString = buildQueryStringWithoutUndefinedValues({ backTo });
+      return `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`;
+    }
     return backTo === 'dashboard'
       ? `/build-application/${applicationId}/dashboard`
       : `/build-application/${applicationId}/${sectionId}`;
+  }
+
+  function getBackButtonHref() {
+    if (from === 'question-type') {
+      const queryString = buildQueryStringWithoutUndefinedValues({
+        backTo,
+        questionId,
+        sectionId,
+      });
+      return `/build-application/${applicationId}/${sectionId}/question-type${queryString}`;
+    }
+    const queryString = buildQueryStringWithoutUndefinedValues({
+      backTo,
+    });
+    return `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`;
   }
 
   let fieldErrors: ValidationError[] = [];
@@ -104,7 +125,13 @@ const getServerSideProps = async ({
           };
 
         case 'save-and-continue' in body:
+          questionSummary =
+            ((await getSummaryFromSession(
+              'updatedQuestion',
+              sessionId
+            )) as unknown as QuestionWithOptionsSummary) || {};
           await patchQuestion(sessionId, applicationId, sectionId, questionId, {
+            ...questionSummary,
             options: options,
           });
 
@@ -160,14 +187,18 @@ const getServerSideProps = async ({
     options = questionData.options as string[];
   }
   const { publicRuntimeConfig } = getConfig();
+  const formActionQueryString = buildQueryStringWithoutUndefinedValues({
+    backTo,
+    from,
+  });
   return {
     props: {
       pageCaption: sectionName,
       questionSummary,
-      backButtonHref: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content?backTo=${backTo}`,
-      formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-options?backTo=${backTo}`,
+      backButtonHref: getBackButtonHref(),
+      formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-options${formActionQueryString}`,
       fieldErrors,
-      cancelChangesHref: getBackToRedirect(),
+      cancelChangesHref: from === 'question-type' ? '' : getBackToRedirect(),
       options,
       csrfToken: res.getHeader('x-csrf-token') as string,
     },
