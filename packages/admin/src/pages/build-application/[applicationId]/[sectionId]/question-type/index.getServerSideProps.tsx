@@ -23,6 +23,8 @@ type RequestBody = {
   _csrf?: string;
 };
 
+const SHORT_QUESTION_WORD_LIMIT = 300;
+
 const redirectQuestionType = [
   ResponseType.Dropdown,
   ResponseType.MultipleSelection,
@@ -132,12 +134,16 @@ export const getServerSideProps = async (
         sessionId,
       };
     } else {
+      const maxWords =
+        body.responseType === ResponseType.ShortAnswer
+          ? SHORT_QUESTION_WORD_LIMIT
+          : undefined;
       await postQuestion(sessionId, applicationId, sectionId, {
         ...restOfQuestionSummary,
         ...props,
         validation: {
           mandatory: optional !== 'true',
-          maxWords: '',
+          maxWords,
         },
       });
 
