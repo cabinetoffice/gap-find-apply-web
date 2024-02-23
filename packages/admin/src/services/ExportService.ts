@@ -1,15 +1,22 @@
 import axios from 'axios';
 import { axiosSessionConfig } from '../utils/session';
+import Pagination from '../types/Pagination';
 
 const BASE_SUBMISSIONS_URL = process.env.BACKEND_HOST + '/grant-export';
 
 const getExportDetails = async (
-  sessionCookie: string,
-  exportBatchId: string
+  exportBatchId: string,
+  grabOnlyFailed: boolean,
+  pagination: Pagination,
+  sessionCookie: string
 ) => {
+  const params = { grabOnlyFailed: grabOnlyFailed, pagination: pagination };
   const response = await axios.get(
     `${BASE_SUBMISSIONS_URL}/${exportBatchId}/details`,
-    axiosSessionConfig(sessionCookie)
+    {
+      params,
+      ...axiosSessionConfig(sessionCookie),
+    }
   );
   return response.data;
 };

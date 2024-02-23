@@ -1,4 +1,4 @@
-import { FlexibleQuestionPageLayout } from 'gap-web-ui';
+import { FlexibleQuestionPageLayout, Table } from 'gap-web-ui';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import React from 'react';
 
@@ -12,32 +12,48 @@ import { DownloadMessage } from '../../../../components/notification-banner/Down
 export const getServerSideProps = async ({
   req,
   res,
+  query,
   resolvedUrl,
   params,
 }: GetServerSidePropsContext) => {
   const sessionCookie = getSessionIdFromCookies(req);
   const { schemeId, exportId } = params as Record<string, string>;
 
+  const pagination = {
+    paginate: true,
+    page: Number(query.page ?? 1) - 1,
+    size: Number(query.limit ?? 10),
+  };
+
   let grantScheme;
-  let exportedSubmissions;
-  let availableSubmissions = [];
   let unavailableSubmissions = [];
+  let availableSubmissionsTotalCount = 0;
+  let unavailableSubmissionsTotalCount = 0;
   let superZipLocation = '';
 
   try {
     grantScheme = await getGrantScheme(schemeId, sessionCookie);
 
-    const exportDetails = await getExportDetails(exportId, sessionCookie);
-
-    exportedSubmissions = exportDetails.exportedSubmissions;
-    availableSubmissions = exportedSubmissions.filter(
-      (submission: { status: string }) => submission.status === 'COMPLETE'
-    );
-    unavailableSubmissions = exportedSubmissions.filter(
-      (submission: { status: string }) => submission.status === 'FAILED'
+    const successExportDetails = await getExportDetails(
+      exportId,
+      false,
+      pagination,
+      sessionCookie
     );
 
-    superZipLocation = exportDetails.superZipFileLocation;
+    availableSubmissionsTotalCount = successExportDetails.successCount;
+    unavailableSubmissionsTotalCount = successExportDetails.failedCount;
+    superZipLocation = successExportDetails.superZipFileLocation;
+
+    if (unavailableSubmissionsTotalCount > 0) {
+      const failedExportDetails = await getExportDetails(
+        exportId,
+        true,
+        pagination,
+        sessionCookie
+      );
+      unavailableSubmissions = failedExportDetails.exportedSubmissions;
+    }
   } catch (err) {
     return generateErrorPageRedirect(
       'Something went wrong while trying to view submission applications.',
@@ -45,7 +61,10 @@ export const getServerSideProps = async ({
     );
   }
 
-  if (availableSubmissions.length == 0 && unavailableSubmissions.length == 0)
+  if (
+    availableSubmissionsTotalCount == 0 &&
+    unavailableSubmissionsTotalCount == 0
+  )
     return generateErrorPageRedirect(
       'There are no submissions available to view or download.',
       '/dashboard'
@@ -58,7 +77,8 @@ export const getServerSideProps = async ({
       individualApplicationsHref: `/scheme/${schemeId}/${exportId}/download-individual`,
       superZipLocation: superZipLocation,
       schemeName: grantScheme.name,
-      availableSubmissions: availableSubmissions,
+      availableSubmissionsTotalCount: availableSubmissionsTotalCount,
+      unavailableSubmissionsTotalCount: unavailableSubmissionsTotalCount,
       unavailableSubmissions: unavailableSubmissions,
     },
   };
@@ -69,69 +89,95 @@ export const CompletedSubmissions = ({
   csrfToken,
   schemeName,
   individualApplicationsHref,
-  availableSubmissions,
+  availableSubmissionsTotalCount,
+  unavailableSubmissionsTotalCount,
   unavailableSubmissions,
   superZipLocation,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  <>
-    {unavailableSubmissions.length > 0 && (
-      <DownloadMessage count={unavailableSubmissions.length} />
-    )}
+  return (
+    <>
+      <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-bottom-6">
+        <div className="govuk-grid-column-full">
+          {unavailableSubmissionsTotalCount > 0 && (
+            <DownloadMessage count={unavailableSubmissionsTotalCount} />
+          )}
 
-    <h1 className="govuk-heading-l">{schemeName}</h1>
+          <h1 className="govuk-heading-l">{schemeName}</h1>
 
-    <h2 className="govuk-heading-m">Applications available to download</h2>
+          <h2 className="govuk-heading-m">Applications submitted</h2>
 
-    <p className="govuk-body" data-cy="cy_Download-submissions-page-text-1">
-      Your grant has{' '}
-      <b>
-        {availableSubmissions.length}{' '}
-        {availableSubmissions.length === 1 ? 'application' : 'applications'}
-      </b>{' '}
-      available to download.
-    </p>
-    <FlexibleQuestionPageLayout
-      fieldErrors={[]}
-      formAction={formAction}
-      csrfToken={csrfToken}
-    >
-      <div className="govuk-button-group">
-        <CustomLink
-          href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
-            superZipLocation
-          )}`}
-          isButton
-          excludeSubPath
-        >
-          Download all applications
-        </CustomLink>
+          <p className="govuk-body">
+            Your grant has{' '}
+            <b>
+              {availableSubmissionsTotalCount}{' '}
+              {availableSubmissionsTotalCount === 1
+                ? 'application'
+                : 'applications'}
+            </b>{' '}
+            available to download.
+          </p>
+          <FlexibleQuestionPageLayout
+            fieldErrors={[]}
+            formAction={formAction}
+            csrfToken={csrfToken}
+          >
+            <div className="govuk-button-group">
+              <CustomLink
+                href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
+                  superZipLocation
+                )}`}
+                isButton
+                excludeSubPath
+              >
+                Download all applications
+              </CustomLink>
 
-        <CustomLink href={individualApplicationsHref} isSecondaryButton>
-          View individual applications
-        </CustomLink>
+              <CustomLink href={individualApplicationsHref} isSecondaryButton>
+                View individual applications
+              </CustomLink>
+            </div>
+          </FlexibleQuestionPageLayout>
+
+          {unavailableSubmissions.length > 0 && (
+            <>
+              <hr className="govuk-section-break govuk-section-break--visible govuk-section-break--m govuk-!-margin-top-7"></hr>
+              <h2 className="govuk-heading-m">Unavailable applications</h2>
+
+              <p className="govuk-body">
+                Your grant has{' '}
+                <b>
+                  {unavailableSubmissionsTotalCount}{' '}
+                  {unavailableSubmissionsTotalCount === 1
+                    ? 'application'
+                    : 'applications'}
+                </b>{' '}
+                that cannot be downloaded. You can still view a read-only
+                version of these applications.
+              </p>
+
+              {/* <Table
+          tHeadColumns={[
+            { name: 'Email address', wrapText: true },
+            { name: 'Department' },
+            { name: 'Roles' },
+            { name: 'Actions' },
+          ]}
+          rows={convertSubmissionDataToTableRows(unavailableSubmissions)}
+        />
+
+        <Pagination
+          additionalQueryData={{
+            clearAllFilters: '',
+          }}
+          itemsPerPage={10}
+          totalItems={unavailableSubmissions.length}
+        /> */}
+            </>
+          )}
+        </div>
       </div>
-    </FlexibleQuestionPageLayout>
-
-    {unavailableSubmissions.length > 0 && (
-      // Paginated view goes here
-      // Page number will be a param?
-      <>
-        {/* <p>You are on page {pageNumber} right now</p>
-                  <CustomLink
-                    href={`/scheme/1/download-submissions?pageNumber=2`}
-                    isSecondaryButton
-                  >
-                    Page 2
-                  </CustomLink>
-                  <CustomLink
-                    href={`/scheme/1/download-submissions?pageNumber=3`}
-                    isSecondaryButton
-                  >
-                    Page 3
-                  </CustomLink> */}
-      </>
-    )}
-  </>;
+    </>
+  );
 };
 
 export default CompletedSubmissions;
