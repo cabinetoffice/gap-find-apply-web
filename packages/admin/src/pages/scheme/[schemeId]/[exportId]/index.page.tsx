@@ -1,31 +1,43 @@
-import { FlexibleQuestionPageLayout, Table } from 'gap-web-ui';
-import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
+import { FlexibleQuestionPageLayout } from 'gap-web-ui';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import React, { useState } from 'react';
+import React from 'react';
+
 import CustomLink from '../../../../components/custom-link/CustomLink';
-import Meta from '../../../../components/layout/Meta';
+import { getExportDetails } from '../../../../services/ExportService';
 import { getGrantScheme } from '../../../../services/SchemeService';
-import { getCompletedSubmissionExportList } from '../../../../services/SubmissionsService';
-import { downloadFile } from '../../../../utils/general';
 import { generateErrorPageRedirect } from '../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../utils/session';
+import { DownloadMessage } from '../../../../components/notification-banner/DownloadMessage';
 
 export const getServerSideProps = async ({
   req,
   res,
-  params,
   resolvedUrl,
+  params,
 }: GetServerSidePropsContext) => {
   const sessionCookie = getSessionIdFromCookies(req);
   const { schemeId, exportId } = params as Record<string, string>;
 
   let grantScheme;
-  let submissionList;
+  let exportedSubmissions;
+  let availableSubmissions = [];
+  let unavailableSubmissions = [];
+  let superZipLocation = '';
+
   try {
-    [grantScheme, submissionList] = await Promise.all([
-      getGrantScheme(schemeId, sessionCookie),
-      getCompletedSubmissionExportList(sessionCookie, exportId),
-    ]);
+    grantScheme = await getGrantScheme(schemeId, sessionCookie);
+
+    const exportDetails = await getExportDetails(exportId, sessionCookie);
+
+    exportedSubmissions = exportDetails.exportedSubmissions;
+    availableSubmissions = exportedSubmissions.filter(
+      (submission: { status: string }) => submission.status === 'COMPLETE'
+    );
+    unavailableSubmissions = exportedSubmissions.filter(
+      (submission: { status: string }) => submission.status === 'FAILED'
+    );
+
+    superZipLocation = exportDetails.superZipFileLocation;
   } catch (err) {
     return generateErrorPageRedirect(
       'Something went wrong while trying to view submission applications.',
@@ -33,199 +45,93 @@ export const getServerSideProps = async ({
     );
   }
 
-  if (!submissionList.length)
+  if (availableSubmissions.length == 0 && unavailableSubmissions.length == 0)
     return generateErrorPageRedirect(
-      'There are no submissions available for download.',
+      'There are no submissions available to view or download.',
       '/dashboard'
     );
 
   return {
     props: {
       formAction: process.env.SUB_PATH + resolvedUrl,
-      schemeName: grantScheme.name,
-      submissionList,
       csrfToken: res.getHeader('x-csrf-token') as string,
+      individualApplicationsHref: `/scheme/${schemeId}/${exportId}/download-individual`,
+      superZipLocation: superZipLocation,
+      schemeName: grantScheme.name,
+      availableSubmissions: availableSubmissions,
+      unavailableSubmissions: unavailableSubmissions,
     },
   };
 };
 
 export const CompletedSubmissions = ({
   formAction,
-  schemeName,
-  submissionList,
   csrfToken,
+  schemeName,
+  individualApplicationsHref,
+  availableSubmissions,
+  unavailableSubmissions,
+  superZipLocation,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const [isSelectAll, setIsSelectAll] = useState(false);
-  const [isChecked, setIsChecked] = useState([] as string[]);
+  <>
+    {unavailableSubmissions.length > 0 && (
+      <DownloadMessage count={unavailableSubmissions.length} />
+    )}
 
-  const handleSelectAll = () => {
-    if (isSelectAll) {
-      setIsSelectAll(false);
-      setIsChecked([]);
-    } else {
-      setIsSelectAll(true);
-      setIsChecked(submissionList.map((submission) => submission.label));
-    }
-  };
+    <h1 className="govuk-heading-l">{schemeName}</h1>
 
-  const handleClick = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, checked } = e.target;
-    if (checked) {
-      setIsChecked([...isChecked, id]);
-    } else {
-      setIsChecked(isChecked.filter((fileName) => fileName !== id));
-    }
-  };
+    <h2 className="govuk-heading-m">Applications available to download</h2>
 
-  const tableHeadColumns = [
-    {
-      name: (
-        <>
-          {/* Temporarily disabling multidownload */}
-          {/* {isJSEnabled() && ( */}
-          {false && (
-            // TODO eventually refactor checkbox component to support the additional props
-            <div className="govuk-checkboxes" data-module="govuk-checkboxes">
-              <div className="govuk-checkboxes__item">
-                <input
-                  className="govuk-checkboxes__input"
-                  id="submissionFileName"
-                  type="checkbox"
-                  aria-label="Select all"
-                  onChange={handleSelectAll}
-                />
-                <label
-                  className="govuk-label govuk-checkboxes__label govuk-!-font-weight-bold"
-                  htmlFor="submissionFileName"
-                >
-                  Name
-                </label>
-              </div>
-            </div>
-          )}
-          {/* Temporarily disabling multidownload */}
-          {/* {!isJSEnabled() && 'Name'} */}
-          {true && 'Name'}
-        </>
-      ),
-      width: 'three-quarters',
-    },
-    {
-      name: 'Action',
-      isVisuallyHidden: true,
-    },
-  ] as TheadColumn[];
-
-  const tableRows = submissionList.map((submission) => {
-    return {
-      cells: [
-        {
-          content: (
-            <>
-              {/* Temporarily disabling multidownload */}
-              {/* {isJSEnabled() && ( */}
-              {false && (
-                // TODO eventually refactor checkbox component to support the additional props
-                <div
-                  className="govuk-checkboxes"
-                  data-module="govuk-checkboxes"
-                >
-                  <div className="govuk-checkboxes__item">
-                    <input
-                      className="govuk-checkboxes__input"
-                      id={submission.label}
-                      name={submission.label}
-                      type="checkbox"
-                      value={submission.label}
-                      onChange={handleClick}
-                      checked={isChecked.includes(submission.label)}
-                    />
-                    <label
-                      className="govuk-label govuk-checkboxes__label break-all-words"
-                      htmlFor={submission.label}
-                    >
-                      {submission.label}
-                    </label>
-                  </div>
-                </div>
-              )}
-              {/* Temporarily disabling multidownload */}
-              {/* {!isJSEnabled() && submission.label} */}
-              {true && submission.label}
-            </>
-          ),
-        },
-        {
-          content: (
-            <div className="govuk-!-text-align-right">
-              <CustomLink
-                href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
-                  submission.s3key
-                )}`}
-                ariaLabel={`Download submission "${submission.label}"`}
-                excludeSubPath
-              >
-                Download
-              </CustomLink>
-            </div>
-          ),
-        },
-      ],
-    };
-  });
-
-  const multiDownloadHandler = async () => {
-    const filesToDownload = isChecked
-      .map((filename) =>
-        submissionList.find((submission) => submission.label === filename)
-      )
-      .filter((fileInfo) => !!fileInfo);
-    await Promise.all(
-      filesToDownload.map((fileInfo) =>
-        downloadFile(fileInfo!.s3key, fileInfo!.label)
-      )
-    );
-  };
-
-  return (
-    <>
-      <Meta title={`Download applications - Manage a grant`} />
-
-      <div className="govuk-!-padding-top-7">
-        <FlexibleQuestionPageLayout
-          fieldErrors={[]}
-          formAction={formAction}
-          csrfToken={csrfToken}
+    <p className="govuk-body" data-cy="cy_Download-submissions-page-text-1">
+      Your grant has{' '}
+      <b>
+        {availableSubmissions.length}{' '}
+        {availableSubmissions.length === 1 ? 'application' : 'applications'}
+      </b>{' '}
+      available to download.
+    </p>
+    <FlexibleQuestionPageLayout
+      fieldErrors={[]}
+      formAction={formAction}
+      csrfToken={csrfToken}
+    >
+      <div className="govuk-button-group">
+        <CustomLink
+          href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
+            superZipLocation
+          )}`}
+          isButton
+          excludeSubPath
         >
-          <h1 className="govuk-heading-l">{schemeName}</h1>
+          Download all applications
+        </CustomLink>
 
-          <div className="submissions-download-table">
-            <Table
-              tableClassName="table-thead-bottom-border"
-              caption="Applications submitted"
-              captionSize="m"
-              tHeadColumns={tableHeadColumns}
-              rows={tableRows}
-            />
-
-            {/* Temporarily disabling multidownload */}
-            {/* {isJSEnabled() && ( */}
-            {false && (
-              // TO DO: refactor Button component to accept various events (something similar to tableAttributes)
-              <button
-                className="govuk-button"
-                type="button"
-                disabled={isChecked.length === 0}
-                onClick={multiDownloadHandler}
-              >
-                Download selected
-              </button>
-            )}
-          </div>
-        </FlexibleQuestionPageLayout>
+        <CustomLink href={individualApplicationsHref} isSecondaryButton>
+          View individual applications
+        </CustomLink>
       </div>
-    </>
-  );
+    </FlexibleQuestionPageLayout>
+
+    {unavailableSubmissions.length > 0 && (
+      // Paginated view goes here
+      // Page number will be a param?
+      <>
+        {/* <p>You are on page {pageNumber} right now</p>
+                  <CustomLink
+                    href={`/scheme/1/download-submissions?pageNumber=2`}
+                    isSecondaryButton
+                  >
+                    Page 2
+                  </CustomLink>
+                  <CustomLink
+                    href={`/scheme/1/download-submissions?pageNumber=3`}
+                    isSecondaryButton
+                  >
+                    Page 3
+                  </CustomLink> */}
+      </>
+    )}
+  </>;
 };
 
 export default CompletedSubmissions;

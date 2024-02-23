@@ -5,10 +5,7 @@ import DownloadSubmissions, {
   getServerSideProps,
 } from './download-submissions.page';
 import { merge } from 'lodash';
-import {
-  findApplicationFormFromScheme,
-  getGrantScheme,
-} from '../../../services/SchemeService';
+import { findApplicationFormFromScheme } from '../../../services/SchemeService';
 import { getLoggedInUsersDetails } from '../../../services/UserService';
 import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
 import ExportStatusEnum from '../../../enums/ExportStatus';
@@ -34,17 +31,9 @@ const mockedGetApplicationExportStatus =
   getApplicationExportStatus as jest.Mock;
 const mockedRequestSubmissionsExport = requestSubmissionsExport as jest.Mock;
 
-const mockedGetGrantScheme = getGrantScheme as jest.Mock;
-
 const customProps = {
   backButtonHref: '/back',
-  individualApplicationsHref: '/applications',
-  allApplicationsHref: '/all-applications',
-  schemeName: 'Scheme',
   exportStatus: ExportStatusEnum.NOT_STARTED,
-  submissionsCount: 1,
-  applicationsUnavailableForDownload: [1, 2, 3],
-  pageNumber: '1',
   emailAddress: '',
   csrfToken: '',
   formAction: '',
@@ -89,7 +78,7 @@ describe('Download submissions page', () => {
       );
     });
 
-    describe('Export has NOT been requested', () => {
+    describe('Export is NOT in progress', () => {
       beforeEach(() => {
         render(component);
       });
@@ -102,6 +91,7 @@ describe('Download submissions page', () => {
         screen.getByText(
           'To see who has applied for your grant, you need to view and download your submitted applications.'
         );
+        screen.getByText('Get started by requesting a list of applications.');
       });
 
       it('Should display the download button', () => {
@@ -139,31 +129,6 @@ describe('Download submissions page', () => {
         screen.getByText('test@email.com');
       });
     });
-
-    describe('Export is completed', () => {
-      beforeEach(() => {
-        render(
-          <DownloadSubmissions
-            {...customProps}
-            exportStatus={ExportStatusEnum.COMPLETE}
-          />
-        );
-      });
-      it('Should render the scheme name as a title', async () => {
-        screen.getByRole('heading', {
-          name: 'Scheme',
-        });
-      });
-
-      it('Should display main text body', () => {
-        screen.getByText('Applications available to download');
-      });
-
-      it('Should render the two buttons', async () => {
-        screen.getByRole('button', { name: 'Download all applications' });
-        screen.getByText('View individual applications');
-      });
-    });
   });
 
   describe('getServerSideProps', () => {
@@ -177,17 +142,6 @@ describe('Download submissions page', () => {
       mockedGetApplicationExportStatus.mockResolvedValue(
         ExportStatusEnum.PROCESSING
       );
-      mockedGetGrantScheme.mockResolvedValue({
-        name: 'Scheme',
-        schemeId: '1',
-        ggisReference: 'ggis',
-        funderId: 'funder',
-        createdDate: '2022-02-02',
-        description: 'Downloads grants scheme.',
-        contactEmail: 'email@email.com',
-        applicationFormId: 'uuid-uuid-uuid-uuid',
-        version: '1',
-      });
       (parseBody as jest.Mock).mockResolvedValue({ testBody: true });
     });
 
