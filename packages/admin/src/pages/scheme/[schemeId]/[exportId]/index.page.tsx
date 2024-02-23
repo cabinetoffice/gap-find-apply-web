@@ -8,6 +8,8 @@ import { getGrantScheme } from '../../../../services/SchemeService';
 import { generateErrorPageRedirect } from '../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../utils/session';
 import { DownloadMessage } from '../../../../components/notification-banner/DownloadMessage';
+import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
+import { Pagination } from '../../../../components/pagination/Pagination';
 
 export const getServerSideProps = async ({
   req,
@@ -94,10 +96,46 @@ export const CompletedSubmissions = ({
   unavailableSubmissions,
   superZipLocation,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const tableHeadColumns = [
+    {
+      name: <>{true && 'Name'}</>,
+      width: 'three-quarters',
+    },
+    {
+      name: 'Action',
+      isVisuallyHidden: true,
+    },
+  ] as TheadColumn[];
+
+  const tableRows = unavailableSubmissions.map((submission) => {
+    return {
+      cells: [
+        {
+          content: <>{true && submission.name}</>,
+        },
+        {
+          content: (
+            <div className="govuk-!-text-align-right">
+              <CustomLink
+                href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
+                  submission.s3key
+                )}`}
+                ariaLabel={`Download submission "${submission.name}"`}
+                excludeSubPath
+              >
+                View
+              </CustomLink>
+            </div>
+          ),
+        },
+      ],
+    };
+  });
+
   return (
     <>
       <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-bottom-6">
-        <div className="govuk-grid-column-full">
+        <div className="govuk-grid-column-three-quarters">
           {unavailableSubmissionsTotalCount > 0 && (
             <DownloadMessage count={unavailableSubmissionsTotalCount} />
           )}
@@ -129,7 +167,7 @@ export const CompletedSubmissions = ({
                 isButton
                 excludeSubPath
               >
-                Download all applications
+                Download all
               </CustomLink>
 
               <CustomLink href={individualApplicationsHref} isSecondaryButton>
@@ -155,23 +193,22 @@ export const CompletedSubmissions = ({
                 version of these applications.
               </p>
 
-              {/* <Table
-          tHeadColumns={[
-            { name: 'Email address', wrapText: true },
-            { name: 'Department' },
-            { name: 'Roles' },
-            { name: 'Actions' },
-          ]}
-          rows={convertSubmissionDataToTableRows(unavailableSubmissions)}
-        />
+              <div className="submissions-download-table">
+                <Table
+                  tableClassName="table-thead-bottom-border"
+                  caption="Submitted applications"
+                  captionSize="m"
+                  tHeadColumns={tableHeadColumns}
+                  rows={tableRows}
+                />
 
-        <Pagination
-          additionalQueryData={{
-            clearAllFilters: '',
-          }}
-          itemsPerPage={10}
-          totalItems={unavailableSubmissions.length}
-        /> */}
+                <Pagination
+                  additionalQueryData={{}}
+                  itemsPerPage={10}
+                  totalItems={unavailableSubmissions.length}
+                  itemCountMargin={true}
+                />
+              </div>
             </>
           )}
         </div>
