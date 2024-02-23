@@ -2,15 +2,15 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
 import { merge } from 'lodash';
-import CompletedSubmissions, { getServerSideProps } from './[exportId].page';
-import { downloadFile, isJSEnabled } from '../../../utils/general';
-import { getGrantScheme } from '../../../services/SchemeService';
-import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
-import { getCompletedSubmissionExportList } from '../../../services/SubmissionsService';
+import CompletedSubmissions, { getServerSideProps } from './index.page';
+import { downloadFile, isJSEnabled } from '../../../../utils/general';
+import { getGrantScheme } from '../../../../services/SchemeService';
+import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
+import { getCompletedSubmissionExportList } from '../../../../services/SubmissionsService';
 
-jest.mock('../../../utils/general');
-jest.mock('../../../services/SchemeService');
-jest.mock('../../../services/SubmissionsService');
+jest.mock('../../../../utils/general');
+jest.mock('../../../../services/SchemeService');
+jest.mock('../../../../services/SubmissionsService');
 
 const submissionList = [
   { label: 'some name', url: '#1' },

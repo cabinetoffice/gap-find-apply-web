@@ -2,13 +2,13 @@ import { FlexibleQuestionPageLayout, Table } from 'gap-web-ui';
 import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import React, { useState } from 'react';
-import CustomLink from '../../../components/custom-link/CustomLink';
-import Meta from '../../../components/layout/Meta';
-import { getGrantScheme } from '../../../services/SchemeService';
-import { getCompletedSubmissionExportList } from '../../../services/SubmissionsService';
-import { downloadFile } from '../../../utils/general';
-import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
-import { getSessionIdFromCookies } from '../../../utils/session';
+import CustomLink from '../../../../components/custom-link/CustomLink';
+import Meta from '../../../../components/layout/Meta';
+import { getGrantScheme } from '../../../../services/SchemeService';
+import { getCompletedSubmissionExportList } from '../../../../services/SubmissionsService';
+import { downloadFile } from '../../../../utils/general';
+import { generateErrorPageRedirect } from '../../../../utils/serviceErrorHelpers';
+import { getSessionIdFromCookies } from '../../../../utils/session';
 
 export const getServerSideProps = async ({
   req,
