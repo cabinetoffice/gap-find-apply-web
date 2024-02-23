@@ -1,31 +1,61 @@
 import { FlexibleQuestionPageLayout, Table } from 'gap-web-ui';
-import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import React, { useState } from 'react';
+import React from 'react';
+
 import CustomLink from '../../../../components/custom-link/CustomLink';
-import Meta from '../../../../components/layout/Meta';
+import { getExportDetails } from '../../../../services/ExportService';
 import { getGrantScheme } from '../../../../services/SchemeService';
-import { getCompletedSubmissionExportList } from '../../../../services/SubmissionsService';
-import { downloadFile } from '../../../../utils/general';
 import { generateErrorPageRedirect } from '../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../utils/session';
+import { DownloadMessage } from '../../../../components/notification-banner/DownloadMessage';
+import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
+import { Pagination } from '../../../../components/pagination/Pagination';
 
 export const getServerSideProps = async ({
   req,
   res,
-  params,
+  query,
   resolvedUrl,
+  params,
 }: GetServerSidePropsContext) => {
   const sessionCookie = getSessionIdFromCookies(req);
   const { schemeId, exportId } = params as Record<string, string>;
 
+  const pagination = {
+    paginate: true,
+    page: Number(query.page ?? 1) - 1,
+    size: Number(query.limit ?? 10),
+  };
+
   let grantScheme;
-  let submissionList;
+  let unavailableSubmissions = [];
+  let availableSubmissionsTotalCount = 0;
+  let unavailableSubmissionsTotalCount = 0;
+  let superZipLocation = '';
+
   try {
-    [grantScheme, submissionList] = await Promise.all([
-      getGrantScheme(schemeId, sessionCookie),
-      getCompletedSubmissionExportList(sessionCookie, exportId),
-    ]);
+    grantScheme = await getGrantScheme(schemeId, sessionCookie);
+
+    const successExportDetails = await getExportDetails(
+      exportId,
+      false,
+      pagination,
+      sessionCookie
+    );
+
+    availableSubmissionsTotalCount = successExportDetails.successCount;
+    unavailableSubmissionsTotalCount = successExportDetails.failedCount;
+    superZipLocation = successExportDetails.superZipFileLocation;
+
+    if (unavailableSubmissionsTotalCount > 0) {
+      const failedExportDetails = await getExportDetails(
+        exportId,
+        true,
+        pagination,
+        sessionCookie
+      );
+      unavailableSubmissions = failedExportDetails.exportedSubmissions;
+    }
   } catch (err) {
     return generateErrorPageRedirect(
       'Something went wrong while trying to view submission applications.',
@@ -33,81 +63,42 @@ export const getServerSideProps = async ({
     );
   }
 
-  if (!submissionList.length)
+  if (
+    availableSubmissionsTotalCount == 0 &&
+    unavailableSubmissionsTotalCount == 0
+  )
     return generateErrorPageRedirect(
-      'There are no submissions available for download.',
+      'There are no submissions available to view or download.',
       '/dashboard'
     );
 
   return {
     props: {
       formAction: process.env.SUB_PATH + resolvedUrl,
-      schemeName: grantScheme.name,
-      submissionList,
       csrfToken: res.getHeader('x-csrf-token') as string,
+      individualApplicationsHref: `/scheme/${schemeId}/${exportId}/download-individual`,
+      superZipLocation: superZipLocation,
+      schemeName: grantScheme.name,
+      availableSubmissionsTotalCount: availableSubmissionsTotalCount,
+      unavailableSubmissionsTotalCount: unavailableSubmissionsTotalCount,
+      unavailableSubmissions: unavailableSubmissions,
     },
   };
 };
 
 export const CompletedSubmissions = ({
   formAction,
-  schemeName,
-  submissionList,
   csrfToken,
+  schemeName,
+  individualApplicationsHref,
+  availableSubmissionsTotalCount,
+  unavailableSubmissionsTotalCount,
+  unavailableSubmissions,
+  superZipLocation,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const [isSelectAll, setIsSelectAll] = useState(false);
-  const [isChecked, setIsChecked] = useState([] as string[]);
-
-  const handleSelectAll = () => {
-    if (isSelectAll) {
-      setIsSelectAll(false);
-      setIsChecked([]);
-    } else {
-      setIsSelectAll(true);
-      setIsChecked(submissionList.map((submission) => submission.label));
-    }
-  };
-
-  const handleClick = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, checked } = e.target;
-    if (checked) {
-      setIsChecked([...isChecked, id]);
-    } else {
-      setIsChecked(isChecked.filter((fileName) => fileName !== id));
-    }
-  };
-
   const tableHeadColumns = [
     {
-      name: (
-        <>
-          {/* Temporarily disabling multidownload */}
-          {/* {isJSEnabled() && ( */}
-          {false && (
-            // TODO eventually refactor checkbox component to support the additional props
-            <div className="govuk-checkboxes" data-module="govuk-checkboxes">
-              <div className="govuk-checkboxes__item">
-                <input
-                  className="govuk-checkboxes__input"
-                  id="submissionFileName"
-                  type="checkbox"
-                  aria-label="Select all"
-                  onChange={handleSelectAll}
-                />
-                <label
-                  className="govuk-label govuk-checkboxes__label govuk-!-font-weight-bold"
-                  htmlFor="submissionFileName"
-                >
-                  Name
-                </label>
-              </div>
-            </div>
-          )}
-          {/* Temporarily disabling multidownload */}
-          {/* {!isJSEnabled() && 'Name'} */}
-          {true && 'Name'}
-        </>
-      ),
+      name: <>{true && 'Name'}</>,
       width: 'three-quarters',
     },
     {
@@ -116,44 +107,11 @@ export const CompletedSubmissions = ({
     },
   ] as TheadColumn[];
 
-  const tableRows = submissionList.map((submission) => {
+  const tableRows = unavailableSubmissions.map((submission) => {
     return {
       cells: [
         {
-          content: (
-            <>
-              {/* Temporarily disabling multidownload */}
-              {/* {isJSEnabled() && ( */}
-              {false && (
-                // TODO eventually refactor checkbox component to support the additional props
-                <div
-                  className="govuk-checkboxes"
-                  data-module="govuk-checkboxes"
-                >
-                  <div className="govuk-checkboxes__item">
-                    <input
-                      className="govuk-checkboxes__input"
-                      id={submission.label}
-                      name={submission.label}
-                      type="checkbox"
-                      value={submission.label}
-                      onChange={handleClick}
-                      checked={isChecked.includes(submission.label)}
-                    />
-                    <label
-                      className="govuk-label govuk-checkboxes__label break-all-words"
-                      htmlFor={submission.label}
-                    >
-                      {submission.label}
-                    </label>
-                  </div>
-                </div>
-              )}
-              {/* Temporarily disabling multidownload */}
-              {/* {!isJSEnabled() && submission.label} */}
-              {true && submission.label}
-            </>
-          ),
+          content: <>{true && submission.name}</>,
         },
         {
           content: (
@@ -162,10 +120,10 @@ export const CompletedSubmissions = ({
                 href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
                   submission.s3key
                 )}`}
-                ariaLabel={`Download submission "${submission.label}"`}
+                ariaLabel={`Download submission "${submission.name}"`}
                 excludeSubPath
               >
-                Download
+                View
               </CustomLink>
             </div>
           ),
@@ -174,55 +132,86 @@ export const CompletedSubmissions = ({
     };
   });
 
-  const multiDownloadHandler = async () => {
-    const filesToDownload = isChecked
-      .map((filename) =>
-        submissionList.find((submission) => submission.label === filename)
-      )
-      .filter((fileInfo) => !!fileInfo);
-    await Promise.all(
-      filesToDownload.map((fileInfo) =>
-        downloadFile(fileInfo!.s3key, fileInfo!.label)
-      )
-    );
-  };
-
   return (
     <>
-      <Meta title={`Download applications - Manage a grant`} />
+      <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-bottom-6">
+        <div className="govuk-grid-column-three-quarters">
+          {unavailableSubmissionsTotalCount > 0 && (
+            <DownloadMessage count={unavailableSubmissionsTotalCount} />
+          )}
 
-      <div className="govuk-!-padding-top-7">
-        <FlexibleQuestionPageLayout
-          fieldErrors={[]}
-          formAction={formAction}
-          csrfToken={csrfToken}
-        >
           <h1 className="govuk-heading-l">{schemeName}</h1>
 
-          <div className="submissions-download-table">
-            <Table
-              tableClassName="table-thead-bottom-border"
-              caption="Applications submitted"
-              captionSize="m"
-              tHeadColumns={tableHeadColumns}
-              rows={tableRows}
-            />
+          <h2 className="govuk-heading-m">Applications submitted</h2>
 
-            {/* Temporarily disabling multidownload */}
-            {/* {isJSEnabled() && ( */}
-            {false && (
-              // TO DO: refactor Button component to accept various events (something similar to tableAttributes)
-              <button
-                className="govuk-button"
-                type="button"
-                disabled={isChecked.length === 0}
-                onClick={multiDownloadHandler}
+          <p className="govuk-body">
+            Your grant has{' '}
+            <b>
+              {availableSubmissionsTotalCount}{' '}
+              {availableSubmissionsTotalCount === 1
+                ? 'application'
+                : 'applications'}
+            </b>{' '}
+            available to download.
+          </p>
+          <FlexibleQuestionPageLayout
+            fieldErrors={[]}
+            formAction={formAction}
+            csrfToken={csrfToken}
+          >
+            <div className="govuk-button-group">
+              <CustomLink
+                href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
+                  superZipLocation
+                )}`}
+                isButton
+                excludeSubPath
               >
-                Download selected
-              </button>
-            )}
-          </div>
-        </FlexibleQuestionPageLayout>
+                Download all
+              </CustomLink>
+
+              <CustomLink href={individualApplicationsHref} isSecondaryButton>
+                View individual applications
+              </CustomLink>
+            </div>
+          </FlexibleQuestionPageLayout>
+
+          {unavailableSubmissions.length > 0 && (
+            <>
+              <hr className="govuk-section-break govuk-section-break--visible govuk-section-break--m govuk-!-margin-top-7"></hr>
+              <h2 className="govuk-heading-m">Unavailable applications</h2>
+
+              <p className="govuk-body">
+                Your grant has{' '}
+                <b>
+                  {unavailableSubmissionsTotalCount}{' '}
+                  {unavailableSubmissionsTotalCount === 1
+                    ? 'application'
+                    : 'applications'}
+                </b>{' '}
+                that cannot be downloaded. You can still view a read-only
+                version of these applications.
+              </p>
+
+              <div className="submissions-download-table">
+                <Table
+                  tableClassName="table-thead-bottom-border"
+                  caption="Submitted applications"
+                  captionSize="m"
+                  tHeadColumns={tableHeadColumns}
+                  rows={tableRows}
+                />
+
+                <Pagination
+                  additionalQueryData={{}}
+                  itemsPerPage={10}
+                  totalItems={unavailableSubmissions.length}
+                  itemCountMargin={true}
+                />
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </>
   );
