@@ -1,0 +1,14 @@
+.breakLine {
+  background-color: #1d70b8;
+  padding: 0.08rem;
+}
+
+.mb-6 {
+  margin-bottom: 6px;
+}
+
+@media (min-width: 768px) {
+  .mb-sm-32 {
+    margin-bottom: 32px;
+  }
+}

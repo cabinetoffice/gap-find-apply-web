@@ -62,6 +62,28 @@ export const getGrantScheme = async (schemeId: string, sessionId: string) => {
   return response.data as Scheme;
 };
 
+export const isSchemeOwner = async (schemeId: string, sessionId: string) => {
+  const { data } = await axios.get<boolean>(
+    `${BASE_SCHEME_URL}/${schemeId}/isSchemeOwner`,
+    axiosSessionConfig(sessionId)
+  );
+  return data;
+};
+
+export const getSchemeEditors = async (
+  schemeId: string,
+  sessionId: string,
+  userServiceJwt: string
+) => {
+  const response = await axios.get(`${BASE_SCHEME_URL}/${schemeId}/editors`, {
+    withCredentials: true,
+    headers: {
+      Cookie: `SESSION=${sessionId}; ${process.env.JWT_COOKIE_NAME}=${userServiceJwt}`,
+    },
+  });
+  return response.data;
+};
+
 export const findApplicationFormFromScheme = (
   schemeId: string,
   sessionId: string

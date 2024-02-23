@@ -8,6 +8,7 @@ import { getApplicationFormSummary } from '../../../services/ApplicationService'
 import {
   findApplicationFormFromScheme,
   getGrantScheme,
+  isSchemeOwner,
 } from '../../../services/SchemeService';
 import FindApplicationFormStatsResponse from '../../../types/FindApplicationFormStatsResponse';
 import InferProps from '../../../types/InferProps';
@@ -17,6 +18,13 @@ import { getSessionIdFromCookies } from '../../../utils/session';
 import BuildAdvert from '../components/BuildAdvert';
 import BuildApplicationForm from '../components/BuildApplicationForm';
 import SchemeApplications from '../components/SchemeApplications';
+import styles from './index.module.scss';
+import Link from 'next/link';
+
+type ManageGrantsSidebarProps = {
+  schemeId: string;
+  isOwner: boolean;
+};
 
 export const getServerSideProps = async ({
   params,
@@ -28,9 +36,12 @@ export const getServerSideProps = async ({
   let allApplicationFormsStats: FindApplicationFormStatsResponse[];
   let schemeApplicationsData = null;
   let grantAdvertPublishData = null;
+  let isOwner;
 
   try {
     scheme = await getGrantScheme(schemeId, sessionCookie);
+    isOwner = await isSchemeOwner(schemeId, sessionCookie);
+
     allApplicationFormsStats = await findApplicationFormFromScheme(
       schemeId,
       sessionCookie
@@ -74,6 +85,7 @@ export const getServerSideProps = async ({
   return {
     props: {
       scheme,
+      isOwner,
       schemeApplicationsData,
       enabledAdBuilder: process.env.FEATURE_ADVERT_BUILDER!,
       grantAdvertPublishData,
@@ -86,6 +98,7 @@ const ViewScheme = ({
   schemeApplicationsData,
   enabledAdBuilder,
   grantAdvertPublishData,
+  isOwner,
 }: InferProps<typeof getServerSideProps>) => {
   const schemeHasApplicationOrAdvert =
     schemeApplicationsData || grantAdvertPublishData.status !== 404;
@@ -200,8 +213,40 @@ const ViewScheme = ({
             </>
           )}
         </div>
+        <ManageGrantsSidebar isOwner={isOwner} schemeId={scheme.schemeId} />
       </div>
     </>
+  );
+};
+
+const ManageGrantsSidebar = ({
+  schemeId,
+  isOwner,
+}: ManageGrantsSidebarProps) => {
+  const titleText = isOwner ? 'Add an editor' : 'Grant Editors';
+  const buttonText = isOwner ? 'Add or manage editors' : 'View Editors';
+  const paragraphText = isOwner
+    ? 'You can add other people to this grant. They will be able to edit it.'
+    : 'You can view a list of the people that can edit this grant.';
+
+  return (
+    <div className="govuk-grid-column-one-third">
+      <hr
+        className={`govuk-section-break govuk-section-break--m govuk-section-break--visible ${styles.breakLine}`}
+      />
+      <h2 className={`govuk-heading-m ${styles['mb-sm-32']}`}>{titleText}</h2>
+      <p className={`${styles['mb-sm-32']} govuk-body`}>{paragraphText}</p>
+      <Link
+        href={`/scheme/${schemeId}/manage-editors`}
+        role="button"
+        draggable="false"
+        className="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        data-cy="cy-apply-register-button"
+      >
+        {buttonText}
+      </Link>
+    </div>
   );
 };
 
