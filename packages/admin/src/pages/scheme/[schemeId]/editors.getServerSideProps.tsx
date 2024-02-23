@@ -4,6 +4,7 @@ import {
   getUserTokenFromCookies,
 } from '../../../utils/session';
 import {
+  getGrantScheme,
   getSchemeEditors,
   isSchemeOwner,
 } from '../../../services/SchemeService';
@@ -34,6 +35,7 @@ export const getServerSideProps = async ({
   const sessionCookie = getSessionIdFromCookies(req);
   const userServiceJwt = getUserTokenFromCookies(req);
   const isOwner = await isSchemeOwner(schemeId, sessionCookie);
+  const { name: schemeName } = await getGrantScheme(schemeId, sessionCookie);
   // const isOwner = true;
 
   if (!isOwner && req.url?.includes('manage-editors'))
@@ -44,11 +46,11 @@ export const getServerSideProps = async ({
       },
     };
 
-  const realEditors = await getSchemeEditors(
-    schemeId,
-    sessionCookie,
-    userServiceJwt
-  );
+  // const realEditors = await getSchemeEditors(
+  //   schemeId,
+  //   sessionCookie,
+  //   userServiceJwt
+  // );
 
   const editors: EditorList[] = [
     {
@@ -93,6 +95,6 @@ export const getServerSideProps = async ({
 
   editorRows.unshift(headingRow);
   return {
-    props: { schemeId, editorRows },
+    props: { schemeId, editorRows, schemeName },
   };
 };
