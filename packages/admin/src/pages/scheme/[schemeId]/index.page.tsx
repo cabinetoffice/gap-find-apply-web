@@ -40,6 +40,7 @@ export const getServerSideProps = async ({
 
   try {
     scheme = await getGrantScheme(schemeId, sessionCookie);
+
     isOwner = await isSchemeOwner(schemeId, sessionCookie);
 
     allApplicationFormsStats = await findApplicationFormFromScheme(
