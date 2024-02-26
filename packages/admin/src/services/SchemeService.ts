@@ -66,7 +66,7 @@ export const getGrantScheme = async (schemeId: string, sessionId: string) => {
 
 export const isSchemeOwner = async (schemeId: string, sessionId: string) => {
   const { data } = await axios.get<boolean>(
-    `${SCHEME_EDITORS_HOST}/${schemeId}/isSchemeOwner`,
+    `${SCHEME_EDITORS_HOST}/${schemeId}/isOwner`,
     axiosSessionConfig(sessionId)
   );
   return data;
@@ -78,7 +78,7 @@ export const getSchemeEditors = async (
   userServiceJwt: string
 ) => {
   const { data } = await axios.get<EditorList[]>(
-    `${SCHEME_EDITORS_HOST}/${schemeId}/editors`,
+    `${SCHEME_EDITORS_HOST}/${schemeId}`,
     getFullConfig(sessionId, userServiceJwt)
   );
   return data;
