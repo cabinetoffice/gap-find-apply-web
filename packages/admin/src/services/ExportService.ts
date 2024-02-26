@@ -10,7 +10,7 @@ const getExportDetails = async (
   pagination: Pagination,
   sessionCookie: string
 ) => {
-  const params = { grabOnlyFailed: grabOnlyFailed, pagination: pagination };
+  const params = { grabOnlyFailed, ...pagination };
   const response = await axios.get(
     `${BASE_SUBMISSIONS_URL}/${exportBatchId}/details`,
     {

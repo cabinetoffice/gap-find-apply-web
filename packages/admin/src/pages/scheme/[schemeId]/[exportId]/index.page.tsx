@@ -98,7 +98,7 @@ export const CompletedSubmissions = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const tableHeadColumns = [
     {
-      name: <>{true && 'Name'}</>,
+      name: <>{true && 'Organisation'}</>,
       width: 'three-quarters',
     },
     {
@@ -135,7 +135,7 @@ export const CompletedSubmissions = ({
   return (
     <>
       <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-bottom-6">
-        <div className="govuk-grid-column-three-quarters">
+        <div className="govuk-grid-column-full-width">
           {unavailableSubmissionsTotalCount > 0 && (
             <DownloadMessage count={unavailableSubmissionsTotalCount} />
           )}
@@ -167,7 +167,7 @@ export const CompletedSubmissions = ({
                 isButton
                 excludeSubPath
               >
-                Download all
+                Download all applications
               </CustomLink>
 
               <CustomLink href={individualApplicationsHref} isSecondaryButton>
@@ -196,7 +196,6 @@ export const CompletedSubmissions = ({
               <div className="submissions-download-table">
                 <Table
                   tableClassName="table-thead-bottom-border"
-                  caption="Submitted applications"
                   captionSize="m"
                   tHeadColumns={tableHeadColumns}
                   rows={tableRows}
@@ -205,7 +204,7 @@ export const CompletedSubmissions = ({
                 <Pagination
                   additionalQueryData={{}}
                   itemsPerPage={10}
-                  totalItems={unavailableSubmissions.length}
+                  totalItems={unavailableSubmissionsTotalCount}
                   itemCountMargin={true}
                 />
               </div>
