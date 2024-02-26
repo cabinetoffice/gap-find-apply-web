@@ -16,7 +16,7 @@ const rmAction = (acc: Row[], row: UnformattedEditorRow) => [
   { ...row, action: undefined },
 ];
 
-const ManageEditors = ({
+const ViewEditors = ({
   editorRows,
   schemeName,
   schemeId,
@@ -36,8 +36,8 @@ const ManageEditors = ({
           <p className="govuk-body">
             All editors can view, edit, and publish an application form or
             advert for this grant. They can also download any grant submissions
-            and information for due diligence checks. Only the grant's owners
-            can add or remove editors.
+            and information for due diligence checks. Only the grant&apos;s
+            owners can add or remove editors.
           </p>
           <SummaryList equalColumns boldHeaderRow rows={mappedTableRows} />
           <div className="govuk-button-group">
@@ -55,4 +55,4 @@ const ManageEditors = ({
   );
 };
 
-export default ManageEditors;
+export default ViewEditors;
