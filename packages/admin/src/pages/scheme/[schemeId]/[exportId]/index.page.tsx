@@ -10,6 +10,7 @@ import { getSessionIdFromCookies } from '../../../../utils/session';
 import { DownloadMessage } from '../../../../components/notification-banner/DownloadMessage';
 import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
 import { Pagination } from '../../../../components/pagination/Pagination';
+import Meta from '../../../../components/layout/Meta';
 
 export const getServerSideProps = async ({
   req,
@@ -134,6 +135,7 @@ export const CompletedSubmissions = ({
 
   return (
     <>
+      <Meta title={`Download applications - Manage a grant`} />
       <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-bottom-6">
         <div className="govuk-grid-column-full-width">
           {unavailableSubmissionsTotalCount > 0 && (
@@ -166,11 +168,16 @@ export const CompletedSubmissions = ({
                 )}`}
                 isButton
                 excludeSubPath
+                disabled={availableSubmissionsTotalCount == 0}
               >
                 Download all applications
               </CustomLink>
 
-              <CustomLink href={individualApplicationsHref} isSecondaryButton>
+              <CustomLink
+                href={individualApplicationsHref}
+                isSecondaryButton
+                disabled={availableSubmissionsTotalCount == 0}
+              >
                 View individual applications
               </CustomLink>
             </div>
