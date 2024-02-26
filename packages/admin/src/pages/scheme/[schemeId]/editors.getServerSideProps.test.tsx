@@ -1,11 +1,11 @@
 import { GetServerSidePropsContext } from 'next';
 import { getServerSideProps } from './editors.getServerSideProps';
 import * as sessionUtils from '../../../utils/session';
+import { getGrantScheme } from '../../../services/SchemeService';
 import {
-  getGrantScheme,
   getSchemeEditors,
   isSchemeOwner,
-} from '../../../services/SchemeService';
+} from '../../../services/SchemeEditorService';
 
 const mockGetServerSidePropsContext = (params = {}, req = {}) =>
   ({
@@ -15,6 +15,7 @@ const mockGetServerSidePropsContext = (params = {}, req = {}) =>
 
 jest.mock('../../../utils/session');
 jest.mock('../../../services/SchemeService');
+jest.mock('../../../services/SchemeEditorService');
 
 const mockSessionUtils = jest.mocked(sessionUtils);
 
