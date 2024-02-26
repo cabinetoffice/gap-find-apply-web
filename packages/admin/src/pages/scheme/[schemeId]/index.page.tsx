@@ -8,7 +8,6 @@ import { getApplicationFormSummary } from '../../../services/ApplicationService'
 import {
   findApplicationFormFromScheme,
   getGrantScheme,
-  isSchemeOwner,
 } from '../../../services/SchemeService';
 import FindApplicationFormStatsResponse from '../../../types/FindApplicationFormStatsResponse';
 import InferProps from '../../../types/InferProps';
@@ -20,6 +19,7 @@ import BuildApplicationForm from '../components/BuildApplicationForm';
 import SchemeApplications from '../components/SchemeApplications';
 import styles from './index.module.scss';
 import Link from 'next/link';
+import { isSchemeOwner } from '../../../services/SchemeEditorService';
 
 type ManageGrantsSidebarProps = {
   schemeId: string;

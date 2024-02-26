@@ -3,7 +3,6 @@ import { SummaryList } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import {
-  Action,
   UnformattedEditorRow,
   getServerSideProps,
 } from '../editors.getServerSideProps';

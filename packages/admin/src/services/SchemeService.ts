@@ -3,14 +3,12 @@ import getConfig from 'next/config';
 import ApplicationQueryObject from '../types/ApplicationQueryObject';
 import Pagination from '../types/Pagination';
 import Scheme from '../types/Scheme';
-import { axiosSessionConfig, getFullConfig } from '../utils/session';
+import { axiosSessionConfig } from '../utils/session';
 import { findMatchingApplicationForms } from './ApplicationService';
-import { EditorList } from '../pages/scheme/[schemeId]/editors.getServerSideProps';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
 const BASE_SCHEME_URL = BACKEND_HOST + '/schemes';
-const SCHEME_EDITORS_HOST = BACKEND_HOST + '/schemeEditors';
 
 export const getUserSchemes = async (
   pagination: Pagination,
@@ -62,26 +60,6 @@ export const getGrantScheme = async (schemeId: string, sessionId: string) => {
   );
 
   return response.data as Scheme;
-};
-
-export const isSchemeOwner = async (schemeId: string, sessionId: string) => {
-  const { data } = await axios.get<boolean>(
-    `${SCHEME_EDITORS_HOST}/${schemeId}/isOwner`,
-    axiosSessionConfig(sessionId)
-  );
-  return data;
-};
-
-export const getSchemeEditors = async (
-  schemeId: string,
-  sessionId: string,
-  userServiceJwt: string
-) => {
-  const { data } = await axios.get<EditorList[]>(
-    `${SCHEME_EDITORS_HOST}/${schemeId}`,
-    getFullConfig(sessionId, userServiceJwt)
-  );
-  return data;
 };
 
 export const findApplicationFormFromScheme = (

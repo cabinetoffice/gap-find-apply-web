@@ -4,16 +4,11 @@ import {
   getUserTokenFromCookies,
 } from '../../../utils/session';
 import {
-  getGrantScheme,
+  EditorList,
   getSchemeEditors,
   isSchemeOwner,
-} from '../../../services/SchemeService';
-
-export type EditorList = {
-  role: 'EDITOR' | 'OWNER';
-  email: string;
-  id: string;
-};
+} from '../../../services/SchemeEditorService';
+import { getGrantScheme } from '../../../services/SchemeService';
 
 export type Action = {
   href: string;
@@ -25,6 +20,45 @@ export type UnformattedEditorRow = {
   key: string;
   value: string;
   action?: string | Action | JSX.Element;
+};
+
+type GetEditorRowsProps = {
+  isOwner: boolean;
+  schemeId: string;
+  sessionCookie: string;
+  userServiceJwt: string;
+};
+
+const getEditorRows = async ({
+  isOwner,
+  schemeId,
+  sessionCookie,
+  userServiceJwt,
+}: GetEditorRowsProps) => {
+  function addOwnerAction({ email: key, role: value, id }: EditorList) {
+    const editorRow: UnformattedEditorRow = { key, value };
+    if (isOwner)
+      editorRow.action = {
+        href: `/scheme/${schemeId}/manage-editors/remove/${id}`,
+        label: 'Remove',
+        ariaLabel: `Remove ${key}`,
+      };
+    return editorRow;
+  }
+
+  const schemeEditors = await getSchemeEditors(
+    schemeId,
+    sessionCookie,
+    userServiceJwt
+  );
+
+  const tableHeadingRow: UnformattedEditorRow = {
+    key: 'Email',
+    value: 'Role',
+    action: isOwner ? 'Actions' : '',
+  };
+
+  return [tableHeadingRow, ...schemeEditors.map(addOwnerAction)];
 };
 
 const getEditorsServerSideProps = async ({
@@ -47,29 +81,17 @@ const getEditorsServerSideProps = async ({
       },
     };
 
-  function formatEditorRows({ email: key, role: value, id }: EditorList) {
-    const editorRow: UnformattedEditorRow = { key, value };
-    if (isOwner)
-      editorRow.action = {
-        href: `/scheme/${schemeId}/manage-editors/remove/${id}`,
-        label: 'Remove',
-        ariaLabel: `Remove ${key}`,
-      };
-    return editorRow;
-  }
-
-  const editorRows = (
-    await getSchemeEditors(schemeId, sessionCookie, userServiceJwt)
-  ).map(formatEditorRows);
-
-  editorRows.unshift({
-    key: 'Email',
-    value: 'Role',
-    action: isOwner ? 'Actions' : '',
-  } as UnformattedEditorRow);
-
   return {
-    props: { schemeId, editorRows, schemeName },
+    props: {
+      schemeId,
+      editorRows: await getEditorRows({
+        isOwner,
+        schemeId,
+        sessionCookie,
+        userServiceJwt,
+      }),
+      schemeName,
+    },
   };
 };
 
