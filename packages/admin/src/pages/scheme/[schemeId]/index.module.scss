@@ -1,5 +1,7 @@
+@import '~govuk-frontend/govuk/helpers/colour';
+
 .breakLine {
-  background-color: #1d70b8;
+  background-color: govuk-colour('blue');
   padding: 0.08rem;
 }
 
