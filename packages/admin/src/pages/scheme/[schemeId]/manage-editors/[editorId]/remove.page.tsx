@@ -1,35 +1,48 @@
 import { FlexibleQuestionPageLayout } from 'gap-web-ui';
-import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
-import { getUserTokenFromCookies } from '../../../../utils/session';
-import InferProps from '../../../../types/InferProps';
-import Meta from '../../../../components/layout/Meta';
+import QuestionPageGetServerSideProps from '../../../../../utils/QuestionPageGetServerSideProps';
+import {
+  getSessionIdFromCookies,
+  getUserTokenFromCookies,
+} from '../../../../../utils/session';
+import InferProps from '../../../../../types/InferProps';
+import Meta from '../../../../../components/layout/Meta';
 import Link from 'next/link';
 import { GetServerSidePropsContext } from 'next';
+import {
+  getSchemeEditors,
+  removeEditor,
+} from '../../../../../services/EditorService';
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   const schemeId = context.params?.schemeId as string;
-  const editorName = context.query?.editorName as string;
+  const editorId = context.params?.editorId as string;
 
-  async function fetchPageData() {
+  async function fetchPageData(jwt: string) {
+    const editors = await getSchemeEditors(
+      schemeId,
+      jwt,
+      getUserTokenFromCookies(context.req)
+    );
+    const editor = editors.find((editor) => editor.id === editorId)!;
     return {
       schemeId,
-      editorName,
+      editorEmail: editor.email,
     };
   }
 
-  async function handleRequest() {}
+  async function handleRequest(body: unknown, jwt: string) {
+    return await removeEditor(jwt, schemeId, editorId);
+  }
 
   return QuestionPageGetServerSideProps({
     context,
     fetchPageData,
     handleRequest,
-    jwt: getUserTokenFromCookies(context.req),
-    onErrorMessage: 'ruh roh',
-    onSuccessRedirectHref: `/scheme/${schemeId}/manager-editors`,
+    jwt: getSessionIdFromCookies(context.req),
+    onErrorMessage: 'Could not remove editors access.',
+    onSuccessRedirectHref: `/scheme/${schemeId}/manage-editors`,
   });
-};
+}
 
 export default function RemoveEditorPage({
   csrfToken,
@@ -42,7 +55,7 @@ export default function RemoveEditorPage({
       <Meta title="Manage Editors - Remove Editor" />
 
       <Link
-        href={`/scheme/${pageData.schemeId}/manager-editors`}
+        href={`/scheme/${pageData.schemeId}/manage-editors`}
         className="govuk-back-link"
       >
         Back
@@ -54,12 +67,12 @@ export default function RemoveEditorPage({
           formAction={formAction}
           fieldErrors={fieldErrors}
         >
-          <span className="govuk-caption-l">{pageData.editorName}</span>
+          <span className="govuk-caption-l">{pageData.editorEmail}</span>
 
           <h1 className="govuk-heading-l">Remove editor</h1>
 
           <p className="govuk-body">
-            If you remove {pageData.editorName} as an editor, they will no
+            If you remove {pageData.editorEmail} as an editor, they will no
             longer be able to view or edit the advert or application form for
             this grant.
           </p>
@@ -73,7 +86,7 @@ export default function RemoveEditorPage({
             </button>
 
             <Link
-              href={`/scheme/${pageData.schemeId}/manager-editors`}
+              href={`/scheme/${pageData.schemeId}/manage-editors`}
               className="govuk-link"
             >
               Cancel
