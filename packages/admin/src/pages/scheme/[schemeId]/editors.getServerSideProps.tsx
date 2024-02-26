@@ -95,15 +95,13 @@ const getEditorsServerSideProps = async ({
   };
 };
 
-async function runGetEditorsAndHandleError(ctx: GetServerSidePropsContext) {
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   try {
     return await getEditorsServerSideProps(ctx);
   } catch (error) {
     console.error('Error getting grant editors: ', error);
 
-    const destination = `${
-      process.env.SUB_PATH
-    }/service-error?serviceErrorProps=${JSON.stringify({
+    const destination = `/service-error?serviceErrorProps=${JSON.stringify({
       errorInformation:
         'Something went wrong while trying to contact the server.',
       linkAttributes: {
@@ -123,6 +121,3 @@ async function runGetEditorsAndHandleError(ctx: GetServerSidePropsContext) {
     };
   }
 }
-
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) =>
-  runGetEditorsAndHandleError(ctx);
