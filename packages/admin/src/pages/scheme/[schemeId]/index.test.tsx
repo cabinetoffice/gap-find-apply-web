@@ -83,6 +83,7 @@ const mockGrantadvertData: getAdvertPublishInformationBySchemeIdResponse = {
 };
 
 jest.mock('../../../services/SchemeService');
+jest.mock('../../../services/SchemeEditorService');
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../services/AdvertPageService');
 
