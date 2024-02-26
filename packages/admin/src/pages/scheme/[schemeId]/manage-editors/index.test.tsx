@@ -1,15 +1,17 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import ManageEditors from './index.page';
+import CustomLink from '../../../../components/custom-link/CustomLink';
 
-jest.mock(
-  '../../../../components/custom-link/CustomLink',
-  () =>
-    ({ href, children }: Record<string, string>) =>
-      <a href={href}>{children}</a>
-);
+jest.mock('../../../../components/custom-link/CustomLink');
 
 describe('ManageEditors', () => {
+  beforeEach(() => {
+    (CustomLink as jest.MockedFunction<typeof CustomLink>).mockImplementation(
+      ({ href, children }) => <a href={href}>{children}</a>
+    );
+  });
+
   test('Editor row', () => {
     const editorRows = [
       {
