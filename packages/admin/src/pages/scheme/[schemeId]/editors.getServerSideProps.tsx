@@ -84,6 +84,13 @@ async function runGetEditorsAndHandleError(ctx: GetServerSidePropsContext) {
     }/service-error?serviceErrorProps=${JSON.stringify({
       errorInformation:
         'Something went wrong while trying to contact the server.',
+      linkAttributes: {
+        href: ctx.params?.schemeId
+          ? `/scheme/${ctx.params?.schemeId}/`
+          : undefined,
+        linkText: 'Please return',
+        linkInformation: ' and try again.',
+      },
     })}`;
 
     return {
