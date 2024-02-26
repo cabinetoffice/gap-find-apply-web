@@ -35,6 +35,13 @@ export const axiosSessionConfig = (sessionId: string) => {
   };
 };
 
+export const getFullConfig = (sessionId: string, userServiceJwt: string) => ({
+  withCredentials: true,
+  headers: {
+    Cookie: `SESSION=${sessionId}; ${process.env.JWT_COOKIE_NAME}=${userServiceJwt}`,
+  },
+});
+
 export const axiosUserServiceConfig = (userToken: string) => ({
   withCredentials: true,
   headers: {

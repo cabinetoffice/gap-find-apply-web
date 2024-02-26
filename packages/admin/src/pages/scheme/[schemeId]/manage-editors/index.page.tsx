@@ -11,6 +11,8 @@ import { Row } from 'gap-web-ui/dist/cjs/components/summary-list/SummaryList';
 
 export { getServerSideProps };
 
+const OWNER = 'Owner';
+
 const LinkToAction = ({ action }: { action: Action }) => (
   <CustomLink
     href={action.href}
@@ -23,9 +25,11 @@ const LinkToAction = ({ action }: { action: Action }) => (
 
 const formatEditorRow = (acc: Row[], row: UnformattedEditorRow) => {
   const mapRequired = typeof row.action !== 'string' && row.action;
-  const action = (
+  let action = (
     mapRequired ? <LinkToAction action={row.action as Action} /> : row.action
   ) as Exclude<Row['action'], undefined>;
+
+  if (row.value === OWNER) action = '-';
 
   return [...acc, { ...row, action }];
 };
@@ -41,17 +45,15 @@ const ManageEditors = ({
     <>
       <Meta title={`Grant overview - Manage Editors`} />
       <CustomLink href={`/scheme/${schemeId}`} isBackButton />
-
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-full govuk-!-margin-bottom-6">
           <span className="govuk-caption-l">{schemeName}</span>
-          <h1 className="govuk-heading-xl">Add or manage editors</h1>
+          <h1 className="govuk-heading-l">Add or manage editors</h1>
           <p className="govuk-body">
             Only the grant owner can add or remove editors.
           </p>
           <br />
           <p className="govuk-body">Editors can:</p>
-
           <ul className="govuk-list govuk-list--bullet">
             <li>view, edit or delete any information entered for this grant</li>
             <li>publish a grant advert or application form</li>
@@ -60,12 +62,17 @@ const ManageEditors = ({
           <br />
           <p className="govuk-body">
             If you need to change the owner of this grant, contact{' '}
-            <a href="findagrant@cabinetoffice.gov.uk.">
-              findagrant@cabinetoffice.gov.uk.
+            <a className="govuk-link" href="findagrant@cabinetoffice.gov.uk">
+              findagrant@cabinetoffice.gov.uk
             </a>
+            .
           </p>
-
-          <SummaryList boldHeaderRow rows={mappedTableRows} />
+          <SummaryList
+            actionTextLeft
+            equalColumns
+            boldHeaderRow
+            rows={mappedTableRows}
+          />
           <div className="govuk-button-group">
             <CustomLink
               isButton

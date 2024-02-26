@@ -223,8 +223,8 @@ const ManageGrantsSidebar = ({
   schemeId,
   isOwner,
 }: ManageGrantsSidebarProps) => {
-  const titleText = isOwner ? 'Add an editor' : 'Grant Editors';
-  const buttonText = isOwner ? 'Add or manage editors' : 'View Editors';
+  const titleText = isOwner ? 'Add an editor' : 'Grant editors';
+  const buttonText = isOwner ? 'Add or manage editors' : 'View editors';
   const paragraphText = isOwner
     ? 'You can add other people to this grant. They will be able to edit it.'
     : 'You can view a list of the people that can edit this grant.';
@@ -237,7 +237,9 @@ const ManageGrantsSidebar = ({
       <h2 className={`govuk-heading-m ${styles['mb-sm-32']}`}>{titleText}</h2>
       <p className={`${styles['mb-sm-32']} govuk-body`}>{paragraphText}</p>
       <Link
-        href={`/scheme/${schemeId}/manage-editors`}
+        href={`/scheme/${schemeId}/${
+          isOwner ? 'manage-editors' : 'view-editors'
+        }`}
         role="button"
         draggable="false"
         className="govuk-button govuk-button--secondary"

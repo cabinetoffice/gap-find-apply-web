@@ -9,7 +9,7 @@ import {
   isSchemeOwner,
 } from '../../../services/SchemeService';
 
-type EditorList = {
+export type EditorList = {
   role: 'EDITOR' | 'OWNER';
   email: string;
   id: string;
@@ -27,74 +27,73 @@ export type UnformattedEditorRow = {
   action?: string | Action | JSX.Element;
 };
 
-export const getServerSideProps = async ({
+const getEditorsServerSideProps = async ({
   params,
   req,
 }: GetServerSidePropsContext) => {
   const { schemeId } = params as Record<string, string>;
   const sessionCookie = getSessionIdFromCookies(req);
   const userServiceJwt = getUserTokenFromCookies(req);
+
   const isOwner = await isSchemeOwner(schemeId, sessionCookie);
+
   const { name: schemeName } = await getGrantScheme(schemeId, sessionCookie);
-  // const isOwner = true;
 
   if (!isOwner && req.url?.includes('manage-editors'))
     return {
       redirect: {
-        destination: `/scheme/${schemeId}`,
         permanent: true,
+        destination: `/scheme/${schemeId}`,
       },
     };
 
-  // const realEditors = await getSchemeEditors(
-  //   schemeId,
-  //   sessionCookie,
-  //   userServiceJwt
-  // );
-
-  const editors: EditorList[] = [
-    {
-      role: 'OWNER',
-      email: 'test.owner@grants.com',
-      id: '1',
-    },
-    {
-      id: '2',
-      role: 'EDITOR',
-      email: 'test-editor@grants.com',
-    },
-    {
-      id: '3',
-      role: 'EDITOR',
-      email: 'test-editor@grants.com',
-    },
-  ];
-
-  const editorRows = editors.map(({ email, role, id }, idx) => {
-    const editorRow: UnformattedEditorRow = {
-      key: email,
-      value: role,
-    };
-
-    if (isOwner) {
+  function formatEditorRows({ email: key, role: value, id }: EditorList) {
+    const editorRow: UnformattedEditorRow = { key, value };
+    if (isOwner)
       editorRow.action = {
         href: `/scheme/${schemeId}/manage-editors/remove/${id}`,
         label: 'Remove',
-        ariaLabel: `Remove ${email}`,
+        ariaLabel: `Remove ${key}`,
       };
-    }
-
     return editorRow;
-  });
+  }
 
-  const headingRow: UnformattedEditorRow = {
+  const editorRows = (
+    await getSchemeEditors(schemeId, sessionCookie, userServiceJwt)
+  ).map(formatEditorRows);
+
+  editorRows.unshift({
     key: 'Email',
     value: 'Role',
     action: isOwner ? 'Actions' : '',
-  };
+  } as UnformattedEditorRow);
 
-  editorRows.unshift(headingRow);
   return {
     props: { schemeId, editorRows, schemeName },
   };
 };
+
+async function runGetEditorsAndHandleError(ctx: GetServerSidePropsContext) {
+  try {
+    return await getEditorsServerSideProps(ctx);
+  } catch (error) {
+    console.error('Error getting grant editors: ', error);
+
+    const destination = `${
+      process.env.SUB_PATH
+    }/service-error?serviceErrorProps=${JSON.stringify({
+      errorInformation:
+        'Something went wrong while trying to contact the server.',
+    })}`;
+
+    return {
+      redirect: {
+        permanent: true,
+        destination,
+      },
+    };
+  }
+}
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) =>
+  runGetEditorsAndHandleError(ctx);
