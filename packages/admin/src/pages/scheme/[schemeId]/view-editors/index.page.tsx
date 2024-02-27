@@ -6,21 +6,20 @@ import {
   UnformattedEditorRow,
   getServerSideProps,
 } from '../editors.getServerSideProps';
-import { Row } from 'gap-web-ui/dist/cjs/components/summary-list/SummaryList';
 
 export { getServerSideProps };
 
-const rmAction = (acc: Row[], row: UnformattedEditorRow) => [
-  ...acc,
-  { ...row, action: undefined },
-];
+const rmAction = (row: UnformattedEditorRow) => ({
+  ...row,
+  action: undefined,
+});
 
 const ViewEditors = ({
   editorRows,
   schemeName,
   schemeId,
 }: InferProps<typeof getServerSideProps>) => {
-  const mappedTableRows = editorRows.reduce(rmAction, []);
+  const mappedTableRows = editorRows.map(rmAction);
 
   return (
     <>
