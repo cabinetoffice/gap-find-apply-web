@@ -52,7 +52,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   });
 }
 
-const ChangeOwnerPage = ({
+const AddEditorPage = ({
   fieldErrors,
   formAction,
   csrfToken,
@@ -64,7 +64,7 @@ const ChangeOwnerPage = ({
       <Meta
         title={`${
           fieldErrors.length > 0 ? 'Error: ' : ''
-        }Manage Editors - Change Scheme Owner`}
+        }Manage Editors - Add an Editor`}
       />
 
       <CustomLink
@@ -107,4 +107,4 @@ const ChangeOwnerPage = ({
   );
 };
 
-export default ChangeOwnerPage;
+export default AddEditorPage;
