@@ -24,11 +24,13 @@ const LinkToAction = ({ action }: { action: Action }) => (
 );
 
 const formatEditorRow = (row: UnformattedEditorRow) => {
-  const mapRequired = typeof row.action !== 'string' && row.action;
   if (row.value === OWNER) return { ...row, action: '-' };
-  if (mapRequired)
-    return { ...row, action: <LinkToAction action={row.action as Action} /> };
-  return row;
+  if (row.action && typeof row.action !== 'string' && 'href' in row.action)
+    return {
+      ...row,
+      action: <LinkToAction action={row.action} />,
+    };
+  return row as Row;
 };
 
 const ManageEditors = ({
