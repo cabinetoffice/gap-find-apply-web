@@ -201,10 +201,6 @@ describe('getServerSideProps', () => {
 });
 
 describe('SubmissionSummary', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('renders SubmissionSummary component and back link correctly', () => {
     render(<SubmissionSummary {...propsWithAllValues} />);
 
