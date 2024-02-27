@@ -35,13 +35,13 @@ const getEditorRows = async ({
   sessionCookie,
   userServiceJwt,
 }: GetEditorRowsProps) => {
-  function addOwnerAction({ email: key, role: value, id }: EditorList) {
-    const editorRow: UnformattedEditorRow = { key, value };
+  function addDeleteEditorColumn({ email, role, id }: EditorList) {
+    const editorRow: UnformattedEditorRow = { key: email, value: role };
     if (isOwner)
       editorRow.action = {
         href: `/scheme/${schemeId}/manage-editors/remove/${id}`,
         label: 'Remove',
-        ariaLabel: `Remove ${key}`,
+        ariaLabel: `Remove ${email}`,
       };
     return editorRow;
   }
@@ -58,7 +58,7 @@ const getEditorRows = async ({
     action: isOwner ? 'Actions' : '',
   };
 
-  return [tableHeadingRow, ...schemeEditors.map(addOwnerAction)];
+  return [tableHeadingRow, ...schemeEditors.map(addDeleteEditorColumn)];
 };
 
 const getEditorsServerSideProps = async ({
@@ -84,13 +84,13 @@ const getEditorsServerSideProps = async ({
   return {
     props: {
       schemeId,
+      schemeName,
       editorRows: await getEditorRows({
         isOwner,
         schemeId,
         sessionCookie,
         userServiceJwt,
       }),
-      schemeName,
     },
   };
 };
