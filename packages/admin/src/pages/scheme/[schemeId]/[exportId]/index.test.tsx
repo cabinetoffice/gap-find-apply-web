@@ -1,31 +1,29 @@
 import '@testing-library/jest-dom';
+
 import { render, screen } from '@testing-library/react';
-import { GetServerSidePropsContext } from 'next';
 import { merge } from 'lodash';
-import CompletedSubmissions, { getServerSideProps } from './index.page';
-import { downloadFile, isJSEnabled } from '../../../../utils/general';
+import { GetServerSidePropsContext } from 'next';
+
+import { getExportDetails } from '../../../../services/ExportService';
 import { getGrantScheme } from '../../../../services/SchemeService';
-import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
 import { getCompletedSubmissionExportList } from '../../../../services/SubmissionsService';
+import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
+import CompletedSubmissions, { getServerSideProps } from './index.page';
+
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      pathname: '',
+      replace: jest.fn(),
+    };
+  },
+}));
 
 jest.mock('../../../../utils/general');
 jest.mock('../../../../services/SchemeService');
 jest.mock('../../../../services/SubmissionsService');
+jest.mock('../../../../services/ExportService');
 
-const submissionList = [
-  { label: 'some name', url: '#1' },
-  { label: 'some other name', url: '#2' },
-  { label: 'some third name', url: '#3' },
-];
-
-const customProps = {
-  formAction: '',
-  schemeName: '',
-  submissionList,
-  csrfToken: '',
-};
-
-const component = <CompletedSubmissions {...customProps} />;
 const SCHEME_ID = 'testSchemeId';
 const EXPORT_ID = 'testExportId';
 
@@ -41,6 +39,9 @@ const getContext = (overrides: any = {}) =>
         cookies: { 'gap-test': 'testSessionId' },
         headers: { referer: '/testRefererPage' },
       } as any,
+      query: {
+        page: '1',
+      } as any,
       res: {
         getHeader: () => 'testCSRFToken',
       },
@@ -49,130 +50,199 @@ const getContext = (overrides: any = {}) =>
     overrides
   );
 
-// Temporary placeholder to be deleted once we unskip tests
-describe.skip('Completed submissions page', () => {
+const defaultAvailableCount = 11;
+const defaultUnavailableCount = 12;
+const schemeName = 'Test Scheme';
+const sampleUnavailableSubmission = {
+  name: 'Test Submission',
+  zipFileLocation: '4321/location.zip',
+  submissionId: '090aa6ef-c8b0-4c8c-a94c-389985f2c753',
+  status: 'FAILED',
+  submittedDate: '2023-12-11T16:18:58.576Z',
+};
+
+const unavailableSubmissionsList = Array(11).fill(sampleUnavailableSubmission);
+
+const customProps = {
+  formAction: '',
+  csrfToken: 'testCSRFToken',
+  schemeName: schemeName,
+  individualApplicationsHref: '/download-individual',
+  availableSubmissionsTotalCount: defaultAvailableCount,
+  unavailableSubmissionsTotalCount: defaultUnavailableCount,
+  unavailableSubmissions: unavailableSubmissionsList,
+  superZipLocation: '1234/location.zip',
+};
+
+const exportDetails = {
+  grantExportId: '0fe53030-b7ce-4338-b46c-14c452b22ee9',
+  failedCount: defaultUnavailableCount,
+  successCount: defaultAvailableCount,
+  superZipFileLocation: '1234/location.zip',
+  exportedSubmissions: unavailableSubmissionsList,
+};
+
+const component = <CompletedSubmissions {...customProps} />;
+
+describe('Download all submissions page', () => {
   describe('UI', () => {
-    it('Should render a meta title correctly', () => {
-      render(component);
-      expect(document.title).toBe('Completed submissions');
-    });
-
-    it('Should render the question page layout output', () => {
-      render(component);
-      screen.getByTestId('question-page-form');
-    });
-
-    it('Should render the table component output', () => {
-      render(component);
-      screen.getByTestId('table-caption');
-    });
-
-    describe('There are completed submissions', () => {
-      it('Should render a "Download" link for each row of the table', () => {
+    describe('Both available and unavailable submissions', () => {
+      beforeEach(() => {
         render(component);
-        screen.getByRole('link', { name: 'Download submission "some name"' });
-        screen.getByRole('link', {
-          name: 'Download submission "some other name"',
-        });
-        screen.getByRole('link', {
-          name: 'Download submission "some third name"',
-        });
       });
 
-      describe('Browser JavaScript disabled', () => {
-        beforeEach(() => {
-          (isJSEnabled as jest.Mock).mockReturnValue(false);
-        });
-
-        it('Should NOT render a "Select all" checkbox for the table', () => {
-          render(component);
-          expect(
-            screen.queryByRole('checkbox', { name: 'Select all' })
-          ).toBeFalsy();
-        });
-
-        it('Should NOT render a checkbox for each row of the table', () => {
-          render(component);
-
-          expect(
-            screen.queryByRole('checkbox', { name: submissionList[0].label })
-          ).toBeFalsy();
-          expect(
-            screen.queryByRole('checkbox', { name: submissionList[1].label })
-          ).toBeFalsy();
-          expect(
-            screen.queryByRole('checkbox', { name: submissionList[2].label })
-          ).toBeFalsy();
-        });
-
-        it('Should NOT render "Download selected" button', () => {
-          render(component);
-          expect(
-            screen.queryByRole('button', { name: 'Download selected' })
-          ).toBeFalsy();
-        });
+      it('Should render a meta title correctly', () => {
+        expect(document.title).toBe('Download applications - Manage a grant');
       });
 
-      describe('Browser JavaScript enabled', () => {
-        beforeEach(() => {
-          (isJSEnabled as jest.Mock).mockReturnValue(true);
-        });
+      it('Should render the page title', () => {
+        screen.getByText('Applications submitted');
+      });
 
-        it('Should render a "Select all" checkbox for the table', () => {
-          render(component);
-          screen.getByRole('checkbox', { name: 'Select all' });
-        });
+      it('Should render the grant name', () => {
+        screen.getByText(schemeName);
+      });
 
-        it('Should render a checkbox for each row of the table', () => {
-          render(component);
+      it('Should render the available count of applications', () => {
+        screen.getByText(defaultAvailableCount + ' applications');
+      });
 
-          screen.getByRole('checkbox', { name: submissionList[0].label });
-          screen.getByRole('checkbox', { name: submissionList[1].label });
-          screen.getByRole('checkbox', { name: submissionList[2].label });
-        });
+      it('Should render the two buttons', async () => {
+        screen.getByText('Download all applications');
+        screen.getByText('View individual applications');
+      });
 
-        it('Should render "Download selected" button in a disabled state when no checkboxes are checked', () => {
-          render(component);
-          expect(
-            screen.getByRole('button', { name: 'Download selected' })
-          ).toHaveAttribute('disabled');
-        });
+      it('Should render the unavailable applications view', () => {
+        screen.getByText('Unavailable applications');
+      });
 
-        it('Should render "Download selected" button NOT in a disabled state when at least 1 checkbox is checked', () => {
-          render(component);
-          const checkbox = screen.getByRole('checkbox', {
-            name: submissionList[0].label,
-          });
+      it('Should render the unavailable count of applications', () => {
+        screen.getByText(defaultUnavailableCount + ' applications');
+      });
 
-          checkbox.click();
+      it('Should render the table heading(s)', () => {
+        screen.getByText('Organisation');
+      });
 
-          expect(
-            screen.getByRole('button', { name: 'Download selected' })
-          ).not.toHaveAttribute('disabled');
-        });
+      it('Should render the org names of the unavailable submissions', () => {
+        screen.getAllByText(sampleUnavailableSubmission.name);
+      });
+
+      it('Should render the unavailable submissions', () => {
+        expect(
+          screen.getAllByText(sampleUnavailableSubmission.name).length
+        ).toEqual(unavailableSubmissionsList.length);
+      });
+
+      it('Renders the unavailable submissions banner', () => {
+        screen.getByText('Important');
+        screen.getByText(
+          'You can view a read-only copy of the applications that are affected in the "Applications unavailable for download" section of this page.'
+        );
       });
     });
 
-    describe('There are no submissions', () => {
-      // Some sort of redirection? Will cover in unhappy paths and integration
+    describe('Available submissions only', () => {
+      beforeEach(() => {
+        const availableOnlyProps = customProps;
+        availableOnlyProps.unavailableSubmissionsTotalCount = 0;
+        availableOnlyProps.unavailableSubmissions = [];
+
+        const availableOnlyComponent = (
+          <CompletedSubmissions {...availableOnlyProps} />
+        );
+
+        render(availableOnlyComponent);
+      });
+
+      it('Should render the available count of applications', () => {
+        screen.getByText(defaultAvailableCount + ' applications');
+      });
+
+      it('Does not render the unavailable submissions table', () => {
+        expect(screen.queryByText('Unavailable submissions')).toBeNull();
+      });
+
+      it('Does not render the unavailable submissions banner', () => {
+        expect(screen.queryByText('Important')).toBeNull();
+        expect(
+          screen.queryByText(
+            'You can view a read-only copy of the applications that are affected in the "Applications unavailable for download" section of this page.'
+          )
+        );
+      });
+    });
+
+    describe('Unavailable submissions only', () => {
+      beforeEach(() => {
+        const unavailableOnlyProps = customProps;
+        unavailableOnlyProps.availableSubmissionsTotalCount = 0;
+        unavailableOnlyProps.unavailableSubmissions =
+          unavailableSubmissionsList;
+        unavailableOnlyProps.unavailableSubmissionsTotalCount =
+          defaultUnavailableCount;
+
+        const unavailableOnlyComponent = (
+          <CompletedSubmissions {...unavailableOnlyProps} />
+        );
+
+        render(unavailableOnlyComponent);
+      });
+
+      it('Renders correct information about submissions', () => {
+        screen.getByText('0 applications');
+      });
+
+      it('Should render the unavailable applications view', () => {
+        screen.getByText('Unavailable applications');
+      });
+
+      it('Should render the unavailable count of applications', () => {
+        screen.getByText(defaultUnavailableCount + ' applications');
+      });
+
+      it('Should render the table heading(s)', () => {
+        screen.getByText('Organisation');
+      });
+
+      it('Should render the org names of the unavailable submissions', () => {
+        screen.getAllByText(sampleUnavailableSubmission.name);
+      });
+
+      it('Should render the unavailable submissions', () => {
+        expect(
+          screen.getAllByText(sampleUnavailableSubmission.name).length
+        ).toEqual(unavailableSubmissionsList.length);
+      });
+
+      it('Renders the unavailable submissions banner', () => {
+        screen.getByText('Important');
+        screen.getByText(
+          'You can view a read-only copy of the applications that are affected in the "Applications unavailable for download" section of this page.'
+        );
+      });
+
+      it('Buttons are disabled', () => {
+        const downloadAllLink = screen.getByRole('button', {
+          name: 'Download all applications',
+        });
+        expect(downloadAllLink).toHaveAttribute('disabled');
+        const downloadIndividualLink = screen.getByRole('button', {
+          name: 'View individual applications',
+        });
+        expect(downloadIndividualLink).toHaveAttribute('disabled');
+      });
     });
   });
 
   describe('Logic', () => {
-    beforeEach(() => {
-      (isJSEnabled as jest.Mock).mockReturnValue(true);
-    });
-
     describe('getServerSideProps', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         (getGrantScheme as jest.Mock).mockResolvedValue({
-          name: 'Test scheme name',
+          name: schemeName,
         });
-        (getCompletedSubmissionExportList as jest.Mock).mockResolvedValue(
-          submissionList
-        );
+        (getExportDetails as jest.Mock).mockResolvedValue(exportDetails);
       });
-
       it('Should redirect to an error page if getGrantScheme throws an error', async () => {
         (getGrantScheme as jest.Mock).mockRejectedValue({});
 
@@ -189,8 +259,8 @@ describe.skip('Completed submissions page', () => {
         });
       });
 
-      it('Should redirect to an error page if getCompletedSubmissionExportList throws an error', async () => {
-        (getCompletedSubmissionExportList as jest.Mock).mockRejectedValue({});
+      it('Should redirect to an error page if the getExportDetails endpoint throws an error', async () => {
+        (getExportDetails as jest.Mock).mockRejectedValue({});
 
         const result = (await getServerSideProps(
           getContext()
@@ -205,8 +275,51 @@ describe.skip('Completed submissions page', () => {
         });
       });
 
-      it('Should redirect to an error page if submissionList has no entries', async () => {
-        (getCompletedSubmissionExportList as jest.Mock).mockResolvedValue([]);
+      it('Should return scheme name', async () => {
+        const result = (await getServerSideProps(
+          getContext()
+        )) as NextGetServerSidePropsResponse;
+        expect(result.props.schemeName).toStrictEqual(schemeName);
+      });
+
+      it('Should return available and unavailable submission counts', async () => {
+        const result = (await getServerSideProps(
+          getContext()
+        )) as NextGetServerSidePropsResponse;
+
+        expect(result.props.unavailableSubmissionsTotalCount).toEqual(
+          defaultUnavailableCount
+        );
+        expect(result.props.availableSubmissionsTotalCount).toEqual(
+          defaultAvailableCount
+        );
+      });
+
+      it('Should return unavailable submissions details', async () => {
+        const result = (await getServerSideProps(
+          getContext()
+        )) as NextGetServerSidePropsResponse;
+
+        expect(result.props.unavailableSubmissions).toEqual(
+          unavailableSubmissionsList
+        );
+      });
+
+      it('Should return csrf token', async () => {
+        const result = (await getServerSideProps(
+          getContext()
+        )) as NextGetServerSidePropsResponse;
+
+        expect(result.props.csrfToken).toEqual('testCSRFToken');
+      });
+
+      it('Should redirect to an error page if there are no submissions', async () => {
+        const zeroSubmissionExportDetails = exportDetails;
+        zeroSubmissionExportDetails.failedCount = 0;
+        zeroSubmissionExportDetails.successCount = 0;
+        (getExportDetails as jest.Mock).mockResolvedValue(
+          zeroSubmissionExportDetails
+        );
 
         const result = (await getServerSideProps(
           getContext()
@@ -215,131 +328,9 @@ describe.skip('Completed submissions page', () => {
         expect(result).toStrictEqual({
           redirect: {
             destination:
-              '/service-error?serviceErrorProps={"errorInformation":"There are no submissions available for download.","linkAttributes":{"href":"/dashboard","linkText":"Please return","linkInformation":" and try again."}}',
+              '/service-error?serviceErrorProps={"errorInformation":"There are no submissions available to view or download.","linkAttributes":{"href":"/dashboard","linkText":"Please return","linkInformation":" and try again."}}',
             statusCode: 302,
           },
-        });
-      });
-
-      it('Should return form action', async () => {
-        const result = (await getServerSideProps(
-          getContext()
-        )) as NextGetServerSidePropsResponse;
-
-        expect(result.props.formAction).toStrictEqual(
-          process.env.SUB_PATH + '/testResolvedURL'
-        );
-      });
-
-      it('Should return scheme name', async () => {
-        const result = (await getServerSideProps(
-          getContext()
-        )) as NextGetServerSidePropsResponse;
-
-        expect(result.props.schemeName).toStrictEqual('Test scheme name');
-      });
-
-      it('Should return submission list', async () => {
-        const result = (await getServerSideProps(
-          getContext()
-        )) as NextGetServerSidePropsResponse;
-
-        expect(result.props.submissionList).toStrictEqual([
-          { label: 'some name', url: '#1' },
-          { label: 'some other name', url: '#2' },
-          { label: 'some third name', url: '#3' },
-        ]);
-      });
-
-      it('Should return csrf token', async () => {
-        const result = (await getServerSideProps(
-          getContext()
-        )) as NextGetServerSidePropsResponse;
-
-        expect(result.props.csrfToken).toStrictEqual('testCSRFToken');
-      });
-    });
-
-    describe('There are completed submissions', () => {
-      describe('Browser JavaScript enabled', () => {
-        describe('Checkboxes', () => {
-          it('Should check the individual checkbox when it is clicked', () => {
-            render(component);
-            const checkbox = screen.getByRole('checkbox', {
-              name: submissionList[0].label,
-            });
-
-            checkbox.click();
-
-            expect(checkbox).toBeChecked();
-          });
-
-          it('Should check all the checkboxes when "Select all" checkbox is clicked', () => {
-            render(component);
-            const selectAll = screen.getByRole('checkbox', {
-              name: 'Select all',
-            });
-
-            selectAll.click();
-
-            expect(selectAll).toBeChecked();
-            expect(
-              screen.getByRole('checkbox', { name: submissionList[0].label })
-            ).toBeChecked();
-            expect(
-              screen.getByRole('checkbox', { name: submissionList[1].label })
-            ).toBeChecked();
-            expect(
-              screen.getByRole('checkbox', { name: submissionList[2].label })
-            ).toBeChecked();
-          });
-
-          it('Should uncheck all the boxes when "Select all" checkbox is unchecked', () => {
-            render(component);
-            const selectAll = screen.getByRole('checkbox', {
-              name: 'Select all',
-            });
-            const checkbox1 = screen.getByRole('checkbox', {
-              name: submissionList[0].label,
-            });
-
-            checkbox1.click();
-            selectAll.click();
-            selectAll.click();
-
-            expect(selectAll).not.toBeChecked();
-            expect(checkbox1).not.toBeChecked();
-            expect(
-              screen.getByRole('checkbox', { name: submissionList[1].label })
-            ).not.toBeChecked();
-            expect(
-              screen.getByRole('checkbox', { name: submissionList[2].label })
-            ).not.toBeChecked();
-          });
-        });
-
-        describe('File download', () => {
-          it('Should download the all files for checked checkboxes when "Download selected" button is clicked', () => {
-            render(component);
-            const checkbox1 = screen.getByRole('checkbox', {
-              name: submissionList[0].label,
-            });
-            const checkbox2 = screen.getByRole('checkbox', {
-              name: submissionList[1].label,
-            });
-            const downloadSelected = screen.getByRole('button', {
-              name: 'Download selected',
-            });
-
-            checkbox1.click();
-            checkbox2.click();
-            downloadSelected.click();
-
-            // We know that the timeout is 100ms per file download.
-            setTimeout(() => {
-              expect(downloadFile).toHaveBeenCalledTimes(2);
-            }, 200);
-          });
         });
       });
     });
