@@ -1,5 +1,5 @@
 import InferProps from '../../../../types/InferProps';
-import { SummaryList } from 'gap-web-ui';
+import { SummaryList, Row } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import {
@@ -7,7 +7,6 @@ import {
   UnformattedEditorRow,
   getServerSideProps,
 } from '../editors.getServerSideProps';
-import { Row } from 'gap-web-ui/dist/cjs/components/summary-list/SummaryList';
 
 export { getServerSideProps };
 
@@ -23,7 +22,7 @@ const LinkToAction = ({ action }: { action: Action }) => (
   </CustomLink>
 );
 
-const formatEditorRow = (row: UnformattedEditorRow) => {
+const formatEditorRow = (row: UnformattedEditorRow): Row => {
   if (row.value === OWNER) return { ...row, action: '-' };
   if (row.action && typeof row.action !== 'string' && 'href' in row.action)
     return {
