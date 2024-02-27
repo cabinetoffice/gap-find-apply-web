@@ -23,15 +23,12 @@ const LinkToAction = ({ action }: { action: Action }) => (
   </CustomLink>
 );
 
-const formatEditorRow = (acc: Row[], row: UnformattedEditorRow) => {
+const formatEditorRow = (row: UnformattedEditorRow) => {
   const mapRequired = typeof row.action !== 'string' && row.action;
-  let action = (
-    mapRequired ? <LinkToAction action={row.action as Action} /> : row.action
-  ) as Exclude<Row['action'], undefined>;
-
-  if (row.value === OWNER) action = '-';
-
-  return [...acc, { ...row, action }];
+  if (row.value === OWNER) return { ...row, action: '-' };
+  if (mapRequired)
+    return { ...row, action: <LinkToAction action={row.action as Action} /> };
+  return row;
 };
 
 const ManageEditors = ({
@@ -39,7 +36,7 @@ const ManageEditors = ({
   schemeName,
   schemeId,
 }: InferProps<typeof getServerSideProps>) => {
-  const mappedTableRows = editorRows.reduce(formatEditorRow, []);
+  const mappedTableRows = editorRows.map(formatEditorRow);
 
   return (
     <>
