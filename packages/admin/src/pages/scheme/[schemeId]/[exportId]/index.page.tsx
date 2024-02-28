@@ -140,26 +140,28 @@ export const CompletedSubmissions = ({
   return (
     <>
       <Meta title={`Download applications - Manage a grant`} />
-      <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-bottom-6">
-        <div className="govuk-grid-column-full-width">
-          {unavailableSubmissionsTotalCount > 0 && (
-            <DownloadMessage count={unavailableSubmissionsTotalCount} />
-          )}
+      <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-0 govuk-!-margin-bottom-6">
+        <div className="govuk-grid-column-full-witdh">
+          <div className="govuk-!-width-two-thirds">
+            {unavailableSubmissionsTotalCount > 0 && (
+              <DownloadMessage count={unavailableSubmissionsTotalCount} />
+            )}
 
-          <h1 className="govuk-heading-l">{schemeName}</h1>
+            <h1 className="govuk-heading-l">{schemeName}</h1>
 
-          <h2 className="govuk-heading-m">Applications submitted</h2>
+            <h2 className="govuk-heading-m">Applications submitted</h2>
 
-          <p className="govuk-body">
-            Your grant has{' '}
-            <b>
-              {availableSubmissionsTotalCount}{' '}
-              {availableSubmissionsTotalCount === 1
-                ? 'application'
-                : 'applications'}
-            </b>{' '}
-            available to download.
-          </p>
+            <p className="govuk-body">
+              Your grant has{' '}
+              <b>
+                {availableSubmissionsTotalCount}{' '}
+                {availableSubmissionsTotalCount === 1
+                  ? 'application'
+                  : 'applications'}
+              </b>{' '}
+              available to download.
+            </p>
+          </div>
           <FlexibleQuestionPageLayout
             fieldErrors={[]}
             formAction={formAction}
@@ -188,8 +190,8 @@ export const CompletedSubmissions = ({
           </FlexibleQuestionPageLayout>
 
           {unavailableSubmissions.length > 0 && (
-            <>
-              <hr className="govuk-section-break govuk-section-break--visible govuk-section-break--m govuk-!-margin-top-7"></hr>
+            <div className="govuk-!-width-two-thirds">
+              <hr className="govuk-section-break govuk-section-break--visible govuk-section-break--m govuk-!-margin-top-2 govuk-!-margin-bottom-7"></hr>
               <h2 className="govuk-heading-m">Unavailable applications</h2>
 
               <p className="govuk-body">
@@ -219,7 +221,7 @@ export const CompletedSubmissions = ({
                   itemCountMargin={true}
                 />
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
