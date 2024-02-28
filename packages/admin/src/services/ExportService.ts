@@ -4,6 +4,14 @@ import Pagination from '../types/Pagination';
 
 const BASE_SUBMISSIONS_URL = process.env.BACKEND_HOST + '/grant-export';
 
+export type ExportDetails = {
+  name: string;
+  zipFileLocation: string;
+  submissionId: string;
+  status: string;
+  submittedDate: string;
+};
+
 const getExportDetails = async (
   exportBatchId: string,
   grabOnlyFailed: boolean,

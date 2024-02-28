@@ -2,7 +2,10 @@ import '@testing-library/jest-dom';
 
 import { render, screen } from '@testing-library/react';
 
-import { getExportDetails } from '../../../../services/ExportService';
+import {
+  ExportDetails,
+  getExportDetails,
+} from '../../../../services/ExportService';
 import { getGrantScheme } from '../../../../services/SchemeService';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
 import { getServerSideProps } from './download-individual.page';
@@ -59,7 +62,7 @@ const sampleSubmission = {
   submittedDate: '20/10/24',
   zipFileLocation: '4321/location.zip',
   submissionId: '3a6cfe2d-bf58-440d-9e07-3579c7dcf207',
-};
+} as ExportDetails;
 
 const submissionList = Array(10).fill(sampleSubmission);
 
@@ -75,7 +78,7 @@ const customProps = {
   formAction: '',
   schemeName: schemeName,
   availableSubmissionsTotalCount: defaultAvailableCount,
-  submissionList: exportDetails,
+  exportedSubmissions: submissionList,
   backBtnUrl: backBtnUrl,
   csrfToken: 'testCSRFToken',
 };
@@ -185,7 +188,7 @@ describe('Download individual submissions page', () => {
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(result.props.submissionList).toEqual(exportDetails);
+        expect(result.props.exportedSubmissions).toEqual(submissionList);
       });
 
       it('Should return csrf token', async () => {

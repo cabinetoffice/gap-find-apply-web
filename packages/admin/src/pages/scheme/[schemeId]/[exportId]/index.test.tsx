@@ -6,7 +6,6 @@ import { GetServerSidePropsContext } from 'next';
 
 import { getExportDetails } from '../../../../services/ExportService';
 import { getGrantScheme } from '../../../../services/SchemeService';
-import { getCompletedSubmissionExportList } from '../../../../services/SubmissionsService';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
 import CompletedSubmissions, { getServerSideProps } from './index.page';
 

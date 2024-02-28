@@ -3,7 +3,10 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import React from 'react';
 
 import CustomLink from '../../../../components/custom-link/CustomLink';
-import { getExportDetails } from '../../../../services/ExportService';
+import {
+  ExportDetails,
+  getExportDetails,
+} from '../../../../services/ExportService';
 import { getGrantScheme } from '../../../../services/SchemeService';
 import { generateErrorPageRedirect } from '../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../utils/session';
@@ -29,7 +32,7 @@ export const getServerSideProps = async ({
   };
 
   let grantScheme;
-  let unavailableSubmissions = [];
+  let unavailableSubmissions = [] as ExportDetails[];
   let availableSubmissionsTotalCount = 0;
   let unavailableSubmissionsTotalCount = 0;
   let superZipLocation = '';

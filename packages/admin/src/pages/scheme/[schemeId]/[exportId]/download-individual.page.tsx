@@ -7,7 +7,10 @@ import { getGrantScheme } from '../../../../services/SchemeService';
 import { generateErrorPageRedirect } from '../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../utils/session';
 import { Pagination } from '../../../../components/pagination/Pagination';
-import { getExportDetails } from '../../../../services/ExportService';
+import {
+  ExportDetails,
+  getExportDetails,
+} from '../../../../services/ExportService';
 
 export const getServerSideProps = async ({
   req,
@@ -28,6 +31,7 @@ export const getServerSideProps = async ({
   let grantScheme;
   let availableSubmissionsTotalCount = 0;
   let submissionList;
+  let exportedSubmissions: ExportDetails[];
 
   try {
     grantScheme = await getGrantScheme(schemeId, sessionCookie);
@@ -40,6 +44,7 @@ export const getServerSideProps = async ({
     );
 
     availableSubmissionsTotalCount = submissionList.successCount;
+    exportedSubmissions = submissionList.exportedSubmissions;
   } catch (err) {
     return generateErrorPageRedirect(
       'Something went wrong while trying to view submission applications.',
@@ -58,7 +63,7 @@ export const getServerSideProps = async ({
       formAction: process.env.SUB_PATH + resolvedUrl,
       schemeName: grantScheme.name,
       availableSubmissionsTotalCount,
-      submissionList,
+      exportedSubmissions,
       backBtnUrl: `/scheme/${schemeId}/${exportId}`,
       csrfToken: res.getHeader('x-csrf-token') as string,
     },
@@ -69,7 +74,7 @@ export const DownloadIndividualSubmissions = ({
   formAction,
   schemeName,
   availableSubmissionsTotalCount,
-  submissionList,
+  exportedSubmissions,
   backBtnUrl,
   csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
@@ -84,7 +89,7 @@ export const DownloadIndividualSubmissions = ({
     },
   ] as TheadColumn[];
 
-  const tableRows = submissionList.exportedSubmissions.map((submission) => {
+  const tableRows = exportedSubmissions.map((submission) => {
     return {
       cells: [
         {
@@ -95,7 +100,7 @@ export const DownloadIndividualSubmissions = ({
             <div className="govuk-!-text-align-right">
               <CustomLink
                 href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
-                  submission.s3key
+                  submission.zipFileLocation
                 )}`}
                 ariaLabel={`Download submission "${submission.name}"`}
                 excludeSubPath
