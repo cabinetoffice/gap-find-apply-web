@@ -110,7 +110,6 @@ const Pagination = ({
           <ul className="govuk-pagination__list">{paginationElements}</ul>
         </>
       )}
-      {/* TODO: Is this margin what we want? */}
       <p
         className={`moj-pagination__results ${
           itemCountMargin ? 'govuk-!-margin-top-9' : ''

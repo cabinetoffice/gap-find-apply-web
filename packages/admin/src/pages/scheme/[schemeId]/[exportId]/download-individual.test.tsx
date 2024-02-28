@@ -8,8 +8,9 @@ import {
 } from '../../../../services/ExportService';
 import { getGrantScheme } from '../../../../services/SchemeService';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
-import { getServerSideProps } from './download-individual.page';
-import DownloadIndividualSubmissions from './download-individual.page';
+import DownloadIndividualSubmissions, {
+  getServerSideProps,
+} from './download-individual.page';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext } from 'next';
 
