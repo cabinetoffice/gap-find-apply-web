@@ -183,7 +183,7 @@ const getServerSideProps = async ({
         a.fieldName.localeCompare(b.fieldName, undefined, { numeric: true })
       );
   }
-  if (req.method !== 'POST') {
+  if (req.method !== 'POST' && questionData.options) {
     options = questionData.options as string[];
   }
   const { publicRuntimeConfig } = getConfig();
