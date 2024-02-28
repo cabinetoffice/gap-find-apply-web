@@ -141,7 +141,7 @@ export const CompletedSubmissions = ({
     <>
       <Meta title={`Download applications - Manage a grant`} />
       <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-0 govuk-!-margin-bottom-6">
-        <div className="govuk-grid-column-full-witdh">
+        <div className="govuk-grid-column-full-width">
           <div className="govuk-!-width-two-thirds">
             {unavailableSubmissionsTotalCount > 0 && (
               <DownloadMessage count={unavailableSubmissionsTotalCount} />
