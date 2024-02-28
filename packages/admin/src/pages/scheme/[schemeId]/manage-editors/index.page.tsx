@@ -46,8 +46,7 @@ const ManageEditors = ({
       <div className="govuk-grid-row govuk-!-padding-top-7">
         {newEditor ? (
           <ImportantBanner
-            bannerHeading="Success"
-            bannerContent={`${newEditor} has been added as an editor.`}
+            bannerHeading={`${newEditor} has been added as an editor.`}
             isSuccess
           />
         ) : null}

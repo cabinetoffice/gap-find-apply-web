@@ -50,7 +50,7 @@ describe('ManageEditors', () => {
     const addEditorLink = getByText('Add an editor');
     expect(addEditorLink).toHaveAttribute(
       'href',
-      '/scheme/dummySchemeId/manage-editors/add-editor'
+      '/scheme/dummySchemeId/manage-editors/add-editor?schemeName=Dummy Scheme'
     );
     expect(addEditorLink).toBeVisible();
 

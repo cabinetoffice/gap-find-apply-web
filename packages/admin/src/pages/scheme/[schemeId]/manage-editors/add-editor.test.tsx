@@ -15,8 +15,8 @@ describe('Manage Editors - Add an Editor', () => {
     const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
       pageData: {
         schemeName: 'Test Scheme',
-        prevEmailAddress: null,
         schemeId: 'testSchemeId',
+        editorEmailAddress: null,
       },
       previousValues: { editorEmailAddress: '' },
       csrfToken: 'csrfToken',
@@ -83,23 +83,6 @@ describe('Manage Editors - Add an Editor', () => {
         screen.getByRole('textbox', { fieldName: 'editorEmailAddress' })
       ).toHaveValue('test@gmail.com');
     });
-
-    it('The text input should default to prevEmailAddress if it exists', () => {
-      render(
-        <AddEditorPage
-          {...getPageProps(getDefaultProps, {
-            previousValues: {
-              editorEmailAddress: null as unknown as undefined,
-            },
-            pageData: { prevEmailAddress: 'test@gmail.com' },
-          })}
-        />
-      );
-
-      expect(
-        screen.getByRole('textbox', { fieldName: 'editorEmailAddress' })
-      ).toHaveValue('test@gmail.com');
-    });
   });
 
   describe('getServerSideProps', () => {
@@ -139,7 +122,7 @@ describe('Manage Editors - Add an Editor', () => {
         expect.objectContaining({
           schemeName: 'Test Scheme',
           schemeId: 'testSchemeId',
-          prevEmailAddress: null,
+          editorEmailAddress: null,
         })
       );
     });
@@ -159,7 +142,8 @@ describe('Manage Editors - Add an Editor', () => {
       );
       expect(result.redirect).toEqual(
         expect.objectContaining({
-          destination: '/schemes/testSchemeId/manage-editors/',
+          destination:
+            '/scheme/testSchemeId/manage-editors?newEditor=test@test.gov',
         })
       );
     });
