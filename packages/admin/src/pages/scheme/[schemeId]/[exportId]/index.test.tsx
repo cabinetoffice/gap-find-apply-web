@@ -72,6 +72,8 @@ const customProps = {
   unavailableSubmissionsTotalCount: defaultUnavailableCount,
   unavailableSubmissions: unavailableSubmissionsList,
   superZipLocation: '1234/location.zip',
+  schemeId: SCHEME_ID,
+  exportId: EXPORT_ID,
 };
 
 const exportDetails = {
@@ -213,6 +215,10 @@ describe('Download all submissions page', () => {
         expect(
           screen.getAllByText(sampleUnavailableSubmission.name).length
         ).toEqual(unavailableSubmissionsList.length);
+      });
+
+      it('Should render the View link for each unavailable submission', () => {
+        expect(screen.getAllByText('View').length).toEqual(11);
       });
 
       it('Renders the unavailable submissions banner', () => {

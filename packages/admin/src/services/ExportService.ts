@@ -21,4 +21,18 @@ const getExportDetails = async (
   return response.data;
 };
 
-export { getExportDetails };
+const getFailedExportDetails = async (
+  exportId: string,
+  submissionId: string,
+  sessionCookie: string
+) => {
+  const response = await axios.get(
+    `${BASE_SUBMISSIONS_URL}/${exportId}/submissions/${submissionId}/details`,
+    {
+      ...axiosSessionConfig(sessionCookie),
+    }
+  );
+  return response.data;
+};
+
+export { getExportDetails, getFailedExportDetails };

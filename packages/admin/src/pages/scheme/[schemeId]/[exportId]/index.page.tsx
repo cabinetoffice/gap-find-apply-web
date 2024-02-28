@@ -83,6 +83,8 @@ export const getServerSideProps = async ({
       availableSubmissionsTotalCount: availableSubmissionsTotalCount,
       unavailableSubmissionsTotalCount: unavailableSubmissionsTotalCount,
       unavailableSubmissions: unavailableSubmissions,
+      schemeId: schemeId,
+      exportId: exportId,
     },
   };
 };
@@ -96,6 +98,8 @@ export const CompletedSubmissions = ({
   unavailableSubmissionsTotalCount,
   unavailableSubmissions,
   superZipLocation,
+  schemeId,
+  exportId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const tableHeadColumns = [
     {
@@ -118,11 +122,8 @@ export const CompletedSubmissions = ({
           content: (
             <div className="govuk-!-text-align-right">
               <CustomLink
-                href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
-                  submission.s3key
-                )}`}
-                ariaLabel={`Download submission "${submission.name}"`}
-                excludeSubPath
+                href={`/scheme/${schemeId}/${exportId}/view/${submission.submissionId}`}
+                ariaLabel={`View submission "${submission.name}"`}
               >
                 View
               </CustomLink>
