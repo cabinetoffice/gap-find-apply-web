@@ -68,6 +68,7 @@ const getEditorsServerSideProps = async ({
   const { schemeId } = params as Record<string, string>;
   const sessionCookie = getSessionIdFromCookies(req);
   const userServiceJwt = getUserTokenFromCookies(req);
+  const queryParams = new URLSearchParams(req.url?.split('?')[1] ?? '');
 
   const isOwner = await isSchemeOwner(schemeId, sessionCookie);
 
@@ -91,6 +92,7 @@ const getEditorsServerSideProps = async ({
         sessionCookie,
         userServiceJwt,
       }),
+      newEditor: queryParams.get('newEditor'),
     },
   };
 };

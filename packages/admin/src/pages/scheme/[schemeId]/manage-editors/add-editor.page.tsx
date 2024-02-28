@@ -16,10 +16,11 @@ type PageBodyResponse = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { schemeId } = context.params as Record<string, string>;
+  const schemeName = decodeURIComponent(context.query.schemeName as string);
+
   const newEmailAddress = context.query.newEmailAddress
     ? decodeURIComponent(context.query.newEmailAddress as string)
     : null;
-  const schemeName = decodeURIComponent(context.query.schemeName as string);
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
     await addSchemeEditor(
@@ -28,13 +29,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       getUserTokenFromCookies(context.req),
       body.editorEmailAddress
     );
+    return body.editorEmailAddress;
   }
 
   async function fetchPageData() {
     return {
       schemeName,
-      prevEmailAddress: newEmailAddress,
       schemeId: schemeId ?? null,
+      editorEmailAddress: newEmailAddress,
     };
   }
 
@@ -48,7 +50,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     handleRequest,
     jwt: getSessionIdFromCookies(context.req),
     onErrorMessage: 'Failed adding new editor.',
-    onSuccessRedirectHref: `/schemes/${schemeId}/manage-editors/`,
+    onSuccessRedirectHref: (editorEmailAddress) => {
+      return `/scheme/${schemeId}/manage-editors?newEditor=${editorEmailAddress}`;
+    },
   });
 }
 
@@ -92,11 +96,7 @@ const AddEditorPage = ({
           <TextInput
             fieldName="editorEmailAddress"
             fieldErrors={fieldErrors}
-            defaultValue={
-              previousValues?.editorEmailAddress ??
-              pageData.prevEmailAddress ??
-              undefined
-            }
+            defaultValue={previousValues?.editorEmailAddress ?? undefined}
             textInputSubtype="email"
           />
 

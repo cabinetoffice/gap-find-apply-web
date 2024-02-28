@@ -1,5 +1,5 @@
 import InferProps from '../../../../types/InferProps';
-import { SummaryList, Row } from 'gap-web-ui';
+import { SummaryList, Row, ImportantBanner } from 'gap-web-ui';
 import Meta from '../../../../components/layout/Meta';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import {
@@ -36,14 +36,21 @@ const ManageEditors = ({
   editorRows,
   schemeName,
   schemeId,
+  newEditor,
 }: InferProps<typeof getServerSideProps>) => {
   const mappedTableRows = editorRows.map(formatEditorRow);
-
   return (
     <>
       <Meta title={`Grant overview - Manage Editors`} />
       <CustomLink href={`/scheme/${schemeId}`} isBackButton />
       <div className="govuk-grid-row govuk-!-padding-top-7">
+        {newEditor ? (
+          <ImportantBanner
+            bannerHeading="Success"
+            bannerContent={`${newEditor} has been added as an editor.`}
+            isSuccess
+          />
+        ) : null}
         <div className="govuk-grid-column-full govuk-!-margin-bottom-6">
           <span className="govuk-caption-l">{schemeName}</span>
           <h1 className="govuk-heading-l">Add or manage editors</h1>
@@ -74,7 +81,7 @@ const ManageEditors = ({
           <div className="govuk-button-group">
             <CustomLink
               isButton
-              href={`/scheme/${schemeId}/manage-editors/add`}
+              href={`/scheme/${schemeId}/manage-editors/add-editor?schemeName=${schemeName}`}
               ariaLabel="Add an editor"
             >
               Add an editor
