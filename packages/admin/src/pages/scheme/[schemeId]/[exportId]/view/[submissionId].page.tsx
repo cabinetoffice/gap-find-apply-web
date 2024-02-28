@@ -1,6 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
 import { getLoggedInUsersDetails } from '../../../../../services/UserService';
-import { getSubmissionBySubmissionId } from '../../../../../services/SubmissionsService';
 import InferProps from '../../../../../types/InferProps';
 import { generateErrorPageRedirect } from '../../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
@@ -8,13 +7,13 @@ import CustomLink from '../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../components/layout/Meta';
 import { QuestionRow } from './QuestionRow.component';
 import { SectionData } from '../../../../../types/SubmissionSummary';
+import { getFailedExportDetails } from '../../../../../services/ExportService';
 export const getServerSideProps = async ({
   req,
   res,
   query,
 }: GetServerSidePropsContext) => {
-  const { schemeId } = query as Record<string, string>;
-  const { submissionId } = query as Record<string, string>;
+  const { schemeId, exportId, submissionId } = query as Record<string, string>;
 
   const errorPageRedirect = generateErrorPageRedirect(
     'Something went wrong.',
@@ -27,14 +26,18 @@ export const getServerSideProps = async ({
   try {
     sessionCookie = await getSessionIdFromCookies(req);
     userDetails = await getLoggedInUsersDetails(sessionCookie);
-    submission = await getSubmissionBySubmissionId(submissionId, sessionCookie);
+    submission = await getFailedExportDetails(
+      exportId,
+      submissionId,
+      sessionCookie
+    );
   } catch (error) {
     return errorPageRedirect;
   }
 
   return {
     props: {
-      backButtonHref: `/scheme/${schemeId}/download-submissions`,
+      backButtonHref: `/scheme/${schemeId}/${exportId}`,
       csrfToken: res.getHeader('x-csrf-token') as string,
       userDetails,
       submission,

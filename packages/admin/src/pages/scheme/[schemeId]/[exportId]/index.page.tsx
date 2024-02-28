@@ -122,9 +122,8 @@ export const CompletedSubmissions = ({
           content: (
             <div className="govuk-!-text-align-right">
               <CustomLink
-                href={`/scheme/${schemeId}/${exportId}/view/${submission.id}`}
+                href={`/scheme/${schemeId}/${exportId}/view/${submission.submissionId}`}
                 ariaLabel={`View submission "${submission.name}"`}
-                excludeSubPath
               >
                 View
               </CustomLink>

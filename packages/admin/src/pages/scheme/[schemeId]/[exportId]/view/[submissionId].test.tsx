@@ -5,15 +5,15 @@ import SubmissionSummary, { getServerSideProps } from './[submissionId].page';
 import { render, screen } from '@testing-library/react';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 import { generateErrorPageRedirect } from '../../../../../utils/serviceErrorHelpers';
+import { getFailedExportDetails } from '../../../../../services/ExportService';
 
 jest.mock('../../../../../services/SubmissionsService');
 jest.mock('../../../../../services/UserService');
+jest.mock('../../../../../services/ExportService');
 jest.mock('../../../../../utils/session');
 jest.mock('../../../../../utils/serviceErrorHelpers');
 
-const mockGetSubmissionBySubmissionId = jest.mocked(
-  getSubmissionBySubmissionId
-);
+const mockGetFailedExportDetails = jest.mocked(getFailedExportDetails);
 const mockGetLoggedInUserDetails = jest.mocked(getLoggedInUsersDetails);
 const mockGetSessionIdFromCookies = jest.mocked(getSessionIdFromCookies);
 const mockGenerateErrorPageRedirect = jest.mocked(generateErrorPageRedirect);
@@ -76,6 +76,7 @@ const submission = {
 const context = {
   query: {
     schemeId: '123',
+    exportId: '456',
     submissionId: '12345678',
   },
   req: {
@@ -158,14 +159,14 @@ describe('getServerSideProps', () => {
 
   it('should return userDetails and submission', async () => {
     mockGetLoggedInUserDetails.mockResolvedValue(userDetails);
-    mockGetSubmissionBySubmissionId.mockResolvedValue(submission);
+    mockGetFailedExportDetails.mockResolvedValue(submission);
     mockGetSessionIdFromCookies.mockReturnValue('testJwt');
 
     const response = await getServerSideProps(context);
 
     expect(response).toEqual({
       props: {
-        backButtonHref: '/scheme/123/download-submissions',
+        backButtonHref: '/scheme/123/456',
         csrfToken: 'testCSRFToken',
         userDetails,
         submission,
@@ -173,7 +174,8 @@ describe('getServerSideProps', () => {
     });
     expect(getSessionIdFromCookies).toHaveBeenCalledWith(context.req);
     expect(getLoggedInUsersDetails).toHaveBeenCalledWith('testJwt');
-    expect(getSubmissionBySubmissionId).toHaveBeenCalledWith(
+    expect(getFailedExportDetails).toHaveBeenCalledWith(
+      '456',
       '12345678',
       'testJwt'
     );
