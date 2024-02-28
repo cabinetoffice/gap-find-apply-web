@@ -1,6 +1,7 @@
 name: Admin Promote to Prod Workflow
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
