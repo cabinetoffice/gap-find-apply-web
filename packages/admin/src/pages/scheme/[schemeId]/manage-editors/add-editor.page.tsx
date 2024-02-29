@@ -9,6 +9,7 @@ import {
 } from '../../../../utils/session';
 import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
 import { addSchemeEditor } from '../../../../services/SchemeEditorService';
+import { getGrantScheme } from '../../../../services/SchemeService';
 
 type PageBodyResponse = {
   editorEmailAddress: string;
@@ -16,7 +17,12 @@ type PageBodyResponse = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { schemeId } = context.params as Record<string, string>;
-  const schemeName = decodeURIComponent(context.query.schemeName as string);
+
+  const schemeName = context.query.schemeName
+    ? decodeURIComponent(context.query.schemeName as string)
+    : await getGrantScheme(schemeId, getSessionIdFromCookies(context.req)).then(
+        (scheme) => scheme.name
+      );
 
   const newEmailAddress = context.query.newEmailAddress
     ? decodeURIComponent(context.query.newEmailAddress as string)
