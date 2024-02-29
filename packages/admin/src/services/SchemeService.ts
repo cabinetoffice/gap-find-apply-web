@@ -120,22 +120,3 @@ export const schemeApplicationIsInternal = async (
   );
   return response.data;
 };
-
-export const addSchemeEditor = async (
-  schemeId: string,
-  sessionId: string,
-  userToken: string,
-  editorEmailAddress: string
-) => {
-  const response = await axios.post(
-    `${BASE_SCHEME_URL}/${schemeId}/editors`,
-    { editorEmailAddress },
-    {
-      withCredentials: true,
-      headers: {
-        Cookie: `SESSION=${sessionId};${process.env.JWT_COOKIE_NAME}=${userToken}`,
-      },
-    }
-  );
-  return response.data;
-};

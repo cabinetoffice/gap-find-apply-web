@@ -4,10 +4,10 @@ import { GetServerSidePropsContext } from 'next';
 import InferProps from '../../../../types/InferProps';
 import AddEditorPage, { getServerSideProps } from './add-editor.page';
 import { getPageProps } from '../../../../testUtils/unitTestHelpers';
-import { addSchemeEditor } from '../../../../services/SchemeService';
+import { addSchemeEditor } from '../../../../services/SchemeEditorService';
 import { parseBody } from '../../../../utils/parseBody';
 
-jest.mock('../../../../services/SchemeService');
+jest.mock('../../../../services/SchemeEditorService');
 jest.mock('../../../../utils/parseBody');
 
 describe('Manage Editors - Add an Editor', () => {

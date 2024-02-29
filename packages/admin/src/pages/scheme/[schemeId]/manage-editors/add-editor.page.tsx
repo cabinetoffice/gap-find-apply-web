@@ -8,7 +8,7 @@ import {
   getUserTokenFromCookies,
 } from '../../../../utils/session';
 import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
-import { addSchemeEditor } from '../../../../services/SchemeService';
+import { addSchemeEditor } from '../../../../services/SchemeEditorService';
 
 type PageBodyResponse = {
   editorEmailAddress: string;
@@ -22,20 +22,23 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     ? decodeURIComponent(context.query.newEmailAddress as string)
     : null;
 
-  async function handleRequest(body: PageBodyResponse, jwt: string) {
+  async function handleRequest(
+    { editorEmailAddress }: PageBodyResponse,
+    jwt: string
+  ) {
     await addSchemeEditor(
       schemeId,
       jwt,
       getUserTokenFromCookies(context.req),
-      body.editorEmailAddress
+      editorEmailAddress
     );
-    return body.editorEmailAddress;
+    return editorEmailAddress;
   }
 
   async function fetchPageData() {
     return {
       schemeName,
-      schemeId: schemeId ?? null,
+      schemeId: schemeId,
       editorEmailAddress: newEmailAddress,
     };
   }
