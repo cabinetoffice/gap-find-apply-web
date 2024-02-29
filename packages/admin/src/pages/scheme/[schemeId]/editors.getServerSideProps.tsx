@@ -92,7 +92,7 @@ const getEditorsServerSideProps = async ({
         sessionCookie,
         userServiceJwt,
       }),
-      newEditor: query['newEditor'],
+      newEditor: query['newEditor'] ?? null,
     },
   };
 };

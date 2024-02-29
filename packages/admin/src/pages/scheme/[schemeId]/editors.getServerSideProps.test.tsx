@@ -54,7 +54,7 @@ describe('getEditorsServerSideProps', () => {
           },
         ],
         schemeName: 'Test Scheme',
-        newEditor: undefined,
+        newEditor: null,
       },
     });
   });
