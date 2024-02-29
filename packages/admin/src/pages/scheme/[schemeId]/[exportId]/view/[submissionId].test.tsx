@@ -73,7 +73,14 @@ const submission = {
   ],
 };
 
+const SCHEME_ID = 'testSchemeId';
+const EXPORT_ID = 'testExportId';
+
 const context = {
+  params: {
+    schemeId: SCHEME_ID,
+    exportId: EXPORT_ID,
+  } as Record<string, string>,
   query: {
     schemeId: '123',
     exportId: '456',
@@ -89,8 +96,10 @@ const context = {
   },
 } as unknown as GetServerSidePropsContext;
 
+const backBtnUrl = `/scheme/${SCHEME_ID}/${EXPORT_ID}`;
+
 const propsWithAllValues = {
-  backButtonHref: '/scheme/123/download-submissions',
+  backButtonHref: backBtnUrl,
   csrfToken: 'csrf',
   userDetails: {
     firstName: 'John',
@@ -208,7 +217,7 @@ describe('SubmissionSummary', () => {
 
     expect(screen.getByRole('link', { name: 'Back' })).toHaveProperty(
       'href',
-      `http://localhost/apply/scheme/123/download-submissions`
+      `http://localhost/apply${backBtnUrl}`
     );
   });
 
@@ -235,5 +244,37 @@ describe('SubmissionSummary', () => {
     expect(screen.getByText('multiResponse 1,')).toBeInTheDocument();
     expect(screen.getByText('multiResponse 2,')).toBeInTheDocument();
     expect(screen.getByText('multiResponse 3')).toBeInTheDocument();
+  });
+
+  it('renders download section correctly if there are attachments to download', () => {
+    const attachmentsZipLocation = 'testZipLocation';
+    const propsWithAttachments = {
+      ...propsWithAllValues,
+      submission: { ...submission, attachmentsZipLocation },
+    };
+    render(<SubmissionSummary {...propsWithAttachments} />);
+
+    expect(screen.getByText('Download attachments')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'download a copy of any files attached to this application (ZIP).'
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText('Return to overview')).toHaveAttribute(
+      'href',
+      `/apply${backBtnUrl}`
+    );
+  });
+
+  it('does not render download section if there are no attachments to download', () => {
+    render(<SubmissionSummary {...propsWithAllValues} />);
+
+    expect(screen.queryByText('Download attachments')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        'download a copy of any files attached to this application (ZIP).'
+      )
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Return to overview')).not.toBeInTheDocument();
   });
 });
