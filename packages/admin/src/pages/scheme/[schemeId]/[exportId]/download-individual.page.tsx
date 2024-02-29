@@ -145,7 +145,8 @@ export const DownloadIndividualSubmissions = ({
               additionalQueryData={{}}
               itemsPerPage={10}
               totalItems={availableSubmissionsTotalCount}
-              itemCountMargin={true}
+              itemType="applications"
+              itemCountMargin={availableSubmissionsTotalCount > 10}
             />
           </div>
 
