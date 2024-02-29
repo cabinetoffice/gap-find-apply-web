@@ -21,7 +21,7 @@ const DownloadMessage = ({ count }: DownloadMessageProps) => {
       </div>
       <div className="govuk-notification-banner__content">
         <p className="govuk-notification-banner__heading">
-          Cannot download {count} applications
+          Cannot download {count} {count > 1 ? 'applications' : 'application'}
         </p>
         <p className="govuk-body">
           You can view a read-only copy of the applications that are affected in
