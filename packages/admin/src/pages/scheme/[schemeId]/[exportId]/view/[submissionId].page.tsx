@@ -33,6 +33,7 @@ export const getServerSideProps = async ({
       sessionCookie
     );
   } catch (error) {
+    console.log(error);
     return errorPageRedirect;
   }
 
@@ -96,6 +97,27 @@ const SubmissionSummary = ({
           })}
         </div>
       </div>
+
+      {submission.attachmentsZipLocation && (
+        <>
+          <h2 className="govuk-heading-m">Download attachments</h2>
+          <p className="govuk-body">
+            You can{' '}
+            <CustomLink
+              href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
+                submission.attachmentsZipLocation
+              )}`}
+              ariaLabel={`Download submission "${submission.name}"`}
+              excludeSubPath
+            >
+              download a copy of any files attached to this application (ZIP).
+            </CustomLink>
+          </p>
+          <CustomLink href={backButtonHref} isSecondaryButton>
+            Return to overview
+          </CustomLink>
+        </>
+      )}
     </>
   );
 };
