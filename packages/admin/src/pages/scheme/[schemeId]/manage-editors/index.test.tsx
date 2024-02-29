@@ -78,4 +78,34 @@ describe('ManageEditors', () => {
     expect(queryByText('Action 1')).not.toBeInTheDocument();
     expect(getByText('-')).toBeVisible();
   });
+
+  test('Banner visible when newEditor email in query param', () => {
+    const { getByText } = render(
+      <ManageEditors
+        editorRows={[]}
+        schemeName="Dummy Scheme"
+        schemeId="dummySchemeId"
+        newEditor="New Editor Name"
+      />
+    );
+
+    const importantBanner = getByText(
+      'New Editor Name has been added as an editor.'
+    );
+    expect(importantBanner).toBeVisible();
+  });
+
+  test('Banner not visible when newEditor email not in query param', () => {
+    const { queryByText } = render(
+      <ManageEditors
+        editorRows={[]}
+        schemeName="Dummy Scheme"
+        schemeId="dummySchemeId"
+      />
+    );
+
+    expect(
+      queryByText('New Editor Name has been added as an editor.')
+    ).not.toBeInTheDocument();
+  });
 });
