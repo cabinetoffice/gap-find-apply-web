@@ -5,24 +5,37 @@ import getConfig from 'next/config';
 import moment from 'moment';
 import AdvertStatusEnum from '../../../enums/AdvertStatus';
 
-const publishedFindAGrantLinkInformation = (
-  linkToAdvertInFindAGrant: string
-) => (
+type PublishedFindAGrantLinkInformationProps = {
+  linkToAdvertInFindAGrant?: string;
+  grantAdvertData: ValidAdvertData;
+  lastUpdatedByEmail: string;
+};
+
+const PublishedFindAGrantLinkInformation = ({
+  linkToAdvertInFindAGrant,
+  grantAdvertData,
+  lastUpdatedByEmail,
+}: PublishedFindAGrantLinkInformationProps) => (
   <div
     className="govuk-!-margin-bottom-6"
     data-cy="cy-published-advert-extra-information"
   >
     <p className="govuk-body">
-      An advert for this grant is live on Find a grant. The link for your advert
-      is below:
+      An advert for this grant is live on Find a grant.
     </p>
+
+    <LastUpdatedBy
+      lastUpdatedByEmail={lastUpdatedByEmail}
+      grantAdvertData={grantAdvertData}
+    />
+    <p className="govuk-body">The link for your advert is below:</p>
     <CustomLink
-      href={linkToAdvertInFindAGrant}
+      href={linkToAdvertInFindAGrant as string}
       customStyle="govuk-!-font-size-19 break-all-words"
       excludeSubPath
       dataCy="cy-link-to-advert-on-find"
     >
-      {linkToAdvertInFindAGrant}
+      {linkToAdvertInFindAGrant as string}
     </CustomLink>
   </div>
 );
@@ -65,7 +78,7 @@ const viewOrChangeLink = (
 const formatTimeStamp = (timestamp: string) => {
   return `on ${moment(timestamp).format('D MMMM YYYY')} at ${moment(
     timestamp
-  ).format('HH:mm')}`;
+  ).format('HH:mm A')}`;
 };
 
 type ValidAdvertData = Exclude<
@@ -106,6 +119,42 @@ const LastUpdatedBy = ({
   return <p className="govuk-body">{text}</p>;
 };
 
+const PublishedAdvertHeaderContent = ({
+  linkToAdvertInFindAGrant,
+  grantAdvertData,
+}: PublishedFindAGrantLinkInformationProps) => (
+  <>
+    <PublishedFindAGrantLinkInformation
+      linkToAdvertInFindAGrant={linkToAdvertInFindAGrant}
+      grantAdvertData={grantAdvertData}
+      lastUpdatedByEmail={grantAdvertData.lastUpdatedByEmail}
+    />
+    <p
+      className="govuk-body"
+      data-cy="cy-information-published-status-tag-line"
+    >
+      {informationForGrantAdvertStatus(grantAdvertData)}
+    </p>
+  </>
+);
+
+const UnpublishedAdvertHeaderContent = ({
+  grantAdvertData,
+}: PublishedFindAGrantLinkInformationProps) => (
+  <>
+    <p
+      className="govuk-body"
+      data-cy="cy-information-published-status-tag-line"
+    >
+      {informationForGrantAdvertStatus(grantAdvertData)}
+    </p>
+    <LastUpdatedBy
+      lastUpdatedByEmail={grantAdvertData.lastUpdatedByEmail}
+      grantAdvertData={grantAdvertData}
+    />
+  </>
+);
+
 const BuildAdvert = ({ schemeId, grantAdvert }: BuildAdvertProps) => {
   const { publicRuntimeConfig } = getConfig();
   const linkToAdvertInFindAGrant = `${publicRuntimeConfig.FIND_A_GRANT_URL}/grants/${grantAdvert?.data?.publishingInfo?.contentfulSlug}`;
@@ -123,29 +172,24 @@ const BuildAdvert = ({ schemeId, grantAdvert }: BuildAdvertProps) => {
       {grantAdvert.status === 200 && grantAdvert.data ? (
         <div className="govuk-!-margin-bottom-6">
           {grantAdvert.data.publishingInfo.grantAdvertStatus ===
-            AdvertStatusEnum.PUBLISHED &&
-            publishedFindAGrantLinkInformation(linkToAdvertInFindAGrant)}
+          AdvertStatusEnum.PUBLISHED ? (
+            <PublishedAdvertHeaderContent
+              lastUpdatedByEmail={grantAdvert.data.lastUpdatedByEmail}
+              linkToAdvertInFindAGrant={linkToAdvertInFindAGrant}
+              grantAdvertData={grantAdvert.data}
+            />
+          ) : (
+            <UnpublishedAdvertHeaderContent
+              grantAdvertData={grantAdvert.data}
+              lastUpdatedByEmail={grantAdvert.data.lastUpdatedByEmail}
+            />
+          )}
 
-          <div>
-            {grantAdvert.data.lastUpdatedByEmail && (
-              <LastUpdatedBy
-                lastUpdatedByEmail={grantAdvert.data.lastUpdatedByEmail || ''}
-                grantAdvertData={grantAdvert.data}
-              />
-            )}
-            <p
-              className="govuk-body"
-              data-cy="cy-information-published-status-tag-line"
-            >
-              {informationForGrantAdvertStatus(grantAdvert.data)}
-            </p>
-
-            {viewOrChangeLink(
-              advertLinkRedirectBasedOnStatus(grantAdvert.data),
-              schemeId,
-              grantAdvert.data.publishingInfo.grantAdvertId
-            )}
-          </div>
+          {viewOrChangeLink(
+            advertLinkRedirectBasedOnStatus(grantAdvert.data),
+            schemeId,
+            grantAdvert.data.publishingInfo.grantAdvertId
+          )}
         </div>
       ) : (
         <div>
