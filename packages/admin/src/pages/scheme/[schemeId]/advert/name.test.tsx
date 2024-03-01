@@ -57,7 +57,7 @@ describe('Application name page', () => {
       render(component);
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/scheme/12345'
+        '/apply/admin/scheme/12345'
       );
     });
 

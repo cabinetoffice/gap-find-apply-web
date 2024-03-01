@@ -9,17 +9,6 @@ import NextGetServerSidePropsResponse from '../../types/NextGetServerSidePropsRe
 import { merge } from 'lodash';
 import { parseBody } from '../../utils/parseBody';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
 jest.mock('../../utils/parseBody');
 jest.mock('../../services/SessionService');
 

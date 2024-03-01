@@ -2,30 +2,17 @@ import { render, screen } from '@testing-library/react';
 import { Pagination } from './Pagination';
 import '@testing-library/jest-dom';
 
-import { useRouter } from 'next/router';
-
-jest.mock('next/router', () => {
-  return {
-    useRouter: jest.fn(),
-  };
-});
-
 const mockProps = {
   itemsPerPage: 10,
   totalItems: 31,
   itemType: 'items',
+  searchParams: {
+    page: 1,
+  },
+  route: 'test',
 };
 
 describe('Testing Pagination component behaviour', () => {
-  const pushMock = jest.fn();
-  beforeAll(async () => {
-    useRouter.mockReturnValue({
-      pathname: 'test',
-      query: {},
-      push: pushMock,
-    });
-  });
-
   it.skip('check pagination with default value ie at page 1', async () => {
     render(<Pagination {...mockProps} />);
     expect(screen.queryByText(/Next/)).toBeInTheDocument();
@@ -33,15 +20,6 @@ describe('Testing Pagination component behaviour', () => {
   });
 
   it('check pagination when at page 2', async () => {
-    useRouter.mockReturnValue({
-      pathname: 'test',
-      query: {
-        skip: 10,
-        limit: 10,
-        page: 2,
-      },
-      push: pushMock,
-    });
     render(<Pagination {...mockProps} />);
     //TODO: We don't use this coponent
     // expect(screen.queryByText(/Next/)).toBeInTheDocument();
@@ -60,16 +38,7 @@ describe('Testing Pagination component behaviour', () => {
   });
 
   it('check pagination when at last page', async () => {
-    useRouter.mockReturnValue({
-      pathname: 'test',
-      query: {
-        skip: 30,
-        limit: 10,
-        page: 4,
-      },
-      push: pushMock,
-    });
-    render(<Pagination {...mockProps} />);
+    render(<Pagination {...mockProps} searchParams={{ page: 4 }} />);
     expect(screen.queryByText(/Next/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Previous/)).toBeInTheDocument();
     //TODO: We don't use this coponent
@@ -92,11 +61,6 @@ describe('Testing Pagination component behaviour', () => {
           )
       );
 
-    useRouter.mockReturnValue({
-      pathname: 'test',
-      query: {},
-      push: pushMock,
-    });
     render(<Pagination {...mockProps} totalItems={9} />);
     expect(getByTextContent('Showing 1 to 9 of 9 items')).toBeVisible();
   });
@@ -106,17 +70,10 @@ describe('Testing Pagination component behaviour', () => {
       itemsPerPage: 10,
       totalItems: 100,
       itemType: 'items',
+      searchParams: { page: 5 },
     };
-    useRouter.mockReturnValue({
-      pathname: 'test',
-      query: {
-        skip: 40,
-        limit: 10,
-        page: 5,
-      },
-      push: pushMock,
-    });
     render(<Pagination {...mockProps1} />);
+
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
@@ -139,16 +96,9 @@ describe('Testing Pagination component behaviour', () => {
       itemsPerPage: 10,
       totalItems: 49,
       itemType: 'items',
+      searchParams: { page: 1 },
     };
-    useRouter.mockReturnValue({
-      pathname: 'test',
-      query: {
-        skip: 0,
-        limit: 10,
-        page: 1,
-      },
-      push: pushMock,
-    });
+
     render(<Pagination {...mockProps2} />);
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
@@ -170,16 +120,8 @@ describe('Testing Pagination component behaviour', () => {
       totalItems: 99,
       itemType: 'items',
     };
-    useRouter.mockReturnValue({
-      pathname: 'test',
-      query: {
-        skip: 40,
-        limit: 10,
-        page: 5,
-      },
-      push: pushMock,
-    });
-    render(<Pagination {...mockProps_10Page} />);
+
+    render(<Pagination {...mockProps_10Page} searchParams={{ page: 5 }} />);
     // screen.debug();
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
@@ -206,7 +148,6 @@ describe('Testing Pagination component behaviour', () => {
 });
 
 describe('Testing Pagination component: Covering Edge cases for 7 set of pages, with first, last and middle as current Page', () => {
-  const pushMock = jest.fn();
   const mockProps_1 = {
     itemsPerPage: 10,
     totalItems: 68,
@@ -214,16 +155,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
   };
 
   it('In 7 set of pages, testing pagination list items when current page is 1', async () => {
-    useRouter.mockReturnValue({
-      pathname: 'test',
-      query: {
-        skip: 0,
-        limit: 10,
-        page: 1,
-      },
-      push: pushMock,
-    });
-    render(<Pagination {...mockProps_1} />);
+    render(<Pagination {...mockProps_1} searchParams={{ page: 1 }} />);
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
@@ -239,16 +171,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
   });
 
   it('In 7 set of pages, testing pagination list items when current page is 4', async () => {
-    useRouter.mockReturnValue({
-      pathname: 'test',
-      query: {
-        skip: 30,
-        limit: 10,
-        page: 4,
-      },
-      push: pushMock,
-    });
-    render(<Pagination {...mockProps_1} />);
+    render(<Pagination {...mockProps_1} searchParams={{ page: 4 }} />);
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`
@@ -267,16 +190,7 @@ describe('Testing Pagination component: Covering Edge cases for 7 set of pages, 
   });
 
   it('In 7 set of pages, testing pagination list items when current page is 7', async () => {
-    useRouter.mockReturnValue({
-      pathname: 'test',
-      query: {
-        skip: 30,
-        limit: 10,
-        page: 7,
-      },
-      push: pushMock,
-    });
-    render(<Pagination {...mockProps_1} />);
+    render(<Pagination {...mockProps_1} searchParams={{ page: 7 }} />);
     const items = screen.getAllByRole('listitem');
     const listItems = items.map((item) => item.textContent);
     expect(listItems).toMatchInlineSnapshot(`

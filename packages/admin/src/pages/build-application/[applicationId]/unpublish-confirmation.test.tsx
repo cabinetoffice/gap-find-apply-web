@@ -50,7 +50,7 @@ describe('Unpublish confirmation page', () => {
     render(<UnpublishConfirmationPage {...getProps()} />);
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
       'href',
-      '/apply/testBack'
+      '/apply/admin/testBack'
     );
   });
 

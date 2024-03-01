@@ -4,7 +4,11 @@ import EditRoleWithId, { getServerSideProps } from './change-roles.page';
 import { getContext } from 'gap-web-ui';
 import { getUserById } from '../../../../services/SuperAdminService';
 import { parseBody } from '../../../../utils/parseBody';
-import { Department, User, Role } from '../../types';
+import {
+  Department,
+  User,
+  Role,
+} from '../../../../app/super-admin-dashboard/types';
 
 jest.mock('../../../../services/SuperAdminService', () => ({
   getUserById: jest.fn(),

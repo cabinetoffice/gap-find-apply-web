@@ -74,7 +74,8 @@ export const buildPaginationArr = (current, last) => {
 };
 
 export const buildPaginationListItems = ({
-  router,
+  route,
+  searchParams,
   currentPage,
   itemsPerPage,
   paginationElementType,
@@ -82,8 +83,6 @@ export const buildPaginationListItems = ({
   ellipsisStartAt,
   additionalQueryData,
 }) => {
-  const { route, query = {} } = router;
-
   const PAGINATION_ELEMENTS_OBJECT = {
     // adding previous button
     [PAGINATION_PREVIOUS_ELEMENT]: (
@@ -92,7 +91,7 @@ export const buildPaginationListItems = ({
           href={{
             pathname: route,
             query: {
-              ...query,
+              ...searchParams,
               skip: (currentPage - 2) * itemsPerPage,
               limit: itemsPerPage,
               page: currentPage - 1,
@@ -124,7 +123,7 @@ export const buildPaginationListItems = ({
           href={{
             pathname: route,
             query: {
-              ...query,
+              ...searchParams,
               skip: currentPage * itemsPerPage,
               limit: itemsPerPage,
               page: currentPage + 1,
@@ -184,7 +183,7 @@ export const buildPaginationListItems = ({
           href={{
             pathname: route,
             query: {
-              ...query,
+              ...searchParams,
               skip: (currentPage - 1) * itemsPerPage,
               limit: itemsPerPage,
               page: currentPage,

@@ -15,7 +15,7 @@ describe('Rendering Privacy Notice', () => {
 
     const linkToNotice = screen.getByRole('link', { name: 'privacy notice' });
     expect(linkToNotice).toBeDefined();
-    expect(linkToNotice).toHaveAttribute('href', '/apply/info/privacy');
+    expect(linkToNotice).toHaveAttribute('href', '/apply/admin/info/privacy');
     //TODO: We don't use this coponent
     // expect(linkToNotice).toHaveAttribute('target', '_blank');
   });

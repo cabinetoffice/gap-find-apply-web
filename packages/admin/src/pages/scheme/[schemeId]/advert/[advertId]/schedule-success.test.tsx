@@ -43,7 +43,7 @@ describe('Advert - Schedule Success Page', () => {
         screen.getByRole('button', { name: 'Back to my account' })
       ).toHaveAttribute(
         'href',
-        '/apply/scheme/schemeId/advert/advertId/survey'
+        '/apply/admin/scheme/schemeId/advert/advertId/survey'
       );
     });
   });

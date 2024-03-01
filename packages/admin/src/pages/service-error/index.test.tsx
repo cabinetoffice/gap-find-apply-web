@@ -38,7 +38,7 @@ describe('Service error page render', () => {
   it('Should include redirect link and information', () => {
     render(serviceErrorPage);
     const link = screen.getByRole('link', { name: 'test redirect' });
-    expect(link).toHaveAttribute('href', '/apply/test/redirect');
+    expect(link).toHaveAttribute('href', '/apply/admin/test/redirect');
     screen.getByText('so we can test this page.');
   });
 

@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import Integrations, { Integration } from './index.page';
 import { render, screen } from '@testing-library/react';
 
-jest.mock('../Navigation');
+jest.mock('./Navigation');
 
 const getProps = ({ isConnected }: { isConnected: boolean }) => ({
   integrations: [

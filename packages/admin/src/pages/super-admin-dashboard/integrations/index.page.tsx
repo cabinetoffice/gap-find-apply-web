@@ -6,9 +6,9 @@ import { getIntegrations } from '../../../services/SuperAdminService';
 import InferProps from '../../../types/InferProps';
 import { fetchDataOrGetRedirect } from '../../../utils/fetchDataOrGetRedirect';
 import { getUserTokenFromCookies } from '../../../utils/session';
-import Navigation from '../Navigation';
 import styles from '../superadmin-dashboard.module.scss';
 import moment from 'moment';
+import Navigation from './Navigation';
 
 const FAILURE = 'FAILURE';
 
@@ -31,7 +31,9 @@ const Integrations = ({
 }: InferProps<typeof getServerSideProps>) => (
   <>
     <Meta title="Integrations" />
+
     <Navigation />
+
     <div className="govuk-grid-row govuk-!-padding-top-7">
       <div className="govuk-grid-column-full">
         <div className={`${styles.sidebar} govuk-grid-column-one-third`}>

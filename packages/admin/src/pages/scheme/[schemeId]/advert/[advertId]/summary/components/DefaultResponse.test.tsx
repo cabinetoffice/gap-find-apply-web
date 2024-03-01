@@ -33,7 +33,7 @@ const section: GrantAdvertSummaryPageSection = {
   pages: [page],
 };
 
-const actionLink = `/apply/scheme/${schemeId}/advert/${advertId}/grantDetails/${page.id}`;
+const actionLink = `/apply/admin/scheme/${schemeId}/advert/${advertId}/grantDetails/${page.id}`;
 
 describe('DefaultResponse component', () => {
   const getDefaultProps = (): Parameters<typeof DefaultResponse>[0] => ({

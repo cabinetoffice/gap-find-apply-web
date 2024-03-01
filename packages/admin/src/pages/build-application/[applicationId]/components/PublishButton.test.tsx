@@ -28,7 +28,7 @@ describe('PublicButton component', () => {
     const button = screen.getByRole('button', { name: 'Publish' });
     expect(button).toHaveAttribute(
       'href',
-      '/apply/build-application/testApplicationId/publish-confirmation'
+      '/apply/admin/build-application/testApplicationId/publish-confirmation'
     );
     expect(button).not.toHaveAttribute('disabled');
   });
@@ -55,7 +55,7 @@ describe('PublicButton component', () => {
     );
     expect(screen.getByRole('link', { name: 'Exit' })).toHaveAttribute(
       'href',
-      '/apply/scheme/testGrantSchemeId'
+      '/apply/admin/scheme/testGrantSchemeId'
     );
   });
 });

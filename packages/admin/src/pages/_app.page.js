@@ -1,3 +1,5 @@
+'use client';
+
 import App from 'next/app';
 import getConfig from 'next/config';
 import Script from 'next/script';

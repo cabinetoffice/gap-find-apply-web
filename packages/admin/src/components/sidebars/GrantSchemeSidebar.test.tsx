@@ -19,6 +19,6 @@ describe('Create Grant Scheme Sidebar', () => {
       screen.getByRole('button', {
         name: 'Add a grant',
       })
-    ).toHaveAttribute('href', '/apply/new-scheme/name');
+    ).toHaveAttribute('href', '/apply/admin/new-scheme/name');
   });
 });

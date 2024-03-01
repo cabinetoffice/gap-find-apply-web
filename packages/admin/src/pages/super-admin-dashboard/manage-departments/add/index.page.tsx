@@ -9,7 +9,7 @@ import {
   checkUserIsSuperAdmin,
   createDepartmentInformation,
 } from '../../../../services/SuperAdminService';
-import { Department } from '../../types';
+import { Department } from '../../../../app/super-admin-dashboard/types';
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
   const fetchPageData = async (jwt: string) => checkUserIsSuperAdmin(jwt);

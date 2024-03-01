@@ -1,5 +1,9 @@
 import UserDetails from '../../types/UserDetails';
 
+type AccountDetailsProps = {
+  userDetails: UserDetails;
+};
+
 const AccountDetails = ({ userDetails }: AccountDetailsProps) => {
   return (
     <div className="govuk-!-margin-bottom-9">
@@ -7,17 +11,21 @@ const AccountDetails = ({ userDetails }: AccountDetailsProps) => {
         <h1 className="govuk-heading-l" data-cy="cy_dashboardPageTitle">
           Manage a grant
         </h1>
+
         <p className="govuk-body">
           Use this service to add your grant details and build an application
           form for applicants to use.
         </p>
       </div>
+
       <h2 className="govuk-heading-m">Your details</h2>
+
       <dl className="govuk-summary-list govuk-summary-list--no-border">
         <div className="govuk-summary-list__row">
           <dt className="govuk-summary-list__key">Email</dt>
           <dd className="govuk-summary-list__value">{`${userDetails.emailAddress}`}</dd>
         </div>
+
         <div className="govuk-summary-list__row">
           <dt className="govuk-summary-list__key">Organisation</dt>
           <dd className="govuk-summary-list__value">
@@ -28,9 +36,5 @@ const AccountDetails = ({ userDetails }: AccountDetailsProps) => {
     </div>
   );
 };
-
-interface AccountDetailsProps {
-  userDetails: UserDetails;
-}
 
 export default AccountDetails;

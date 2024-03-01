@@ -308,7 +308,7 @@ describe('AdvertSummaryPage', () => {
 
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
       'href',
-      `/apply/scheme/${context.params.schemeId}/advert/${context.params.advertId}/section-overview`
+      `/apply/admin/scheme/${context.params.schemeId}/advert/${context.params.advertId}/section-overview`
     );
   });
 
@@ -317,7 +317,7 @@ describe('AdvertSummaryPage', () => {
 
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
       'href',
-      `/apply/scheme/${context.params.schemeId}/advert/${context.params.advertId}/section-overview`
+      `/apply/admin/scheme/${context.params.schemeId}/advert/${context.params.advertId}/section-overview`
     );
   });
 
@@ -508,7 +508,7 @@ describe('AdvertSummaryPage', () => {
     );
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
       'href',
-      `/apply/scheme/${context.params.schemeId}`
+      `/apply/admin/scheme/${context.params.schemeId}`
     );
   });
 
@@ -536,7 +536,7 @@ describe('AdvertSummaryPage', () => {
     );
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
       'href',
-      `/apply/scheme/${context.params.schemeId}`
+      `/apply/admin/scheme/${context.params.schemeId}`
     );
   });
 

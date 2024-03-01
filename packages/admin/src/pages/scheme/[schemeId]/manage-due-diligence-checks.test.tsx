@@ -136,7 +136,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
       );
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        `/apply/scheme/${SCHEME_ID}`
+        `/apply/admin/scheme/${SCHEME_ID}`
       );
     });
 
@@ -269,7 +269,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/apply/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsChecks?schemeId=${SCHEME_ID}&onlyValidationErrors=false`
+        `/apply/admin/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsChecks?schemeId=${SCHEME_ID}&onlyValidationErrors=false`
       );
     });
 
@@ -306,7 +306,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/apply/api/manage-due-diligence/v2/downloadAllDueDiligenceChecks?schemeId=${SCHEME_ID}&internal=true`
+        `/apply/admin/api/manage-due-diligence/v2/downloadAllDueDiligenceChecks?schemeId=${SCHEME_ID}&internal=true`
       );
     });
 
@@ -326,7 +326,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/apply/api/manage-due-diligence/v2/downloadAllDueDiligenceChecks?schemeId=${SCHEME_ID}&internal=false`
+        `/apply/admin/api/manage-due-diligence/v2/downloadAllDueDiligenceChecks?schemeId=${SCHEME_ID}&internal=false`
       );
     });
 
@@ -364,7 +364,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
 
       expect(
         screen.getByRole('button', { name: 'Back to grant summary' })
-      ).toHaveAttribute('href', `/apply/scheme/${SCHEME_ID}`);
+      ).toHaveAttribute('href', `/apply/admin/scheme/${SCHEME_ID}`);
     });
 
     it('Should not show the Spotlight error banner if no errors have been found', () => {
@@ -482,7 +482,7 @@ describe('scheme/[schemeId]/manage-due-diligence-checks', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/apply/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsChecks?schemeId=${SCHEME_ID}&onlyValidationErrors=true`
+        `/apply/admin/api/manage-due-diligence/v2/internal/downloadSpotlightSubmissionsChecks?schemeId=${SCHEME_ID}&onlyValidationErrors=true`
       );
     });
   });

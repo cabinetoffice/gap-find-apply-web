@@ -24,3 +24,9 @@ jest.mock('next/config', () => {
     }),
   };
 });
+
+jest.mock('next/headers', () => ({
+  cookies: () => ({
+    get: jest.fn().mockReturnValue({ value: 'test' }),
+  }),
+}));

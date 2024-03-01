@@ -10,7 +10,7 @@ import {
   getDepartment,
   updateDepartmentInformation,
 } from '../../../../../services/SuperAdminService';
-import { Department } from '../../../types';
+import { Department } from '../../../../../app/super-admin-dashboard/types';
 
 type PageBodyResponse = Omit<Department, 'id'>;
 

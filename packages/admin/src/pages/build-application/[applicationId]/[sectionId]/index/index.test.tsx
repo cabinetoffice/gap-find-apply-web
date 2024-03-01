@@ -239,7 +239,7 @@ describe('Edit section page', () => {
       render(<EditSectionPage {...getPageProps(getDefaultProps)} />);
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/build-application/some-application-id/dashboard'
+        '/apply/admin/build-application/some-application-id/dashboard'
       );
     });
 
@@ -263,15 +263,15 @@ describe('Edit section page', () => {
     it.each([
       [
         'Add a new question',
-        '/apply/build-application/some-application-id/testSectionId/question-content',
+        '/apply/admin/build-application/some-application-id/testSectionId/question-content',
       ],
       [
         'Delete section',
-        '/apply/build-application/some-application-id/testSectionId/delete-confirmation',
+        '/apply/admin/build-application/some-application-id/testSectionId/delete-confirmation',
       ],
       [
         'Save and go back',
-        '/apply/build-application/some-application-id/dashboard',
+        '/apply/admin/build-application/some-application-id/dashboard',
       ],
     ])('button %s should have href %s', (name, href) => {
       render(<EditSectionPage {...getPageProps(getDefaultProps)} />);

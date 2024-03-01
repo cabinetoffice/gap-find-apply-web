@@ -25,7 +25,10 @@ describe('Custom Link component', () => {
 
     it('Should render a link with the provided href', () => {
       render(<CustomLink {...props()} />);
-      expect(screen.getByRole('link')).toHaveAttribute('href', '/apply/test');
+      expect(screen.getByRole('link')).toHaveAttribute(
+        'href',
+        '/apply/admin/test'
+      );
     });
 
     it('Should render a link with the provided dataCy prop', () => {

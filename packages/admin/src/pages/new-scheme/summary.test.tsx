@@ -8,17 +8,6 @@ import { merge } from 'lodash';
 import { parseBody } from '../../utils/parseBody';
 import { createNewScheme } from '../../services/SchemeService';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
 jest.mock('../../utils/parseBody');
 jest.mock('../../services/SessionService');
 jest.mock('../../services/SchemeService');
@@ -42,7 +31,7 @@ describe('Scheme summary page', () => {
       const backButtonElement = screen.getByRole('link', { name: 'Back' });
       expect(backButtonElement).toHaveAttribute(
         'href',
-        '/apply/new-scheme/email'
+        '/apply/admin/new-scheme/email'
       );
     });
 

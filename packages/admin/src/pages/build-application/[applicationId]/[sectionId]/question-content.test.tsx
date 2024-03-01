@@ -58,7 +58,7 @@ describe('Question content page', () => {
       render(component);
       expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
         'href',
-        '/apply/dashboard'
+        '/apply/admin/dashboard'
       );
     });
 

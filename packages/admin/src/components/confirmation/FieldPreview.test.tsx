@@ -28,7 +28,7 @@ describe('FieldPreview page render', () => {
   it('Should render a link with link attributes provided', () => {
     render(component);
     const link = screen.getByRole('link', { name: 'Test link text' });
-    expect(link).toHaveAttribute('href', '/apply/test');
+    expect(link).toHaveAttribute('href', '/apply/admin/test');
   });
 
   it('Should add GDS responsive spacing to the field preview when provided', () => {

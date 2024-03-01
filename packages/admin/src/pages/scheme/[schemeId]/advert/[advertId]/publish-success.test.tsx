@@ -117,7 +117,7 @@ describe('Advert - Publish Success Page', () => {
     it("Should render 'Back to my account' button", () => {
       expect(
         screen.getByRole('button', { name: 'Back to my account' })
-      ).toHaveAttribute('href', '/apply/scheme/schemeId');
+      ).toHaveAttribute('href', '/apply/admin/scheme/schemeId');
     });
 
     it('Should render a link provided by server side props', () => {

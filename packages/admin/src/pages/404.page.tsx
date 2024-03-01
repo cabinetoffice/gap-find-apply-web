@@ -1,4 +1,3 @@
-import Link from '../components/custom-link/CustomLink';
 import Meta from '../components/layout/Meta';
 
 const Custom404 = () => {
