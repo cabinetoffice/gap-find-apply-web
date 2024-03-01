@@ -64,6 +64,7 @@ const getEditorRows = async ({
 const getEditorsServerSideProps = async ({
   params,
   req,
+  query,
 }: GetServerSidePropsContext) => {
   const { schemeId } = params as Record<string, string>;
   const sessionCookie = getSessionIdFromCookies(req);
@@ -91,6 +92,7 @@ const getEditorsServerSideProps = async ({
         sessionCookie,
         userServiceJwt,
       }),
+      newEditor: query['newEditor'] ?? null,
     },
   };
 };
