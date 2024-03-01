@@ -1,13 +1,13 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import Scheme from '../../types/Scheme';
-import Dashboard, { getServerSideProps } from './index.page';
-import { getUserSchemes } from '../../services/SchemeService';
-import { getLoggedInUsersDetails } from '../../services/UserService';
-import UserDetails from '../../types/UserDetails';
-import InferProps from '../../types/InferProps';
 import { Optional, expectObjectEquals, getContext, getProps } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
+import { getUserSchemes } from '../../services/SchemeService';
+import { getLoggedInUsersDetails } from '../../services/UserService';
+import InferProps from '../../types/InferProps';
+import Scheme from '../../types/Scheme';
+import UserDetails from '../../types/UserDetails';
+import Dashboard, { getServerSideProps } from './index.page';
 
 jest.mock('../../services/SchemeService');
 jest.mock('../../services/UserService');
@@ -19,13 +19,17 @@ const mockSchemeList: Scheme[] = [
     ggisReference: 'ggisReference',
     funderId: '24356',
     createdDate: '2011-12-10T14:48:00',
+    lastUpdatedDate: '2011-12-10T15:50:00',
+    lastUpdatedBy: 'test@email.com',
   },
   {
     name: 'Scheme name 2',
     schemeId: '456',
     ggisReference: 'ggisReference',
     funderId: '26456',
-    createdDate: '2011-10-10T14:48:00',
+    createdDate: '2011-10-10T16:48:00',
+    lastUpdatedDate: '2011-12-10T14:48:00',
+    lastUpdatedBy: 'test2@email.com',
   },
 ];
 
@@ -165,8 +169,8 @@ describe('Dashboard', () => {
     it('Should render the "manage your grant scheme table" scheme created at dates when there are schemes', () => {
       render(<Dashboard {...getProps(getDefaultProps)} />);
 
-      screen.getByRole('cell', { name: '10 December 2011' });
-      screen.getByRole('cell', { name: '10 October 2011' });
+      screen.getByRole('cell', { name: 'Saturday 10 December 2011, 2:48 pm' });
+      screen.getByRole('cell', { name: 'Monday 10 October 2011, 2:48 pm' });
     });
 
     it('Should render the "manage your grant scheme table" scheme view links when there are schemes', () => {
@@ -178,18 +182,6 @@ describe('Dashboard', () => {
       expect(
         screen.getByRole('link', { name: 'View scheme Scheme name 2' })
       ).toHaveAttribute('href', '/apply/scheme/456');
-    });
-
-    it('Should render a View all schemes link to the schemes page when there are schemes', () => {
-      render(<Dashboard {...getProps(getDefaultProps)} />);
-
-      const viewAllSchemesElement = screen.getByRole('link', {
-        name: 'View all grants',
-      });
-      expect(viewAllSchemesElement).toHaveAttribute(
-        'href',
-        '/apply/scheme-list'
-      );
     });
 
     it('Should NOT render the "create new grant scheme" section when there are schemes', () => {

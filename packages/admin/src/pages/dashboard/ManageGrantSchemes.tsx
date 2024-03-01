@@ -1,4 +1,3 @@
-import CustomLink from '../../components/custom-link/CustomLink';
 import Table from '../../components/table/Table';
 import Scheme from '../../types/Scheme';
 import { generateSchemeTableRows } from '../scheme-list/index.page';
@@ -12,20 +11,13 @@ const ManageGrantSchemes = ({ schemes }: ManageGrantSchemesProps) => {
         tableClassName="table-thead-bottom-border"
         tableCaptionClassName="govuk-table__caption--m"
         tableHeadColumns={[
-          { name: 'Name' },
-          { name: 'Date created' },
-          { name: 'Action', classNames: 'govuk-visually-hidden' },
+          { name: 'Grant' },
+          { name: 'Created' },
+          { name: 'Last Updated' },
+          { name: 'Updated By' },
         ]}
         rows={schemeTableRows}
       />
-
-      <CustomLink
-        href="/scheme-list"
-        customStyle="govuk-!-font-size-19"
-        dataCy="cy_SchemeListButton"
-      >
-        View all grants
-      </CustomLink>
     </div>
   ) : (
     <div data-testid="create-new-grant-scheme-section">

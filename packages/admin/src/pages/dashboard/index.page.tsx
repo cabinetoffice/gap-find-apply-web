@@ -1,16 +1,15 @@
+import { ImportantBanner } from 'gap-web-ui';
+import { GetServerSidePropsContext } from 'next';
 import Meta from '../../components/layout/Meta';
-import AccountDetails from './AccountDetails';
-import ManageGrantSchemes from './ManageGrantSchemes';
 import { getUserSchemes } from '../../services/SchemeService';
-import Pagination from '../../types/Pagination';
 import { getLoggedInUsersDetails } from '../../services/UserService';
+import InferProps from '../../types/InferProps';
+import Pagination from '../../types/Pagination';
 import UserDetails from '../../types/UserDetails';
 import { getSessionIdFromCookies } from '../../utils/session';
-import { GetServerSidePropsContext } from 'next';
-import CustomLink from '../../components/custom-link/CustomLink';
-import InferProps from '../../types/InferProps';
-import { ImportantBanner } from 'gap-web-ui';
 import Navigation from '../super-admin-dashboard/Navigation';
+import AccountDetails from './AccountDetails';
+import ManageGrantSchemes from './ManageGrantSchemes';
 
 const FAILED = 'FAILED';
 const SUCCEEDED = 'SUCCEEDED';
@@ -20,7 +19,7 @@ export const getServerSideProps = async ({
   query,
 }: GetServerSidePropsContext) => {
   const paginationParams: Pagination = {
-    paginate: true,
+    paginate: false,
     page: 0,
     size: 2,
     sort: 'createdDate,DESC',
@@ -82,17 +81,10 @@ const Dashboard = ({
       {isTechSupportUser && <Navigation isSuperAdminNav={false}></Navigation>}
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <Meta title="Dashboard - Manage a grant" />
-        <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+        <div className="govuk-grid-column-full govuk-!-margin-bottom-6">
           {bannerProps && <ImportantBanner {...formattedBannerProps} />}
           <AccountDetails userDetails={userDetails} />
           <ManageGrantSchemes schemes={schemes} />
-          <CustomLink
-            href="/new-scheme/name"
-            isButton
-            dataCy="cy_addAGrantButton"
-          >
-            Add a grant
-          </CustomLink>
         </div>
       </div>
     </>

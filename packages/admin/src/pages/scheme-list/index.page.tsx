@@ -1,8 +1,6 @@
+import moment from 'moment';
 import { GetServerSideProps } from 'next';
 import CustomLink from '../../components/custom-link/CustomLink';
-import Meta from '../../components/layout/Meta';
-import GrantSchemeSidebar from '../../components/sidebars/GrantSchemeSidebar';
-import Table from '../../components/table/Table';
 import { getUserSchemes } from '../../services/SchemeService';
 import Scheme from '../../types/Scheme';
 import { getSessionIdFromCookies } from '../../utils/session';
@@ -27,69 +25,28 @@ export const generateSchemeTableRows = ({ schemes }: SchemesProps) => {
         dataCy={`cy_linkToScheme_${scheme.name}`}
         ariaLabel={`View scheme ${scheme.name}`}
       >
-        View
+        {scheme.name}
       </CustomLink>
-    );
-    const formattedDate = new Date(scheme.createdDate).toLocaleDateString(
-      'en-UK',
-      { day: 'numeric', month: 'long', year: 'numeric' }
     );
 
     return {
       cells: [
         {
-          content: scheme.name,
+          content: schemeLink,
         },
-        { content: formattedDate },
-        { content: schemeLink },
+        { content: dateFormatter(scheme.createdDate) },
+        { content: dateFormatter(scheme.lastUpdatedDate) },
+        { content: scheme.lastUpdatedBy },
       ],
     };
   });
 };
 
-const SchemeList = ({ schemes }: SchemesProps) => {
-  const schemeTableRows = generateSchemeTableRows({ schemes });
-  return (
-    <>
-      <CustomLink
-        href="/dashboard"
-        dataCy="cy_schemeListBackButton"
-        isBackButton
-      />
-
-      <div className="govuk-grid-row govuk-!-padding-top-7">
-        <Meta title="Grant scheme list - Manage a grant" />
-
-        <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-          <h1 className="govuk-heading-l" data-cy="cy_schemeListingPageTitle">
-            All grants
-          </h1>
-
-          <p className="govuk-body" data-cy="cy_schemeListingPageDescription">
-            The list below shows all of the grants for your account.
-          </p>
-
-          <Table
-            rows={schemeTableRows}
-            tableName="Schemes table"
-            tableClassName="table-thead-bottom-border"
-            tableCaptionClassName="govuk-visually-hidden"
-            tableHeadColumns={[
-              { name: 'Scheme name' },
-              { name: 'Date created' },
-              { name: 'Action', classNames: 'govuk-visually-hidden' },
-            ]}
-          />
-        </div>
-
-        <GrantSchemeSidebar />
-      </div>
-    </>
-  );
-};
+export function dateFormatter(date: string) {
+  const utcDate = moment(date).utc();
+  return moment(utcDate).local().format('dddd D MMMM YYYY, h:mm a');
+}
 
 interface SchemesProps {
   schemes: Scheme[];
 }
-
-export default SchemeList;
