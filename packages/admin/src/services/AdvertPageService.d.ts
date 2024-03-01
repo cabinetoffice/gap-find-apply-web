@@ -68,15 +68,20 @@ export type getAdvertStatusBySchemeIdResponse = {
 
 export type getAdvertPublishInformationBySchemeIdResponse = {
   status: number;
-  data?: {
-    grantAdvertId: string;
-    grantAdvertStatus: grantAdvertStatus;
-    contentfulSlug: string | null;
-    openingDate: string | null;
-    closingDate: string | null;
-    firstPublishedDate: string | null;
-    lastUnpublishedDate: string | null;
-    unpublishedDate: string | null;
+  data: null | {
+    lastUpdatedByEmail: string;
+    publishingInfo: {
+      grantAdvertId: string;
+      grantAdvertStatus: grantAdvertStatus;
+      contentfulSlug: string | null;
+      openingDate: string | null;
+      closingDate: string | null;
+      firstPublishedDate: string | null;
+      lastUnpublishedDate: string | null;
+      unpublishedDate: string | null;
+      lastPublishedDate: string | null;
+      lastUpdated: string | null;
+    };
   };
 };
 

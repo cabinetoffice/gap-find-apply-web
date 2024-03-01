@@ -27,25 +27,23 @@ const publishedFindAGrantLinkInformation = (
   </div>
 );
 
-const informationForGrantAdvertStatus = (
-  grantAdvertData: getAdvertPublishInformationBySchemeIdResponse
-) => {
-  const scheduledDate = moment(grantAdvertData?.data?.openingDate)
-    .utc()
-    .format('D MMMM YYYY');
-  return grantAdvertData?.data?.grantAdvertStatus === AdvertStatusEnum.PUBLISHED
-    ? 'You can make changes to your advert, or unpublish it, here:'
-    : grantAdvertData?.data?.grantAdvertStatus === AdvertStatusEnum.SCHEDULED
+const informationForGrantAdvertStatus = ({
+  publishingInfo: { openingDate, grantAdvertStatus },
+}: ValidAdvertData) => {
+  const scheduledDate = moment(openingDate).utc().format('D MMMM YYYY');
+  return grantAdvertStatus === AdvertStatusEnum.PUBLISHED
+    ? 'You can make changes to your advert or unpublish it here:'
+    : grantAdvertStatus === AdvertStatusEnum.SCHEDULED
     ? `Your advert is scheduled to be published on ${scheduledDate}`
     : 'You have created an advert, but it is not live on Find a grant';
 };
 
-const advertLinkRedirectBasedOnStatus = (
-  grantAdvertData: getAdvertPublishInformationBySchemeIdResponse
-) => {
-  return grantAdvertData?.data?.grantAdvertStatus === AdvertStatusEnum.PUBLISHED
+const advertLinkRedirectBasedOnStatus = ({
+  publishingInfo: { grantAdvertStatus },
+}: ValidAdvertData) => {
+  return grantAdvertStatus === AdvertStatusEnum.PUBLISHED
     ? 'summary'
-    : grantAdvertData?.data?.grantAdvertStatus === AdvertStatusEnum.SCHEDULED
+    : grantAdvertStatus === AdvertStatusEnum.SCHEDULED
     ? 'summary'
     : 'section-overview';
 };
@@ -64,9 +62,54 @@ const viewOrChangeLink = (
   </CustomLink>
 );
 
-const BuildAdvert = ({ schemeId, grantAdvertData }: BuildAdvertProps) => {
+const formatTimeStamp = (timestamp: string) => {
+  return `on ${moment(timestamp).format('D MMMM YYYY')} at ${moment(
+    timestamp
+  ).format('HH:mm')}`;
+};
+
+type ValidAdvertData = Exclude<
+  getAdvertPublishInformationBySchemeIdResponse['data'],
+  null
+>;
+
+type GetLastUpdatedByText = (
+  lastUpdatedByEmail: string,
+  publishingInfo: ValidAdvertData['publishingInfo']
+) => string;
+
+const getLastUpdatedByText: GetLastUpdatedByText = (
+  lastUpdatedByEmail: string,
+  { lastUpdated, grantAdvertStatus }
+) => {
+  const lastModifiedString = formatTimeStamp(lastUpdated as string);
+  if (grantAdvertStatus === AdvertStatusEnum.PUBLISHED)
+    return `It was published by ${lastUpdatedByEmail} ${lastModifiedString}`;
+
+  if (grantAdvertStatus === AdvertStatusEnum.SCHEDULED)
+    return `Your advert was scheduled to be published ${lastModifiedString} by ${lastUpdatedByEmail}`;
+
+  return `It was last edited by ${lastUpdatedByEmail} ${lastModifiedString}`;
+};
+
+const LastUpdatedBy = ({
+  lastUpdatedByEmail,
+  grantAdvertData,
+}: {
+  lastUpdatedByEmail: string;
+  grantAdvertData: ValidAdvertData;
+}) => {
+  const text = getLastUpdatedByText(
+    lastUpdatedByEmail,
+    grantAdvertData.publishingInfo
+  );
+  return <p className="govuk-body">{text}</p>;
+};
+
+const BuildAdvert = ({ schemeId, grantAdvert }: BuildAdvertProps) => {
   const { publicRuntimeConfig } = getConfig();
-  const linkToAdvertInFindAGrant = `${publicRuntimeConfig.FIND_A_GRANT_URL}/grants/${grantAdvertData?.data?.contentfulSlug}`;
+  const linkToAdvertInFindAGrant = `${publicRuntimeConfig.FIND_A_GRANT_URL}/grants/${grantAdvert?.data?.publishingInfo?.contentfulSlug}`;
+
   return (
     <>
       <h2
@@ -77,23 +120,30 @@ const BuildAdvert = ({ schemeId, grantAdvertData }: BuildAdvertProps) => {
         Grant advert
       </h2>
 
-      {grantAdvertData?.status === 200 ? (
+      {grantAdvert.status === 200 && grantAdvert.data ? (
         <div className="govuk-!-margin-bottom-6">
-          {grantAdvertData?.data?.grantAdvertStatus ===
+          {grantAdvert.data.publishingInfo.grantAdvertStatus ===
             AdvertStatusEnum.PUBLISHED &&
             publishedFindAGrantLinkInformation(linkToAdvertInFindAGrant)}
 
           <div>
+            {grantAdvert.data.lastUpdatedByEmail && (
+              <LastUpdatedBy
+                lastUpdatedByEmail={grantAdvert.data.lastUpdatedByEmail || ''}
+                grantAdvertData={grantAdvert.data}
+              />
+            )}
             <p
               className="govuk-body"
               data-cy="cy-information-published-status-tag-line"
             >
-              {informationForGrantAdvertStatus(grantAdvertData)}
+              {informationForGrantAdvertStatus(grantAdvert.data)}
             </p>
+
             {viewOrChangeLink(
-              advertLinkRedirectBasedOnStatus(grantAdvertData),
+              advertLinkRedirectBasedOnStatus(grantAdvert.data),
               schemeId,
-              grantAdvertData?.data?.grantAdvertId
+              grantAdvert.data.publishingInfo.grantAdvertId
             )}
           </div>
         </div>
@@ -117,7 +167,7 @@ const BuildAdvert = ({ schemeId, grantAdvertData }: BuildAdvertProps) => {
 
 type BuildAdvertProps = {
   schemeId: Scheme['schemeId'];
-  grantAdvertData: getAdvertPublishInformationBySchemeIdResponse;
+  grantAdvert: getAdvertPublishInformationBySchemeIdResponse;
 };
 
 export default BuildAdvert;

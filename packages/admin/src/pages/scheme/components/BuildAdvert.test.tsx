@@ -8,19 +8,24 @@ import {
 import { getPageProps } from '../../../testUtils/unitTestHelpers';
 import AdvertStatusEnum from '../../../enums/AdvertStatus';
 
-describe('BuildAdvert', () => {
+describe('BuildAdvert component', () => {
   const getDefaultProps = () =>
     ({
       status: 200,
       data: {
-        grantAdvertId: '2476958a-c9ab-447b-8b48-8b34b87dee0c',
-        grantAdvertStatus: 'SCHEDULED',
-        contentfulSlug: 'some-contentful-slug',
-        openingDate: '2023-03-30T23:01:00Z',
-        closingDate: null,
-        firstPublishedDate: null,
-        lastUnpublishedDate: null,
-        unpublishedDate: null,
+        lastUpdatedByEmail: 'my-email',
+        publishingInfo: {
+          grantAdvertId: '2476958a-c9ab-447b-8b48-8b34b87dee0c',
+          grantAdvertStatus: 'SCHEDULED',
+          contentfulSlug: 'some-contentful-slug',
+          openingDate: '2023-03-30T23:01:00Z',
+          closingDate: null,
+          firstPublishedDate: null,
+          lastPublishedDate: null,
+          lastUpdated: '2023-03-30T23:01:00Z',
+          lastUnpublishedDate: null,
+          unpublishedDate: null,
+        },
       },
     } as getAdvertPublishInformationBySchemeIdResponse);
   const grantAdvertId = getDefaultProps();
@@ -28,13 +33,14 @@ describe('BuildAdvert', () => {
   describe('BuildAdvert - no grant advert', () => {
     const dummyGrantAdvertDataWithNoAdvert: getAdvertPublishInformationBySchemeIdResponse =
       {
+        data: null,
         status: 404,
       };
     beforeEach(() => {
       render(
         <BuildAdvert
           schemeId="12345"
-          grantAdvertData={dummyGrantAdvertDataWithNoAdvert}
+          grantAdvert={dummyGrantAdvertDataWithNoAdvert}
         />
       );
     });
@@ -59,8 +65,10 @@ describe('BuildAdvert', () => {
       render(
         <BuildAdvert
           schemeId="12345"
-          grantAdvertData={getPageProps(getDefaultProps, {
-            data: { grantAdvertStatus: AdvertStatusEnum.DRAFT },
+          grantAdvert={getPageProps(getDefaultProps, {
+            data: {
+              publishingInfo: { grantAdvertStatus: AdvertStatusEnum.DRAFT },
+            },
           })}
         />
       );
@@ -69,6 +77,12 @@ describe('BuildAdvert', () => {
     it('Should render correct section title', () => {
       screen.getByRole('heading', { name: 'Grant advert' });
     });
+
+    expect(
+      screen.queryByText(
+        'It was published by my-email on 31 March 2023 at 00:01'
+      )
+    ).toBeNull();
 
     it('Should render section description', () => {
       screen.getByText(
@@ -81,7 +95,7 @@ describe('BuildAdvert', () => {
         screen.getByRole('link', { name: 'View or change your advert' })
       ).toHaveAttribute(
         'href',
-        `/apply/scheme/12345/advert/${grantAdvertId?.data?.grantAdvertId}/section-overview`
+        `/apply/scheme/12345/advert/${grantAdvertId?.data?.publishingInfo.grantAdvertId}/section-overview`
       );
     });
   });
@@ -91,8 +105,12 @@ describe('BuildAdvert', () => {
       render(
         <BuildAdvert
           schemeId="12345"
-          grantAdvertData={getPageProps(getDefaultProps, {
-            data: { grantAdvertStatus: AdvertStatusEnum.PUBLISHED },
+          grantAdvert={getPageProps(getDefaultProps, {
+            data: {
+              publishingInfo: {
+                grantAdvertStatus: AdvertStatusEnum.PUBLISHED,
+              },
+            },
           })}
         />
       );
@@ -120,8 +138,13 @@ describe('BuildAdvert', () => {
     });
 
     it('Should render a description to edit a grant', () => {
+      expect(
+        screen.getByText(
+          'It was published by my-email on 31 March 2023 at 00:01'
+        )
+      ).toBeVisible();
       screen.getByText(
-        'You can make changes to your advert, or unpublish it, here:'
+        'You can make changes to your advert or unpublish it here:'
       );
     });
 
@@ -130,7 +153,7 @@ describe('BuildAdvert', () => {
         screen.getByRole('link', { name: 'View or change your advert' })
       ).toHaveAttribute(
         'href',
-        `/apply/scheme/12345/advert/${grantAdvertId?.data?.grantAdvertId}/summary`
+        `/apply/scheme/12345/advert/${grantAdvertId?.data?.publishingInfo.grantAdvertId}/summary`
       );
     });
   });
@@ -140,16 +163,21 @@ describe('BuildAdvert', () => {
       render(
         <BuildAdvert
           schemeId="12345"
-          grantAdvertData={getPageProps(getDefaultProps)}
+          grantAdvert={getPageProps(getDefaultProps)}
         />
       );
     });
 
     it('Should render correct section title', () => {
       screen.getByRole('heading', { name: 'Grant advert' });
+      expect(
+        screen.getByText(
+          'Your advert was scheduled to be published on 31 March 2023 at 00:01 by my-email'
+        )
+      ).toBeVisible();
     });
 
-    it.only('Should render a description for the scheduled grant', () => {
+    it('Should render a description for the scheduled grant', () => {
       screen.getByText(
         'Your advert is scheduled to be published on 30 March 2023'
       );
@@ -160,7 +188,7 @@ describe('BuildAdvert', () => {
         screen.getByRole('link', { name: 'View or change your advert' })
       ).toHaveAttribute(
         'href',
-        `/apply/scheme/12345/advert/${grantAdvertId?.data?.grantAdvertId}/summary`
+        `/apply/scheme/12345/advert/${grantAdvertId?.data?.publishingInfo.grantAdvertId}/summary`
       );
     });
   });
@@ -179,25 +207,17 @@ describe('BuildAdvert', () => {
       render(
         <BuildAdvert
           schemeId="12345"
-          grantAdvertData={getPageProps(getDefaultProps)}
+          grantAdvert={getPageProps(getDefaultProps)}
         />
       );
     });
 
-    it('Should render a description for the published grant', () => {
-      screen.getByText('');
-    });
-
-    it('Should render a link to view advert on Find a grant', () => {
+    it('Should not render a link to view advert on Find a grant', () => {
       expect(
-        screen.getByRole('link', {
+        screen.queryByRole('link', {
           name: 'https://www.find-government-grants.service.gov.uk/grants/some-contentful-slug',
         })
-      ).not.toBeDefined();
-    });
-
-    it('Should render a description to edit a grant', () => {
-      screen.getByText('');
+      ).toBeNull();
     });
 
     it('Should render a "View or change your advert" link', () => {

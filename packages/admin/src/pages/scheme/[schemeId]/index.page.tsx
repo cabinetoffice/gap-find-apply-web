@@ -13,7 +13,10 @@ import FindApplicationFormStatsResponse from '../../../types/FindApplicationForm
 import InferProps from '../../../types/InferProps';
 import Scheme from '../../../types/Scheme';
 import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
-import { getSessionIdFromCookies } from '../../../utils/session';
+import {
+  getSessionIdFromCookies,
+  getUserTokenFromCookies,
+} from '../../../utils/session';
 import BuildAdvert from '../components/BuildAdvert';
 import BuildApplicationForm from '../components/BuildApplicationForm';
 import SchemeApplications from '../components/SchemeApplications';
@@ -70,6 +73,7 @@ export const getServerSideProps = async ({
   try {
     grantAdvertPublishData = await getGrantAdvertPublishInformationBySchemeId(
       sessionCookie,
+      getUserTokenFromCookies(req),
       schemeId
     );
   } catch (err) {
@@ -80,7 +84,7 @@ export const getServerSideProps = async ({
         '/dashboard'
       );
     }
-    grantAdvertPublishData = { status: 404 };
+    grantAdvertPublishData = { status: 404, data: null };
   }
 
   return {
@@ -163,7 +167,7 @@ const ViewScheme = ({
           {enabledAdBuilder === 'enabled' && (
             <BuildAdvert
               schemeId={scheme.schemeId}
-              grantAdvertData={grantAdvertPublishData}
+              grantAdvert={grantAdvertPublishData}
             />
           )}
 
