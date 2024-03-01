@@ -26,7 +26,7 @@ export default async function QuestionPageGetServerSideProps<
   K extends FetchPageData,
   V
 >(props: QuestionPageGetServerSidePropsType<T, K, V>) {
-  const { context, fetchPageData, jwt, isEdit = false } = props;
+  const { context, fetchPageData, jwt } = props;
   const { res, resolvedUrl } = context;
 
   const pageData = await fetchAndHandlePageData(
@@ -58,7 +58,6 @@ export default async function QuestionPageGetServerSideProps<
       fieldErrors,
       pageData,
       previousValues,
-      isEdit,
     },
   };
 }

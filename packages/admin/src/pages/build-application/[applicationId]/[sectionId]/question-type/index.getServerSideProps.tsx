@@ -210,6 +210,7 @@ export const getServerSideProps = async (
       backButtonHref: questionId
         ? `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`
         : `/build-application/${applicationId}/${sectionId}/question-content`,
+      isEdit: questionId !== undefined,
     };
   };
 
@@ -223,6 +224,5 @@ export const getServerSideProps = async (
     } the question.`,
     handleRequest,
     jwt: sessionId,
-    isEdit: questionId !== undefined,
   });
 };
