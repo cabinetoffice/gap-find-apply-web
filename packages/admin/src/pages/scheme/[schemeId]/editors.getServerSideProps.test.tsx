@@ -7,10 +7,11 @@ import {
   isSchemeOwner,
 } from '../../../services/SchemeEditorService';
 
-const mockGetServerSidePropsContext = (params = {}, req = {}) =>
+const mockGetServerSidePropsContext = (params = {}, req = {}, query = {}) =>
   ({
     params,
     req,
+    query,
   } as unknown as GetServerSidePropsContext);
 
 jest.mock('../../../utils/session');
@@ -53,6 +54,7 @@ describe('getEditorsServerSideProps', () => {
           },
         ],
         schemeName: 'Test Scheme',
+        newEditor: null,
       },
     });
   });
