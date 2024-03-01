@@ -41,10 +41,6 @@ const getContext = (overrides: any = {}) =>
       query: {
         page: '1',
       } as any,
-      res: {
-        getHeader: () => 'testCSRFToken',
-      },
-      resolvedUrl: '/testResolvedURL',
     } as unknown as GetServerSidePropsContext,
     overrides
   );
@@ -63,8 +59,6 @@ const sampleUnavailableSubmission = {
 const unavailableSubmissionsList = Array(11).fill(sampleUnavailableSubmission);
 
 const customProps = {
-  formAction: '',
-  csrfToken: 'testCSRFToken',
   schemeName: schemeName,
   individualApplicationsHref: '/download-individual',
   availableSubmissionsTotalCount: defaultAvailableCount,
@@ -97,7 +91,7 @@ describe('Download all submissions page', () => {
       });
 
       it('Should render the page title', () => {
-        screen.getByText('Applications submitted');
+        screen.getByText('Applications available to download');
       });
 
       it('Should render the grant name', () => {
@@ -114,7 +108,7 @@ describe('Download all submissions page', () => {
       });
 
       it('Should render the unavailable applications view', () => {
-        screen.getByText('Unavailable applications');
+        screen.getByText('Applications unavailable for download');
       });
 
       it('Should render the unavailable count of applications', () => {
@@ -195,7 +189,7 @@ describe('Download all submissions page', () => {
       });
 
       it('Should render the unavailable applications view', () => {
-        screen.getByText('Unavailable applications');
+        screen.getByText('Applications unavailable for download');
       });
 
       it('Should render the unavailable count of applications', () => {
@@ -308,14 +302,6 @@ describe('Download all submissions page', () => {
         expect(result.props.unavailableSubmissions).toEqual(
           unavailableSubmissionsList
         );
-      });
-
-      it('Should return csrf token', async () => {
-        const result = (await getServerSideProps(
-          getContext()
-        )) as NextGetServerSidePropsResponse;
-
-        expect(result.props.csrfToken).toEqual('testCSRFToken');
       });
 
       it('Should redirect to an error page if there are no submissions', async () => {

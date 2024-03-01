@@ -1,4 +1,4 @@
-import { FlexibleQuestionPageLayout, Table } from 'gap-web-ui';
+import { Table } from 'gap-web-ui';
 import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import CustomLink from '../../../../components/custom-link/CustomLink';
@@ -14,10 +14,8 @@ import {
 
 export const getServerSideProps = async ({
   req,
-  res,
   query,
   params,
-  resolvedUrl,
 }: GetServerSidePropsContext) => {
   const sessionCookie = getSessionIdFromCookies(req);
   const { schemeId, exportId } = params as Record<string, string>;
@@ -60,23 +58,19 @@ export const getServerSideProps = async ({
 
   return {
     props: {
-      formAction: process.env.SUB_PATH + resolvedUrl,
       schemeName: grantScheme.name,
       availableSubmissionsTotalCount,
       exportedSubmissions,
       backBtnUrl: `/scheme/${schemeId}/${exportId}`,
-      csrfToken: res.getHeader('x-csrf-token') as string,
     },
   };
 };
 
 export const DownloadIndividualSubmissions = ({
-  formAction,
   schemeName,
   availableSubmissionsTotalCount,
   exportedSubmissions,
   backBtnUrl,
-  csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const tableHeadColumns = [
     {
@@ -119,43 +113,37 @@ export const DownloadIndividualSubmissions = ({
       <Meta title={`Download applications - Manage a grant`} />
       <CustomLink href={backBtnUrl} isBackButton />
 
-      <div className="govuk-!-padding-top-7">
-        <FlexibleQuestionPageLayout
-          fieldErrors={[]}
-          formAction={formAction}
-          csrfToken={csrfToken}
-        >
-          <span className="govuk-caption-l" data-cy="cyApplicationTitle">
-            {schemeName}
-          </span>
-          <h1 className="govuk-heading-l" tabIndex={-1}>
-            Download individual applications
-          </h1>
+      <div className="govuk-!-width-two-thirds govuk-!-padding-top-7">
+        <span className="govuk-caption-l" data-cy="cyApplicationTitle">
+          {schemeName}
+        </span>
+        <h1 className="govuk-heading-l" tabIndex={-1}>
+          Download individual applications
+        </h1>
 
-          <div className="submissions-download-table">
-            <Table
-              tableClassName="table-thead-bottom-border"
-              caption="Submitted applications"
-              captionSize="m"
-              tHeadColumns={tableHeadColumns}
-              rows={tableRows}
-            />
+        <div className="submissions-download-table">
+          <Table
+            tableClassName="table-thead-bottom-border"
+            caption="Submitted applications"
+            captionSize="m"
+            tHeadColumns={tableHeadColumns}
+            rows={tableRows}
+          />
 
-            <Pagination
-              additionalQueryData={{}}
-              itemsPerPage={10}
-              totalItems={availableSubmissionsTotalCount}
-              itemType="applications"
-              itemCountMargin={availableSubmissionsTotalCount > 10}
-            />
-          </div>
+          <Pagination
+            additionalQueryData={{}}
+            itemsPerPage={10}
+            totalItems={availableSubmissionsTotalCount}
+            itemType="applications"
+            itemCountMargin={availableSubmissionsTotalCount > 10}
+          />
+        </div>
 
-          <div className="govuk-!-margin-top-6">
-            <CustomLink href={backBtnUrl} isSecondaryButton>
-              Return to overview
-            </CustomLink>
-          </div>
-        </FlexibleQuestionPageLayout>
+        <div className="govuk-!-margin-top-6">
+          <CustomLink href={backBtnUrl} isSecondaryButton>
+            Return to overview
+          </CustomLink>
+        </div>
       </div>
     </>
   );

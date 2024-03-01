@@ -46,10 +46,6 @@ const getContext = (overrides: any = {}) =>
       query: {
         page: '1',
       } as any,
-      res: {
-        getHeader: () => 'testCSRFToken',
-      },
-      resolvedUrl: '/testResolvedURL',
     } as unknown as GetServerSidePropsContext,
     overrides
   );
@@ -76,12 +72,10 @@ const exportDetails = {
 };
 
 const customProps = {
-  formAction: '',
   schemeName: schemeName,
   availableSubmissionsTotalCount: defaultAvailableCount,
   exportedSubmissions: submissionList,
   backBtnUrl: backBtnUrl,
-  csrfToken: 'testCSRFToken',
 };
 
 const component = <DownloadIndividualSubmissions {...customProps} />;
@@ -190,14 +184,6 @@ describe('Download individual submissions page', () => {
         )) as NextGetServerSidePropsResponse;
 
         expect(result.props.exportedSubmissions).toEqual(submissionList);
-      });
-
-      it('Should return csrf token', async () => {
-        const result = (await getServerSideProps(
-          getContext()
-        )) as NextGetServerSidePropsResponse;
-
-        expect(result.props.csrfToken).toEqual('testCSRFToken');
       });
 
       it('Should redirect to an error page if there are no submissions', async () => {

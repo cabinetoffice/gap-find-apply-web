@@ -1,4 +1,4 @@
-import { FlexibleQuestionPageLayout, Table } from 'gap-web-ui';
+import { ImportantBanner, Table } from 'gap-web-ui';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import React from 'react';
 
@@ -10,16 +10,13 @@ import {
 import { getGrantScheme } from '../../../../services/SchemeService';
 import { generateErrorPageRedirect } from '../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../utils/session';
-import { DownloadMessage } from '../../../../components/notification-banner/DownloadMessage';
 import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
 import { Pagination } from '../../../../components/pagination/Pagination';
 import Meta from '../../../../components/layout/Meta';
 
 export const getServerSideProps = async ({
   req,
-  res,
   query,
-  resolvedUrl,
   params,
 }: GetServerSidePropsContext) => {
   const sessionCookie = getSessionIdFromCookies(req);
@@ -78,8 +75,6 @@ export const getServerSideProps = async ({
 
   return {
     props: {
-      formAction: process.env.SUB_PATH + resolvedUrl,
-      csrfToken: res.getHeader('x-csrf-token') as string,
       individualApplicationsHref: `/scheme/${schemeId}/${exportId}/download-individual`,
       superZipLocation: superZipLocation,
       schemeName: grantScheme.name,
@@ -93,8 +88,6 @@ export const getServerSideProps = async ({
 };
 
 export const CompletedSubmissions = ({
-  formAction,
-  csrfToken,
   schemeName,
   individualApplicationsHref,
   availableSubmissionsTotalCount,
@@ -140,59 +133,64 @@ export const CompletedSubmissions = ({
   return (
     <>
       <Meta title={`Download applications - Manage a grant`} />
-      <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-0 govuk-!-margin-bottom-6">
-        <div className="govuk-grid-column-full-width">
-          <div className="govuk-!-width-two-thirds">
-            {unavailableSubmissionsTotalCount > 0 && (
-              <DownloadMessage count={unavailableSubmissionsTotalCount} />
-            )}
+      <div className="govuk-grid-row govuk-!-padding-top-7 govuk-!-margin-bottom-6">
+        <div className="govuk-grid-column-two-thirds">
+          {unavailableSubmissionsTotalCount > 0 && (
+            <ImportantBanner
+              bannerHeading={`Cannot download ${unavailableSubmissionsTotalCount} ${
+                unavailableSubmissionsTotalCount > 1
+                  ? 'applications'
+                  : 'application'
+              }`}
+              bannerContent={
+                'You can view a read-only copy of the applications that are affected in the "Applications unavailable for download" section of this page.'
+              }
+            />
+          )}
 
-            <h1 className="govuk-heading-l">{schemeName}</h1>
+          <h1 className="govuk-heading-l">{schemeName}</h1>
 
-            <h2 className="govuk-heading-m">Applications submitted</h2>
+          <h2 className="govuk-heading-m">
+            Applications available to download
+          </h2>
 
-            <p className="govuk-body">
-              Your grant has{' '}
-              <b>
-                {availableSubmissionsTotalCount}{' '}
-                {availableSubmissionsTotalCount === 1
-                  ? 'application'
-                  : 'applications'}
-              </b>{' '}
-              available to download.
-            </p>
+          <p className="govuk-body">
+            Your grant has{' '}
+            <b>
+              {availableSubmissionsTotalCount}{' '}
+              {availableSubmissionsTotalCount === 1
+                ? 'application'
+                : 'applications'}
+            </b>{' '}
+            available to download.
+          </p>
+          <div className="govuk-button-group">
+            <CustomLink
+              href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
+                superZipLocation
+              )}`}
+              isButton
+              excludeSubPath
+              disabled={availableSubmissionsTotalCount == 0}
+            >
+              Download all applications
+            </CustomLink>
+
+            <CustomLink
+              href={individualApplicationsHref}
+              isSecondaryButton
+              disabled={availableSubmissionsTotalCount == 0}
+            >
+              View individual applications
+            </CustomLink>
           </div>
-          <FlexibleQuestionPageLayout
-            fieldErrors={[]}
-            formAction={formAction}
-            csrfToken={csrfToken}
-          >
-            <div className="govuk-button-group">
-              <CustomLink
-                href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
-                  superZipLocation
-                )}`}
-                isButton
-                excludeSubPath
-                disabled={availableSubmissionsTotalCount == 0}
-              >
-                Download all applications
-              </CustomLink>
-
-              <CustomLink
-                href={individualApplicationsHref}
-                isSecondaryButton
-                disabled={availableSubmissionsTotalCount == 0}
-              >
-                View individual applications
-              </CustomLink>
-            </div>
-          </FlexibleQuestionPageLayout>
 
           {unavailableSubmissions.length > 0 && (
-            <div className="govuk-!-width-two-thirds">
+            <>
               <hr className="govuk-section-break govuk-section-break--visible govuk-section-break--m govuk-!-margin-top-2 govuk-!-margin-bottom-7"></hr>
-              <h2 className="govuk-heading-m">Unavailable applications</h2>
+              <h2 className="govuk-heading-m">
+                Applications unavailable for download
+              </h2>
 
               <p className="govuk-body">
                 Your grant has{' '}
@@ -218,10 +216,11 @@ export const CompletedSubmissions = ({
                   additionalQueryData={{}}
                   itemsPerPage={10}
                   totalItems={unavailableSubmissionsTotalCount}
-                  itemCountMargin={true}
+                  itemType="applications"
+                  itemCountMargin={unavailableSubmissionsTotalCount > 10}
                 />
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
