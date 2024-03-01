@@ -1,4 +1,4 @@
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
 import QuestionPageGetServerSideProps from '../../../../../utils/QuestionPageGetServerSideProps';
@@ -6,11 +6,16 @@ import Meta from '../../../../../components/layout/Meta';
 import CustomLink from '../../../../../components/custom-link/CustomLink';
 import { Button, FlexibleQuestionPageLayout, TextInput } from 'gap-web-ui';
 import { ApplicationFormSection } from '../../../../../types/ApplicationForm';
-import { postQuestion } from '../../../../../services/QuestionService';
+import {
+  getQuestion,
+  patchQuestion,
+  postQuestion,
+} from '../../../../../services/QuestionService';
 import { getSummaryFromSession } from '../../../../../services/SessionService';
 import { QuestionWithOptionsSummary } from '../../../../../types/QuestionSummary';
 import ResponseTypeEnum from '../../../../../enums/ResponseType';
 import InferProps from '../../../../../types/InferProps';
+import { buildQueryStringWithoutUndefinedValues } from '../../../../../utils/general';
 
 type RequestBody = {
   maxWords: string;
@@ -20,6 +25,7 @@ export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
   const { applicationId, sectionId } = context.params as Record<string, string>;
+  const { questionId, backTo } = context.query;
   const sessionCookie = getSessionIdFromCookies(context.req);
 
   async function fetchPageData() {
@@ -32,36 +38,83 @@ export const getServerSideProps = async (
       (section) => section.sectionId === sectionId
     ) as ApplicationFormSection;
 
+    const queryString = buildQueryStringWithoutUndefinedValues(context.query);
+
+    let maxWords = '';
+    if (questionId) {
+      const questionData = await getQuestion(
+        sessionCookie,
+        applicationId,
+        sectionId,
+        questionId.toString()
+      );
+      if (questionData.validation.maxWords) {
+        maxWords = questionData.validation.maxWords;
+      }
+    }
+
     return {
-      backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type`,
+      backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type${queryString}`,
       sectionTitle,
+      maxWords,
+      isEdit: !!questionId,
     };
   }
 
   async function handleRequest(body: RequestBody, jwt: string) {
-    const questionSummary = (await getSummaryFromSession(
-      'newQuestion',
-      sessionCookie
-    )) as QuestionWithOptionsSummary;
+    if (questionId) {
+      const questionSummary = (await getSummaryFromSession(
+        'updatedQuestion',
+        sessionCookie
+      )) as unknown as QuestionWithOptionsSummary;
+      const { optional, ...restOfQuestionSummary } = questionSummary;
+      const { maxWords: _, ...restOfBody } = body;
+      const bodyToPatch = {
+        ...restOfQuestionSummary,
+        ...restOfBody,
+        validation: {
+          maxWords: body.maxWords,
+          mandatory: optional !== 'true',
+        },
+      };
+      await patchQuestion(
+        sessionCookie,
+        applicationId,
+        sectionId,
+        questionId.toString(),
+        bodyToPatch
+      );
+    } else {
+      const questionSummary = (await getSummaryFromSession(
+        'newQuestion',
+        sessionCookie
+      )) as unknown as QuestionWithOptionsSummary;
 
-    const { optional, ...restOfQuestionSummary } = questionSummary;
-    const { maxWords: _, ...restOfBody } = body;
+      const { optional, ...restOfQuestionSummary } = questionSummary;
+      const { maxWords: _, ...restOfBody } = body;
 
-    await postQuestion(jwt, applicationId, sectionId, {
-      ...restOfQuestionSummary,
-      ...restOfBody,
-      responseType: ResponseTypeEnum.LongAnswer,
-      validation: {
-        maxWords: body.maxWords,
-        mandatory: optional !== 'true',
-      },
-    });
+      await postQuestion(jwt, applicationId, sectionId, {
+        ...restOfQuestionSummary,
+        ...restOfBody,
+        responseType: ResponseTypeEnum.LongAnswer,
+        validation: {
+          maxWords: body.maxWords,
+          mandatory: optional !== 'true',
+        },
+      });
+    }
   }
 
-  return QuestionPageGetServerSideProps({
+  let onSuccessRedirectHref = `/build-application/${applicationId}/${sectionId}`;
+  if (questionId) {
+    const queryString = buildQueryStringWithoutUndefinedValues({ backTo });
+    onSuccessRedirectHref = `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`;
+  }
+
+  return await QuestionPageGetServerSideProps({
     context,
     fetchPageData,
-    onSuccessRedirectHref: `/build-application/${applicationId}/${sectionId}`,
+    onSuccessRedirectHref,
     jwt: sessionCookie,
     onErrorMessage: 'Something went wrong while trying to load this page.',
     handleRequest,
@@ -72,7 +125,7 @@ export default function AddWordCount({
   fieldErrors,
   formAction,
   previousValues,
-  pageData: { sectionTitle, backButtonHref },
+  pageData: { sectionTitle, backButtonHref, maxWords },
   csrfToken,
 }: InferProps<typeof getServerSideProps>) {
   return (
@@ -104,7 +157,9 @@ export default function AddWordCount({
                 questionHintText="This will set the maximum number of words an applicant can use to answer this question. You can choose a limit of up to 5000 words."
                 width="4"
                 fieldErrors={fieldErrors}
-                defaultValue={(previousValues?.maxWords as string) || ''}
+                defaultValue={
+                  (previousValues?.maxWords as string) || maxWords || ''
+                }
               />
             </div>
             <div className="govuk-grid-row govuk-button-group">

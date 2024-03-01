@@ -83,6 +83,7 @@ const mockGrantadvertData: getAdvertPublishInformationBySchemeIdResponse = {
 };
 
 jest.mock('../../../services/SchemeService');
+jest.mock('../../../services/SchemeEditorService');
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../services/AdvertPageService');
 
@@ -263,6 +264,7 @@ describe('scheme/[schemeId]', () => {
     it('Should render back button', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
@@ -278,6 +280,7 @@ describe('scheme/[schemeId]', () => {
     it('Should render a "Grant summary" heading', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
@@ -285,16 +288,32 @@ describe('scheme/[schemeId]', () => {
         />
       );
       screen.getByRole('heading', { name: 'Grant summary' });
+      const sidebarLink = screen.getByRole('button', {
+        name: 'Add or manage editors',
+      });
+      expect(sidebarLink).toHaveAttribute(
+        'href',
+        `/scheme/${mockScheme.schemeId}/manage-editors`
+      );
     });
 
     it('Should render a ggis reference number summary list row', () => {
       render(
         <ViewScheme
+          isOwner={false}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
         />
+      );
+
+      const sidebarLink = screen.getByRole('button', {
+        name: 'View editors',
+      });
+      expect(sidebarLink).toHaveAttribute(
+        'href',
+        `/scheme/${mockScheme.schemeId}/view-editors`
       );
       screen.getByText('GGIS Scheme Reference Number');
       screen.getByText('SCH 000003589');
@@ -304,6 +323,7 @@ describe('scheme/[schemeId]', () => {
     it('Should render a support email address summary list row', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
@@ -318,6 +338,7 @@ describe('scheme/[schemeId]', () => {
     it('Should render the "SchemeApplications" component when there is an application form', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
@@ -330,6 +351,7 @@ describe('scheme/[schemeId]', () => {
     it('Should NOT render the "SchemeApplications" component when there is no application form', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={{
             applicationForm: null,
@@ -360,6 +382,7 @@ describe('scheme/[schemeId]', () => {
     it('Should NOT render the "BuildApplicationForm" component when there is an application form', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
@@ -374,6 +397,7 @@ describe('scheme/[schemeId]', () => {
     it('Should render Build Advert section when enabledAdBuilder value is set to "enabled"', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'enabled'}
@@ -387,6 +411,7 @@ describe('scheme/[schemeId]', () => {
     it('Should NOT render Build Advert section when enabledAdBuilder value is set to null (not provided)', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
@@ -400,6 +425,7 @@ describe('scheme/[schemeId]', () => {
     it('Should render a "Due diligence checks" section for internal applications', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
@@ -422,6 +448,7 @@ describe('scheme/[schemeId]', () => {
     it('Should render a "Due diligence checks" section for external applications', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={null}
           enabledAdBuilder={'disabled'}
@@ -445,6 +472,7 @@ describe('scheme/[schemeId]', () => {
       mockScheme.version = '1';
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={null}
           enabledAdBuilder={'disabled'}
@@ -460,6 +488,7 @@ describe('scheme/[schemeId]', () => {
       mockScheme.version = '2';
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={null}
           enabledAdBuilder={'disabled'}

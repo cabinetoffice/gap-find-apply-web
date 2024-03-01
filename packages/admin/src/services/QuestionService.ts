@@ -17,8 +17,9 @@ const patchQuestion = (
     fieldTitle: string;
     displayText: string;
     hintText: string;
-    validation: { mandatory: boolean; maxWords?: string };
+    validation: { mandatory: boolean; maxWords?: string | number };
     options: string[];
+    responseType: ResponseType;
   }>
 ): Promise<void> => {
   return axios.patch(

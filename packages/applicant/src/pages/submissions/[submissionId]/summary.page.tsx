@@ -85,7 +85,8 @@ export const getServerSideProps: GetServerSideProps<
       applicationName,
       hasSubmissionBeenSubmitted: hasBeenSubmitted,
       csrfToken: res.getHeader('x-csrf-token') as string,
-      closedAndInProgress: grantApplicationStatus === 'REMOVED',
+      closedAndInProgress:
+        !hasBeenSubmitted && grantApplicationStatus === 'REMOVED',
     },
   };
 };
