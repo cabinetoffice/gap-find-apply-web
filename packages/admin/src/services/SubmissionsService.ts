@@ -65,22 +65,10 @@ const createPresignedUrl = async (sessionCookie: string, s3Key: string) => {
   return response.data;
 };
 
-const getSubmissionBySubmissionId = async (
-  submissionId: string,
-  sessionCookie: string
-) => {
-  const response = await axios.get(
-    `${BASE_SUBMISSIONS_URL}/${submissionId}`,
-    axiosSessionConfig(sessionCookie)
-  );
-  return response.data;
-};
-
 export {
   spotlightExport,
   getApplicationExportStatus,
   requestSubmissionsExport,
   getCompletedSubmissionExportList,
   createPresignedUrl,
-  getSubmissionBySubmissionId,
 };

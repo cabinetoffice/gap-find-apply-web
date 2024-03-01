@@ -1,11 +1,9 @@
-import { GetServerSidePropsContext } from 'next';
-import { getSubmissionBySubmissionId } from '../../../../../services/SubmissionsService';
-import { getLoggedInUsersDetails } from '../../../../../services/UserService';
-import SubmissionSummary, { getServerSideProps } from './[submissionId].page';
 import { render, screen } from '@testing-library/react';
-import { getSessionIdFromCookies } from '../../../../../utils/session';
-import { generateErrorPageRedirect } from '../../../../../utils/serviceErrorHelpers';
+import { GetServerSidePropsContext } from 'next';
+
 import { getFailedExportDetails } from '../../../../../services/ExportService';
+import { getSessionIdFromCookies } from '../../../../../utils/session';
+import SubmissionSummary, { getServerSideProps } from './[submissionId].page';
 
 jest.mock('../../../../../services/SubmissionsService');
 jest.mock('../../../../../services/UserService');
@@ -14,21 +12,14 @@ jest.mock('../../../../../utils/session');
 jest.mock('../../../../../utils/serviceErrorHelpers');
 
 const mockGetFailedExportDetails = jest.mocked(getFailedExportDetails);
-const mockGetLoggedInUserDetails = jest.mocked(getLoggedInUsersDetails);
 const mockGetSessionIdFromCookies = jest.mocked(getSessionIdFromCookies);
-const mockGenerateErrorPageRedirect = jest.mocked(generateErrorPageRedirect);
 
-const userDetails = {
-  firstName: 'John',
-  lastName: 'Doe',
-  organisationName: 'Example Organisation',
-  emailAddress: 'email@email.com',
-  roles: 'admin',
-  created: '2022-01-01',
-};
+const schemeName = 'Test Scheme';
+const organisationName = 'Test Org';
 
 const submission = {
-  schemeName: 'Example Scheme',
+  schemeName: schemeName,
+  legalName: organisationName,
   sections: [
     {
       sectionId: '1',
@@ -101,16 +92,10 @@ const backBtnUrl = `/scheme/${SCHEME_ID}/${EXPORT_ID}`;
 const propsWithAllValues = {
   backButtonHref: backBtnUrl,
   csrfToken: 'csrf',
-  userDetails: {
-    firstName: 'John',
-    lastName: 'Doe',
-    organisationName: 'Example Organisation',
-    emailAddress: 'email@email.com',
-    roles: 'admin',
-    created: '2022-01-01',
-  },
+  organisationName: organisationName,
   submission: {
-    schemeName: 'Example Scheme',
+    schemeName: schemeName,
+    legalName: organisationName,
     sections: [
       {
         sectionId: '1',
@@ -166,8 +151,7 @@ describe('getServerSideProps', () => {
     jest.clearAllMocks();
   });
 
-  it('should return userDetails and submission', async () => {
-    mockGetLoggedInUserDetails.mockResolvedValue(userDetails);
+  it('should return submission', async () => {
     mockGetFailedExportDetails.mockResolvedValue(submission);
     mockGetSessionIdFromCookies.mockReturnValue('testJwt');
 
@@ -177,37 +161,16 @@ describe('getServerSideProps', () => {
       props: {
         backButtonHref: '/scheme/123/456',
         csrfToken: 'testCSRFToken',
-        userDetails,
+        organisationName,
         submission,
       },
     });
     expect(getSessionIdFromCookies).toHaveBeenCalledWith(context.req);
-    expect(getLoggedInUsersDetails).toHaveBeenCalledWith('testJwt');
     expect(getFailedExportDetails).toHaveBeenCalledWith(
       '456',
       '12345678',
       'testJwt'
     );
-  });
-
-  it('should return error page redirect if getLoggedInUsersDetails throws an error', async () => {
-    mockGetSessionIdFromCookies.mockReturnValue('testJwt');
-    mockGetLoggedInUserDetails.mockRejectedValue(new Error('Test error'));
-    mockGenerateErrorPageRedirect.mockReturnValue({
-      redirect: { destination: 'testDestination', statusCode: 302 },
-    });
-
-    const response = await getServerSideProps(context);
-
-    expect(response).toEqual({
-      redirect: {
-        destination: 'testDestination',
-        statusCode: 302,
-      },
-    });
-    expect(getSessionIdFromCookies).toHaveBeenCalledWith(context.req);
-    expect(getLoggedInUsersDetails).toHaveBeenCalledWith('testJwt');
-    expect(getSubmissionBySubmissionId).not.toHaveBeenCalled();
   });
 });
 
@@ -224,8 +187,8 @@ describe('SubmissionSummary', () => {
   it('renders scheme name, organisation name, and section titles correctly', () => {
     render(<SubmissionSummary {...propsWithAllValues} />);
 
-    expect(screen.getByText('Example Scheme')).toBeInTheDocument();
-    expect(screen.getByText('Example Organisation')).toBeInTheDocument();
+    expect(screen.getByText(schemeName)).toBeInTheDocument();
+    expect(screen.getByText(organisationName)).toBeInTheDocument();
     expect(screen.getByText('Section 1')).toBeInTheDocument();
     expect(screen.getByText('Section 2')).toBeInTheDocument();
   });

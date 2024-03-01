@@ -22,16 +22,16 @@ export const getServerSideProps = async ({
     !!req.headers.referer
   );
 
-  let userDetails, submission, sessionCookie;
+  let submission, sessionCookie, organisationName;
 
   try {
     sessionCookie = await getSessionIdFromCookies(req);
-    userDetails = await getLoggedInUsersDetails(sessionCookie);
     submission = await getFailedExportDetails(
       exportId,
       submissionId,
       sessionCookie
     );
+    organisationName = submission.legalName;
   } catch (error) {
     console.log(error);
     return errorPageRedirect;
@@ -41,7 +41,7 @@ export const getServerSideProps = async ({
     props: {
       backButtonHref: `/scheme/${schemeId}/${exportId}`,
       csrfToken: res.getHeader('x-csrf-token') as string,
-      userDetails,
+      organisationName,
       submission,
     },
   };
@@ -49,7 +49,7 @@ export const getServerSideProps = async ({
 
 const SubmissionSummary = ({
   backButtonHref,
-  userDetails,
+  organisationName,
   submission,
 }: InferProps<typeof getServerSideProps>) => {
   return (
@@ -67,7 +67,7 @@ const SubmissionSummary = ({
             {submission.schemeName}
           </span>
           <h1 className="govuk-heading-l" data-cy="cy-page-header">
-            {userDetails.organisationName}
+            {organisationName}
           </h1>
           {submission.sections.map((section: SectionData) => {
             return (
