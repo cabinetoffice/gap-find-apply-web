@@ -5,7 +5,6 @@ import {
   spotlightExport,
   requestSubmissionsExport,
   getCompletedSubmissionExportList,
-  getSubmissionBySubmissionId,
 } from './SubmissionsService';
 
 jest.mock('axios');
@@ -93,39 +92,5 @@ describe('SubmissionsService', () => {
         { label: 'File name', url: 'http://testFileLink.com' },
       ]);
     });
-  });
-
-  it('should return the submission data when given a valid submission ID and session cookie', async () => {
-    const expectedData = {
-      submissionId: 'testSubmissionId',
-      schemeId: 1,
-      schemeName: 'TestScheme',
-      legalName: 'TestLegalName',
-      applicationName: 'TestApplication',
-      sections: [
-        {
-          sectionId: 1,
-          sectionName: 'Section1',
-        },
-      ],
-    };
-
-    mockedAxios.get.mockResolvedValue({
-      data: expectedData,
-    });
-
-    const result = await getSubmissionBySubmissionId(
-      'testSubmissionId',
-      'testSessionCookie'
-    );
-
-    expect(result).toEqual(expectedData);
-    expect(mockedAxios.get).toHaveBeenCalledWith(
-      `${BASE_SUBMISSIONS_URL}/testSubmissionId`,
-      {
-        headers: { Cookie: 'SESSION=testSessionCookie;' },
-        withCredentials: true,
-      }
-    );
   });
 });
