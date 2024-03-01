@@ -11,7 +11,7 @@ import { GetServerSidePropsContext } from 'next';
 import {
   getSchemeEditors,
   removeEditor,
-} from '../../../../../services/EditorService';
+} from '../../../../../services/SchemeEditorService';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const schemeId = context.params?.schemeId as string;
@@ -23,7 +23,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       jwt,
       getUserTokenFromCookies(context.req)
     );
-    const editor = editors.find((editor) => editor.id === editorId)!;
+    const editor = editors.find((editor) => editor.id == editorId)!;
     return {
       schemeId,
       editorEmail: editor.email,

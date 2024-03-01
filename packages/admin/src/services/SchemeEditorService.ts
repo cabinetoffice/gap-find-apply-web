@@ -45,3 +45,14 @@ export const addSchemeEditor = async (
   );
   return response.data;
 };
+
+export async function removeEditor(
+  sessionCookie: string,
+  schemeId: string,
+  editorId: string
+) {
+  await axios.delete(
+    `${SCHEME_HOST}/${schemeId}/editors/${editorId}`,
+    axiosSessionConfig(sessionCookie)
+  );
+}

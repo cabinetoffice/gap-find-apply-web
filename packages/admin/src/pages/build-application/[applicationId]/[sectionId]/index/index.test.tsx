@@ -112,7 +112,7 @@ describe('Edit section page', () => {
         );
 
         expect(mockedHandleQuestionOrdering).toHaveBeenCalledWith({
-          sessionId: '',
+          sessionId: 'testSessionId',
           applicationId: 'testApplicationId',
           sectionId: 'testSectionId',
           questionId: 'testQuestionId',
@@ -165,7 +165,7 @@ describe('Edit section page', () => {
 
         expect(mockedGetApplicationFormSummary).toHaveBeenCalledWith(
           'testApplicationId',
-          ''
+          'testSessionId'
         );
       });
 

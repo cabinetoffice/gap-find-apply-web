@@ -47,7 +47,7 @@ describe('getEditorsServerSideProps', () => {
             key: 'owner@example.com',
             value: 'OWNER',
             action: {
-              href: '/scheme/testSchemeId/manage-editors/remove/ownerId',
+              href: '/scheme/testSchemeId/manage-editors/ownerId/remove',
               label: 'Remove',
               ariaLabel: 'Remove owner@example.com',
             },

@@ -94,13 +94,6 @@ describe('Manage Editors - Add an Editor', () => {
       query: {
         schemeName: 'Test Scheme',
       },
-      req: {
-        cookies: {
-          'user-service-token': 'jwt',
-          sessionId: 'testSessionId',
-        },
-      },
-      res: { getHeader: () => 'testCSRFToken' },
     });
 
     const mockedAddSchemeEditor = jest.mocked(addSchemeEditor);
@@ -137,7 +130,7 @@ describe('Manage Editors - Add an Editor', () => {
       expect(mockedAddSchemeEditor).toHaveBeenCalledWith(
         'testSchemeId',
         'testSessionId',
-        'jwt',
+        'testJWT',
         'test@test.gov'
       );
       expect(result.redirect).toEqual(
