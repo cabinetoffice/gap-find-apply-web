@@ -161,7 +161,7 @@ describe('Change department page', () => {
       expect(updateUserRoles).toHaveBeenCalledWith(
         'someId',
         ['3', ' 4'],
-        '',
+        'testJWT',
         1
       );
     });
