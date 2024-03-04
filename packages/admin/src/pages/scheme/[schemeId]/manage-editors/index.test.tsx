@@ -54,7 +54,7 @@ describe('ManageEditors', () => {
     );
     expect(addEditorLink).toBeVisible();
 
-    const returnLink = getByText('Return to grant overview');
+    const returnLink = getByText('Back to grant overview');
     expect(returnLink).toHaveAttribute('href', '/scheme/dummySchemeId/');
     expect(returnLink).toBeVisible();
   });
