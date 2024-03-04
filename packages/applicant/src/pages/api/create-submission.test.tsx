@@ -1,6 +1,5 @@
 import { merge } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { GrantApplicant } from '../../types/models/GrantApplicant';
 import {
   GrantApplicantOrganisationProfileService,
   UpdateOrganisationDetailsDto,
@@ -10,16 +9,18 @@ import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
 } from '../../services/GrantMandatoryQuestionService';
+import { GrantSchemeService } from '../../services/GrantSchemeService';
 import {
   CreateSubmissionResponse,
   createSubmission,
 } from '../../services/SubmissionService';
 import { Overrides } from '../../testUtils/unitTestHelpers';
+import { GrantAdvert } from '../../types/models/GrantAdvert';
+import { GrantApplicant } from '../../types/models/GrantApplicant';
+import { GrantApplication } from '../../types/models/GrantApplication';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import handler from './create-submission.page';
-import { GrantAdvert } from '../../types/models/GrantAdvert';
-import { GrantSchemeService } from '../../services/GrantSchemeService';
 
 jest.mock('../../services/SubmissionService');
 jest.mock('../../services/GrantMandatoryQuestionService.ts');
@@ -165,10 +166,21 @@ describe('API Handler Tests', () => {
       isInternal: true,
       grantApplicationId: 'grantApplicationId',
     };
+
+    const getGrantApplicationResponse: GrantApplication = {
+      id: '1',
+      version: 2,
+      created: '',
+      lastUpdated: '',
+      lastUpdatedBy: 1,
+      applicationName: 'application name',
+      applicationStatus: 'PUBLISHED',
+      definition: null,
+    };
     GrantSchemeService.getInstance.mockReturnValue({
       getGrantSchemeById: jest.fn().mockResolvedValue({
         grantAdverts: [getAdvertBySchemeIdResponse],
-        grantApplication: { id: '1' },
+        grantApplication: getGrantApplicationResponse,
       }),
     });
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
