@@ -216,6 +216,9 @@ describe('AdvertPageService', () => {
     > = {
       status: 200,
       data: {
+        lastPublishedDate: '2023-03-30T23:01:00Z',
+        lastUpdatedByEmail: 'testUser',
+        lastUpdated: '2023-03-30T23:01:00Z',
         grantAdvertId: '2476958a-c9ab-447b-8b48-8b34b87dee0c',
         grantAdvertStatus: AdvertStatusEnum.DRAFT,
         contentfulSlug: null,
@@ -232,12 +235,16 @@ describe('AdvertPageService', () => {
         data: expectedResponse,
       });
 
-      await getGrantAdvertPublishInformationBySchemeId(sessionId, advertId);
+      await getGrantAdvertPublishInformationBySchemeId(
+        sessionId,
+        'jwt',
+        advertId
+      );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
         `${BASE_ADVERT_URL}/publish-information`,
         {
-          headers: { Cookie: 'SESSION=testSessionId;' },
+          headers: { Cookie: 'SESSION=testSessionId; user-service-token=jwt' },
           withCredentials: true,
           params: {
             grantSchemeId: 'testAdvertId',
@@ -251,6 +258,7 @@ describe('AdvertPageService', () => {
 
       const response = await getGrantAdvertPublishInformationBySchemeId(
         sessionId,
+        'jwt',
         advertId
       );
 
