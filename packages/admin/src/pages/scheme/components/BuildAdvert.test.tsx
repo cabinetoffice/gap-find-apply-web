@@ -14,18 +14,16 @@ describe('BuildAdvert component', () => {
       status: 200,
       data: {
         lastUpdatedByEmail: 'my-email',
-        publishingInfo: {
-          grantAdvertId: '2476958a-c9ab-447b-8b48-8b34b87dee0c',
-          grantAdvertStatus: 'SCHEDULED',
-          contentfulSlug: 'some-contentful-slug',
-          openingDate: '2023-03-30T23:01:00Z',
-          closingDate: null,
-          firstPublishedDate: null,
-          lastPublishedDate: null,
-          lastUpdated: '2023-03-30T23:01:00Z',
-          lastUnpublishedDate: null,
-          unpublishedDate: null,
-        },
+        grantAdvertId: '2476958a-c9ab-447b-8b48-8b34b87dee0c',
+        grantAdvertStatus: 'SCHEDULED',
+        contentfulSlug: 'some-contentful-slug',
+        openingDate: '2023-03-30T23:01:00Z',
+        closingDate: null,
+        firstPublishedDate: null,
+        lastPublishedDate: null,
+        lastUpdated: '2023-03-30T23:01:00Z',
+        lastUnpublishedDate: null,
+        unpublishedDate: null,
       },
     } as getAdvertPublishInformationBySchemeIdResponse);
   const grantAdvertId = getDefaultProps();
@@ -33,7 +31,6 @@ describe('BuildAdvert component', () => {
   describe('BuildAdvert - no grant advert', () => {
     const dummyGrantAdvertDataWithNoAdvert: getAdvertPublishInformationBySchemeIdResponse =
       {
-        data: null,
         status: 404,
       };
     beforeEach(() => {
@@ -67,7 +64,7 @@ describe('BuildAdvert component', () => {
           schemeId="12345"
           grantAdvert={getPageProps(getDefaultProps, {
             data: {
-              publishingInfo: { grantAdvertStatus: AdvertStatusEnum.DRAFT },
+              grantAdvertStatus: AdvertStatusEnum.DRAFT,
             },
           })}
         />
@@ -95,7 +92,7 @@ describe('BuildAdvert component', () => {
         screen.getByRole('link', { name: 'View or change your advert' })
       ).toHaveAttribute(
         'href',
-        `/apply/scheme/12345/advert/${grantAdvertId?.data?.publishingInfo.grantAdvertId}/section-overview`
+        `/apply/scheme/12345/advert/${grantAdvertId?.data?.grantAdvertId}/section-overview`
       );
     });
   });
@@ -107,9 +104,7 @@ describe('BuildAdvert component', () => {
           schemeId="12345"
           grantAdvert={getPageProps(getDefaultProps, {
             data: {
-              publishingInfo: {
-                grantAdvertStatus: AdvertStatusEnum.PUBLISHED,
-              },
+              grantAdvertStatus: AdvertStatusEnum.PUBLISHED,
             },
           })}
         />
@@ -121,9 +116,7 @@ describe('BuildAdvert component', () => {
     });
 
     it('Should render a description for the published grant', () => {
-      screen.getByText(
-        'An advert for this grant is live on Find a grant. The link for your advert is below:'
-      );
+      screen.getByText('An advert for this grant is live on Find a grant.');
     });
 
     it('Should render a link to view advert on Find a grant', () => {
@@ -140,7 +133,7 @@ describe('BuildAdvert component', () => {
     it('Should render a description to edit a grant', () => {
       expect(
         screen.getByText(
-          'It was published by my-email on 31 March 2023 at 00:01'
+          'It was published by my-email on 31 March 2023 at 00:01 AM'
         )
       ).toBeVisible();
       screen.getByText(
@@ -153,7 +146,7 @@ describe('BuildAdvert component', () => {
         screen.getByRole('link', { name: 'View or change your advert' })
       ).toHaveAttribute(
         'href',
-        `/apply/scheme/12345/advert/${grantAdvertId?.data?.publishingInfo.grantAdvertId}/summary`
+        `/apply/scheme/12345/advert/${grantAdvertId?.data?.grantAdvertId}/summary`
       );
     });
   });
@@ -172,7 +165,7 @@ describe('BuildAdvert component', () => {
       screen.getByRole('heading', { name: 'Grant advert' });
       expect(
         screen.getByText(
-          'Your advert was scheduled to be published on 31 March 2023 at 00:01 by my-email'
+          'Your advert was scheduled to be published on 31 March 2023 at 00:01 AM by my-email'
         )
       ).toBeVisible();
     });
@@ -188,12 +181,11 @@ describe('BuildAdvert component', () => {
         screen.getByRole('link', { name: 'View or change your advert' })
       ).toHaveAttribute(
         'href',
-        `/apply/scheme/12345/advert/${grantAdvertId?.data?.publishingInfo.grantAdvertId}/summary`
+        `/apply/scheme/12345/advert/${grantAdvertId?.data?.grantAdvertId}/summary`
       );
     });
   });
 
-  // TODO: waiting on GAP-1586 to release these.
   describe('BuildAdvert - with scheduled grant advert', () => {
     const dummyGrantAdvertDataWithAdvert: getAdvertStatusBySchemeIdResponse = {
       status: 200,
