@@ -45,10 +45,12 @@ const ManageEditors = ({
       <CustomLink href={`/scheme/${schemeId}`} isBackButton />
       <div className="govuk-grid-row govuk-!-padding-top-7">
         {newEditor ? (
-          <ImportantBanner
-            bannerHeading={`${newEditor} has been added as an editor.`}
-            isSuccess
-          />
+          <div className="govuk-grid-column-two-thirds">
+            <ImportantBanner
+              bannerHeading={`${newEditor} has been added as an editor.`}
+              isSuccess
+            />
+          </div>
         ) : null}
         <div className="govuk-grid-column-full govuk-!-margin-bottom-6">
           <span className="govuk-caption-l">{schemeName}</span>
