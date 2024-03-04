@@ -15,6 +15,7 @@ const Pagination = ({
   itemsPerPage = 10,
   totalItems = 0,
   itemType = 'items',
+  itemCountMargin = false,
 }) => {
   const router = useRouter();
 
@@ -110,7 +111,9 @@ const Pagination = ({
         </>
       )}
       <p
-        className="moj-pagination__results"
+        className={`moj-pagination__results ${
+          itemCountMargin ? 'govuk-!-margin-top-9' : ''
+        }`}
         data-cy="cyPaginationShowingGrants"
         style={{
           paddingTop: '0.6rem',
