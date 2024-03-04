@@ -39,7 +39,7 @@ const getEditorRows = async ({
     const editorRow: UnformattedEditorRow = { key: email, value: role };
     if (isOwner)
       editorRow.action = {
-        href: `/scheme/${schemeId}/manage-editors/remove/${id}`,
+        href: `/scheme/${schemeId}/manage-editors/${id}/remove`,
         label: 'Remove',
         ariaLabel: `Remove ${email}`,
       };
