@@ -32,12 +32,12 @@ export function getGrantStatusText({
 
   const CONTENT_MAP: StatusContentMap = {
     [PUBLISHED]: 'You can make changes to your advert or unpublish it here:',
-    [SCHEDULED]: `Your advert is scheduled to be published on ${scheduledDate}`,
+    [SCHEDULED]: `Your advert is scheduled to be published on ${scheduledDate}.`,
   };
 
   return (
     CONTENT_MAP[grantAdvertStatus] ??
-    'You have created an advert, but it is not live on Find a grant'
+    'You have created an advert, but it is not live on Find a grant.'
   );
 }
 
@@ -49,13 +49,13 @@ export function getLastUpdatedByText({
   const lastModifiedString = formatTimeStamp(lastUpdated as string);
 
   const CONTENT_MAP: StatusContentMap = {
-    [PUBLISHED]: `It was published by ${lastUpdatedByEmail} ${lastModifiedString}`,
-    [SCHEDULED]: `Your advert was scheduled to be published ${lastModifiedString} by ${lastUpdatedByEmail}`,
+    [PUBLISHED]: `It was published by ${lastUpdatedByEmail} ${lastModifiedString}.`,
+    [SCHEDULED]: `Your advert was scheduled to be published ${lastModifiedString} by ${lastUpdatedByEmail}.`,
   };
 
   return (
     CONTENT_MAP[grantAdvertStatus] ??
-    `It was last edited by ${lastUpdatedByEmail} ${lastModifiedString}`
+    `It was last edited by ${lastUpdatedByEmail} ${lastModifiedString}.`
   );
 }
 

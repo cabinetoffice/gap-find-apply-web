@@ -77,13 +77,13 @@ describe('BuildAdvert component', () => {
 
     expect(
       screen.queryByText(
-        'It was published by my-email on 31 March 2023 at 00:01'
+        'It was published by my-email on 31 March 2023 at 00:01.'
       )
     ).toBeNull();
 
     it('Should render section description', () => {
       screen.getByText(
-        'You have created an advert, but it is not live on Find a grant'
+        'You have created an advert, but it is not live on Find a grant.'
       );
     });
 
@@ -133,7 +133,7 @@ describe('BuildAdvert component', () => {
     it('Should render a description to edit a grant', () => {
       expect(
         screen.getByText(
-          'It was published by my-email on 30 March 2023 at 23:01 PM'
+          'It was published by my-email on 30 March 2023 at 23:01 PM.'
         )
       ).toBeVisible();
       screen.getByText(
@@ -165,14 +165,14 @@ describe('BuildAdvert component', () => {
       screen.getByRole('heading', { name: 'Grant advert' });
       expect(
         screen.getByText(
-          'Your advert was scheduled to be published on 30 March 2023 at 23:01 PM by my-email'
+          'Your advert was scheduled to be published on 30 March 2023 at 23:01 PM by my-email.'
         )
       ).toBeVisible();
     });
 
     it('Should render a description for the scheduled grant', () => {
       screen.getByText(
-        'Your advert is scheduled to be published on 30 March 2023'
+        'Your advert is scheduled to be published on 30 March 2023.'
       );
     });
 
