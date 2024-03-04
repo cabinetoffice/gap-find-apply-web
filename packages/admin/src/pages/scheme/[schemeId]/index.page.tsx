@@ -84,7 +84,7 @@ export const getServerSideProps = async ({
         '/dashboard'
       );
     }
-    grantAdvertPublishData = { status: 404, data: null };
+    grantAdvertPublishData = { status: 404 };
   }
 
   return {
