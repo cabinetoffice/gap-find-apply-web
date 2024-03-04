@@ -69,6 +69,7 @@ export type getAdvertStatusBySchemeIdResponse = {
 export type getAdvertPublishInformationBySchemeIdResponse = {
   status: number;
   data?: {
+    lastUpdatedByEmail: string;
     grantAdvertId: string;
     grantAdvertStatus: grantAdvertStatus;
     contentfulSlug: string | null;
@@ -77,6 +78,8 @@ export type getAdvertPublishInformationBySchemeIdResponse = {
     firstPublishedDate: string | null;
     lastUnpublishedDate: string | null;
     unpublishedDate: string | null;
+    lastPublishedDate: string | null;
+    lastUpdated: string | null;
   };
 };
 

@@ -71,14 +71,19 @@ const mockScheme: Scheme = {
 const mockGrantadvertData: getAdvertPublishInformationBySchemeIdResponse = {
   status: 200,
   data: {
-    grantAdvertId: 'dummy-id',
-    grantAdvertStatus: AdvertStatusEnum.DRAFT,
-    contentfulSlug: null,
-    openingDate: null,
-    closingDate: null,
-    firstPublishedDate: null,
-    lastUnpublishedDate: null,
-    unpublishedDate: null,
+    lastUpdatedByEmail: 'my-email',
+    publishingInfo: {
+      grantAdvertId: 'dummy-id',
+      grantAdvertStatus: AdvertStatusEnum.DRAFT,
+      contentfulSlug: null,
+      lastPublishedDate: null,
+      lastUpdated: null,
+      openingDate: null,
+      closingDate: null,
+      firstPublishedDate: null,
+      lastUnpublishedDate: null,
+      unpublishedDate: null,
+    },
   },
 };
 
@@ -229,14 +234,19 @@ describe('scheme/[schemeId]', () => {
       expect(response.props.grantAdvertPublishData).toStrictEqual({
         status: 200,
         data: {
-          grantAdvertId: 'dummy-id',
-          grantAdvertStatus: 'DRAFT',
-          contentfulSlug: null,
-          openingDate: null,
-          closingDate: null,
-          firstPublishedDate: null,
-          lastUnpublishedDate: null,
-          unpublishedDate: null,
+          lastUpdatedByEmail: 'my-email',
+          publishingInfo: {
+            grantAdvertId: 'dummy-id',
+            grantAdvertStatus: AdvertStatusEnum.DRAFT,
+            contentfulSlug: null,
+            lastPublishedDate: null,
+            lastUpdated: null,
+            openingDate: null,
+            closingDate: null,
+            firstPublishedDate: null,
+            lastUnpublishedDate: null,
+            unpublishedDate: null,
+          },
         },
       });
     });
