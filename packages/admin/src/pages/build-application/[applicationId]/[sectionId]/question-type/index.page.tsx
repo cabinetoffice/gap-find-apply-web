@@ -15,11 +15,10 @@ const getPageTitle = (fieldErrors: string | any[], isEdit: boolean) =>
   } - Manage a grant`;
 
 const QuestionType = ({
-  pageData: { sectionName, defaultRadio, backButtonHref },
+  pageData: { sectionName, defaultRadio, backButtonHref, isEdit },
   formAction,
   fieldErrors,
   csrfToken,
-  isEdit,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>

@@ -57,6 +57,7 @@ export const getServerSideProps = async (
       backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type${queryString}`,
       sectionTitle,
       maxWords,
+      isEdit: !!questionId,
     };
   }
 
@@ -117,7 +118,6 @@ export const getServerSideProps = async (
     jwt: sessionCookie,
     onErrorMessage: 'Something went wrong while trying to load this page.',
     handleRequest,
-    isEdit: !!questionId,
   });
 };
 
