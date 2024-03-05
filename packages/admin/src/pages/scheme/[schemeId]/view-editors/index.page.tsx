@@ -42,9 +42,9 @@ const ViewEditors = ({
             <CustomLink
               isSecondaryButton
               href={`/scheme/${schemeId}/`}
-              ariaLabel="Return to grant overview"
+              ariaLabel="Back to grant overview"
             >
-              Return to grant overview
+              Back to grant overview
             </CustomLink>
           </div>
         </div>
