@@ -23,6 +23,10 @@ import SchemeApplications from '../components/SchemeApplications';
 import styles from './index.module.scss';
 import Link from 'next/link';
 import { isSchemeOwner } from '../../../services/SchemeEditorService';
+import {
+  getLastEditedEmail,
+  getPublisherEmail,
+} from '../../../services/SchemeService';
 
 type ManageGrantsSidebarProps = {
   schemeId: string;
@@ -40,6 +44,7 @@ export const getServerSideProps = async ({
   let schemeApplicationsData = null;
   let grantAdvertPublishData = null;
   let isOwner;
+  let editorOrPublisherEmail;
 
   try {
     scheme = await getGrantScheme(schemeId, sessionCookie);
@@ -61,6 +66,12 @@ export const getServerSideProps = async ({
         ),
         applicationFormStats: allApplicationFormsStats[0],
       };
+
+      editorOrPublisherEmail =
+        schemeApplicationsData.applicationForm.applicationStatus == 'DRAFT' ||
+        schemeApplicationsData.applicationForm.applicationStatus == 'REMOVED'
+          ? await getLastEditedEmail(schemeId, sessionCookie)
+          : await getPublisherEmail(schemeId, sessionCookie);
     }
   } catch (err) {
     return generateErrorPageRedirect(
@@ -94,6 +105,7 @@ export const getServerSideProps = async ({
       schemeApplicationsData,
       enabledAdBuilder: process.env.FEATURE_ADVERT_BUILDER!,
       grantAdvertPublishData,
+      editorOrPublisherEmail,
     },
   };
 };
@@ -104,6 +116,7 @@ const ViewScheme = ({
   enabledAdBuilder,
   grantAdvertPublishData,
   isOwner,
+  editorOrPublisherEmail,
 }: InferProps<typeof getServerSideProps>) => {
   const schemeHasApplicationOrAdvert =
     schemeApplicationsData || grantAdvertPublishData.status !== 404;
@@ -176,6 +189,7 @@ const ViewScheme = ({
               applicationForm={schemeApplicationsData.applicationForm}
               applicationFormStats={schemeApplicationsData.applicationFormStats}
               schemeVersion={scheme.version}
+              editorOrPublisherEmail={editorOrPublisherEmail}
             />
           ) : (
             <BuildApplicationForm schemeId={scheme.schemeId} />

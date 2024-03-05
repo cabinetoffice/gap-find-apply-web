@@ -3,19 +3,24 @@ import getConfig from 'next/config';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import { ApplicationFormSummary } from '../../../types/ApplicationForm';
 import FindApplicationFormStatsResponse from '../../../types/FindApplicationFormStatsResponse';
+import moment from 'moment';
 
 const SchemeApplications = ({
   applicationForm,
   applicationFormStats,
   schemeVersion,
+  editorOrPublisherEmail,
 }: SchemeApplicationsProps) => {
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
-  };
+  const formatDate = (timestamp: string) =>
+    `${moment(timestamp).format('D MMMM YYYY')}, ${moment(timestamp).format(
+      'h:mm a'
+    )}`;
+
+  const isLastEditedOrDatePublished =
+    applicationForm.audit.lastPublished &&
+    applicationForm.applicationStatus !== 'REMOVED'
+      ? 'Date published'
+      : 'Last edited';
 
   const { publicRuntimeConfig } = getConfig();
 
@@ -31,24 +36,12 @@ const SchemeApplications = ({
           tHeadColumns={[
             { name: 'Application form name', width: 'one-third' },
             { name: 'Date created' },
-            { name: 'Date published' },
-            { name: 'Action', isVisuallyHidden: true },
+            { name: isLastEditedOrDatePublished },
           ]}
           forceCellTopBorder={true}
           rows={[
             {
               cells: [
-                { content: applicationForm.applicationName },
-                {
-                  content: formatDate(applicationForm.audit.created),
-                },
-                {
-                  content:
-                    applicationForm.audit.lastPublished &&
-                    applicationForm.applicationStatus !== 'REMOVED'
-                      ? formatDate(applicationForm.audit.lastPublished)
-                      : '-',
-                },
                 {
                   content: (
                     <CustomLink
@@ -56,9 +49,20 @@ const SchemeApplications = ({
                       ariaLabel={`View application: ${applicationForm.applicationName}`}
                       dataCy="cy_view-application-link"
                     >
-                      View
+                      {applicationForm.applicationName}
                     </CustomLink>
                   ),
+                },
+                {
+                  content: formatDate(applicationForm.audit.created),
+                },
+                {
+                  content:
+                    (applicationForm.audit.lastPublished &&
+                    applicationForm.applicationStatus !== 'REMOVED'
+                      ? formatDate(applicationForm.audit.lastPublished)
+                      : formatDate(applicationForm.audit.lastUpdatedDate)) +
+                    `\n (${editorOrPublisherEmail})`,
                 },
               ],
             },
@@ -186,6 +190,7 @@ type SchemeApplicationsProps = {
   applicationForm: ApplicationFormSummary;
   applicationFormStats: FindApplicationFormStatsResponse;
   schemeVersion?: string;
+  editorOrPublisherEmail?: string;
 };
 
 export default SchemeApplications;
