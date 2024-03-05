@@ -60,8 +60,6 @@ export const getServerSideProps: GetServerSideProps = async ({
     req,
     res,
     async (body: any) => {
-      options = body.options;
-
       options = Object.keys(body).reduce((array, key) => {
         if (key.startsWith('options')) {
           array.push(...body[key]);

@@ -355,6 +355,7 @@ describe('Question Options', () => {
         it('Should redirect to dashboard after successfully adding question with options', async () => {
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
+            'save-question': '',
           });
 
           (postQuestion as jest.Mock).mockResolvedValue({});
@@ -381,6 +382,7 @@ describe('Question Options', () => {
         it('Should redirect to service error page if saving throws an error', async () => {
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
+            'save-question': '',
           });
 
           (postQuestion as jest.Mock).mockRejectedValue({});
@@ -395,6 +397,7 @@ describe('Question Options', () => {
         it('Should return field errors if they are returned from the backend.', async () => {
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
+            'save-question': '',
           });
           (postQuestion as jest.Mock).mockRejectedValue({
             response: { data: { fieldErrors: validationErrors } },
@@ -412,6 +415,7 @@ describe('Question Options', () => {
         it('Should parse class level errors into field level errors', async () => {
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
+            'save-question': '',
           });
           (postQuestion as jest.Mock).mockRejectedValue({
             response: { data: { fieldErrors: validationErrors } },
