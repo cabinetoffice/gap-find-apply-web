@@ -62,13 +62,25 @@ export const getServerSideProps: GetServerSideProps = async ({
     async (body: any) => {
       options = body.options;
 
+      options = Object.keys(body).reduce((array, key) => {
+        if (key.startsWith('options')) {
+          array.push(...body[key]);
+        }
+
+        if (key.startsWith('delete_')) {
+          const deleteOptionIndex = Number(key.split('_')[1]);
+          array.splice(deleteOptionIndex, 1);
+        }
+        return array;
+      }, [] as string[]);
+
       if ('add-another-option' in body) {
         options.push('');
 
         return {
           data: 'OPTION_ADDED',
         };
-      } else {
+      } else if ('save-question' in body) {
         const { optional, ...restOfQuestionSummary } = questionSummary;
 
         await postQuestion(
@@ -84,6 +96,10 @@ export const getServerSideProps: GetServerSideProps = async ({
 
         return {
           data: 'QUESTION_SAVED',
+        };
+      } else {
+        return {
+          data: 'OPTION_REMOVED',
         };
       }
     },
@@ -183,8 +199,23 @@ const QuestionOptions = ({
                 fieldName={`options[${index}]`}
                 defaultValue={option}
                 fieldErrors={fieldErrors}
+                fluidWidth="three-quarters"
                 TitleTag="h2"
-              />
+              >
+                {options.length > 2 && (
+                  <button
+                    name={`delete_${index}`}
+                    className="button--tertiary govuk-!-margin-left-3"
+                    aria-label={`Delete the ${toWordsOrdinal(
+                      index + 1
+                    )} option`}
+                    data-module="govuk-button"
+                    data-cy={`cy_questionOptions-deleteOption-${index + 1}`}
+                  >
+                    Delete
+                  </button>
+                )}
+              </TextInput>
             );
           })}
 
