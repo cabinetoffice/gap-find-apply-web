@@ -26,7 +26,7 @@ import { isSchemeOwner } from '../../../services/SchemeEditorService';
 import {
   getLastEditedEmail,
   getPublisherEmail,
-} from '../../../services/SchemeService';
+} from '../../../services/ApplicationService';
 
 type ManageGrantsSidebarProps = {
   schemeId: string;
@@ -66,12 +66,13 @@ export const getServerSideProps = async ({
         ),
         applicationFormStats: allApplicationFormsStats[0],
       };
-
+      const grantApplicationId =
+        schemeApplicationsData.applicationForm.grantApplicationId;
       editorOrPublisherEmail =
         schemeApplicationsData.applicationForm.applicationStatus == 'DRAFT' ||
         schemeApplicationsData.applicationForm.applicationStatus == 'REMOVED'
-          ? await getLastEditedEmail(schemeId, sessionCookie)
-          : await getPublisherEmail(schemeId, sessionCookie);
+          ? await getLastEditedEmail(grantApplicationId, sessionCookie)
+          : await getPublisherEmail(grantApplicationId, sessionCookie);
     }
   } catch (err) {
     return generateErrorPageRedirect(

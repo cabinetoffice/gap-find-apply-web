@@ -120,25 +120,3 @@ export const schemeApplicationIsInternal = async (
   );
   return response.data;
 };
-
-export const getLastEditedEmail = async (
-  schemeId: string,
-  sessionId: string
-) => {
-  const response = await axios.post(
-    `${BASE_SCHEME_URL}/${schemeId}/application/lastUpdated/email`,
-    axiosSessionConfig(sessionId)
-  );
-  return response.data;
-};
-
-export const getPublisherEmail = async (
-  schemeId: string,
-  sessionId: string
-) => {
-  const response = await axios.post(
-    `${BASE_SCHEME_URL}/${schemeId}/application/publisher/email`,
-    axiosSessionConfig(sessionId)
-  );
-  return response.data;
-};
