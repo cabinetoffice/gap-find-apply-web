@@ -136,14 +136,6 @@ const getLastEditedEmail = async (applicationId: string, sessionId: string) => {
   return response.data;
 };
 
-const getPublisherEmail = async (applicationId: string, sessionId: string) => {
-  const response = await axios.post(
-    `${BASE_APPLICATION_URL}/${applicationId}//publisher/email`,
-    axiosSessionConfig(sessionId)
-  );
-  return response.data;
-};
-
 export {
   createNewApplicationForm,
   findMatchingApplicationForms,
@@ -153,5 +145,4 @@ export {
   handleSectionOrdering,
   handleQuestionOrdering,
   getLastEditedEmail,
-  getPublisherEmail,
 };

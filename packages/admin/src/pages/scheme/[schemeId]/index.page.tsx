@@ -23,10 +23,7 @@ import SchemeApplications from '../components/SchemeApplications';
 import styles from './index.module.scss';
 import Link from 'next/link';
 import { isSchemeOwner } from '../../../services/SchemeEditorService';
-import {
-  getLastEditedEmail,
-  getPublisherEmail,
-} from '../../../services/ApplicationService';
+import { getLastEditedEmail } from '../../../services/ApplicationService';
 
 type ManageGrantsSidebarProps = {
   schemeId: string;
@@ -68,11 +65,10 @@ export const getServerSideProps = async ({
       };
       const grantApplicationId =
         schemeApplicationsData.applicationForm.grantApplicationId;
-      editorOrPublisherEmail =
-        schemeApplicationsData.applicationForm.applicationStatus == 'DRAFT' ||
-        schemeApplicationsData.applicationForm.applicationStatus == 'REMOVED'
-          ? await getLastEditedEmail(grantApplicationId, sessionCookie)
-          : await getPublisherEmail(grantApplicationId, sessionCookie);
+      editorOrPublisherEmail = await getLastEditedEmail(
+        grantApplicationId,
+        sessionCookie
+      );
     }
   } catch (err) {
     return generateErrorPageRedirect(
