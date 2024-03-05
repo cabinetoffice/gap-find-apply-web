@@ -129,7 +129,7 @@ const handleQuestionOrdering = async ({
 };
 
 const getLastEditedEmail = async (applicationId: string, sessionId: string) => {
-  const response = await axios.post(
+  const response = await axios.get(
     `${BASE_APPLICATION_URL}/${applicationId}/lastUpdated/email`,
     axiosSessionConfig(sessionId)
   );
