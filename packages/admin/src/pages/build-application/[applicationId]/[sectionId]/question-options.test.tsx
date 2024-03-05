@@ -155,6 +155,24 @@ describe('Question Options', () => {
       );
       expect(document.title).toBe('Error: Add a question - Manage a grant');
     });
+
+    it('Should NOT render "Delete" button for each option when there are 2 or less options present', () => {
+      render(component);
+      expect(screen.queryByRole('button', { name: 'Delete' })).toBeFalsy();
+    });
+
+    it('Should render "Delete" button for each option when there are 3 or more options present', () => {
+      render(
+        <QuestionOptions
+          {...getProps({
+            options: ['Option one', 'Option two', 'Option three'],
+          })}
+        />
+      );
+      screen.getByRole('button', { name: 'Delete the first option' });
+      screen.getByRole('button', { name: 'Delete the second option' });
+      screen.getByRole('button', { name: 'Delete the third option' });
+    });
   });
 
   describe('getServerSideProps', () => {
