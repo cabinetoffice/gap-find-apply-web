@@ -44,7 +44,7 @@ export const getServerSideProps = async ({
   let schemeApplicationsData = null;
   let grantAdvertPublishData = null;
   let isOwner;
-  let editorOrPublisherEmail;
+  let editorOrPublisherEmail = null;
 
   try {
     scheme = await getGrantScheme(schemeId, sessionCookie);
@@ -96,6 +96,7 @@ export const getServerSideProps = async ({
       );
     }
     grantAdvertPublishData = { status: 404 };
+    editorOrPublisherEmail = `NA`;
   }
 
   return {
