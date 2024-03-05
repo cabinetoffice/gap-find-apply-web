@@ -1,8 +1,10 @@
 import { ImportantBanner, Table } from 'gap-web-ui';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import React from 'react';
 
+import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
 import CustomLink from '../../../../components/custom-link/CustomLink';
+import Meta from '../../../../components/layout/Meta';
+import { Pagination } from '../../../../components/pagination/Pagination';
 import {
   ExportDetails,
   getExportDetails,
@@ -10,9 +12,6 @@ import {
 import { getGrantScheme } from '../../../../services/SchemeService';
 import { generateErrorPageRedirect } from '../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../utils/session';
-import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
-import { Pagination } from '../../../../components/pagination/Pagination';
-import Meta from '../../../../components/layout/Meta';
 
 export const getServerSideProps = async ({
   req,
@@ -164,26 +163,28 @@ export const CompletedSubmissions = ({
             </b>{' '}
             available to download.
           </p>
-          <div className="govuk-button-group">
-            <CustomLink
-              href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
-                superZipLocation
-              )}`}
-              isButton
-              excludeSubPath
-              disabled={availableSubmissionsTotalCount == 0}
-            >
-              Download all applications
-            </CustomLink>
+          {availableSubmissionsTotalCount > 0 && (
+            <div className="govuk-button-group">
+              <CustomLink
+                href={`/apply/admin/api/signed-url?key=${encodeURIComponent(
+                  superZipLocation
+                )}`}
+                isButton
+                excludeSubPath
+                disabled={availableSubmissionsTotalCount == 0}
+              >
+                Download all applications
+              </CustomLink>
 
-            <CustomLink
-              href={individualApplicationsHref}
-              isSecondaryButton
-              disabled={availableSubmissionsTotalCount == 0}
-            >
-              View individual applications
-            </CustomLink>
-          </div>
+              <CustomLink
+                href={individualApplicationsHref}
+                isSecondaryButton
+                disabled={availableSubmissionsTotalCount == 0}
+              >
+                View individual applications
+              </CustomLink>
+            </div>
+          )}
 
           {unavailableSubmissions.length > 0 && (
             <>

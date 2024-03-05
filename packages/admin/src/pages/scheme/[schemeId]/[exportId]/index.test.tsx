@@ -184,6 +184,11 @@ describe('Download all submissions page', () => {
         render(unavailableOnlyComponent);
       });
 
+      it('Should not render the two buttons', async () => {
+        expect(screen.queryByText('Download all applications')).toBeFalsy;
+        expect(screen.queryByText('View individual applications')).toBeFalsy();
+      });
+
       it('Renders correct information about submissions', () => {
         screen.getByText('0 applications');
       });
@@ -219,17 +224,6 @@ describe('Download all submissions page', () => {
         screen.getByText(
           'You can view a read-only copy of the applications that are affected in the "Applications unavailable for download" section of this page.'
         );
-      });
-
-      it('Buttons are disabled', () => {
-        const downloadAllLink = screen.getByRole('button', {
-          name: 'Download all applications',
-        });
-        expect(downloadAllLink).toHaveAttribute('disabled');
-        const downloadIndividualLink = screen.getByRole('button', {
-          name: 'View individual applications',
-        });
-        expect(downloadIndividualLink).toHaveAttribute('disabled');
       });
     });
   });
