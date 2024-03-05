@@ -1,12 +1,9 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
-import Scheme from '../../types/Scheme';
-import SchemeList, {
-  generateSchemeTableRows,
-  getServerSideProps,
-} from './index.page';
-import { getUserSchemes } from '../../services/SchemeService';
+import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../components/custom-link/CustomLink';
+import { getUserSchemes } from '../../services/SchemeService';
+import Scheme from '../../types/Scheme';
+import { generateSchemeTableRows, getServerSideProps } from './index.page';
 
 jest.mock('next/config', () => () => {
   return {
@@ -28,6 +25,8 @@ const mockSchemeList: Scheme[] = [
     ggisReference: 'ggisReference',
     funderId: '4567',
     createdDate: '2011-12-10T14:48:00',
+    lastUpdatedBy: 'test@admin.com',
+    lastUpdatedDate: '2011-12-10T14:48:00',
   },
   {
     name: 'Scheme name 2',
@@ -35,10 +34,10 @@ const mockSchemeList: Scheme[] = [
     ggisReference: 'ggisReference',
     funderId: '4562467',
     createdDate: '2011-10-10T14:48:00',
+    lastUpdatedBy: 'test2@admin.com',
+    lastUpdatedDate: '2011-10-10T14:48:00',
   },
 ];
-
-const schemesPageComponent = <SchemeList schemes={mockSchemeList} />;
 
 describe('SchemeList', () => {
   describe('getServerSideProps', () => {
@@ -51,22 +50,10 @@ describe('SchemeList', () => {
 
       const result = await getServerSideProps({
         req: { cookies: { 'gap-test': 'testSessionId' } },
-      } as any);
+      } as unknown as GetServerSidePropsContext);
 
       expect(result).toStrictEqual({ props: { schemes: mockSchemeList } });
     });
-  });
-
-  it('Should render a page title', () => {
-    render(schemesPageComponent);
-    screen.getByRole('heading', { name: 'All grants' });
-  });
-
-  it('Should render a page description', () => {
-    render(schemesPageComponent);
-    screen.getByText(
-      'The list below shows all of the grants for your account.'
-    );
   });
 
   describe('generateSchemeTableRows', () => {
@@ -76,28 +63,23 @@ describe('SchemeList', () => {
         {
           cells: [
             {
-              content: 'Scheme name 1',
-            },
-            { content: '10 December 2011' },
-            {
               content: (
                 <CustomLink
                   href="/scheme/123"
                   dataCy="cy_linkToScheme_Scheme name 1"
                   ariaLabel="View scheme Scheme name 1"
                 >
-                  View
+                  Scheme name 1
                 </CustomLink>
               ),
             },
+            { content: '10 December 2011, 2:48 pm' },
+            { content: '10 December 2011, 2:48 pm' },
+            { content: 'test@admin.com' },
           ],
         },
         {
           cells: [
-            {
-              content: 'Scheme name 2',
-            },
-            { content: '10 October 2011' },
             {
               content: (
                 <CustomLink
@@ -105,10 +87,13 @@ describe('SchemeList', () => {
                   dataCy="cy_linkToScheme_Scheme name 2"
                   ariaLabel="View scheme Scheme name 2"
                 >
-                  View
+                  Scheme name 2
                 </CustomLink>
               ),
             },
+            { content: '10 October 2011, 2:48 pm' },
+            { content: '10 October 2011, 2:48 pm' },
+            { content: 'test2@admin.com' },
           ],
         },
       ]);

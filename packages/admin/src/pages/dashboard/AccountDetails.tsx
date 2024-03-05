@@ -1,4 +1,3 @@
-import CustomLink from '../../components/custom-link/CustomLink';
 import UserDetails from '../../types/UserDetails';
 
 const AccountDetails = ({ userDetails }: AccountDetailsProps) => {
@@ -13,23 +12,27 @@ const AccountDetails = ({ userDetails }: AccountDetailsProps) => {
         <h2 className="govuk-heading-m">Your details</h2>
         <dl className="govuk-summary-list govuk-summary-list--no-border">
           <div className="govuk-summary-list__row">
-            <dt className="govuk-summary-list__key">Email</dt>
-            <dd className="govuk-summary-list__value">{`${userDetails.emailAddress}`}</dd>
+            <dt className="govuk-summary-list__key" id="email">
+              Email
+            </dt>
+            <dd
+              className="govuk-summary-list__value"
+              aria-labelledby="email"
+            >{`${userDetails.emailAddress}`}</dd>
           </div>
           <div className="govuk-summary-list__row">
-            <dt className="govuk-summary-list__key">Organisation</dt>
-            <dd className="govuk-summary-list__value">
+            <dt className="govuk-summary-list__key" id="organisation-name">
+              Organisation
+            </dt>
+            <dd
+              className="govuk-summary-list__value"
+              aria-labelledby="organisation-name"
+            >
               {userDetails.organisationName}
             </dd>
           </div>
         </dl>
-        <p className="govuk-body">
-          All of the grants linked to your account are listed below.
-        </p>
       </div>
-      <CustomLink href="/new-scheme/name" isButton dataCy="cy_addAGrantButton">
-        Add a grant
-      </CustomLink>
     </>
   );
 };

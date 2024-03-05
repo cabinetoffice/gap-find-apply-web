@@ -44,7 +44,7 @@ export const generateSchemeTableRows = ({ schemes }: SchemesProps) => {
 
 export function dateFormatter(date: string) {
   const utcDate = moment(date).utc();
-  return moment(utcDate).local().format('dddd D MMMM YYYY, h:mm a');
+  return moment(utcDate).local().format('D MMMM YYYY, h:mm a');
 }
 
 interface SchemesProps {

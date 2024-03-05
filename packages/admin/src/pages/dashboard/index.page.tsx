@@ -1,10 +1,12 @@
 import { ImportantBanner } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
+import CustomLink from '../../components/custom-link/CustomLink';
 import Meta from '../../components/layout/Meta';
-import { getUserSchemes } from '../../services/SchemeService';
+import { getOwnedAndEditableSchemes } from '../../services/SchemeService';
 import { getLoggedInUsersDetails } from '../../services/UserService';
 import InferProps from '../../types/InferProps';
 import Pagination from '../../types/Pagination';
+import Scheme from '../../types/Scheme';
 import UserDetails from '../../types/UserDetails';
 import { getSessionIdFromCookies } from '../../utils/session';
 import Navigation from '../super-admin-dashboard/Navigation';
@@ -25,7 +27,12 @@ export const getServerSideProps = async ({
     sort: 'createdDate,DESC',
   };
   const sessionCookie = getSessionIdFromCookies(req);
-  const schemes = await getUserSchemes(paginationParams, sessionCookie);
+  const allUserSchemes = await getOwnedAndEditableSchemes(
+    paginationParams,
+    sessionCookie
+  );
+  const schemesUserOwns = allUserSchemes.ownedSchemes;
+  const schemesUserCanEdit = allUserSchemes.editableSchemes;
   const userDetails: UserDetails = await getLoggedInUsersDetails(sessionCookie);
 
   const isTechSupportUser = userDetails.roles.includes('TECHNICAL_SUPPORT');
@@ -41,7 +48,8 @@ export const getServerSideProps = async ({
 
   return {
     props: {
-      schemes: schemes,
+      schemesUserOwns,
+      schemesUserCanEdit,
       userDetails,
       bannerProps,
       isTechSupportUser,
@@ -67,7 +75,8 @@ const errorBannerProps = {
 };
 
 const Dashboard = ({
-  schemes,
+  schemesUserOwns,
+  schemesUserCanEdit,
   userDetails,
   bannerProps,
   isTechSupportUser,
@@ -76,6 +85,10 @@ const Dashboard = ({
     bannerProps === FAILED
       ? errorBannerProps
       : (bannerProps as { bannerHeading: string; isSuccess: boolean });
+
+  const schemesUserOwnsIsEmpty = schemesUserOwns.length === 0;
+  const schemesUserCanEditIsEmpty = schemesUserCanEdit.length === 0;
+
   return (
     <>
       {isTechSupportUser && <Navigation isSuperAdminNav={false}></Navigation>}
@@ -84,12 +97,59 @@ const Dashboard = ({
         <div className="govuk-grid-column-full govuk-!-margin-bottom-6">
           {bannerProps && <ImportantBanner {...formattedBannerProps} />}
           <AccountDetails userDetails={userDetails} />
-          <ManageGrantSchemes schemes={schemes} />
+
+          {schemesUserOwnsIsEmpty && schemesUserCanEditIsEmpty
+            ? noGrantsView()
+            : grantsView(
+                schemesUserOwns,
+                schemesUserCanEdit,
+                schemesUserOwnsIsEmpty,
+                schemesUserCanEditIsEmpty
+              )}
         </div>
       </div>
     </>
   );
 };
+
+const noGrantsView = () => (
+  <>
+    <p className="govuk-body">
+      You do not own or have editing permissions for any grants.
+    </p>
+    <CustomLink href="/new-scheme/name" isButton dataCy="cy_addAGrantButton">
+      Add a grant
+    </CustomLink>
+  </>
+);
+
+const grantsView = (
+  schemesUserOwns: Scheme[],
+  schemesUserCanEdit: Scheme[],
+  schemesUserOwnsIsEmpty: boolean,
+  schemesUserCanEditIsEmpty: boolean
+) => (
+  <>
+    <p className="govuk-body">
+      All of the grants linked to your account are listed below.
+    </p>
+    <CustomLink href="/new-scheme/name" isButton dataCy="cy_addAGrantButton">
+      Add a grant
+    </CustomLink>
+    {!schemesUserOwnsIsEmpty && (
+      <ManageGrantSchemes
+        schemes={schemesUserOwns}
+        tableHeading="Grants you own"
+      />
+    )}
+    {!schemesUserCanEditIsEmpty && (
+      <ManageGrantSchemes
+        schemes={schemesUserCanEdit}
+        tableHeading="Grants you can edit"
+      />
+    )}
+  </>
+);
 
 const getBannerProps = ({
   findMigrationStatus,
