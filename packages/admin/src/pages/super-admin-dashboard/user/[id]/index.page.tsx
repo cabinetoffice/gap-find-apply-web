@@ -39,12 +39,14 @@ export const getServerSideProps = async ({
     const usersSchemes = await getAdminsSchemes(sub, sessionId);
     const adminRoles = new Set(['ADMIN', 'SUPER_ADMIN']);
     const isUserAdmin = user.role && adminRoles.has(user.role?.name);
+    const doesOwnScheme = usersSchemes.length > 0;
 
     return {
       isViewingOwnAccount,
       ...user,
       schemes: usersSchemes,
       isUserAdmin,
+      doesOwnScheme,
     };
   };
 
@@ -188,7 +190,6 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
 
             {!pageData.isViewingOwnAccount && (
               <div className="govuk-button-group">
-                {/* THIS SHOULD BE DISABLED IF THE ADMIN IS AN OWNER */}
                 <DeleteButton
                   gapUserId={pageData.gapUserId}
                   userHasSchemes={userHasSchemes}
