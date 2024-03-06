@@ -8,6 +8,12 @@ import {
 import { getPageProps } from '../../../testUtils/unitTestHelpers';
 import AdvertStatusEnum from '../../../enums/AdvertStatus';
 
+jest.mock('moment', () => {
+  const moment = jest.requireActual('moment');
+  //required to avoid timezone issues between local and CI
+  return (timestamp: string) => moment(timestamp).utc();
+});
+
 describe('BuildAdvert component', () => {
   const getDefaultProps = () =>
     ({
@@ -19,11 +25,13 @@ describe('BuildAdvert component', () => {
         contentfulSlug: 'some-contentful-slug',
         openingDate: '2023-03-30T23:01:00Z',
         closingDate: null,
-        firstPublishedDate: null,
-        lastPublishedDate: null,
+        firstPublishedDate: '2023-03-30T23:01:00Z',
         lastUpdated: '2023-03-30T23:01:00Z',
         lastUnpublishedDate: null,
+        lastPublishedDate: '2023-03-30T23:01:00Z',
         unpublishedDate: null,
+        created: '2023-03-30T21:01:00Z',
+        validLastUpdated: true,
       },
     } as getAdvertPublishInformationBySchemeIdResponse);
   const grantAdvertId = getDefaultProps();
@@ -219,6 +227,48 @@ describe('BuildAdvert component', () => {
         'href',
         `/apply/scheme/12345/advert/${dummyGrantAdvertDataWithAdvert?.data?.grantAdvertId}/summary`
       );
+    });
+  });
+
+  describe('BuildAdvert - with invalid last updated', () => {
+    it('Scheduled advert should render the created on date', () => {
+      render(
+        <BuildAdvert
+          schemeId="12345"
+          grantAdvert={getPageProps(getDefaultProps, {
+            data: {
+              validLastUpdated: false,
+              grantAdvertStatus: AdvertStatusEnum.SCHEDULED,
+            },
+          })}
+        />
+      );
+
+      expect(
+        screen.getByText(
+          'It was created by my-email on 30 March 2023 at 21:01 PM.'
+        )
+      ).toBeVisible();
+    });
+
+    it('Draft advert should render the created on date', () => {
+      render(
+        <BuildAdvert
+          schemeId="12345"
+          grantAdvert={getPageProps(getDefaultProps, {
+            data: {
+              validLastUpdated: false,
+              grantAdvertStatus: AdvertStatusEnum.DRAFT,
+            },
+          })}
+        />
+      );
+
+      expect(
+        screen.getByText(
+          'It was created by my-email on 30 March 2023 at 21:01 PM.'
+        )
+      ).toBeVisible();
     });
   });
 });
