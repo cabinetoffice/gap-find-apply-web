@@ -98,31 +98,32 @@ jest.mock('../../../services/AdvertPageService');
 
 describe('scheme/[schemeId]', () => {
   describe('getServerSideProps', () => {
-    const mockedGetScheme = getGrantScheme as jest.MockedFn<
-      typeof getGrantScheme
-    >;
-    const mockedFindApplicationFormFromScheme =
-      findApplicationFormFromScheme as jest.MockedFn<
-        typeof findApplicationFormFromScheme
-      >;
+    const mockedGetScheme = jest.mocked(getGrantScheme);
+
+    const mockedFindApplicationFormFromScheme = jest.mocked(
+      findApplicationFormFromScheme
+    );
 
     const mockGetLastEditedEmail = jest.mocked(getLastEditedEmail);
 
-    const mockGetAdvertPublishInformationBySchemeId =
-      getGrantAdvertPublishInformationBySchemeId as jest.MockedFn<
-        typeof getGrantAdvertPublishInformationBySchemeId
-      >;
+    const mockGetAdvertPublishInformationBySchemeId = jest.mocked(
+      getGrantAdvertPublishInformationBySchemeId
+    );
 
-    it('Should get the scheme id from the path param', async () => {
+    const mockGetApplicationFormSummary = jest.mocked(
+      getApplicationFormSummary
+    );
+
+    beforeEach(() => {
       mockedGetScheme.mockResolvedValue(mockScheme);
       mockedFindApplicationFormFromScheme.mockResolvedValue([
         applicationFormFoundStats(),
       ]);
-      (getApplicationFormSummary as jest.Mock).mockResolvedValue(
-        applicationForm
-      );
+      mockGetApplicationFormSummary.mockResolvedValue(applicationForm);
       mockGetLastEditedEmail.mockResolvedValue('test@test.gov');
+    });
 
+    it('Should get the scheme id from the path param', async () => {
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
@@ -131,14 +132,6 @@ describe('scheme/[schemeId]', () => {
     });
 
     it('Should return scheme to view as a prop', async () => {
-      mockedGetScheme.mockResolvedValue(mockScheme);
-      mockedFindApplicationFormFromScheme.mockResolvedValue([
-        applicationFormFoundStats(),
-      ]);
-      (getApplicationFormSummary as jest.Mock).mockResolvedValue(
-        applicationForm
-      );
-
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
@@ -149,14 +142,6 @@ describe('scheme/[schemeId]', () => {
     });
 
     it('Should return an applicationForm as a prop', async () => {
-      mockedGetScheme.mockResolvedValue(mockScheme);
-      mockedFindApplicationFormFromScheme.mockResolvedValue([
-        applicationFormFoundStats(),
-      ]);
-      (getApplicationFormSummary as jest.Mock).mockResolvedValue(
-        applicationForm
-      );
-
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
@@ -174,14 +159,6 @@ describe('scheme/[schemeId]', () => {
     });
 
     it('Should return the first application form stats as a prop when application is found', async () => {
-      mockedGetScheme.mockResolvedValue(mockScheme);
-      mockedFindApplicationFormFromScheme.mockResolvedValue([
-        applicationFormFoundStats(),
-      ]);
-      (getApplicationFormSummary as jest.Mock).mockResolvedValue(
-        applicationForm
-      );
-
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
