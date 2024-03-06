@@ -188,7 +188,7 @@ type SchemeApplicationsProps = {
   applicationForm: ApplicationFormSummary;
   applicationFormStats: FindApplicationFormStatsResponse;
   schemeVersion?: string;
-  editorOrPublisherEmail?: string;
+  editorOrPublisherEmail: string;
 };
 
 export default SchemeApplications;
