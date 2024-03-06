@@ -12,9 +12,7 @@ const SchemeApplications = ({
   editorOrPublisherEmail,
 }: SchemeApplicationsProps) => {
   const formatDate = (timestamp: string) =>
-    `${moment(timestamp).format('D MMMM YYYY')}, ${moment(timestamp).format(
-      'h:mm a'
-    )}`;
+    `${moment(timestamp).format('D MMMM YYYY, h:mm a')}`;
 
   const isLastEditedOrDatePublished =
     applicationForm.audit.lastPublished &&
