@@ -95,7 +95,6 @@ export const getServerSideProps = async ({
       );
     }
     grantAdvertPublishData = { status: 404 };
-    editorOrPublisherEmail = `NA`;
   }
 
   return {
@@ -189,7 +188,7 @@ const ViewScheme = ({
               applicationForm={schemeApplicationsData.applicationForm}
               applicationFormStats={schemeApplicationsData.applicationFormStats}
               schemeVersion={scheme.version}
-              editorOrPublisherEmail={editorOrPublisherEmail}
+              editorOrPublisherEmail={editorOrPublisherEmail ?? 'NA'}
             />
           ) : (
             <BuildApplicationForm schemeId={scheme.schemeId} />
