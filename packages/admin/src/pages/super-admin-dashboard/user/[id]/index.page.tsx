@@ -16,9 +16,11 @@ import { fetchDataOrGetRedirect } from '../../../../utils/fetchDataOrGetRedirect
 import moment from 'moment';
 import InferProps from '../../../../types/InferProps';
 import { getAdminsSchemes } from '../../../../services/SchemeService';
-import { isSchemeOwner } from '../../../../services/SchemeEditorService';
 import Scheme from '../../../../types/Scheme';
-import { is } from 'cypress/types/bluebird';
+import {
+  getSchemeEditors,
+  isSchemeOwner,
+} from '../../../../services/SchemeEditorService';
 
 export const getServerSideProps = async ({
   params,
@@ -40,6 +42,16 @@ export const getServerSideProps = async ({
     const adminRoles = new Set(['ADMIN', 'SUPER_ADMIN']);
     const isUserAdmin = user.role && adminRoles.has(user.role?.name);
     const doesOwnScheme = usersSchemes.length > 0;
+
+    console.log('ADMIN');
+    console.log(
+      'IS SCHEME OWNER of SUPERADMINGrant: ',
+      await isSchemeOwner('28', sessionId)
+    );
+    console.log(
+      'IS SCHEME OWNER of Test1: ',
+      await isSchemeOwner('27', sessionId)
+    );
 
     return {
       isViewingOwnAccount,
