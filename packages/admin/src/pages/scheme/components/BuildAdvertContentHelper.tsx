@@ -8,12 +8,7 @@ type StatusContentMap = { [Key in AdvertStatusEnum]?: string };
 
 export type ValidAdvertData = NonNullable<
   getAdvertPublishInformationBySchemeIdResponse['data']
-> extends infer T
-  ? {
-      [K in keyof T]: NonNullable<T[K]>;
-    }
-  : never;
-
+>;
 export type AdvertData = {
   grantAdvertData: ValidAdvertData;
 };
@@ -55,7 +50,7 @@ export function getLastUpdatedByText({
   created,
 }: ValidAdvertData) {
   const publishedDateString = formatTimeStamp(
-    lastPublishedDate ?? firstPublishedDate
+    lastPublishedDate ?? (firstPublishedDate as string)
   );
   const lastUpdatedString = formatTimeStamp(lastUpdated);
 

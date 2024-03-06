@@ -19,11 +19,13 @@ describe('BuildAdvert component', () => {
         contentfulSlug: 'some-contentful-slug',
         openingDate: '2023-03-30T23:01:00Z',
         closingDate: null,
-        firstPublishedDate: null,
-        lastPublishedDate: null,
+        firstPublishedDate: '2023-03-30T23:01:00Z',
         lastUpdated: '2023-03-30T23:01:00Z',
         lastUnpublishedDate: null,
+        lastPublishedDate: '2023-03-30T23:01:00Z',
         unpublishedDate: null,
+        created: '2023-03-30T21:01:00Z',
+        validLastUpdated: true,
       },
     } as getAdvertPublishInformationBySchemeIdResponse);
   const grantAdvertId = getDefaultProps();
@@ -165,7 +167,7 @@ describe('BuildAdvert component', () => {
       screen.getByRole('heading', { name: 'Grant advert' });
       expect(
         screen.getByText(
-          'Your advert was scheduled to be published on 30 March 2023 at 23:01 PM by my-email.'
+          'Your advert was scheduled to be published on 31 March 2023 at 23:01 PM by my-email.'
         )
       ).toBeVisible();
     });
@@ -219,6 +221,48 @@ describe('BuildAdvert component', () => {
         'href',
         `/apply/scheme/12345/advert/${dummyGrantAdvertDataWithAdvert?.data?.grantAdvertId}/summary`
       );
+    });
+  });
+
+  describe('BuildAdvert - with invalid last updated', () => {
+    it('Scheduled advert should render the created on date', () => {
+      render(
+        <BuildAdvert
+          schemeId="12345"
+          grantAdvert={getPageProps(getDefaultProps, {
+            data: {
+              validLastUpdated: false,
+              grantAdvertStatus: AdvertStatusEnum.SCHEDULED,
+            },
+          })}
+        />
+      );
+
+      expect(
+        screen.getByText(
+          'It was created by my-email on 4 March 2024 at 21:01 PM.'
+        )
+      ).toBeVisible();
+    });
+
+    it('Draft advert should render the created on date', () => {
+      render(
+        <BuildAdvert
+          schemeId="12345"
+          grantAdvert={getPageProps(getDefaultProps, {
+            data: {
+              validLastUpdated: false,
+              grantAdvertStatus: AdvertStatusEnum.DRAFT,
+            },
+          })}
+        />
+      );
+
+      expect(
+        screen.getByText(
+          'It was created by my-email on 4 March 2024 at 21:01 PM.'
+        )
+      ).toBeVisible();
     });
   });
 });

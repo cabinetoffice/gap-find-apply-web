@@ -81,7 +81,7 @@ export type getAdvertPublishInformationBySchemeIdResponse = {
     validLastUpdated: boolean;
     unpublishedDate: string | null;
     lastPublishedDate: string | null;
-    lastUpdated: string | null;
+    lastUpdated: string;
   };
 };
 
