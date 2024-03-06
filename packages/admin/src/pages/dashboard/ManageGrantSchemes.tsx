@@ -15,14 +15,24 @@ export const generateSchemeTableRows = ({ schemes }: SchemesProps) => {
       </CustomLink>
     );
 
+    const createdDate = scheme.createdDate
+      ? dateFormatter(scheme.createdDate)
+      : '-';
+
+    const updatedDate = scheme.lastUpdatedDate
+      ? dateFormatter(scheme.lastUpdatedDate)
+      : '-';
+
+    const lastUpdatedBy = scheme.lastUpdatedBy ? scheme.lastUpdatedBy : '-';
+
     return {
       cells: [
         {
           content: schemeLink,
         },
-        { content: dateFormatter(scheme.createdDate) },
-        { content: dateFormatter(scheme.lastUpdatedDate) },
-        { content: scheme.lastUpdatedBy },
+        { content: createdDate },
+        { content: updatedDate },
+        { content: lastUpdatedBy },
       ],
     };
   });
