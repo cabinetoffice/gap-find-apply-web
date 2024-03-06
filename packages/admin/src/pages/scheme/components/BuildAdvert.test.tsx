@@ -8,6 +8,11 @@ import {
 import { getPageProps } from '../../../testUtils/unitTestHelpers';
 import AdvertStatusEnum from '../../../enums/AdvertStatus';
 
+jest.mock('moment', () => {
+  const moment = jest.requireActual('moment');
+  return (timestamp: string) => moment(timestamp).utc();
+});
+
 describe('BuildAdvert component', () => {
   const getDefaultProps = () =>
     ({
@@ -240,7 +245,7 @@ describe('BuildAdvert component', () => {
 
       expect(
         screen.getByText(
-          'It was created by my-email on 30 March 2024 at 21:01 PM.'
+          'It was created by my-email on 30 March 2023 at 21:01 PM.'
         )
       ).toBeVisible();
     });
@@ -260,7 +265,7 @@ describe('BuildAdvert component', () => {
 
       expect(
         screen.getByText(
-          'It was created by my-email on 30 March 2024 at 21:01 PM.'
+          'It was created by my-email on 30 March 2023 at 21:01 PM.'
         )
       ).toBeVisible();
     });
