@@ -32,7 +32,7 @@ type ApplicationFormSummary = {
   audit: {
     version: number;
     created: string;
-    lastUpdatedDate: string;
+    lastUpdated: string;
     lastUpdatedBy: string;
     lastPublished: string;
   };
