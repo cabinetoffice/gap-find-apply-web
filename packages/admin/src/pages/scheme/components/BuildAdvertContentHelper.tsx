@@ -61,7 +61,7 @@ export function getLastUpdatedByText({
   const CONTENT_MAP: StatusContentMap = {
     [PUBLISHED]: `It was published by ${lastUpdatedByEmail} ${publishedDateString}.`,
     [SCHEDULED]: validLastUpdated
-      ? `Your advert was scheduled to be published ${publishedDateString} by ${lastUpdatedByEmail}.`
+      ? `Your advert was scheduled to be published ${lastUpdatedString} by ${lastUpdatedByEmail}.`
       : invalidLastUpdatedString,
   };
 
