@@ -61,7 +61,7 @@ const SchemeApplications = ({
                     (applicationForm.audit.lastPublished &&
                     applicationForm.applicationStatus !== 'REMOVED'
                       ? formatDate(applicationForm.audit.lastPublished)
-                      : formatDate(applicationForm.audit.lastUpdatedDate)) +
+                      : formatDate(applicationForm.audit.lastUpdated)) +
                     `\n (${editorOrPublisherEmail})`,
                 },
               ],
