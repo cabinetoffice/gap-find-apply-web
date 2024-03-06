@@ -56,19 +56,16 @@ export const getServerSideProps: GetServerSideProps = async ({
     (section) => section.sectionId === sectionId
   )?.sectionTitle;
 
-  function processBody(body: any, options: string[]) {
-    options = Object.keys(body).reduce((array, key) => {
+  function processBody(body: any) {
+    return Object.keys(body).reduce((array, key) => {
       if (key.startsWith('options')) {
         array.push(...body[key]);
-      }
-
-      if (key.startsWith('delete_')) {
+      } else if (key.startsWith('delete_')) {
         const deleteOptionIndex = Number(key.split('_')[1]);
         array.splice(deleteOptionIndex, 1);
       }
       return array;
     }, [] as string[]);
-    return options;
   }
 
   async function handleOptions(body: any, options: string[]) {
@@ -106,7 +103,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     req,
     res,
     async (body: any) => {
-      options = processBody(body, options);
+      options = processBody(body);
 
       return handleOptions(body, options);
     },
@@ -213,9 +210,7 @@ const QuestionOptions = ({
                   <button
                     name={`delete_${index}`}
                     className="button--tertiary govuk-!-margin-left-3"
-                    aria-label={`Delete option ${toWordsOrdinal(
-                      index + 1
-                    )}`}
+                    aria-label={`Delete option ${toWordsOrdinal(index + 1)}`}
                     data-module="govuk-button"
                     data-cy={`cy_questionOptions-deleteOption-${index + 1}`}
                   >

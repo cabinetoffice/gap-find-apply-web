@@ -10,6 +10,7 @@ import { postQuestion } from '../../../../services/QuestionService';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
 import { parseBody } from '../../../../utils/parseBody';
 import { ValidationError } from 'gap-web-ui';
+import { post } from 'cypress/types/jquery';
 
 jest.mock('../../../../services/ApplicationService');
 jest.mock('../../../../services/QuestionService');
@@ -169,9 +170,9 @@ describe('Question Options', () => {
           })}
         />
       );
-      screen.getByRole('button', { name: 'Delete the first option' });
-      screen.getByRole('button', { name: 'Delete the second option' });
-      screen.getByRole('button', { name: 'Delete the third option' });
+      screen.getByRole('button', { name: 'Delete option first' });
+      screen.getByRole('button', { name: 'Delete option second' });
+      screen.getByRole('button', { name: 'Delete option third' });
     });
   });
 
@@ -428,6 +429,34 @@ describe('Question Options', () => {
           expect(result.props.fieldErrors).toStrictEqual(
             parsedValidationErrors
           );
+        });
+      });
+      describe('Delete an option', () => {
+        it('Should return an array of current options minus one option when "Delete" button for the option is clicked', async () => {
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two', 'option three'],
+            delete_0: '',
+          });
+
+          const result = (await getServerSideProps(
+            postContext()
+          )) as NextGetServerSidePropsResponse;
+
+          expect(result.props.options).toStrictEqual([
+            'option two',
+            'option three',
+          ]);
+        });
+
+        it('Should NOT try to update the question options when "Delete" button is clicked', async () => {
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two', 'option three'],
+            delete_0: '',
+          });
+
+          await getServerSideProps(postContext());
+
+          expect(postQuestion).not.toHaveBeenCalled();
         });
       });
     });
