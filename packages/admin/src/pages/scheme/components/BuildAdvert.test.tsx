@@ -10,6 +10,7 @@ import AdvertStatusEnum from '../../../enums/AdvertStatus';
 
 jest.mock('moment', () => {
   const moment = jest.requireActual('moment');
+  //required to avoid timezone issues between local and CI
   return (timestamp: string) => moment(timestamp).utc();
 });
 
