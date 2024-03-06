@@ -54,7 +54,7 @@ describe('BuildApplicationForm', () => {
       />
     );
 
-    screen.getByRole('cell', { name: '3 January 2022, 12:00 am' });
+    screen.getByRole('cell', { name: '3 January 2022, 12:00am' });
   });
 
   it('Should render a application form date published table col', () => {
@@ -68,7 +68,7 @@ describe('BuildApplicationForm', () => {
     );
 
     screen.getByRole('cell', {
-      name: '4 January 2022, 12:00 am (test@test.gov)',
+      name: '4 January 2022, 12:00am (test@test.gov)',
     });
   });
 
@@ -85,7 +85,7 @@ describe('BuildApplicationForm', () => {
     );
 
     screen.getByRole('cell', {
-      name: '5 January 2022, 12:00 am (test@test.gov)',
+      name: '5 January 2022, 12:00am (test@test.gov)',
     });
   });
 
@@ -102,7 +102,7 @@ describe('BuildApplicationForm', () => {
     );
 
     screen.getByRole('cell', {
-      name: '5 January 2022, 12:00 am (test@test.gov)',
+      name: '5 January 2022, 12:00am (test@test.gov)',
     });
   });
 
