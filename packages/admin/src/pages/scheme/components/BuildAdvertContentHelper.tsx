@@ -15,7 +15,7 @@ export type AdvertData = {
 
 const formatTimeStamp = (timestamp: string) =>
   `on ${moment(timestamp).format('D MMMM YYYY')} at ${moment(timestamp).format(
-    'HH:mma'
+    'h:mma'
   )}`;
 
 export const getAdvertLink = ({ grantAdvertStatus }: ValidAdvertData) =>
