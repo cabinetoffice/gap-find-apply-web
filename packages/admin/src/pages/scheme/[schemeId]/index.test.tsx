@@ -6,7 +6,10 @@ import { GetServerSidePropsResult, Redirect } from 'next';
 import AdvertStatusEnum from '../../../enums/AdvertStatus';
 import { getGrantAdvertPublishInformationBySchemeId } from '../../../services/AdvertPageService';
 import { getAdvertPublishInformationBySchemeIdResponse } from '../../../services/AdvertPageService.d';
-import { getApplicationFormSummary } from '../../../services/ApplicationService';
+import {
+  getApplicationFormSummary,
+  getLastEditedEmail,
+} from '../../../services/ApplicationService';
 import {
   findApplicationFormFromScheme,
   getGrantScheme,
@@ -21,6 +24,7 @@ const applicationForm = {
   audit: {
     created: '2022-01-03T00:00:00.00Z',
     lastPublished: '2022-01-04T00:00:00.00Z',
+    lastUpdated: '2022-01-05T00:00:00.00Z',
   },
 } as ApplicationFormSummary;
 
@@ -101,6 +105,9 @@ describe('scheme/[schemeId]', () => {
       findApplicationFormFromScheme as jest.MockedFn<
         typeof findApplicationFormFromScheme
       >;
+
+    const mockGetLastEditedEmail = jest.mocked(getLastEditedEmail);
+
     const mockGetAdvertPublishInformationBySchemeId =
       getGrantAdvertPublishInformationBySchemeId as jest.MockedFn<
         typeof getGrantAdvertPublishInformationBySchemeId
@@ -111,6 +118,11 @@ describe('scheme/[schemeId]', () => {
       mockedFindApplicationFormFromScheme.mockResolvedValue([
         applicationFormFoundStats(),
       ]);
+      (getApplicationFormSummary as jest.Mock).mockResolvedValue(
+        applicationForm
+      );
+      mockGetLastEditedEmail.mockResolvedValue('test@test.gov');
+
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
@@ -123,6 +135,9 @@ describe('scheme/[schemeId]', () => {
       mockedFindApplicationFormFromScheme.mockResolvedValue([
         applicationFormFoundStats(),
       ]);
+      (getApplicationFormSummary as jest.Mock).mockResolvedValue(
+        applicationForm
+      );
 
       const response = (await getServerSideProps(
         getContext()
@@ -153,6 +168,7 @@ describe('scheme/[schemeId]', () => {
         audit: {
           created: '2022-01-03T00:00:00.00Z',
           lastPublished: '2022-01-04T00:00:00.00Z',
+          lastUpdated: '2022-01-05T00:00:00.00Z',
         },
       });
     });
@@ -162,6 +178,9 @@ describe('scheme/[schemeId]', () => {
       mockedFindApplicationFormFromScheme.mockResolvedValue([
         applicationFormFoundStats(),
       ]);
+      (getApplicationFormSummary as jest.Mock).mockResolvedValue(
+        applicationForm
+      );
 
       const response = (await getServerSideProps(
         getContext()
@@ -224,6 +243,9 @@ describe('scheme/[schemeId]', () => {
       mockedFindApplicationFormFromScheme.mockResolvedValue([
         applicationFormFoundStats(),
       ]);
+      (getApplicationFormSummary as jest.Mock).mockResolvedValue(
+        applicationForm
+      );
       mockGetAdvertPublishInformationBySchemeId.mockResolvedValue(
         mockGrantadvertData
       );
@@ -315,6 +337,7 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
 
@@ -338,6 +361,7 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       screen.getByText('Support email address');
@@ -353,6 +377,7 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       screen.getByTestId('scheme-application-component');
@@ -397,6 +422,7 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       expect(
@@ -412,6 +438,7 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'enabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
 
@@ -426,6 +453,7 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
 
@@ -440,6 +468,7 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       screen.getByRole('heading', { name: 'Due diligence checks' });
@@ -463,6 +492,7 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={null}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       screen.getByRole('heading', { name: 'Due diligence checks' });
@@ -487,6 +517,7 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={null}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       expect(
@@ -503,6 +534,7 @@ describe('scheme/[schemeId]', () => {
           schemeApplicationsData={null}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={{ status: 404 }}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       expect(

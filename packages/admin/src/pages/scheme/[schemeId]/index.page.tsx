@@ -4,7 +4,6 @@ import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import { getGrantAdvertPublishInformationBySchemeId } from '../../../services/AdvertPageService';
-import { getApplicationFormSummary } from '../../../services/ApplicationService';
 import {
   findApplicationFormFromScheme,
   getGrantScheme,
@@ -23,7 +22,10 @@ import SchemeApplications from '../components/SchemeApplications';
 import styles from './index.module.scss';
 import Link from 'next/link';
 import { isSchemeOwner } from '../../../services/SchemeEditorService';
-import { getLastEditedEmail } from '../../../services/ApplicationService';
+import {
+  getLastEditedEmail,
+  getApplicationFormSummary,
+} from '../../../services/ApplicationService';
 
 type ManageGrantsSidebarProps = {
   schemeId: string;
