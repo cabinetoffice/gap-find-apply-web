@@ -213,9 +213,9 @@ const QuestionOptions = ({
                   <button
                     name={`delete_${index}`}
                     className="button--tertiary govuk-!-margin-left-3"
-                    aria-label={`Delete the ${toWordsOrdinal(
+                    aria-label={`Delete option ${toWordsOrdinal(
                       index + 1
-                    )} option`}
+                    )}`}
                     data-module="govuk-button"
                     data-cy={`cy_questionOptions-deleteOption-${index + 1}`}
                   >
