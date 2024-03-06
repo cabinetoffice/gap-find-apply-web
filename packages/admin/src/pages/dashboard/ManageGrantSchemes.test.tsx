@@ -1,9 +1,10 @@
 import '@testing-library/jest-dom';
-import { GetServerSidePropsContext } from 'next';
+import { render, screen } from '@testing-library/react';
 import CustomLink from '../../components/custom-link/CustomLink';
-import { getUserSchemes } from '../../services/SchemeService';
 import Scheme from '../../types/Scheme';
-import { generateSchemeTableRows, getServerSideProps } from './index.page';
+import ManageGrantSchemes, {
+  generateSchemeTableRows,
+} from './ManageGrantSchemes';
 
 jest.mock('next/config', () => () => {
   return {
@@ -26,7 +27,7 @@ const mockSchemeList: Scheme[] = [
     funderId: '4567',
     createdDate: '2011-12-10T14:48:00',
     lastUpdatedBy: 'test@admin.com',
-    lastUpdatedDate: '2011-12-10T14:48:00',
+    lastUpdatedDate: '2011-12-10T15:00:00',
   },
   {
     name: 'Scheme name 2',
@@ -35,27 +36,13 @@ const mockSchemeList: Scheme[] = [
     funderId: '4562467',
     createdDate: '2011-10-10T14:48:00',
     lastUpdatedBy: 'test2@admin.com',
-    lastUpdatedDate: '2011-10-10T14:48:00',
+    lastUpdatedDate: '2011-10-10T15:00:00',
   },
 ];
 
-describe('SchemeList', () => {
-  describe('getServerSideProps', () => {
-    const mockedGetUserSchemes = getUserSchemes as jest.MockedFn<
-      typeof getUserSchemes
-    >;
+const tableHeading = 'Grants you own';
 
-    it('Should return a list of schemes', async () => {
-      mockedGetUserSchemes.mockResolvedValue(mockSchemeList);
-
-      const result = await getServerSideProps({
-        req: { cookies: { 'gap-test': 'testSessionId' } },
-      } as unknown as GetServerSidePropsContext);
-
-      expect(result).toStrictEqual({ props: { schemes: mockSchemeList } });
-    });
-  });
-
+describe('ManageGrantSchemes', () => {
   describe('generateSchemeTableRows', () => {
     it('Should create an array of table rows when schemes are passed in', () => {
       const result = generateSchemeTableRows({ schemes: mockSchemeList });
@@ -74,7 +61,7 @@ describe('SchemeList', () => {
               ),
             },
             { content: '10 December 2011, 2:48 pm' },
-            { content: '10 December 2011, 2:48 pm' },
+            { content: '10 December 2011, 3:00 pm' },
             { content: 'test@admin.com' },
           ],
         },
@@ -92,11 +79,57 @@ describe('SchemeList', () => {
               ),
             },
             { content: '10 October 2011, 2:48 pm' },
-            { content: '10 October 2011, 2:48 pm' },
+            { content: '10 October 2011, 3:00 pm' },
             { content: 'test2@admin.com' },
           ],
         },
       ]);
+    });
+  });
+
+  describe('ManageGrantSchemes', () => {
+    it('should render the table with the correct heading', () => {
+      render(
+        <ManageGrantSchemes
+          schemes={mockSchemeList}
+          tableHeading={tableHeading}
+        />
+      );
+
+      screen.getByRole('table', { name: tableHeading });
+    });
+
+    it('should render the table headings', () => {
+      render(
+        <ManageGrantSchemes
+          schemes={mockSchemeList}
+          tableHeading={tableHeading}
+        />
+      );
+
+      screen.getByRole('columnheader', { name: 'Grant' });
+      screen.getByRole('columnheader', { name: 'Created' });
+      screen.getByRole('columnheader', { name: 'Last Updated' });
+      screen.getByRole('columnheader', { name: 'Updated By' });
+    });
+
+    it('should render the table contents', () => {
+      render(
+        <ManageGrantSchemes
+          schemes={mockSchemeList}
+          tableHeading={tableHeading}
+        />
+      );
+
+      screen.getByRole('link', { name: 'View scheme Scheme name 1' });
+      screen.getByRole('cell', { name: '10 October 2011, 2:48 pm' });
+      screen.getByRole('cell', { name: '10 October 2011, 3:00 pm' });
+      screen.getByRole('cell', { name: 'test@admin.com' });
+
+      screen.getByRole('link', { name: 'View scheme Scheme name 2' });
+      screen.getByRole('cell', { name: '10 December 2011, 2:48 pm' });
+      screen.getByRole('cell', { name: '10 December 2011, 3:00 pm' });
+      screen.getByRole('cell', { name: 'test2@admin.com' });
     });
   });
 });
