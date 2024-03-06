@@ -87,7 +87,7 @@ const RichText = ({
           toolbar: 'blocks | bold italic | bullist numlist | link',
           block_formats:
             'Paragraph=p; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
-          target_list: [{ text: 'Current window', value: '' }],
+          link_target_list: false,
         }}
         disabled={disabled}
         value={value}
