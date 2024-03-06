@@ -10,6 +10,7 @@ const getSchemeApplicationsProps = (overrides: any = {}) =>
       audit: {
         created: '2022-01-03T00:00:00.00Z',
         lastPublished: '2022-01-04T00:00:00.00Z',
+        lastUpdated: '2022-01-05T00:00:00.00Z',
       },
     },
     overrides
@@ -34,10 +35,13 @@ describe('BuildApplicationForm', () => {
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
+        editorOrPublisherEmail="test@test.gov"
       />
     );
 
-    screen.getByRole('cell', { name: 'Test application name' });
+    screen.getByRole('cell', {
+      name: 'View application: Test application name',
+    });
   });
 
   it('Should render a application form date created table col', () => {
@@ -46,10 +50,11 @@ describe('BuildApplicationForm', () => {
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
+        editorOrPublisherEmail="test@test.gov"
       />
     );
 
-    screen.getByRole('cell', { name: '3 January 2022' });
+    screen.getByRole('cell', { name: '3 January 2022, 12:00 am' });
   });
 
   it('Should render a application form date published table col', () => {
@@ -58,13 +63,16 @@ describe('BuildApplicationForm', () => {
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
+        editorOrPublisherEmail="test@test.gov"
       />
     );
 
-    screen.getByRole('cell', { name: '4 January 2022' });
+    screen.getByRole('cell', {
+      name: '4 January 2022, 12:00 am (test@test.gov)',
+    });
   });
 
-  it('Should render a "-" when there is no published date', () => {
+  it('Should render a last updated date when there is no published date', () => {
     render(
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps({
@@ -72,13 +80,16 @@ describe('BuildApplicationForm', () => {
         })}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
+        editorOrPublisherEmail="test@test.gov"
       />
     );
 
-    screen.getByRole('cell', { name: '-' });
+    screen.getByRole('cell', {
+      name: '5 January 2022, 12:00 am (test@test.gov)',
+    });
   });
 
-  it('Should render a "-" when there is a published date and the application status is "UNPUBLISHED"', () => {
+  it('Should render a last updated date when there is a published date and the application status is "UNPUBLISHED"', () => {
     render(
       <SchemeApplications
         applicationForm={getSchemeApplicationsProps({
@@ -86,10 +97,13 @@ describe('BuildApplicationForm', () => {
         })}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
+        editorOrPublisherEmail="test@test.gov"
       />
     );
 
-    screen.getByRole('cell', { name: '-' });
+    screen.getByRole('cell', {
+      name: '5 January 2022, 12:00 am (test@test.gov)',
+    });
   });
 
   it('Should render a application form view table col', () => {
