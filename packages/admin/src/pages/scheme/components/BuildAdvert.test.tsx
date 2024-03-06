@@ -167,7 +167,7 @@ describe('BuildAdvert component', () => {
       screen.getByRole('heading', { name: 'Grant advert' });
       expect(
         screen.getByText(
-          'Your advert was scheduled to be published on 31 March 2023 at 23:01 PM by my-email.'
+          'Your advert was scheduled to be published on 30 March 2023 at 23:01 PM by my-email.'
         )
       ).toBeVisible();
     });
@@ -240,7 +240,7 @@ describe('BuildAdvert component', () => {
 
       expect(
         screen.getByText(
-          'It was created by my-email on 4 March 2024 at 21:01 PM.'
+          'It was created by my-email on 30 March 2024 at 21:01 PM.'
         )
       ).toBeVisible();
     });
@@ -260,7 +260,7 @@ describe('BuildAdvert component', () => {
 
       expect(
         screen.getByText(
-          'It was created by my-email on 4 March 2024 at 21:01 PM.'
+          'It was created by my-email on 30 March 2024 at 21:01 PM.'
         )
       ).toBeVisible();
     });
