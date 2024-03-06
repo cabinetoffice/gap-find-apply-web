@@ -18,6 +18,7 @@ type PageBodyResponse = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
+  //TODO : GET OWNER STATUS VIA QUERY PARAMS
   const APPLICANT_ROLES_IDS = ['1', '2'];
   const ADMIN_ROLES_IDS = ['3', '4', '5'];
 
@@ -111,7 +112,10 @@ const EditRoleWithId = ({
           >
             <span className="govuk-caption-l">{user.emailAddress}</span>
             <h1 className="govuk-heading-l">Change the user&apos;s Role</h1>
-
+            <p className="govuk-body">
+              While this user owns grants, you cannot demote them to an
+              applicant.
+            </p>
             <Checkboxes
               fieldErrors={fieldErrors}
               fieldName="newUserRoles"
@@ -126,6 +130,8 @@ const EditRoleWithId = ({
               }))}
               defaultCheckboxes={user.roles.map(({ id }) => String(id))}
             />
+
+            {/* TODO: RENDER DISABLED ADMIN CHECKBOX IF THEY ARE AN OWNER */}
 
             <div className="govuk-button-group">
               <button className="govuk-button" data-module="govuk-button">
