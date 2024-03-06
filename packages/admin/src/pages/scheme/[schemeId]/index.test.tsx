@@ -202,7 +202,7 @@ describe('scheme/[schemeId]', () => {
     });
 
     it('Should redirect to service error when error occurs fetching an application from the application ids', async () => {
-      (getApplicationFormSummary as jest.Mock).mockRejectedValue({});
+      mockGetApplicationFormSummary.mockRejectedValue({});
       const response = (await getServerSideProps(
         getContext()
       )) as GetServerSidePropsResult<Redirect>;
@@ -220,9 +220,6 @@ describe('scheme/[schemeId]', () => {
       mockedFindApplicationFormFromScheme.mockResolvedValue([
         applicationFormFoundStats(),
       ]);
-      (getApplicationFormSummary as jest.Mock).mockResolvedValue(
-        applicationForm
-      );
       mockGetAdvertPublishInformationBySchemeId.mockResolvedValue(
         mockGrantadvertData
       );
