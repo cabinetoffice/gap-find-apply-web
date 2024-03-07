@@ -1,7 +1,10 @@
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import InferProps from '../../../types/InferProps';
-import { getApplicationFormSummary } from '../../../services/ApplicationService';
+import {
+  getApplicationFormSummary,
+  getLastEditedEmail,
+} from '../../../services/ApplicationService';
 import Meta from '../../../components/layout/Meta';
 import { getSessionIdFromCookies } from '../../../utils/session';
 import { formatDateTimeForSentence } from '../../../utils/dateFormatterGDS';
@@ -19,19 +22,19 @@ export const getServerSideProps = async (
     false
   );
   const {
-    audit: { lastUpdateBy, lastUpdated },
+    audit: { lastUpdated },
   } = application;
 
-  // const editorOrPublisherEmail = await getLastEditedEmail(
-  //   applicationId,
-  //   sessionCookie
-  // );
+  const editorOrPublisherEmail = await getLastEditedEmail(
+    applicationId,
+    sessionCookie
+  );
 
   return {
     props: {
       pageData: {
         applicationId,
-        lastEditedBy: lastUpdateBy,
+        lastEditedBy: editorOrPublisherEmail,
         lastEditedDate: formatDateTimeForSentence(new Date(lastUpdated)),
       },
     },
@@ -52,7 +55,7 @@ export default function ErrorMultipleEditorsPage({
           not be saved.
         </p>
         <p className="govuk-body">
-          The last edit was made on {lastEditedDate}.
+          The last edit was made by {lastEditedBy} on {lastEditedDate}.
         </p>
         <p className="govuk-body">
           To try again, you can{' '}
