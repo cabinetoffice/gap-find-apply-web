@@ -38,6 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       grantApplicant.organisation,
       mandatoryQuestionData
     );
+
     await grantApplicantOrganisationProfileService.updateOrganisation(
       updateOrganisationDetailsDto,
       jwt
@@ -45,8 +46,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (
       !grantApplication.id ||
-      grantApplication.applicationStatus != 'PUBLISHED'
+      grantApplication.applicationStatus !== 'PUBLISHED'
     ) {
+      console.log(
+        'Grant application does not exist or is not published. Redirecting to external application.'
+      );
       await grantMandatoryQuestionService.updateMandatoryQuestion(
         jwt,
         mandatoryQuestionId,
@@ -61,6 +65,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         )}?url=${grantAdverts[0].externalSubmissionUrl}`
       );
     }
+    console.log('Grant has an internal application. Creating submission');
 
     const { submissionId } = await createSubmission(grantApplication.id, jwt);
 
