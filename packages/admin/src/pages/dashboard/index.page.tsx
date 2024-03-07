@@ -27,8 +27,10 @@ export const getServerSideProps = async ({
     sort: 'lastUpdated,DESC',
   };
   const sessionCookie = getSessionIdFromCookies(req);
-  const { ownedSchemes: schemesUserOwns, editableSchemes: schemesUserCanEdit } =
-    await getOwnedAndEditableSchemes(paginationParams, sessionCookie);
+  const { ownedSchemes, editableSchemes } = await getOwnedAndEditableSchemes(
+    paginationParams,
+    sessionCookie
+  );
   const userDetails: UserDetails = await getLoggedInUsersDetails(sessionCookie);
 
   const isTechSupportUser = userDetails.roles.includes('TECHNICAL_SUPPORT');
@@ -44,8 +46,8 @@ export const getServerSideProps = async ({
 
   return {
     props: {
-      schemesUserOwns,
-      schemesUserCanEdit,
+      ownedSchemes,
+      editableSchemes,
       userDetails,
       bannerProps,
       isTechSupportUser,
@@ -71,8 +73,8 @@ const errorBannerProps = {
 };
 
 const Dashboard = ({
-  schemesUserOwns,
-  schemesUserCanEdit,
+  ownedSchemes,
+  editableSchemes,
   userDetails,
   bannerProps,
   isTechSupportUser,
@@ -82,8 +84,8 @@ const Dashboard = ({
       ? errorBannerProps
       : (bannerProps as { bannerHeading: string; isSuccess: boolean });
 
-  const schemesUserOwnsIsEmpty = schemesUserOwns.length === 0;
-  const schemesUserCanEditIsEmpty = schemesUserCanEdit.length === 0;
+  const schemesUserOwnsIsEmpty = ownedSchemes.length === 0;
+  const schemesUserCanEditIsEmpty = editableSchemes.length === 0;
 
   return (
     <>
@@ -97,8 +99,8 @@ const Dashboard = ({
           {schemesUserOwnsIsEmpty && schemesUserCanEditIsEmpty
             ? noGrantsView()
             : grantsView(
-                schemesUserOwns,
-                schemesUserCanEdit,
+                ownedSchemes,
+                editableSchemes,
                 schemesUserOwnsIsEmpty,
                 schemesUserCanEditIsEmpty
               )}
@@ -120,8 +122,8 @@ const noGrantsView = () => (
 );
 
 const grantsView = (
-  schemesUserOwns: Scheme[],
-  schemesUserCanEdit: Scheme[],
+  ownedSchemes: Scheme[],
+  editableSchemes: Scheme[],
   schemesUserOwnsIsEmpty: boolean,
   schemesUserCanEditIsEmpty: boolean
 ) => (
@@ -134,13 +136,13 @@ const grantsView = (
     </CustomLink>
     {!schemesUserOwnsIsEmpty && (
       <ManageGrantSchemes
-        schemes={schemesUserOwns}
+        schemes={ownedSchemes}
         tableHeading="Grants you own"
       />
     )}
     {!schemesUserCanEditIsEmpty && (
       <ManageGrantSchemes
-        schemes={schemesUserCanEdit}
+        schemes={editableSchemes}
         tableHeading="Grants you can edit"
       />
     )}

@@ -84,8 +84,8 @@ describe('Dashboard', () => {
 
       expectObjectEquals(result, {
         props: {
-          schemesUserOwns: mockSchemeList.ownedSchemes,
-          schemesUserCanEdit: mockSchemeList.editableSchemes,
+          ownedSchemes: mockSchemeList.ownedSchemes,
+          editableSchemes: mockSchemeList.editableSchemes,
           userDetails: mockUserDetails,
           bannerProps: null,
           isTechSupportUser: false,
@@ -97,8 +97,8 @@ describe('Dashboard', () => {
   describe('Dashboard page render', () => {
     function getDefaultProps(): InferProps<typeof getServerSideProps> {
       return {
-        schemesUserOwns: mockSchemeList.ownedSchemes,
-        schemesUserCanEdit: mockSchemeList.editableSchemes,
+        ownedSchemes: mockSchemeList.ownedSchemes,
+        editableSchemes: mockSchemeList.editableSchemes,
         bannerProps: null,
         userDetails: mockUserDetails,
         isTechSupportUser: false,
@@ -186,7 +186,7 @@ describe('Dashboard', () => {
       render(
         <Dashboard
           {...getProps(getDefaultProps, {
-            schemesUserOwns: [],
+            ownedSchemes: [],
           })}
         />
       );
@@ -206,7 +206,7 @@ describe('Dashboard', () => {
       render(
         <Dashboard
           {...getProps(getDefaultProps, {
-            schemesUserCanEdit: [],
+            editableSchemes: [],
           })}
         />
       );
@@ -230,8 +230,8 @@ describe('Dashboard', () => {
       render(
         <Dashboard
           {...getProps(getDefaultProps, {
-            schemesUserOwns: [],
-            schemesUserCanEdit: [],
+            ownedSchemes: [],
+            editableSchemes: [],
           })}
         />
       );
@@ -249,8 +249,8 @@ describe('Dashboard', () => {
       render(
         <Dashboard
           {...getProps(getDefaultProps, {
-            schemesUserOwns: [],
-            schemesUserCanEdit: [],
+            ownedSchemes: [],
+            editableSchemes: [],
           })}
         />
       );
