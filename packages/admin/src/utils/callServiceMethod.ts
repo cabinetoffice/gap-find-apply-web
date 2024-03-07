@@ -1,5 +1,4 @@
 import { ValidationError } from 'gap-web-ui';
-import { NextRedirect } from './QuestionPageGetServerSidePropsTypes';
 import ServiceError from '../types/ServiceError';
 import { parseBody } from './parseBody';
 import {

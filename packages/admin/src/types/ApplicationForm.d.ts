@@ -36,7 +36,7 @@ type ApplicationFormSummary = {
     lastUpdated: string;
     lastUpdateBy: string;
   };
-  sections?: ApplicationFormSection[];
+  sections: ApplicationFormSection[];
 };
 
 export type {

@@ -229,9 +229,9 @@ describe('Dashboard', () => {
         audit: {
           revision: 1,
           created: 'createdDate',
-          lastUpdatedDate: 'lastUpdatedDate',
-          lastUpdatedBy: 'lastUpdatedBy',
-          lastPublished: 'lastPublishedDate',
+          createdBy: 'createdBy',
+          lastUpdated: 'lastUpdatedDate',
+          lastUpdateBy: 'lastUpdatedBy',
         },
         sections: sections,
       });
