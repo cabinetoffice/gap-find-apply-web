@@ -1,33 +1,58 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import Scheme from '../../types/Scheme';
-import Dashboard, { getServerSideProps } from './index.page';
-import { getUserSchemes } from '../../services/SchemeService';
-import { getLoggedInUsersDetails } from '../../services/UserService';
-import UserDetails from '../../types/UserDetails';
-import InferProps from '../../types/InferProps';
 import { Optional, expectObjectEquals, getContext, getProps } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
+import { getOwnedAndEditableSchemes } from '../../services/SchemeService';
+import { getLoggedInUsersDetails } from '../../services/UserService';
+import InferProps from '../../types/InferProps';
+import UserDetails from '../../types/UserDetails';
+import Dashboard, { getServerSideProps } from './index.page';
 
 jest.mock('../../services/SchemeService');
 jest.mock('../../services/UserService');
 
-const mockSchemeList: Scheme[] = [
-  {
-    name: 'Scheme name 1',
-    schemeId: '123',
-    ggisReference: 'ggisReference',
-    funderId: '24356',
-    createdDate: '2011-12-10T14:48:00',
-  },
-  {
-    name: 'Scheme name 2',
-    schemeId: '456',
-    ggisReference: 'ggisReference',
-    funderId: '26456',
-    createdDate: '2011-10-10T14:48:00',
-  },
-];
+const mockSchemeList = {
+  ownedSchemes: [
+    {
+      name: 'Scheme name 1',
+      schemeId: '123',
+      ggisReference: 'ggisReference',
+      funderId: '24356',
+      createdDate: '2011-12-10T14:48:00',
+      lastUpdatedDate: '2011-12-10T15:50:00',
+      lastUpdatedBy: 'test@email.com',
+    },
+    {
+      name: 'Scheme name 2',
+      schemeId: '456',
+      ggisReference: 'ggisReference',
+      funderId: '26456',
+      createdDate: '2011-10-10T16:48:00',
+      lastUpdatedDate: '2011-12-10T14:48:00',
+      lastUpdatedBy: 'test2@email.com',
+    },
+  ],
+  editableSchemes: [
+    {
+      name: 'Scheme name 3',
+      schemeId: '789',
+      ggisReference: 'ggisReference',
+      funderId: '26675',
+      createdDate: '2011-12-10T14:48:00',
+      lastUpdatedDate: '2011-12-10T15:50:00',
+      lastUpdatedBy: 'test@email.com',
+    },
+    {
+      name: 'Scheme name 4',
+      schemeId: '987',
+      ggisReference: 'ggisReference',
+      funderId: '26675',
+      createdDate: '2011-10-10T16:48:00',
+      lastUpdatedDate: '2011-12-10T14:48:00',
+      lastUpdatedBy: 'test2@email.com',
+    },
+  ],
+};
 
 const mockUserDetails: UserDetails = {
   firstName: 'Test',
@@ -40,7 +65,7 @@ const mockUserDetails: UserDetails = {
 
 describe('Dashboard', () => {
   describe('getServerSideProps', () => {
-    const mockedGetUserSchemes = jest.mocked(getUserSchemes);
+    const mockedGeEditableSchemes = jest.mocked(getOwnedAndEditableSchemes);
     const mockedGetLoggedInUsersDetails = jest.mocked(getLoggedInUsersDetails);
 
     function getDefaultContext(): Optional<GetServerSidePropsContext> {
@@ -48,7 +73,7 @@ describe('Dashboard', () => {
     }
 
     beforeEach(() => {
-      mockedGetUserSchemes.mockResolvedValue(mockSchemeList);
+      mockedGeEditableSchemes.mockResolvedValue(mockSchemeList);
       mockedGetLoggedInUsersDetails.mockResolvedValue(mockUserDetails);
       process.env.SESSION_COOKIE_NAME = 'gap-test';
       process.env.ONE_LOGIN_MIGRATION_JOURNEY_ENABLED = 'false';
@@ -59,7 +84,8 @@ describe('Dashboard', () => {
 
       expectObjectEquals(result, {
         props: {
-          schemes: mockSchemeList,
+          ownedSchemes: mockSchemeList.ownedSchemes,
+          editableSchemes: mockSchemeList.editableSchemes,
           userDetails: mockUserDetails,
           bannerProps: null,
           isTechSupportUser: false,
@@ -71,9 +97,11 @@ describe('Dashboard', () => {
   describe('Dashboard page render', () => {
     function getDefaultProps(): InferProps<typeof getServerSideProps> {
       return {
-        schemes: mockSchemeList,
+        ownedSchemes: mockSchemeList.ownedSchemes,
+        editableSchemes: mockSchemeList.editableSchemes,
         bannerProps: null,
         userDetails: mockUserDetails,
+        isTechSupportUser: false,
       };
     }
 
@@ -139,101 +167,95 @@ describe('Dashboard', () => {
     it('Should render the user email', () => {
       render(<Dashboard {...getProps(getDefaultProps)} />);
 
-      screen.getByText('test@email.com');
+      screen.findByRole('definition', { name: 'test@email.com' });
     });
 
     it('Should render the organisation name', () => {
       render(<Dashboard {...getProps(getDefaultProps)} />);
 
-      screen.getByText('Testing Org');
+      screen.findByRole('definition', { name: 'Testing Org' });
     });
 
-    it('Should render the "manage your grant scheme table" headings when there are schemes', () => {
+    it('Should render the "Grants you own" table if there are grants', () => {
       render(<Dashboard {...getProps(getDefaultProps)} />);
 
-      screen.getByRole('columnheader', { name: 'Name' });
-      screen.getByRole('columnheader', { name: 'Date created' });
+      expect(screen.getByRole('table', { name: 'Grants you own' }));
     });
 
-    it('Should render the "manage your grant scheme table" scheme names when there are schemes', () => {
-      render(<Dashboard {...getProps(getDefaultProps)} />);
-
-      screen.getByRole('cell', { name: 'Scheme name 1' });
-      screen.getByRole('cell', { name: 'Scheme name 2' });
-    });
-
-    it('Should render the "manage your grant scheme table" scheme created at dates when there are schemes', () => {
-      render(<Dashboard {...getProps(getDefaultProps)} />);
-
-      screen.getByRole('cell', { name: '10 December 2011' });
-      screen.getByRole('cell', { name: '10 October 2011' });
-    });
-
-    it('Should render the "manage your grant scheme table" scheme view links when there are schemes', () => {
-      render(<Dashboard {...getProps(getDefaultProps)} />);
-
-      expect(
-        screen.getByRole('link', { name: 'View scheme Scheme name 1' })
-      ).toHaveAttribute('href', '/apply/scheme/123');
-      expect(
-        screen.getByRole('link', { name: 'View scheme Scheme name 2' })
-      ).toHaveAttribute('href', '/apply/scheme/456');
-    });
-
-    it('Should render a View all schemes link to the schemes page when there are schemes', () => {
-      render(<Dashboard {...getProps(getDefaultProps)} />);
-
-      const viewAllSchemesElement = screen.getByRole('link', {
-        name: 'View all grants',
-      });
-      expect(viewAllSchemesElement).toHaveAttribute(
-        'href',
-        '/apply/scheme-list'
+    it('Should NOT render the "Grants you own" table if there are no grants', () => {
+      render(
+        <Dashboard
+          {...getProps(getDefaultProps, {
+            ownedSchemes: [],
+          })}
+        />
       );
+
+      expect(
+        screen.queryByRole('table', { name: 'Grants you own' })
+      ).not.toBeInTheDocument();
     });
 
-    it('Should NOT render the "create new grant scheme" section when there are schemes', () => {
+    it('Should render the "Grants you cam edit" table if there are grants', () => {
       render(<Dashboard {...getProps(getDefaultProps)} />);
 
-      expect(
-        screen.queryByTestId('create-new-grant-scheme-section')
-      ).toBeFalsy();
+      expect(screen.getByRole('table', { name: 'Grants you can edit' }));
     });
 
-    it('Should NOT render the "manage your grant scheme table" when there are no schemes', () => {
-      render(<Dashboard {...getProps(getDefaultProps, { schemes: [] })} />);
-
-      const manageGrantSchemeTable = screen.queryByTestId(
-        'manage-grant-scheme-table'
+    it('Should NOT render the "Grants you cam edit" table if there are no grants', () => {
+      render(
+        <Dashboard
+          {...getProps(getDefaultProps, {
+            editableSchemes: [],
+          })}
+        />
       );
-      expect(manageGrantSchemeTable).toBeFalsy();
-    });
-
-    it('Should render the "create new grant scheme" section when there are no schemes', () => {
-      render(<Dashboard {...getProps(getDefaultProps, { schemes: [] })} />);
-
-      screen.getByRole('heading', { name: 'Add grant details' });
-      screen.getByText('Start by adding the details of your grant.');
-      screen.getByRole('button', { name: 'Add a grant' });
-    });
-
-    it('Should NOT render the "create new grant scheme" side bar when there are no schemes', () => {
-      render(<Dashboard {...getProps(getDefaultProps, { schemes: [] })} />);
 
       expect(
-        screen.queryByText('Create new grant schemes to advertise your grants.')
-      ).toBeFalsy();
-      expect(
-        screen.queryByTestId('create-new-grant-scheme-sidebar')
-      ).toBeFalsy();
+        screen.queryByRole('table', { name: 'Grants you can edit' })
+      ).not.toBeInTheDocument();
     });
 
-    it('Should NOT render a View all schemes link to the schemes page when there are no schemes', () => {
-      render(<Dashboard {...getProps(getDefaultProps, { schemes: [] })} />);
+    it('Should render the "grants linked to your account" paragraph if there are schemes', () => {
+      const text = 'All of the grants linked to your account are listed below.';
 
-      expect(
-        screen.queryByRole('link', { name: 'View all schemes' })
-      ).toBeFalsy();
+      render(<Dashboard {...getProps(getDefaultProps)} />);
+
+      screen.getByText(text);
+    });
+
+    it('Should render the no editing permissions paragraph if there are no schemes', () => {
+      const text = 'You do not own or have editing permissions for any grants.';
+
+      render(
+        <Dashboard
+          {...getProps(getDefaultProps, {
+            ownedSchemes: [],
+            editableSchemes: [],
+          })}
+        />
+      );
+
+      screen.getByText(text);
+    });
+
+    it('Should render the "Add a grant" button when there are schemes', () => {
+      render(<Dashboard {...getProps(getDefaultProps)} />);
+
+      screen.getByText('Add a grant');
+    });
+
+    it('Should render the "Add a grant" button when there are no schemes', () => {
+      render(
+        <Dashboard
+          {...getProps(getDefaultProps, {
+            ownedSchemes: [],
+            editableSchemes: [],
+          })}
+        />
+      );
+
+      screen.getByText('Add a grant');
     });
   });
 });
