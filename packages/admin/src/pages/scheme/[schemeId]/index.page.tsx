@@ -188,7 +188,7 @@ const ViewScheme = ({
               applicationForm={schemeApplicationsData.applicationForm}
               applicationFormStats={schemeApplicationsData.applicationFormStats}
               schemeVersion={scheme.version}
-              editorOrPublisherEmail={editorOrPublisherEmail ?? 'NA'}
+              editorOrPublisherEmail={editorOrPublisherEmail}
             />
           ) : (
             <BuildApplicationForm schemeId={scheme.schemeId} />
