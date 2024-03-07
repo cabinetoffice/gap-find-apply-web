@@ -275,7 +275,7 @@ describe('Question Options', () => {
         );
       });
 
-      it('Should return a two blank options', async () => {
+      it('Should return two blank options', async () => {
         const result = (await getServerSideProps(
           getContext()
         )) as NextGetServerSidePropsResponse;
