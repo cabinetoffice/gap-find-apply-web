@@ -24,15 +24,11 @@ export const getServerSideProps = async ({
     paginate: false,
     page: 0,
     size: 2,
-    sort: 'createdDate,DESC',
+    sort: 'lastUpdated,DESC',
   };
   const sessionCookie = getSessionIdFromCookies(req);
-  const allUserSchemes = await getOwnedAndEditableSchemes(
-    paginationParams,
-    sessionCookie
-  );
-  const schemesUserOwns = allUserSchemes.ownedSchemes;
-  const schemesUserCanEdit = allUserSchemes.editableSchemes;
+  const { ownedSchemes: schemesUserOwns, editableSchemes: schemesUserCanEdit } =
+    await getOwnedAndEditableSchemes(paginationParams, sessionCookie);
   const userDetails: UserDetails = await getLoggedInUsersDetails(sessionCookie);
 
   const isTechSupportUser = userDetails.roles.includes('TECHNICAL_SUPPORT');

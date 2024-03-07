@@ -6,17 +6,6 @@ import ManageGrantSchemes, {
   generateSchemeTableRows,
 } from './ManageGrantSchemes';
 
-jest.mock('next/config', () => () => {
-  return {
-    serverRuntimeConfig: {
-      backendHost: 'http://localhost:8080',
-    },
-    publicRuntimeConfig: {
-      SUB_PATH: '/apply',
-      APPLICANT_DOMAIN: 'http://localhost:8080',
-    },
-  };
-});
 jest.mock('../../services/SchemeService');
 
 const mockSchemeList: Scheme[] = [
@@ -60,8 +49,8 @@ describe('ManageGrantSchemes', () => {
                 </CustomLink>
               ),
             },
-            { content: '10 December 2011, 2:48 pm' },
-            { content: '10 December 2011, 3:00 pm' },
+            { content: '10 December 2011, 2:48pm' },
+            { content: '10 December 2011, 3:00pm' },
             { content: 'test@admin.com' },
           ],
         },
@@ -78,8 +67,8 @@ describe('ManageGrantSchemes', () => {
                 </CustomLink>
               ),
             },
-            { content: '10 October 2011, 2:48 pm' },
-            { content: '10 October 2011, 3:00 pm' },
+            { content: '10 October 2011, 2:48pm' },
+            { content: '10 October 2011, 3:00pm' },
             { content: 'test2@admin.com' },
           ],
         },
@@ -122,13 +111,13 @@ describe('ManageGrantSchemes', () => {
       );
 
       screen.getByRole('link', { name: 'View scheme Scheme name 1' });
-      screen.getByRole('cell', { name: '10 October 2011, 2:48 pm' });
-      screen.getByRole('cell', { name: '10 October 2011, 3:00 pm' });
+      screen.getByRole('cell', { name: '10 October 2011, 2:48pm' });
+      screen.getByRole('cell', { name: '10 October 2011, 3:00pm' });
       screen.getByRole('cell', { name: 'test@admin.com' });
 
       screen.getByRole('link', { name: 'View scheme Scheme name 2' });
-      screen.getByRole('cell', { name: '10 December 2011, 2:48 pm' });
-      screen.getByRole('cell', { name: '10 December 2011, 3:00 pm' });
+      screen.getByRole('cell', { name: '10 December 2011, 2:48pm' });
+      screen.getByRole('cell', { name: '10 December 2011, 3:00pm' });
       screen.getByRole('cell', { name: 'test2@admin.com' });
     });
   });

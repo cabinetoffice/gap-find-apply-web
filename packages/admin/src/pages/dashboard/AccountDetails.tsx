@@ -15,10 +15,9 @@ const AccountDetails = ({ userDetails }: AccountDetailsProps) => {
             <dt className="govuk-summary-list__key" id="email">
               Email
             </dt>
-            <dd
-              className="govuk-summary-list__value"
-              aria-labelledby="email"
-            >{`${userDetails.emailAddress}`}</dd>
+            <dd className="govuk-summary-list__value" aria-labelledby="email">
+              {userDetails.emailAddress}
+            </dd>
           </div>
           <div className="govuk-summary-list__row">
             <dt className="govuk-summary-list__key" id="organisation-name">
