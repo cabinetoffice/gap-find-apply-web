@@ -30,13 +30,13 @@ type ApplicationFormSummary = {
   applicationName: string;
   applicationStatus: 'DRAFT' | 'PUBLISHED' | 'REMOVED';
   audit: {
-    version: number;
+    revision: number;
     created: string;
+    createdBy: string;
     lastUpdated: string;
-    lastUpdatedBy: string;
-    lastPublished: string;
+    lastUpdateBy: string;
   };
-  sections: ApplicationFormSection[];
+  sections?: ApplicationFormSection[];
 };
 
 export type {

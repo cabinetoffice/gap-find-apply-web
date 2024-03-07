@@ -56,11 +56,11 @@ const updateSectionTitle = async ({
   sessionId,
   applicationId,
   sectionId,
-  body: { sectionTitle },
+  body: { sectionTitle, revision },
 }: UpdateSectionTitleProps) => {
   await axios.patch(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/title`,
-    { sectionTitle },
+    { sectionTitle, revision },
     axiosSessionConfig(sessionId)
   );
 };

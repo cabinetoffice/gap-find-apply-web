@@ -73,7 +73,7 @@ describe('Question Options', () => {
           lastUpdatedDate: '2021-08-12T14:00:00.000Z',
           lastPublished: '2021-08-12T14:00:00.000Z',
           lastUpdatedBy: 'Test User',
-          version: 1,
+          revision: 1,
         },
         grantApplicationId: 'testGrantApplicationId',
         grantSchemeId: 'testGrantSchemeId',

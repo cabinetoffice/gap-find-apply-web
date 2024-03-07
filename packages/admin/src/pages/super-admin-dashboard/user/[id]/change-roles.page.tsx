@@ -1,19 +1,40 @@
 import { Checkboxes, FlexibleQuestionPageLayout } from 'gap-web-ui';
 
 import { GetServerSidePropsContext } from 'next';
-import { getUserTokenFromCookies } from '../../../../utils/session';
+import {
+  getSessionIdFromCookies,
+  getUserTokenFromCookies,
+} from '../../../../utils/session';
 import {
   getUserById,
   getAllRoles,
   updateUserRoles,
+  getUserFromJwt,
 } from '../../../../services/SuperAdminService';
 import Meta from '../../../../components/layout/Meta';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
+import { getAdminsSchemes } from '../../../../services/SchemeService';
 
 type PageBodyResponse = {
   newUserRoles: string | string[];
+};
+
+const doesUserHaveSchemes = async (
+  context: GetServerSidePropsContext,
+  userId: string
+): Promise<boolean> => {
+  const userToken = getUserTokenFromCookies(context.req);
+  const sessionId = getSessionIdFromCookies(context.req);
+  const jwtUser = await getUserFromJwt(userToken);
+  const isViewingOwnAccount = jwtUser?.gapUserId === userId;
+  const user = isViewingOwnAccount
+    ? jwtUser
+    : await getUserById(userId, userToken);
+  const sub = user?.sub ? user.sub : user.colaSub;
+  const usersSchemes = await getAdminsSchemes(sub, sessionId);
+  return usersSchemes.length > 0;
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -29,7 +50,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
     const userDepartment = (await getUserById(userId, jwt)).department;
 
-    if (hasAdminRole(newUserRoles) && !hasAdminRole(oldUserRoles)) {
+    const isBeingDemotedFromAdmin =
+      hasAdminRole(oldUserRoles) && !hasAdminRole(newUserRoles);
+    if (isBeingDemotedFromAdmin) {
+      const userHasSchemes = await doesUserHaveSchemes(context, userId);
+      if (userHasSchemes) {
+        // reject
+      }
+    }
+
+    const isBeingPromotedToAdmin =
+      !hasAdminRole(oldUserRoles) && hasAdminRole(newUserRoles);
+    if (isBeingPromotedToAdmin) {
       departmentPageUrl += `?newRoles=${newUserRoles}`;
       return { userDepartment, newUserRoles, userId, departmentPageUrl };
     }

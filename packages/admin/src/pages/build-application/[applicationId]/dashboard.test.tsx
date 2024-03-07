@@ -227,7 +227,7 @@ describe('Dashboard', () => {
         applicationName: 'Industrial Energy Transformation Fund (IETF)',
         applicationStatus: 'DRAFT',
         audit: {
-          version: 1,
+          revision: 1,
           created: 'createdDate',
           lastUpdatedDate: 'lastUpdatedDate',
           lastUpdatedBy: 'lastUpdatedBy',
