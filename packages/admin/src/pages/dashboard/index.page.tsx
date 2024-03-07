@@ -96,21 +96,23 @@ const Dashboard = ({
           {bannerProps && <ImportantBanner {...formattedBannerProps} />}
           <AccountDetails userDetails={userDetails} />
 
-          {schemesUserOwnsIsEmpty && schemesUserCanEditIsEmpty
-            ? noGrantsView()
-            : grantsView(
-                ownedSchemes,
-                editableSchemes,
-                schemesUserOwnsIsEmpty,
-                schemesUserCanEditIsEmpty
-              )}
+          {schemesUserOwnsIsEmpty && schemesUserCanEditIsEmpty ? (
+            <NoGrantsView />
+          ) : (
+            <GrantsView
+              ownedSchemes={ownedSchemes}
+              editableSchemes={editableSchemes}
+              schemesUserOwnsIsEmpty={schemesUserOwnsIsEmpty}
+              schemesUserCanEditIsEmpty={schemesUserCanEditIsEmpty}
+            />
+          )}
         </div>
       </div>
     </>
   );
 };
 
-const noGrantsView = () => (
+const NoGrantsView = () => (
   <>
     <p className="govuk-body">
       You do not own or have editing permissions for any grants.
@@ -121,12 +123,12 @@ const noGrantsView = () => (
   </>
 );
 
-const grantsView = (
-  ownedSchemes: Scheme[],
-  editableSchemes: Scheme[],
-  schemesUserOwnsIsEmpty: boolean,
-  schemesUserCanEditIsEmpty: boolean
-) => (
+const GrantsView = ({
+  ownedSchemes,
+  editableSchemes,
+  schemesUserOwnsIsEmpty,
+  schemesUserCanEditIsEmpty,
+}: GrantsViewProps) => (
   <>
     <p className="govuk-body">
       All of the grants linked to your account are listed below.
@@ -166,5 +168,12 @@ const getBannerProps = ({
 
   return null;
 };
+
+interface GrantsViewProps {
+  ownedSchemes: Scheme[];
+  editableSchemes: Scheme[];
+  schemesUserOwnsIsEmpty: boolean;
+  schemesUserCanEditIsEmpty: boolean;
+}
 
 export default Dashboard;
