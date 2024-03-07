@@ -16,11 +16,6 @@ import { fetchDataOrGetRedirect } from '../../../../utils/fetchDataOrGetRedirect
 import moment from 'moment';
 import InferProps from '../../../../types/InferProps';
 import { getAdminsSchemes } from '../../../../services/SchemeService';
-import Scheme from '../../../../types/Scheme';
-import {
-  getSchemeEditors,
-  isSchemeOwner,
-} from '../../../../services/SchemeEditorService';
 
 export const getServerSideProps = async ({
   params,
@@ -107,11 +102,13 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
           <div className="govuk-grid-column-two-thirds">
             <span className="govuk-caption-l">{pageData.emailAddress}</span>
             <h1 className="govuk-heading-l">Manage a user</h1>
-            <p className="govuk-body">
-              While this user owns grants, you cannot demote them to an
-              applicant or delete their account. You must transfer those grants
-              to another owner first.
-            </p>
+            {userHasSchemes && (
+              <p className="govuk-body">
+                While this user owns grants, you cannot demote them to an
+                applicant or delete their account. You must transfer those
+                grants to another owner first.
+              </p>
+            )}
             <h2 className="govuk-heading-m">User Information</h2>
             <SummaryList
               rows={[
