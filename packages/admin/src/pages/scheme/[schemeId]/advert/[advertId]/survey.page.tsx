@@ -84,7 +84,7 @@ const Survey = ({
         }Satisfaction survey - Manage a grant`}
       />
       <div className="govuk-grid-row">
-        <div className="govuk-!-margin-top-7">
+        <div className="govuk-grid-column-two-thirds govuk-!-margin-top-7">
           <h1 className="govuk-heading-l" tabIndex={-1}>
             Give feedback on Manage a grant
           </h1>
