@@ -9,33 +9,56 @@ import Meta from '../../../components/layout/Meta';
 import { getSessionIdFromCookies } from '../../../utils/session';
 import { formatDateTimeForSentence } from '../../../utils/dateFormatterGDS';
 
+const getLastEditedDate = async (
+  applicationId: string,
+  sessionCookie: string
+): Promise<string> => {
+  try {
+    const application = await getApplicationFormSummary(
+      applicationId,
+      sessionCookie,
+      false,
+      false
+    );
+    const {
+      audit: { lastUpdated },
+    } = application;
+    return formatDateTimeForSentence(new Date(lastUpdated));
+  } catch (e) {
+    console.log(e);
+    return 'unknown';
+  }
+};
+
+const getLastEditedBy = async (
+  applicationId: string,
+  sessionCookie: string
+): Promise<string> => {
+  try {
+    return (
+      (await getLastEditedEmail(applicationId, sessionCookie)) || 'unknown'
+    );
+  } catch (e) {
+    console.log(e);
+    return 'unknown';
+  }
+};
+
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
   const sessionCookie = getSessionIdFromCookies(context.req);
   const { applicationId } = context.params as Record<string, string>;
 
-  const application = await getApplicationFormSummary(
-    applicationId,
-    sessionCookie,
-    false,
-    false
-  );
-  const {
-    audit: { lastUpdated },
-  } = application;
-
-  const editorOrPublisherEmail = await getLastEditedEmail(
-    applicationId,
-    sessionCookie
-  );
+  const lastEditedDate = await getLastEditedDate(applicationId, sessionCookie);
+  const lastEditedBy = await getLastEditedBy(applicationId, sessionCookie);
 
   return {
     props: {
       pageData: {
         applicationId,
-        lastEditedBy: editorOrPublisherEmail,
-        lastEditedDate: formatDateTimeForSentence(new Date(lastUpdated)),
+        lastEditedBy,
+        lastEditedDate,
       },
     },
   };
