@@ -95,7 +95,6 @@ export const getServerSideProps = async ({
       );
     }
     grantAdvertPublishData = { status: 404 };
-    editorOrPublisherEmail = `NA`;
   }
 
   return {
