@@ -7,6 +7,7 @@ import {
   getApplicationFormSummary,
   updateApplicationFormStatus,
   handleSectionOrdering,
+  getLastEditedEmail,
 } from './ApplicationService';
 import getConfig from 'next/config';
 import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
@@ -203,6 +204,24 @@ describe('ApplicationService', () => {
         { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
       );
       expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getLastUpdatedEmail', () => {
+    it('Should call the expected endpoint to retrieve the last updated email', async () => {
+      const grantApplicationId = 'a028d000004Osy3BEA';
+      const sessionCookie = 'testSessionId';
+
+      mockedAxios.get.mockResolvedValue({
+        data: { lastUpdatedEmail: 'test@test.gov' },
+      });
+
+      await getLastEditedEmail(grantApplicationId, sessionCookie);
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_APPLICATION_URL}/${grantApplicationId}/lastUpdated/email`,
+        { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
+      );
     });
   });
 });

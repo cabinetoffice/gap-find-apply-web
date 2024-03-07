@@ -4,7 +4,6 @@ import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import { getGrantAdvertPublishInformationBySchemeId } from '../../../services/AdvertPageService';
-import { getApplicationFormSummary } from '../../../services/ApplicationService';
 import {
   findApplicationFormFromScheme,
   getGrantScheme,
@@ -23,6 +22,10 @@ import SchemeApplications from '../components/SchemeApplications';
 import styles from './index.module.scss';
 import Link from 'next/link';
 import { isSchemeOwner } from '../../../services/SchemeEditorService';
+import {
+  getLastEditedEmail,
+  getApplicationFormSummary,
+} from '../../../services/ApplicationService';
 
 type ManageGrantsSidebarProps = {
   schemeId: string;
@@ -40,6 +43,7 @@ export const getServerSideProps = async ({
   let schemeApplicationsData = null;
   let grantAdvertPublishData = null;
   let isOwner;
+  let editorOrPublisherEmail = null;
 
   try {
     scheme = await getGrantScheme(schemeId, sessionCookie);
@@ -61,6 +65,12 @@ export const getServerSideProps = async ({
         ),
         applicationFormStats: allApplicationFormsStats[0],
       };
+      const grantApplicationId =
+        schemeApplicationsData.applicationForm.grantApplicationId;
+      editorOrPublisherEmail = await getLastEditedEmail(
+        grantApplicationId,
+        sessionCookie
+      );
     }
   } catch (err) {
     return generateErrorPageRedirect(
@@ -94,6 +104,7 @@ export const getServerSideProps = async ({
       schemeApplicationsData,
       enabledAdBuilder: process.env.FEATURE_ADVERT_BUILDER!,
       grantAdvertPublishData,
+      editorOrPublisherEmail,
     },
   };
 };
@@ -104,6 +115,7 @@ const ViewScheme = ({
   enabledAdBuilder,
   grantAdvertPublishData,
   isOwner,
+  editorOrPublisherEmail,
 }: InferProps<typeof getServerSideProps>) => {
   const schemeHasApplicationOrAdvert =
     schemeApplicationsData || grantAdvertPublishData.status !== 404;
@@ -176,6 +188,7 @@ const ViewScheme = ({
               applicationForm={schemeApplicationsData.applicationForm}
               applicationFormStats={schemeApplicationsData.applicationFormStats}
               schemeVersion={scheme.version}
+              editorOrPublisherEmail={editorOrPublisherEmail}
             />
           ) : (
             <BuildApplicationForm schemeId={scheme.schemeId} />

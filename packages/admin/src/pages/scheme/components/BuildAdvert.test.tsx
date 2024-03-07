@@ -173,7 +173,7 @@ describe('BuildAdvert component', () => {
       screen.getByRole('heading', { name: 'Grant advert' });
       expect(
         screen.getByText(
-          'Your advert was scheduled to be published on 30 March 2023 at 11:01pm by my-email.'
+          'It was last edited by my-email on 30 March 2023 at 11:01pm.'
         )
       ).toBeVisible();
     });
