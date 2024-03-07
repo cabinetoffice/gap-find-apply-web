@@ -41,24 +41,12 @@ export const getServerSideProps = async ({
     const usersSchemes = await getAdminsSchemes(sub, sessionId);
     const adminRoles = new Set(['ADMIN', 'SUPER_ADMIN']);
     const isUserAdmin = user.role && adminRoles.has(user.role?.name);
-    const doesOwnScheme = usersSchemes.length > 0;
-
-    console.log('ADMIN');
-    console.log(
-      'IS SCHEME OWNER of SUPERADMINGrant: ',
-      await isSchemeOwner('28', sessionId)
-    );
-    console.log(
-      'IS SCHEME OWNER of Test1: ',
-      await isSchemeOwner('27', sessionId)
-    );
 
     return {
       isViewingOwnAccount,
       ...user,
       schemes: usersSchemes,
       isUserAdmin,
-      doesOwnScheme,
     };
   };
 
@@ -141,9 +129,8 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                   key: 'Roles',
                   value: pageData.role?.label || 'Blocked',
                   action: pageData.role?.label ? (
-                    // MUST ADD QUERY PARAMS BASED ON WHETHER THEY ARE AN OWNER
                     <Link
-                      href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-roles`}
+                      href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-roles?isOwner=${userHasSchemes}`}
                       className="govuk-link"
                     >
                       Change

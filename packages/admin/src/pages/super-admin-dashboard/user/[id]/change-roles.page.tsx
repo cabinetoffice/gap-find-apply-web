@@ -18,7 +18,7 @@ type PageBodyResponse = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
-  //TODO : GET OWNER STATUS VIA QUERY PARAMS
+  const isOwner = (context.query?.isOwner === 'true') as boolean;
   const APPLICANT_ROLES_IDS = ['1', '2'];
   const ADMIN_ROLES_IDS = ['3', '4', '5'];
 
