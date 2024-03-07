@@ -35,6 +35,7 @@ type ApplicationFormSummary = {
     createdBy: string;
     lastUpdated: string;
     lastUpdateBy: string;
+    lastPublished: string;
   };
   sections: ApplicationFormSection[];
 };
