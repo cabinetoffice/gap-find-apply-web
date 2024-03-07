@@ -7,6 +7,7 @@ import {
 import { GetServerSideProps } from 'next';
 import getConfig from 'next/config';
 import { toWordsOrdinal } from 'number-to-words';
+
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';
 import { getApplicationFormSummary } from '../../../../services/ApplicationService';
@@ -32,7 +33,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   const sessionCookie = getSessionIdFromCookies(req);
 
   let fieldErrors: ValidationError[] = [];
-  let options: string[] = [''];
+  let options: string[] = ['', ''];
   let applicationFormSummary: ApplicationFormSummary;
   let questionSummary: QuestionWithOptionsSummary;
 

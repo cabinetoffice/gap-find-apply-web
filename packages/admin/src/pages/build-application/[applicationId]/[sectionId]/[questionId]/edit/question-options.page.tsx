@@ -1,9 +1,10 @@
 import { Button, FlexibleQuestionPageLayout, TextInput } from 'gap-web-ui';
 import { toWordsOrdinal } from 'number-to-words';
+
 import CustomLink from '../../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../../components/layout/Meta';
-import OptionsQuestionSummary from '../../components/OptionsQuestionSummary';
 import InferProps from '../../../../../../types/InferProps';
+import OptionsQuestionSummary from '../../components/OptionsQuestionSummary';
 import getServerSideProps from './question-options.getServerSideProps';
 
 export { getServerSideProps };
