@@ -39,7 +39,7 @@ const getEditorRows = async ({
     const editorRow: UnformattedEditorRow = { key: email, value: role };
     if (isOwner)
       editorRow.action = {
-        href: `/scheme/${schemeId}/manage-editors/remove/${id}`,
+        href: `/scheme/${schemeId}/manage-editors/${id}/remove`,
         label: 'Remove',
         ariaLabel: `Remove ${email}`,
       };
@@ -64,6 +64,7 @@ const getEditorRows = async ({
 const getEditorsServerSideProps = async ({
   params,
   req,
+  query,
 }: GetServerSidePropsContext) => {
   const { schemeId } = params as Record<string, string>;
   const sessionCookie = getSessionIdFromCookies(req);
@@ -91,6 +92,7 @@ const getEditorsServerSideProps = async ({
         sessionCookie,
         userServiceJwt,
       }),
+      newEditor: query['newEditor'] ?? null,
     },
   };
 };

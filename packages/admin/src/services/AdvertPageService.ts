@@ -2,7 +2,7 @@ import axios from 'axios';
 import getConfig from 'next/config';
 import { GetSectionOverviewPageContentResponse } from '../types/GetSectionOverviewPageContentResponse';
 import { GrantAdvertSummaryPageResponse } from '../types/GetSummaryPageContentResponse';
-import { axiosSessionConfig } from '../utils/session';
+import { axiosSessionConfig, getFullConfig } from '../utils/session';
 import {
   GetAdvertSectionPageContentResponse,
   getAdvertStatusBySchemeIdResponse,
@@ -131,10 +131,11 @@ const scheduleAdvert = async (sessionId: string, advertId: string) => {
 
 const getGrantAdvertPublishInformationBySchemeId = async (
   sessionId: string,
+  userServiceJwt: string,
   grantSchemeId: string
 ): Promise<getAdvertPublishInformationBySchemeIdResponse> => {
   const res = await axios.get(`${BASE_ADVERT_URL}/publish-information`, {
-    ...axiosSessionConfig(sessionId),
+    ...getFullConfig(sessionId, userServiceJwt),
     params: {
       grantSchemeId,
     },

@@ -31,3 +31,28 @@ export const getSchemeEditors = async (
   );
   return data;
 };
+
+export const addSchemeEditor = async (
+  schemeId: string,
+  sessionId: string,
+  userToken: string,
+  editorEmailAddress: string
+) => {
+  const response = await axios.post(
+    `${SCHEME_HOST}/${schemeId}/editors`,
+    { editorEmailAddress },
+    getFullConfig(sessionId, userToken)
+  );
+  return response.data;
+};
+
+export async function removeEditor(
+  sessionCookie: string,
+  schemeId: string,
+  editorId: string
+) {
+  await axios.delete(
+    `${SCHEME_HOST}/${schemeId}/editors/${editorId}`,
+    axiosSessionConfig(sessionCookie)
+  );
+}

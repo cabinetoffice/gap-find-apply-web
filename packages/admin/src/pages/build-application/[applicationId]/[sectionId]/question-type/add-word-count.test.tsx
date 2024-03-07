@@ -147,6 +147,7 @@ describe('getServerSideProps()', () => {
       backButtonHref: '/build-application/appId/sectionId/question-type',
       sectionTitle: 'Custom section name',
       maxWords: '',
+      isEdit: false,
     });
   });
 });
@@ -157,11 +158,9 @@ const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
     backButtonHref: '/some-back-href',
     sectionTitle: 'section-title',
     maxWords: '',
+    isEdit: false,
   },
   previousValues: {
-    fieldTitle: 'Test 2 Section Field Title',
-    hintText: 'Test 2 hint text',
-    optional: '',
     maxWords: '',
   },
   formAction: '',

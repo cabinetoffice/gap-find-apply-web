@@ -7,10 +7,11 @@ import {
   isSchemeOwner,
 } from '../../../services/SchemeEditorService';
 
-const mockGetServerSidePropsContext = (params = {}, req = {}) =>
+const mockGetServerSidePropsContext = (params = {}, req = {}, query = {}) =>
   ({
     params,
     req,
+    query,
   } as unknown as GetServerSidePropsContext);
 
 jest.mock('../../../utils/session');
@@ -46,13 +47,14 @@ describe('getEditorsServerSideProps', () => {
             key: 'owner@example.com',
             value: 'OWNER',
             action: {
-              href: '/scheme/testSchemeId/manage-editors/remove/ownerId',
+              href: '/scheme/testSchemeId/manage-editors/ownerId/remove',
               label: 'Remove',
               ariaLabel: 'Remove owner@example.com',
             },
           },
         ],
         schemeName: 'Test Scheme',
+        newEditor: null,
       },
     });
   });
