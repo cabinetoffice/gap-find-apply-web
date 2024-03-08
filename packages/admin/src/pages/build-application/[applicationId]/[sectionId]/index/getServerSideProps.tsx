@@ -1,12 +1,13 @@
 import { GetServerSidePropsContext } from 'next';
-import callServiceMethod from '../../../../../utils/callServiceMethod';
-import { getSessionIdFromCookies } from '../../../../../utils/session';
 import {
   getApplicationFormSummary,
+  getApplicationStatus,
   handleQuestionOrdering,
 } from '../../../../../services/ApplicationService';
-import { generateErrorPageParams } from '../../../../../utils/serviceErrorHelpers';
 import ServiceError from '../../../../../types/ServiceError';
+import callServiceMethod from '../../../../../utils/callServiceMethod';
+import { generateErrorPageParams } from '../../../../../utils/serviceErrorHelpers';
+import { getSessionIdFromCookies } from '../../../../../utils/session';
 
 const getServerSideProps = async ({
   params,
@@ -17,15 +18,16 @@ const getServerSideProps = async ({
 }: GetServerSidePropsContext) => {
   const { applicationId, sectionId } = params as Record<string, string>;
   const { scrollPosition } = query as Record<string, string>;
+  const sessionId = getSessionIdFromCookies(req);
 
   const result = await callServiceMethod(
     req,
     res,
     async (body) => {
-      const sessionId = getSessionIdFromCookies(req);
       const params = Object.keys(body)[0].split('/');
       const increment = params[0] === 'Up' ? -1 : 1;
       const questionId = params[1];
+
       await handleQuestionOrdering({
         sessionId,
         applicationId,
@@ -43,6 +45,19 @@ const getServerSideProps = async ({
 
   if ('redirect' in result) {
     return result;
+  }
+
+  const applicationStatus = await getApplicationStatus(
+    applicationId,
+    sessionId
+  );
+  if (applicationStatus === 'PUBLISHED') {
+    return {
+      redirect: {
+        destination: `/build-application/${applicationId}/dashboard`,
+        permanent: false,
+      },
+    };
   }
 
   let applicationFormSummary;
