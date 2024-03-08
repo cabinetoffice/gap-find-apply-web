@@ -60,7 +60,7 @@ const getServerSideProps = async ({
   }
 
   let fieldErrors: ValidationError[] = [];
-  let options: string[] = [''];
+  let options: string[] = ['', ''];
   let applicationFormSummary: ApplicationFormSummary;
   let questionData: ApplicationFormQuestion;
   let questionSummary: QuestionWithOptionsSummary;
