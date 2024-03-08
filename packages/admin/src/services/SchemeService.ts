@@ -1,6 +1,7 @@
 import axios from 'axios';
 import getConfig from 'next/config';
 import ApplicationQueryObject from '../types/ApplicationQueryObject';
+import EditableSchemes from '../types/EditableSchemes';
 import Pagination from '../types/Pagination';
 import Scheme from '../types/Scheme';
 import { axiosSessionConfig } from '../utils/session';
@@ -18,6 +19,21 @@ export const getUserSchemes = async (
     params: pagination,
     ...axiosSessionConfig(sessionId),
   });
+
+  return response.data;
+};
+
+export const getOwnedAndEditableSchemes = async (
+  pagination: Pagination,
+  sessionId: string
+) => {
+  const response = await axios.get<EditableSchemes>(
+    `${BASE_SCHEME_URL}/editable`,
+    {
+      params: pagination,
+      ...axiosSessionConfig(sessionId),
+    }
+  );
 
   return response.data;
 };

@@ -2,16 +2,17 @@ import axios from 'axios';
 import getConfig from 'next/config';
 import ApplicationQueryObject from '../types/ApplicationQueryObject';
 import Pagination from '../types/Pagination';
+import { axiosSessionConfig } from '../utils/session';
 import { findMatchingApplicationForms } from './ApplicationService';
 import {
   createNewScheme,
   findApplicationFormFromScheme,
   getGrantScheme,
+  getOwnedAndEditableSchemes,
   getUserSchemes,
   patchScheme,
   schemeApplicationIsInternal,
 } from './SchemeService';
-import { axiosSessionConfig } from '../utils/session';
 
 jest.mock('next/config', () => () => {
   return {
@@ -51,6 +52,37 @@ describe('SchemeService', () => {
     },
   ];
 
+  const mockEditableSchemes = {
+    ownedSchemes: [
+      {
+        name: 'name-1',
+        schemeId: 'schemeId-1',
+        ggisReference: 'ggisReference-1',
+        organisationId: 'organisationId-1',
+      },
+      {
+        name: 'name-2',
+        schemeId: 'schemeId-2',
+        ggisReference: 'ggisReference-2',
+        organisationId: 'organisationId-2',
+      },
+    ],
+    editableSchemes: [
+      {
+        name: 'name-3',
+        schemeId: 'schemeId-3',
+        ggisReference: 'ggisReference-3',
+        organisationId: 'organisationId-3',
+      },
+      {
+        name: 'name-4',
+        schemeId: 'schemeId-4',
+        ggisReference: 'ggisReference-4',
+        organisationId: 'organisationId-4',
+      },
+    ],
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -86,6 +118,52 @@ describe('SchemeService', () => {
         withCredentials: true,
       });
       expect(result).toStrictEqual(mockSchemes);
+    });
+  });
+
+  describe('getOwnedAndEditableSchemes function', () => {
+    it('Should return a list of owned schemes and a list of editable schemes', async () => {
+      mockedAxios.get.mockResolvedValue({ data: mockEditableSchemes });
+
+      const result = await getOwnedAndEditableSchemes(
+        { paginate: false },
+        'testSessionId'
+      );
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_SCHEME_URL}/editable`,
+        {
+          params: { paginate: false },
+          headers: { Cookie: 'SESSION=testSessionId;' },
+          withCredentials: true,
+        }
+      );
+      expect(result).toStrictEqual(mockEditableSchemes);
+    });
+
+    it('Should return a list of owned schemes and a list of editable schemes with a limit', async () => {
+      mockedAxios.get.mockResolvedValue({ data: mockEditableSchemes });
+      const paginationParams: Pagination = {
+        paginate: true,
+        page: 0,
+        size: 2,
+        sort: 'createdDate,DESC',
+      };
+
+      const result = await getOwnedAndEditableSchemes(
+        paginationParams,
+        'testSessionId'
+      );
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_SCHEME_URL}/editable`,
+        {
+          params: paginationParams,
+          headers: { Cookie: 'SESSION=testSessionId;' },
+          withCredentials: true,
+        }
+      );
+      expect(result).toStrictEqual(mockEditableSchemes);
     });
   });
 
