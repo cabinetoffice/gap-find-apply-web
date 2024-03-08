@@ -58,18 +58,13 @@ export function getLastUpdatedByText({
     created
   )}.`;
 
-  const CONTENT_MAP: StatusContentMap = {
-    [PUBLISHED]: `It was published by ${lastUpdatedByEmail} ${publishedDateString}.`,
-    [SCHEDULED]: validLastUpdated
-      ? `Your advert was scheduled to be published ${lastUpdatedString} by ${lastUpdatedByEmail}.`
-      : invalidLastUpdatedString,
-  };
+  const publishedText = `It was published by ${lastUpdatedByEmail} ${publishedDateString}.`;
 
   const defaultText = validLastUpdated
     ? `It was last edited by ${lastUpdatedByEmail} ${lastUpdatedString}.`
     : invalidLastUpdatedString;
 
-  return CONTENT_MAP[grantAdvertStatus] ?? defaultText;
+  return PUBLISHED === grantAdvertStatus ? publishedText : defaultText;
 }
 
 export const LastUpdatedBy = ({ grantAdvertData }: AdvertData) => (
