@@ -61,12 +61,12 @@ describe('SectionService', () => {
         sectionId: SECTION_ID,
         body: {
           sectionTitle: 'New Title',
-          revision: '1',
+          version: '1',
         },
       });
       expect(mockedAxios.patch).toHaveBeenCalledWith(
         `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/${SECTION_ID}/title`,
-        { sectionTitle: 'New Title', revision: '1' },
+        { sectionTitle: 'New Title', version: '1' },
         { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
       );
     });

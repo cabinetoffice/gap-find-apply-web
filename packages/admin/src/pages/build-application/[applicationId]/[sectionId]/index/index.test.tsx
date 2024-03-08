@@ -35,7 +35,7 @@ const getDefaultAppFormSummary = (): InferServiceMethodResponse<
     lastPublished: '2021-08-09T14:00:00.000Z',
     lastUpdateBy: 'some-user',
     lastUpdated: '2021-08-09T14:00:00.000Z',
-    revision: 1,
+    version: 1,
   },
   grantApplicationId: 'testApplicationId',
   grantSchemeId: 'some-grant-scheme-id',

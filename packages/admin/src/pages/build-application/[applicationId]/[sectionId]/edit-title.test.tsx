@@ -16,7 +16,7 @@ beforeEach(() => {
     ],
     applicationStatus: 'DRAFT',
     audit: {
-      revision: 1,
+      version: 1,
     },
   });
 });

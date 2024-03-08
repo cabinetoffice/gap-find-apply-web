@@ -33,7 +33,7 @@ describe('getServerSideProps', () => {
       applicationName: '',
       applicationStatus: 'DRAFT',
       audit: {
-        revision: 1,
+        version: 1,
         created: '',
         createdBy: '',
         lastUpdated: '2024-03-06T17:05:34.493600Z',

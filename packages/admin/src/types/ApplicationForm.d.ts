@@ -30,7 +30,7 @@ type ApplicationFormSummary = {
   applicationName: string;
   applicationStatus: 'DRAFT' | 'PUBLISHED' | 'REMOVED';
   audit: {
-    revision: number;
+    version: number;
     created: string;
     createdBy: string;
     lastUpdated: string;

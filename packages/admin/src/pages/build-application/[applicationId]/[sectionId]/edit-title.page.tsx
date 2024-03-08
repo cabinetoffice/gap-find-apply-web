@@ -17,14 +17,14 @@ export const getServerSideProps = (context: GetServerSidePropsContext) => {
       (section) => section.sectionId === sectionId
     )!;
     const {
-      audit: { revision },
+      audit: { version },
     } = application;
 
-    return { sectionTitle, applicationId, sectionId, revision };
+    return { sectionTitle, applicationId, sectionId, version };
   };
 
   const handleRequest = async (
-    body: { sectionTitle: string; revision: string },
+    body: { sectionTitle: string; version: string },
     sessionId: string
   ) =>
     updateSectionTitle({
@@ -46,7 +46,7 @@ export const getServerSideProps = (context: GetServerSidePropsContext) => {
 
 export default function EditSectionTitle({
   csrfToken,
-  pageData: { sectionTitle, applicationId, sectionId, revision },
+  pageData: { sectionTitle, applicationId, sectionId, version },
   formAction,
   fieldErrors,
   previousValues,
@@ -77,7 +77,7 @@ export default function EditSectionTitle({
             fieldErrors={fieldErrors}
           />
 
-          <input type="hidden" name="revision" value={revision} />
+          <input type="hidden" name="version" value={version} />
 
           <div className="govuk-button-group">
             <button className="govuk-button" data-module="govuk-button">
