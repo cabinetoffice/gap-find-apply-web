@@ -10,6 +10,7 @@ interface Scheme {
   version?: string;
   lastUpdatedDate: string;
   lastUpdatedBy: string;
+  encryptedLastUpdatedBy: string;
 }
 
 export default Scheme;

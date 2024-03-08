@@ -2,6 +2,11 @@ import axios from 'axios';
 import getConfig from 'next/config';
 import { axiosSessionConfig, getFullConfig } from '../utils/session';
 
+import { decrypt } from '../utils/encryption';
+import EditableSchemes from '../types/EditableSchemes';
+import Scheme from '../types/Scheme';
+import Pagination from '../types/Pagination';
+
 const { serverRuntimeConfig } = getConfig();
 
 export type EditorList = {
@@ -20,6 +25,11 @@ export const isSchemeOwner = async (schemeId: string, sessionId: string) => {
   return data;
 };
 
+const decryptSchemeEditors = async (editor: EditorList) => ({
+  ...editor,
+  email: await decrypt(editor.email),
+});
+
 export const getSchemeEditors = async (
   schemeId: string,
   sessionId: string,
@@ -29,7 +39,8 @@ export const getSchemeEditors = async (
     `${SCHEME_HOST}/${schemeId}/editors`,
     getFullConfig(sessionId, userServiceJwt)
   );
-  return data;
+
+  return Promise.all(data.map(decryptSchemeEditors));
 };
 
 export const addSchemeEditor = async (
@@ -56,3 +67,37 @@ export async function removeEditor(
     axiosSessionConfig(sessionCookie)
   );
 }
+
+export const getOwnedAndEditableSchemes = async (
+  pagination: Pagination,
+  sessionId: string
+) => {
+  const response = await axios.get<EditableSchemes>(`${SCHEME_HOST}/editable`, {
+    params: pagination,
+    ...axiosSessionConfig(sessionId),
+  });
+
+  return decryptOwnedAndEditableSchemes(response.data);
+};
+
+const decryptOwnedAndEditableSchemes = async (
+  editableSchemes: EditableSchemes
+) => {
+  const decryptedEditableSchemes = await Promise.all(
+    Object.entries(editableSchemes).map(formatEditableSchemeObject)
+  );
+
+  return Object.fromEntries(decryptedEditableSchemes);
+};
+
+const formatEditableSchemeObject = async ([key, schemes]: [
+  string,
+  Scheme[]
+]) => [key, await Promise.all(schemes.map(decryptLastUpdatedBy))];
+
+export const decryptLastUpdatedBy = async (scheme: Scheme) => {
+  if (scheme.encryptedLastUpdatedBy)
+    scheme.lastUpdatedBy = await decrypt(scheme.encryptedLastUpdatedBy);
+
+  return scheme;
+};

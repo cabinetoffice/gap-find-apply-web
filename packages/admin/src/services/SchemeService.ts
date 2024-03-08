@@ -1,11 +1,11 @@
 import axios from 'axios';
 import getConfig from 'next/config';
 import ApplicationQueryObject from '../types/ApplicationQueryObject';
-import EditableSchemes from '../types/EditableSchemes';
 import Pagination from '../types/Pagination';
 import Scheme from '../types/Scheme';
 import { axiosSessionConfig } from '../utils/session';
 import { findMatchingApplicationForms } from './ApplicationService';
+import { decryptLastUpdatedBy } from './SchemeEditorService';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -19,21 +19,6 @@ export const getUserSchemes = async (
     params: pagination,
     ...axiosSessionConfig(sessionId),
   });
-
-  return response.data;
-};
-
-export const getOwnedAndEditableSchemes = async (
-  pagination: Pagination,
-  sessionId: string
-) => {
-  const response = await axios.get<EditableSchemes>(
-    `${BASE_SCHEME_URL}/editable`,
-    {
-      params: pagination,
-      ...axiosSessionConfig(sessionId),
-    }
-  );
 
   return response.data;
 };
@@ -70,12 +55,12 @@ export const createNewScheme = async (
 };
 
 export const getGrantScheme = async (schemeId: string, sessionId: string) => {
-  const response = await axios.get(
+  const { data } = await axios.get<Scheme>(
     `${BASE_SCHEME_URL}/${schemeId}`,
     axiosSessionConfig(sessionId)
   );
 
-  return response.data as Scheme;
+  return decryptLastUpdatedBy(data);
 };
 
 export const findApplicationFormFromScheme = (

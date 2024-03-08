@@ -7,6 +7,7 @@ import {
 import getConfig from 'next/config';
 import { axiosSessionConfig } from '../utils/session';
 import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
+import { decrypt } from '../utils/encryption';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -129,11 +130,14 @@ const handleQuestionOrdering = async ({
 };
 
 const getLastEditedEmail = async (applicationId: string, sessionId: string) => {
-  const response = await axios.get(
+  const {
+    data: { encryptedLastUpdatedEmail },
+  } = await axios.get<{ encryptedLastUpdatedEmail: string }>(
     `${BASE_APPLICATION_URL}/${applicationId}/lastUpdated/email`,
     axiosSessionConfig(sessionId)
   );
-  return response.data;
+
+  return decrypt(encryptedLastUpdatedEmail);
 };
 
 export {
