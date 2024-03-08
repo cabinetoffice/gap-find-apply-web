@@ -3,9 +3,9 @@ import {
   Radio,
   TextArea,
   TextInput,
-  DocumentUpload,
   SelectInput,
   Checkboxes,
+  UploadFile,
 } from 'gap-web-ui';
 import ResponseTypeEnum from '../../../../../enums/ResponseType';
 import { ApplicationFormQuestion } from '../../../../../types/ApplicationForm';
@@ -32,7 +32,7 @@ const PreviewInputSwitch = (question: ApplicationFormQuestion) => {
     case ResponseTypeEnum.Date:
       return <DateInput {...inputProps} />;
     case ResponseTypeEnum.SingleFileUpload:
-      return <DocumentUpload {...inputProps} disabled={true} />;
+      return <UploadFile {...inputProps} disabled={true} />;
     case ResponseTypeEnum.Dropdown:
       return (
         <SelectInput
