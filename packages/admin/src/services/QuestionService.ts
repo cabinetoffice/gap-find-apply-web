@@ -20,8 +20,14 @@ const patchQuestion = (
     validation: { mandatory: boolean; maxWords?: string | number };
     options: string[];
     responseType: ResponseType;
+    version: number;
   }>
 ): Promise<void> => {
+  console.log(
+    'patching question',
+    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}`,
+    values
+  );
   return axios.patch(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}`,
     values,

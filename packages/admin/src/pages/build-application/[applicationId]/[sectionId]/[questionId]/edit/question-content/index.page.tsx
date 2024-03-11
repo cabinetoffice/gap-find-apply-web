@@ -20,6 +20,7 @@ const QuestionContent = ({
   pageData: {
     backButtonHref,
     questionData,
+    version,
     deleteConfirmationUrl,
     backTo,
     previewUrl,
@@ -99,6 +100,8 @@ const QuestionContent = ({
             fieldErrors={fieldErrors}
             defaultChecked={optionalRadioDefault()}
           />
+
+          <input type="hidden" name="version" value={version} />
 
           <div className="govuk-button-group">
             <Button
