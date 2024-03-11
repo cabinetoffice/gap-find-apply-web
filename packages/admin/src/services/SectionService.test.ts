@@ -44,7 +44,7 @@ describe('SectionService', () => {
       await deleteSection(SESSION_ID, APPLICATION_ID, SECTION_ID, VERSION);
 
       expect(mockedAxios.delete).toHaveBeenCalledWith(
-        `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/${SECTION_ID}/${VERSION}`,
+        `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/${SECTION_ID}?version=${VERSION}`,
         { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
       );
     });
