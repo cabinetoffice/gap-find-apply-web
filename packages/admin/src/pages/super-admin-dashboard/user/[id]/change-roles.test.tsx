@@ -128,7 +128,8 @@ describe('Render edit role page', () => {
   test('SHOULD NOT disable the Administrator checkbox if the user DOES NOT own a scheme', () => {
     render(componentNonOwner);
     expect(
-      screen.getByText('Administrator').parentElement?.previousSibling
+      screen.getByText('Administrator').parentElement?.parentElement
+        ?.parentElement
     ).not.toBeDisabled();
   });
   test('SHOULD disable the Administrator checkbox if the user DOES own a scheme', () => {

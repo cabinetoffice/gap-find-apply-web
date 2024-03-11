@@ -68,7 +68,7 @@ describe('Super admin - Edit user page', () => {
 
       expect(screen.getByRole('link', { name: 'Change' })).toHaveAttribute(
         'href',
-        '/super-admin-dashboard/user/1/change-roles'
+        '/super-admin-dashboard/user/1/change-roles?isOwner=false'
       );
     });
 
@@ -78,7 +78,7 @@ describe('Super admin - Edit user page', () => {
       const changeLinks = screen.getAllByRole('link', { name: 'Change' });
       expect(changeLinks[0]).toHaveAttribute(
         'href',
-        '/super-admin-dashboard/user/1/change-roles'
+        '/super-admin-dashboard/user/1/change-roles?isOwner=false'
       );
       expect(changeLinks[1]).toHaveAttribute(
         'href',
@@ -167,6 +167,13 @@ describe('Super admin - Edit user page', () => {
             schemes: [{ name: 'Test Scheme', schemeId: 'schemeId' }],
           })}
         />
+      );
+
+      const changeLinks = screen.getAllByRole('link', { name: 'Change' });
+      //they own the grant
+      expect(changeLinks[0]).toHaveAttribute(
+        'href',
+        '/super-admin-dashboard/user/1/change-roles?isOwner=true'
       );
 
       expect(
