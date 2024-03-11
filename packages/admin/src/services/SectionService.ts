@@ -30,7 +30,7 @@ const deleteSection = (
   version: string
 ): Promise<void> => {
   return axios.delete(
-    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/${version}`,
+    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}?version=${version}`,
     axiosSessionConfig(sessionId)
   );
 };
