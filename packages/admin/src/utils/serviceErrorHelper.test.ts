@@ -1,4 +1,10 @@
-import { generateErrorMessageFromStatusCode } from './serviceErrorHelpers';
+import {
+  generateErrorMessageFromStatusCode,
+  generateErrorPageMultipleEditors,
+  generateErrorPageParams,
+  generateErrorPageRedirect,
+  generateErrorPageRedirectV2,
+} from './serviceErrorHelpers';
 
 // https://jestjs.io/docs/api#testeachtablename-fn-timeout
 describe('generateErrorMessageFromStatusCode', () => {
@@ -17,4 +23,85 @@ describe('generateErrorMessageFromStatusCode', () => {
       expect(generateErrorMessageFromStatusCode(code)).toEqual(expectedResult);
     }
   );
+});
+
+describe('generateErrorPage functions', () => {
+  const expectedErrorPageParams = {
+    errorInformation: 'some info',
+    linkAttributes: {
+      href: 'some-url',
+      linkText: 'Please return',
+      linkInformation: ' and try again.',
+    },
+  };
+  test('generateErrorPageParams', () => {
+    expect(
+      generateErrorPageParams(
+        expectedErrorPageParams.errorInformation,
+        expectedErrorPageParams.linkAttributes.href
+      )
+    ).toEqual(expectedErrorPageParams);
+  });
+
+  describe('generateErrorPageRedirect', () => {
+    test('exclude sub path', () => {
+      expect(
+        generateErrorPageRedirect(
+          expectedErrorPageParams.errorInformation,
+          expectedErrorPageParams.linkAttributes.href,
+          true
+        )
+      ).toEqual({
+        redirect: {
+          destination:
+            '/service-error?serviceErrorProps={"errorInformation":"some info","linkAttributes":{"href":"some-url","linkText":"Please return","linkInformation":" and try again."}}&excludeSubPath=true',
+          statusCode: 302,
+        },
+      });
+    });
+    test("don't exclude subpath", () => {
+      expect(
+        generateErrorPageRedirect(
+          expectedErrorPageParams.errorInformation,
+          expectedErrorPageParams.linkAttributes.href
+        )
+      ).toEqual({
+        redirect: {
+          destination:
+            '/service-error?serviceErrorProps={"errorInformation":"some info","linkAttributes":{"href":"some-url","linkText":"Please return","linkInformation":" and try again."}}',
+          statusCode: 302,
+        },
+      });
+    });
+  });
+
+  describe('generateErrorPageRedirectV2', () => {
+    test('renders params', () => {
+      expect(generateErrorPageRedirectV2('CODE', 'param_string')).toEqual({
+        redirect: {
+          destination: '/error-page/code/CODE?href=param_string',
+          statusCode: 302,
+        },
+      });
+    });
+    test('renders link', () => {
+      expect(
+        generateErrorPageRedirectV2('CODE', expectedErrorPageParams)
+      ).toEqual({
+        redirect: {
+          destination: '/error-page/code/CODE?href=some-url',
+          statusCode: 302,
+        },
+      });
+    });
+  });
+
+  test('generateErrorPageMultipleEditors', () => {
+    expect(generateErrorPageMultipleEditors('appId')).toEqual({
+      redirect: {
+        statusCode: 302,
+        destination: `/build-application/appId/error-multiple-editors`,
+      },
+    });
+  });
 });

@@ -1,12 +1,12 @@
 import axios from 'axios';
-import ApplicationQueryObject from '../types/ApplicationQueryObject';
-import {
-  ApplicationFormSummary,
-  ApplicationFormSection,
-} from '../types/ApplicationForm';
 import getConfig from 'next/config';
-import { axiosSessionConfig } from '../utils/session';
+import {
+  ApplicationFormSection,
+  ApplicationFormSummary,
+} from '../types/ApplicationForm';
+import ApplicationQueryObject from '../types/ApplicationQueryObject';
 import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
+import { axiosSessionConfig } from '../utils/session';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -128,12 +128,33 @@ const handleQuestionOrdering = async ({
   );
 };
 
+const getLastEditedEmail = async (applicationId: string, sessionId: string) => {
+  const response = await axios.get(
+    `${BASE_APPLICATION_URL}/${applicationId}/lastUpdated/email`,
+    axiosSessionConfig(sessionId)
+  );
+  return response.data;
+};
+
+const getApplicationStatus = async (
+  applicationId: string,
+  sessionId: string
+) => {
+  const response = await axios.get(
+    `${BASE_APPLICATION_URL}/${applicationId}/status`,
+    axiosSessionConfig(sessionId)
+  );
+  return response.data;
+};
+
 export {
   createNewApplicationForm,
   findMatchingApplicationForms,
-  getApplicationFormSummary,
   getApplicationFormSection,
-  updateApplicationFormStatus,
-  handleSectionOrdering,
+  getApplicationFormSummary,
+  getApplicationStatus,
+  getLastEditedEmail,
   handleQuestionOrdering,
+  handleSectionOrdering,
+  updateApplicationFormStatus,
 };

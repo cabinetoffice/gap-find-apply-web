@@ -1,15 +1,17 @@
 import axios, { AxiosError } from 'axios';
+import getConfig from 'next/config';
 import ApplicationQueryObject from '../types/ApplicationQueryObject';
+import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
 import {
   createNewApplicationForm,
   findMatchingApplicationForms,
   getApplicationFormSection,
   getApplicationFormSummary,
-  updateApplicationFormStatus,
+  getApplicationStatus,
+  getLastEditedEmail,
   handleSectionOrdering,
+  updateApplicationFormStatus,
 } from './ApplicationService';
-import getConfig from 'next/config';
-import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
 
 jest.mock('next/config', () => () => {
   return {
@@ -203,6 +205,42 @@ describe('ApplicationService', () => {
         { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
       );
       expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getLastUpdatedEmail', () => {
+    it('Should call the expected endpoint to retrieve the last updated email', async () => {
+      const grantApplicationId = 'a028d000004Osy3BEA';
+      const sessionCookie = 'testSessionId';
+
+      mockedAxios.get.mockResolvedValue({
+        data: { lastUpdatedEmail: 'test@test.gov' },
+      });
+
+      await getLastEditedEmail(grantApplicationId, sessionCookie);
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_APPLICATION_URL}/${grantApplicationId}/lastUpdated/email`,
+        { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
+      );
+    });
+  });
+
+  describe('getApplicationStatus', () => {
+    it('Should call the expected endpoint to retrieve the application form status', async () => {
+      const grantApplicationId = 'a028d000004Osy3BEA';
+      const sessionCookie = 'testSessionId';
+
+      mockedAxios.get.mockResolvedValue({
+        data: { status: 'PUBLISHED' },
+      });
+
+      await getApplicationStatus(grantApplicationId, sessionCookie);
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_APPLICATION_URL}/${grantApplicationId}/status`,
+        { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
+      );
     });
   });
 });

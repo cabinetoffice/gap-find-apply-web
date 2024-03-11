@@ -9,14 +9,13 @@ type StatusContentMap = { [Key in AdvertStatusEnum]?: string };
 export type ValidAdvertData = NonNullable<
   getAdvertPublishInformationBySchemeIdResponse['data']
 >;
-
 export type AdvertData = {
   grantAdvertData: ValidAdvertData;
 };
 
 const formatTimeStamp = (timestamp: string) =>
   `on ${moment(timestamp).format('D MMMM YYYY')} at ${moment(timestamp).format(
-    'HH:mm A'
+    'h:mma'
   )}`;
 
 export const getAdvertLink = ({ grantAdvertStatus }: ValidAdvertData) =>
@@ -43,20 +42,29 @@ export function getGrantStatusText({
 
 export function getLastUpdatedByText({
   lastUpdated,
+  lastPublishedDate,
+  firstPublishedDate,
   grantAdvertStatus,
+  validLastUpdated,
   lastUpdatedByEmail,
+  created,
 }: ValidAdvertData) {
-  const lastModifiedString = formatTimeStamp(lastUpdated as string);
-
-  const CONTENT_MAP: StatusContentMap = {
-    [PUBLISHED]: `It was published by ${lastUpdatedByEmail} ${lastModifiedString}.`,
-    [SCHEDULED]: `Your advert was scheduled to be published ${lastModifiedString} by ${lastUpdatedByEmail}.`,
-  };
-
-  return (
-    CONTENT_MAP[grantAdvertStatus] ??
-    `It was last edited by ${lastUpdatedByEmail} ${lastModifiedString}.`
+  const publishedDateString = formatTimeStamp(
+    lastPublishedDate ?? (firstPublishedDate as string)
   );
+  const lastUpdatedString = formatTimeStamp(lastUpdated);
+
+  const invalidLastUpdatedString = `It was created by ${lastUpdatedByEmail} ${formatTimeStamp(
+    created
+  )}.`;
+
+  const publishedText = `It was published by ${lastUpdatedByEmail} ${publishedDateString}.`;
+
+  const defaultText = validLastUpdated
+    ? `It was last edited by ${lastUpdatedByEmail} ${lastUpdatedString}.`
+    : invalidLastUpdatedString;
+
+  return PUBLISHED === grantAdvertStatus ? publishedText : defaultText;
 }
 
 export const LastUpdatedBy = ({ grantAdvertData }: AdvertData) => (
