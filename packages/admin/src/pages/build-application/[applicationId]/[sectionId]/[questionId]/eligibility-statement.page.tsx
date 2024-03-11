@@ -42,7 +42,6 @@ export const getServerSideProps = async ({
     req,
     res,
     async (body: RequestBody) => {
-      console.log('eligib', body);
       const result = await patchQuestion(
         sessionId,
         applicationId,
