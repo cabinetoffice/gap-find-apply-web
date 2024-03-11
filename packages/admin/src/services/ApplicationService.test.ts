@@ -26,6 +26,10 @@ jest.mock('next/config', () => () => {
 });
 jest.mock('axios');
 
+jest.mock('../utils/encryption', () => ({
+  decrypt: jest.fn(),
+}));
+
 describe('ApplicationService', () => {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
   const { serverRuntimeConfig } = getConfig();
@@ -214,7 +218,7 @@ describe('ApplicationService', () => {
       const sessionCookie = 'testSessionId';
 
       mockedAxios.get.mockResolvedValue({
-        data: { lastUpdatedEmail: 'test@test.gov' },
+        data: { encryptedLastUpdatedEmail: 'test@test.gov' },
       });
 
       await getLastEditedEmail(grantApplicationId, sessionCookie);
