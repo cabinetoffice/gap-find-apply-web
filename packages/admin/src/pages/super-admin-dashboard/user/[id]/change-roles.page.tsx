@@ -141,8 +141,7 @@ function renderConditionalCheckboxes(
   roles: Role[],
   user: User
 ) {
-  const adminCheckbox = roles.filter(({ name }) => name === 'ADMIN');
-  const otherCheckboxes = roles.filter(({ name }) => name !== 'ADMIN');
+  const adminCheckboxes = roles.filter(({ name }) => name === 'ADMIN');
   if (isOwner) {
     return (
       <>
@@ -153,27 +152,9 @@ function renderConditionalCheckboxes(
           <Checkboxes
             fieldErrors={fieldErrors}
             fieldName="newUserRoles"
-            disabledOptions={adminCheckbox.map(
-              ({ id, label, description }) => ({
-                value: String(id),
-                label: (
-                  <div>
-                    <span>{label}</span>
-                    <p className="govuk-hint">{description}</p>
-                  </div>
-                ),
-              })
-            )}
-            options={otherCheckboxes.map(({ id, label, description }) => ({
-              value: String(id),
-              label: (
-                <div>
-                  <span>{label}</span>
-                  <p className="govuk-hint">{description}</p>
-                </div>
-              ),
-            }))}
+            options={roles.map(renderCheckbox)}
             defaultCheckboxes={user.roles.map(({ id }) => String(id))}
+            disabledCheckboxes={adminCheckboxes.map(({ id }) => String(id))}
           />
         </div>
       </>
@@ -183,18 +164,21 @@ function renderConditionalCheckboxes(
       <Checkboxes
         fieldErrors={fieldErrors}
         fieldName="newUserRoles"
-        options={roles.map(({ id, label, description }) => ({
-          value: String(id),
-          label: (
-            <>
-              <span>{label}</span>
-              <p className="govuk-hint">{description}</p>
-            </>
-          ),
-        }))}
+        options={roles.map(renderCheckbox)}
         defaultCheckboxes={user.roles.map(({ id }) => String(id))}
       />
     );
   }
 }
+
+const renderCheckbox = ({ id, label, description }: Role) => ({
+  value: String(id),
+  label: (
+    <div>
+      <span>{label}</span>
+      <p className="govuk-hint">{description}</p>
+    </div>
+  ),
+});
+
 export default EditRoleWithId;

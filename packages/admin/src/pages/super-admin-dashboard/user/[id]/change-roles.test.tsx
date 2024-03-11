@@ -94,16 +94,19 @@ describe('Render edit role page', () => {
     //user has all roles (see component)
     render(componentNonOwner);
     expect(
-      screen.getByText('Find').parentElement?.previousSibling
+      screen.getByText('Find').parentElement?.parentElement?.previousSibling
     ).toBeChecked();
     expect(
-      screen.getByText('Super administrator').parentElement?.previousSibling
+      screen.getByText('Super administrator').parentElement?.parentElement
+        ?.previousSibling
     ).toBeChecked();
     expect(
-      screen.getByText('Administrator').parentElement?.previousSibling
+      screen.getByText('Administrator').parentElement?.parentElement
+        ?.previousSibling
     ).toBeChecked();
     expect(
-      screen.getByText('Applicant').parentElement?.previousSibling
+      screen.getByText('Applicant').parentElement?.parentElement
+        ?.previousSibling
     ).toBeChecked();
   });
 

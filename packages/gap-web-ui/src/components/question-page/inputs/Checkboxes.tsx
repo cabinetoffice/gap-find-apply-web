@@ -10,7 +10,7 @@ const Checkboxes = ({
   fieldName,
   fieldErrors,
   options,
-  disabledOptions,
+  disabledCheckboxes,
   defaultCheckboxes,
   disabled = false,
   divideLastCheckboxOption = false,
@@ -74,86 +74,6 @@ const Checkboxes = ({
           }
           data-module="govuk-checkboxes"
         >
-          {disabledOptions &&
-            disabledOptions.map((option, index) => {
-              const value =
-                typeof option === 'string'
-                  ? option
-                  : typeof option.label === 'string' &&
-                    !useOptionValueAsInputValue
-                  ? option.label
-                  : (option.value as string);
-
-              const getDataBehaviour = () => {
-                if (!divideLastCheckboxOption) return undefined;
-                if (divideCheckboxIndex === 1 && index === 0)
-                  return 'exclusive';
-                if (
-                  divideCheckboxIndex === disabledOptions.length - 1 &&
-                  index === disabledOptions.length - 1
-                )
-                  return 'exclusive';
-                return undefined;
-              };
-
-              return (
-                <React.Fragment key={value}>
-                  {divideLastCheckboxOption &&
-                    index === divideCheckboxIndex && (
-                      <div className="govuk-checkboxes__divider">or</div>
-                    )}
-
-                  <div className="govuk-checkboxes__item">
-                    <input
-                      className="govuk-checkboxes__input"
-                      id={index === 0 ? fieldName : `${fieldName}-${index + 1}`}
-                      name={fieldName}
-                      type="checkbox"
-                      value={value}
-                      defaultChecked={
-                        defaultCheckboxes &&
-                        defaultCheckboxes.indexOf(value) >= 0
-                      }
-                      disabled={true}
-                      data-behaviour={getDataBehaviour()}
-                      data-cy={`cy-checkbox-value-${value}`}
-                      data-aria-controls={
-                        typeof option === 'object' && option.conditionalInput
-                          ? `conditional-${
-                              index === 0
-                                ? fieldName
-                                : `${fieldName}-${index + 1}`
-                            }`
-                          : undefined
-                      }
-                    />
-                    <label
-                      className="govuk-label govuk-checkboxes__label"
-                      htmlFor={
-                        index === 0 ? fieldName : `${fieldName}-${index + 1}`
-                      }
-                      data-cy={`cy-checkbox-label-${value}`}
-                    >
-                      {typeof option === 'string' ? value : option.label}
-                    </label>
-                  </div>
-
-                  {typeof option === 'object' && option.conditionalInput && (
-                    <div
-                      className="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden"
-                      id={`conditional-${
-                        index === 0 ? fieldName : `${fieldName}-${index + 1}`
-                      }`}
-                      data-testid={`conditional-input-wrapper-${index + 1}`}
-                    >
-                      <div className="govuk-form-group">
-                        {option.conditionalInput}
-                      </div>
-                    </div>
-                  )}
-                </React.Fragment>
-              );
-            })}
           {options &&
             options.map((option, index) => {
               const value =
@@ -194,7 +114,11 @@ const Checkboxes = ({
                         defaultCheckboxes &&
                         defaultCheckboxes.indexOf(value) >= 0
                       }
-                      disabled={disabled}
+                      disabled={
+                        disabled ||
+                        (disabledCheckboxes &&
+                          disabledCheckboxes.indexOf(value) >= 0)
+                      }
                       data-behaviour={getDataBehaviour()}
                       data-cy={`cy-checkbox-value-${value}`}
                       data-aria-controls={
@@ -254,8 +178,8 @@ type CheckboxOption =
 
 export interface CheckboxesProps extends InputComponentProps {
   options?: string[] | CheckboxOption[];
-  disabledOptions?: string[] | CheckboxOption[];
   defaultCheckboxes?: string[];
+  disabledCheckboxes?: string[];
   disabled?: boolean;
   divideLastCheckboxOption?: boolean;
   divideCheckboxIndex?: number;
