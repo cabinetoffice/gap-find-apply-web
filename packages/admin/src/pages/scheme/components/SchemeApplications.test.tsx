@@ -109,6 +109,7 @@ describe('BuildApplicationForm', () => {
   it('Should render a application form view table col', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
@@ -123,6 +124,7 @@ describe('BuildApplicationForm', () => {
   it('Should render a "View submitted applications" heading', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
@@ -135,6 +137,7 @@ describe('BuildApplicationForm', () => {
   it('Should render a summary of the view submitted applications action', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats({ submissionCount: 1 })}
         schemeVersion={SCHEME_VERSION}
@@ -149,6 +152,7 @@ describe('BuildApplicationForm', () => {
   it('Should render a summary of the view submitted applications action alternative text', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
@@ -161,6 +165,7 @@ describe('BuildApplicationForm', () => {
   it('Should render In progress row within application submissions summary table', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats({ inProgressCount: 123 })}
         schemeVersion={SCHEME_VERSION}
@@ -174,6 +179,7 @@ describe('BuildApplicationForm', () => {
   it('Should render In progress row within application submissions summary table', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats({ submissionCount: 456 })}
         schemeVersion={SCHEME_VERSION}
@@ -187,6 +193,7 @@ describe('BuildApplicationForm', () => {
   it('Should render 0 if there are no submissions in progress or submitted', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
@@ -200,6 +207,7 @@ describe('BuildApplicationForm', () => {
   it('Should render a "View submitted applications" button', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats({ submissionCount: 1 })}
         schemeVersion={SCHEME_VERSION}
@@ -214,6 +222,7 @@ describe('BuildApplicationForm', () => {
   it('Should render a "View submitted applications" button as disabled when application has no submissions', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
@@ -228,6 +237,7 @@ describe('BuildApplicationForm', () => {
   it('Should render a "Required checks" heading', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
@@ -240,6 +250,7 @@ describe('BuildApplicationForm', () => {
   it('Should render a summary of the view submitted applications action', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
@@ -257,6 +268,7 @@ describe('BuildApplicationForm', () => {
   it('Should render a link to direct admins to spotlight', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
@@ -271,6 +283,7 @@ describe('BuildApplicationForm', () => {
   it('Should render a "View submitted applications" button', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats({ submissionCount: 1 })}
         schemeVersion={SCHEME_VERSION}
@@ -285,6 +298,7 @@ describe('BuildApplicationForm', () => {
   it('Should render a disabled "Download required checks" button', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={SCHEME_VERSION}
@@ -299,6 +313,7 @@ describe('BuildApplicationForm', () => {
   it('Should not render "Download required checks" section for V2 schemes', () => {
     render(
       <SchemeApplications
+        editorOrPublisherEmail=""
         applicationForm={getSchemeApplicationsProps()}
         applicationFormStats={getApplicationFormStats()}
         schemeVersion={'2'}
