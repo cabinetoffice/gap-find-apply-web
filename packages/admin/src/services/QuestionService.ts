@@ -69,10 +69,11 @@ const deleteQuestion = (
   sessionId: string,
   applicationId: string,
   sectionId: string,
-  questionId: string
+  questionId: string,
+  version: string
 ): Promise<void> => {
   return axios.delete(
-    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}`,
+    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}?version=${version}`,
     axiosSessionConfig(sessionId)
   );
 };
