@@ -12,6 +12,7 @@ import {
   handleSectionOrdering,
   updateApplicationFormStatus,
 } from './ApplicationService';
+import { decrypt } from '../utils/encryption';
 
 jest.mock('next/config', () => () => {
   return {
@@ -222,6 +223,8 @@ describe('ApplicationService', () => {
       });
 
       await getLastEditedEmail(grantApplicationId, sessionCookie);
+
+      expect(decrypt).toHaveBeenCalledWith('test@test.gov');
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
         `${BASE_APPLICATION_URL}/${grantApplicationId}/lastUpdated/email`,
