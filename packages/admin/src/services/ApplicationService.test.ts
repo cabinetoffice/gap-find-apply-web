@@ -219,7 +219,7 @@ describe('ApplicationService', () => {
       const sessionCookie = 'testSessionId';
 
       mockedAxios.get.mockResolvedValue({
-        data: { encryptedLastUpdatedEmail: 'test@test.gov' },
+        data: { encryptedEmail: 'test@test.gov' },
       });
 
       await getLastEditedEmail(grantApplicationId, sessionCookie);
