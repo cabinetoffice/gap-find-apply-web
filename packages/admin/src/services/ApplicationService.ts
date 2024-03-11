@@ -131,13 +131,13 @@ const handleQuestionOrdering = async ({
 
 const getLastEditedEmail = async (applicationId: string, sessionId: string) => {
   const {
-    data: { encryptedLastUpdatedEmail },
-  } = await axios.get<{ encryptedLastUpdatedEmail: string }>(
+    data: { encryptedEmail },
+  } = await axios.get<{ encryptedEmail: string }>(
     `${BASE_APPLICATION_URL}/${applicationId}/lastUpdated/email`,
     axiosSessionConfig(sessionId)
   );
 
-  return decrypt(encryptedLastUpdatedEmail);
+  return decrypt(encryptedEmail);
 };
 
 const getApplicationStatus = async (
