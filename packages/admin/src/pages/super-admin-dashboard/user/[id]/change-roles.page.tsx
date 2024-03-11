@@ -33,6 +33,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       String(role.id)
     );
     const newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
+    //case where admin checkbox is disabled (role isn't auto selected)
+    isOwner ? newUserRoles.push('3') : null;
+
     const userDepartment = (await getUserById(userId, jwt)).department;
 
     if (hasAdminRole(newUserRoles) && !hasAdminRole(oldUserRoles)) {
@@ -140,7 +143,6 @@ function renderConditionalCheckboxes(
 ) {
   const adminCheckbox = roles.filter(({ name }) => name === 'ADMIN');
   const otherCheckboxes = roles.filter(({ name }) => name !== 'ADMIN');
-  console.log('user roles: ', user.roles);
   if (isOwner) {
     return (
       <>
@@ -151,21 +153,17 @@ function renderConditionalCheckboxes(
           <Checkboxes
             fieldErrors={fieldErrors}
             fieldName="newUserRoles"
-            options={adminCheckbox.map(({ id, label, description }) => ({
-              value: String(id),
-              label: (
-                <div>
-                  <span>{label}</span>
-                  <p className="govuk-hint">{description}</p>
-                </div>
-              ),
-            }))}
-            defaultCheckboxes={adminCheckbox.map(({ id }) => String(id))}
-            disabled
-          />
-          <Checkboxes
-            fieldErrors={fieldErrors}
-            fieldName="newUserRoles"
+            disabledOptions={adminCheckbox.map(
+              ({ id, label, description }) => ({
+                value: String(id),
+                label: (
+                  <div>
+                    <span>{label}</span>
+                    <p className="govuk-hint">{description}</p>
+                  </div>
+                ),
+              })
+            )}
             options={otherCheckboxes.map(({ id, label, description }) => ({
               value: String(id),
               label: (
