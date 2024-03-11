@@ -24,8 +24,19 @@ type PageBodyResponse = {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
   const isOwner = (context.query?.isOwner === 'true') as boolean;
-  const APPLICANT_ROLES_IDS = ['1', '2'];
-  const ADMIN_ROLES_IDS = ['3', '4', '5'];
+  const ROLE_IDS = {
+    FIND: '1',
+    APPLICANT: '2',
+    ADMIN: '3',
+    SUPER_ADMIN: '4',
+    TECH_SUPPORT: '5',
+  };
+  const APPLICANT_ROLES_IDS = [ROLE_IDS.FIND, ROLE_IDS.APPLICANT];
+  const ADMIN_ROLES_IDS = [
+    ROLE_IDS.ADMIN,
+    ROLE_IDS.SUPER_ADMIN,
+    ROLE_IDS.TECH_SUPPORT,
+  ];
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
     let departmentPageUrl = `/super-admin-dashboard/user/${userId}/change-department`;
@@ -34,7 +45,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     );
     const newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
     //case where admin checkbox is disabled (role isn't auto selected)
-    isOwner ? newUserRoles.push('3') : null;
+    isOwner ? newUserRoles.push(ROLE_IDS.ADMIN) : null;
 
     const userDepartment = (await getUserById(userId, jwt)).department;
 
