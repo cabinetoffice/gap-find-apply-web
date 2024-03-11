@@ -21,7 +21,6 @@ const QuestionContent = ({
     backButtonHref,
     questionData,
     deleteConfirmationUrl,
-    backTo,
     previewUrl,
     editQuestionTypeUrl,
   },
@@ -141,7 +140,7 @@ const QuestionContent = ({
           </p>
 
           <CustomLink
-            href={deleteConfirmationUrl + '?backTo=' + backTo}
+            href={deleteConfirmationUrl}
             isButton
             customStyle="govuk-button--warning"
           >
