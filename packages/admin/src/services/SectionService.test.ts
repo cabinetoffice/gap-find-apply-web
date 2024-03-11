@@ -15,6 +15,7 @@ const BASE_APPLICATION_URL = BACKEND_HOST + '/application-forms';
 const APPLICATION_ID = 'TestApp';
 const SECTION_ID = 'SectionId';
 const SESSION_ID = 'SessionId';
+const VERSION = '1';
 
 describe('SectionService', () => {
   describe('postSection', () => {
@@ -40,10 +41,10 @@ describe('SectionService', () => {
     it('Should delete a section', async () => {
       mockedAxios.delete.mockResolvedValue({});
 
-      await deleteSection(SESSION_ID, APPLICATION_ID, SECTION_ID);
+      await deleteSection(SESSION_ID, APPLICATION_ID, SECTION_ID, VERSION);
 
       expect(mockedAxios.delete).toHaveBeenCalledWith(
-        `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/${SECTION_ID}`,
+        `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/${SECTION_ID}/${VERSION}`,
         { headers: { Cookie: 'SESSION=SessionId;' }, withCredentials: true }
       );
     });

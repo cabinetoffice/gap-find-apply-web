@@ -13,6 +13,7 @@ const EditSectionPage = ({
   section,
   grantApplicationName,
   applicationId,
+  version,
   scrollPosition,
   resolvedUrl,
   csrfToken,
@@ -118,7 +119,7 @@ const EditSectionPage = ({
       </p>
 
       <CustomLink
-        href={`/build-application/${applicationId}/${section.sectionId}/delete-confirmation`}
+        href={`/build-application/${applicationId}/${section.sectionId}/delete-confirmation?version=${version}`}
         isButton
         customStyle="govuk-button--warning"
       >
