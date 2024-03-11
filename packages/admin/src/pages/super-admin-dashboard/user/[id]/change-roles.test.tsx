@@ -58,13 +58,28 @@ const getMockUser = (
   department: department,
   created: 'now',
 });
-const component = (
+const componentNonOwner = (
   <EditRoleWithId
     formAction="."
     pageData={{
       roles: getMockRoles(),
       user: getMockUser(),
       userId: '1',
+      isOwner: false,
+    }}
+    csrfToken="csrf"
+    fieldErrors={[]}
+    previousValues={{ newUserRoles: ['FIND', 'SUPER_ADMIN'] }}
+  />
+);
+const componentAsOwner = (
+  <EditRoleWithId
+    formAction="."
+    pageData={{
+      roles: getMockRoles(),
+      user: getMockUser(),
+      userId: '1',
+      isOwner: true,
     }}
     csrfToken="csrf"
     fieldErrors={[]}
@@ -72,26 +87,61 @@ const component = (
   />
 );
 
-describe('Edit role page', () => {
+describe('Render edit role page', () => {
   beforeEach(jest.clearAllMocks);
 
   test('Should only check input roles which the queried user has', () => {
     //user has all roles (see component)
-    render(component);
+    render(componentNonOwner);
     expect(
-      screen.getByText('Find').parentElement?.previousSibling
+      screen.getByText('Find').parentElement?.parentElement?.previousSibling
     ).toBeChecked();
     expect(
-      screen.getByText('Super administrator').parentElement?.previousSibling
+      screen.getByText('Super administrator').parentElement?.parentElement
+        ?.previousSibling
     ).toBeChecked();
     expect(
-      screen.getByText('Administrator').parentElement?.previousSibling
+      screen.getByText('Administrator').parentElement?.parentElement
+        ?.previousSibling
     ).toBeChecked();
     expect(
-      screen.getByText('Applicant').parentElement?.previousSibling
+      screen.getByText('Applicant').parentElement?.parentElement
+        ?.previousSibling
     ).toBeChecked();
   });
 
+  test('Copy text SHOULD appear when the user is an owner', () => {
+    render(componentAsOwner);
+    expect(
+      screen.getByText(
+        'While this user owns grants, you cannot demote them to an applicant.'
+      )
+    ).toBeInTheDocument();
+  });
+
+  test('Copy text SHOULD NOT appear when the user is not an owner', () => {
+    render(componentNonOwner);
+    expect(
+      screen.findAllByText(
+        'While this user owns grants, you cannot demote them to an applicant.'
+      )
+    ).not.toBeNull();
+  });
+
+  test('SHOULD NOT disable the Administrator checkbox if the user DOES NOT own a scheme', () => {
+    render(componentNonOwner);
+    expect(screen.getByText('Administrator')).not.toBeDisabled();
+  });
+  test('SHOULD disable the Administrator checkbox if the user DOES own a scheme', () => {
+    render(componentAsOwner);
+    expect(
+      screen.getByText('Administrator').parentElement?.parentElement
+        ?.previousSibling
+    ).toBeDisabled();
+  });
+});
+
+describe('getServerSideProps', () => {
   test('Should redirect to change department page as User who is being newly promoted to ADMIN', async () => {
     mockParseBody.mockResolvedValue({ newUserRoles: ['3', '4'] });
     mockGetUserById.mockResolvedValue(getMockUser(getMockRoles().slice(0, 1)));

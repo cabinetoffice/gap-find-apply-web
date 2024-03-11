@@ -92,6 +92,32 @@ describe('Checkbox component', () => {
     );
   });
 
+  it('Should disable several (but not all) checkboxes when `disabledCheckboxes`` are provided', () => {
+    render(<Checkboxes {...props} disabledCheckboxes={['British', 'Irish']} />);
+    expect(screen.getByRole('checkbox', { name: /british/i })).toHaveAttribute(
+      'disabled'
+    );
+    expect(screen.getByRole('checkbox', { name: /irish/i })).toHaveAttribute(
+      'disabled'
+    );
+    expect(
+      screen.getByRole('checkbox', { name: /other/i })
+    ).not.toHaveAttribute('disabled');
+  });
+
+  it('Should prioritise the disabled prop over the disabledCheckboxes prop', () => {
+    render(<Checkboxes {...props} disabled disabledCheckboxes={['British']} />);
+    expect(screen.getByRole('checkbox', { name: /british/i })).toHaveAttribute(
+      'disabled'
+    );
+    expect(screen.getByRole('checkbox', { name: /irish/i })).toHaveAttribute(
+      'disabled'
+    );
+    expect(screen.getByRole('checkbox', { name: /other/i })).toHaveAttribute(
+      'disabled'
+    );
+  });
+
   it('Should NOT divide the final option by default', () => {
     render(<Checkboxes {...props} options={['Yes', 'No', 'Maybe? :O']} />);
     expect(screen.queryByText('or')).toBeFalsy();
