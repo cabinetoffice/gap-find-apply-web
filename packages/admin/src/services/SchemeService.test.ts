@@ -8,11 +8,11 @@ import {
   createNewScheme,
   findApplicationFormFromScheme,
   getGrantScheme,
-  getOwnedAndEditableSchemes,
   getUserSchemes,
   patchScheme,
   schemeApplicationIsInternal,
 } from './SchemeService';
+import { getOwnedAndEditableSchemes } from './SchemeEditorService';
 
 jest.mock('next/config', () => () => {
   return {
@@ -83,9 +83,7 @@ describe('SchemeService', () => {
     ],
   };
 
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
+  beforeEach(jest.resetAllMocks);
 
   describe('getUserSchemes function', () => {
     it('Should return a list of organisation schemes', async () => {
