@@ -1,4 +1,4 @@
-ARG IMAGE_NAME=18.19-alpine3.18
+ARG IMAGE_NAME=18.19-alpine
 FROM --platform=linux/amd64 node:${IMAGE_NAME} as build
 
 ARG APP_NAME
