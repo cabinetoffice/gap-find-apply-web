@@ -49,6 +49,9 @@ export function getLastUpdatedByText({
   lastUpdatedByEmail,
   created,
 }: ValidAdvertData) {
+  if (!lastUpdatedByEmail && lastUpdated) {
+    lastUpdatedByEmail = 'Deleted user';
+  }
   const publishedDateString = formatTimeStamp(
     lastPublishedDate ?? (firstPublishedDate as string)
   );
