@@ -1,15 +1,17 @@
 import '@testing-library/jest-dom';
-import { getContext } from 'gap-web-ui';
-import UserPage, { getServerSideProps } from './change-department.page';
-import { Department, Role, User } from '../../types';
 import { render, screen } from '@testing-library/react';
-import { parseBody } from '../../../../utils/parseBody';
+import { getContext } from 'gap-web-ui';
 import {
   getChangeDepartmentPage,
   updateUserRoles,
 } from '../../../../services/SuperAdminService';
+import { parseBody } from '../../../../utils/parseBody';
+import { getUserTokenFromCookies } from '../../../../utils/session';
+import { Department, Role, User } from '../../types';
+import UserPage, { getServerSideProps } from './change-department.page';
 
 jest.mock('../../../../utils/parseBody');
+jest.mock('../../../../utils/session');
 
 jest.mock('../../../../services/SuperAdminService', () => ({
   getUserById: jest.fn(),
@@ -139,6 +141,7 @@ describe('Change department page', () => {
     });
 
     test('Should update roles if user is being promoted to ADMIN', async () => {
+      (getUserTokenFromCookies as jest.Mock).mockReturnValue('testJWT');
       mockGetChangeDepartmentPage.mockResolvedValueOnce({
         user: getMockUser([getMockRoles()[0], getMockRoles()[1]]),
         departments: [{ id: '4', name: 'hello world' }],

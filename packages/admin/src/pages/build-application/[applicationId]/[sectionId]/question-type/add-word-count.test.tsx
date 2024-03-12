@@ -44,6 +44,9 @@ describe('getServerSideProps()', () => {
     process.env.SESSION_COOKIE_NAME = 'sessionId';
     (parseBody as jest.Mock).mockResolvedValue(getMockQuestionSummary());
     (getApplicationFormSummary as jest.Mock).mockResolvedValue({
+      audit: {
+        version: 1,
+      },
       sections: [
         { sectionId: 'sectionId0', sectionTitle: 'Custom section name 0' },
         { sectionId: 'sectionId', sectionTitle: 'Custom section name' },
@@ -95,6 +98,7 @@ describe('getServerSideProps()', () => {
     (parseBody as jest.Mock).mockResolvedValue({
       responseType: 'LongAnswer',
       maxWords: 20,
+      version: 1,
     });
     (patchQuestion as jest.Mock).mockResolvedValueOnce(
       getMockQuestionSummary()
@@ -128,6 +132,7 @@ describe('getServerSideProps()', () => {
           maxWords: 20,
           mandatory: true,
         },
+        version: 1,
       })
     );
   });
@@ -148,6 +153,7 @@ describe('getServerSideProps()', () => {
       sectionTitle: 'Custom section name',
       maxWords: '',
       isEdit: false,
+      version: 1,
     });
   });
 });
@@ -159,6 +165,7 @@ const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
     sectionTitle: 'section-title',
     maxWords: '',
     isEdit: false,
+    version: 1,
   },
   previousValues: {
     maxWords: '',

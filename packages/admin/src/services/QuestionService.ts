@@ -20,6 +20,7 @@ const patchQuestion = (
     validation: { mandatory: boolean; maxWords?: string | number };
     options: string[];
     responseType: ResponseType;
+    version: number;
   }>
 ): Promise<void> => {
   return axios.patch(

@@ -64,6 +64,7 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
 
     return {
       questionData,
+      version: applicationFormSummary.audit.version,
       backButtonHref: getBackToRedirect(),
       deleteConfirmationUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/delete-confirmation${queryString}`,
       previewUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/preview`,
