@@ -31,13 +31,14 @@ const getApplicationFormStats = (overrides: any = {}) =>
 const SCHEME_VERSION = '1';
 
 const renderComponent = (overrideProps?: Partial<SchemeApplicationsProps>) => {
-  const defaultProps = {
+  const props = {
     applicationForm: getSchemeApplicationsProps(),
     applicationFormStats: getApplicationFormStats(),
     schemeVersion: SCHEME_VERSION,
     editorOrPublisherEmail: '',
+    ...overrideProps,
   };
-  render(<SchemeApplications {...{ ...defaultProps, ...overrideProps }} />);
+  render(<SchemeApplications {...props} />);
 };
 
 describe('BuildApplicationForm', () => {
