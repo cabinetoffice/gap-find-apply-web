@@ -129,6 +129,7 @@ export const getServerSideProps = async ({
           : body.displayText,
       csrfToken: res.getHeader('x-csrf-token') as string,
       applicationStatus: appForm.applicationStatus,
+      version: appForm.audit.version,
     },
   };
 };
@@ -142,6 +143,7 @@ const EligibilityStatement = ({
   csrfToken,
   grantName,
   applicationStatus,
+  version,
 }: InferProps<typeof getServerSideProps>) => {
   if (applicationStatus === 'PUBLISHED') {
     return (
@@ -251,6 +253,7 @@ const EligibilityStatement = ({
             defaultValue={defaultValue}
             limit={6000}
           />
+          <input type="hidden" name="version" value={version} />
           <Button text="Save and exit" />
         </FlexibleQuestionPageLayout>
       </div>
