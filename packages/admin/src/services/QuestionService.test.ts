@@ -30,6 +30,7 @@ const SESSION_ID = 'TestSession';
 const APPLICATION_ID = 'TestApp';
 const SECTION_ID = 'TestSection';
 const QUESTION_ID = 'TestQuestion';
+const VERSION = '1';
 
 describe('QuestionService', () => {
   describe('patchQuestion', () => {
@@ -110,10 +111,16 @@ describe('QuestionService', () => {
     it('Should delete a question', async () => {
       mockedAxios.delete.mockResolvedValue({});
 
-      await deleteQuestion(SESSION_ID, APPLICATION_ID, SECTION_ID, QUESTION_ID);
+      await deleteQuestion(
+        SESSION_ID,
+        APPLICATION_ID,
+        SECTION_ID,
+        QUESTION_ID,
+        VERSION
+      );
 
       expect(mockedAxios.delete).toHaveBeenCalledWith(
-        `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/${SECTION_ID}/questions/${QUESTION_ID}`,
+        `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/${SECTION_ID}/questions/${QUESTION_ID}?version=${VERSION}`,
         { headers: { Cookie: 'SESSION=TestSession;' }, withCredentials: true }
       );
     });

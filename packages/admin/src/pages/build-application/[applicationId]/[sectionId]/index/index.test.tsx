@@ -35,9 +35,10 @@ const getDefaultAppFormSummary = (): InferServiceMethodResponse<
   applicationStatus: 'DRAFT',
   audit: {
     created: '2021-08-09T14:00:00.000Z',
+    createdBy: 'some-user',
     lastPublished: '2021-08-09T14:00:00.000Z',
-    lastUpdatedBy: 'some-user',
-    lastUpdatedDate: '2021-08-09T14:00:00.000Z',
+    lastUpdateBy: 'some-user',
+    lastUpdated: '2021-08-09T14:00:00.000Z',
     version: 1,
   },
   grantApplicationId: 'testApplicationId',
@@ -74,9 +75,11 @@ const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
         profileField: '',
         questionSuffix: '',
         validation: {},
+        optional: 'false',
       },
     ],
   },
+  version: 1,
 });
 
 describe('Edit section page', () => {
@@ -201,6 +204,7 @@ describe('Edit section page', () => {
               sectionTitle: 'some-section-title',
               questions: [],
             },
+            version: 1,
           },
         });
       });
@@ -306,7 +310,7 @@ describe('Edit section page', () => {
       ],
       [
         'Delete section',
-        '/apply/build-application/some-application-id/testSectionId/delete-confirmation',
+        '/apply/build-application/some-application-id/testSectionId/delete-confirmation?version=1',
       ],
       [
         'Save and go back',

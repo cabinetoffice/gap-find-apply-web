@@ -12,6 +12,7 @@ export { getServerSideProps };
 const QuestionOptions = ({
   pageCaption,
   questionSummary,
+  version,
   backButtonHref,
   formAction,
   cancelChangesHref,
@@ -70,6 +71,8 @@ const QuestionOptions = ({
               </TextInput>
             );
           })}
+
+          <input type="hidden" name="version" value={version} />
 
           <div className="govuk-grid-column-two-thirds">
             <div className="govuk-grid-row">

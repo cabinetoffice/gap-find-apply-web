@@ -80,6 +80,7 @@ const getServerSideProps = async ({
 
   return {
     props: {
+      version: applicationFormSummary.audit.version,
       section,
       grantApplicationName: applicationFormSummary.applicationName,
       applicationId: applicationFormSummary.grantApplicationId,

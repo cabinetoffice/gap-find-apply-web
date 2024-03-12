@@ -185,4 +185,39 @@ describe('callServiceMethod', () => {
       fieldErrors: 'testFieldErrors',
     });
   });
+
+  it('redirects to an Multiple Editors error page if associated error is thrown', async () => {
+    (parseBody as jest.Mock).mockResolvedValue({
+      testBody: true,
+    });
+    const applicationId = 123;
+    const serviceFunc = jest.fn(() => {
+      throw {
+        response: {
+          data: {
+            error: {
+              message: 'MULTIPLE_EDITORS',
+            },
+          },
+        },
+        config: {
+          url: `/application-forms/${applicationId}/sectionId`,
+        },
+      };
+    });
+    const redirectTo = jest.fn(() => 'testDestination');
+    const req = { testReq: true, method: 'POST' } as any;
+    const res = {} as any;
+
+    const result = await callServiceMethod(req, res, serviceFunc, redirectTo, {
+      errorInformation: 'something happened',
+    } as ServiceError);
+
+    expect(result).toEqual({
+      redirect: {
+        destination: `/build-application/${applicationId}/error-multiple-editors`,
+        statusCode: 302,
+      },
+    });
+  });
 });

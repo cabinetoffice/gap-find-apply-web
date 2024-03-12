@@ -15,6 +15,7 @@ jest.mock('../../../../services/ApplicationService');
 
 const APPLICATION_ID = 'testApplicationId';
 const SECTION_ID = 'testSectionId';
+const VERSION = '1';
 
 const customProps = {
   fieldErrors: [],
@@ -40,13 +41,15 @@ const getContext = (overrides: any = {}) =>
         applicationId: APPLICATION_ID,
         sectionId: SECTION_ID,
       } as Record<string, string>,
+      query: {
+        version: VERSION,
+      },
       req: {
         method: 'GET',
         cookies: { 'gap-test': 'testSessionId' },
       },
       res: { getHeader: () => 'testCSRFToken' },
-      resolvedUrl:
-        '/build-application/testApplicationId/testSectionId/delete-confirmation',
+      resolvedUrl: `/build-application/testApplicationId/testSectionId/delete-confirmation?version=${VERSION}`,
     } as unknown as GetServerSidePropsContext,
     overrides
   );
@@ -120,7 +123,7 @@ describe('Delete section page', () => {
 
       expect(value.props.formAction).toStrictEqual(
         process.env.SUB_PATH +
-          `/build-application/${APPLICATION_ID}/${SECTION_ID}/delete-confirmation`
+          `/build-application/${APPLICATION_ID}/${SECTION_ID}/delete-confirmation?version=${VERSION}`
       );
     });
   });

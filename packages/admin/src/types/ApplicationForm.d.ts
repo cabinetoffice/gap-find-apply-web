@@ -32,8 +32,9 @@ type ApplicationFormSummary = {
   audit: {
     version: number;
     created: string;
+    createdBy: string;
     lastUpdated: string;
-    lastUpdatedBy: string;
+    lastUpdateBy: string;
     lastPublished: string;
   };
   sections: ApplicationFormSection[];
