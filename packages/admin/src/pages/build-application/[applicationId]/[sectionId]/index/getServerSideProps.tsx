@@ -24,7 +24,7 @@ const getServerSideProps = async ({
     req,
     res,
     async (body) => {
-      const params = Object.keys(body)[0].split('/');
+      const params = Object.keys(body)[1].split('/');
       const increment = params[0] === 'Up' ? -1 : 1;
       const questionId = params[1];
 
@@ -34,6 +34,7 @@ const getServerSideProps = async ({
         sectionId,
         questionId,
         increment,
+        version: body.version,
       });
     },
     `/build-application/${applicationId}/${sectionId}?scrollPosition=${scrollPosition}`,

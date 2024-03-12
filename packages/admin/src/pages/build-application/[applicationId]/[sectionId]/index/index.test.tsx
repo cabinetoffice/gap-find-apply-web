@@ -105,6 +105,7 @@ describe('Edit section page', () => {
       beforeEach(() => {
         mockedHandleQuestionOrdering.mockResolvedValue(undefined);
         (parseBody as jest.Mock).mockResolvedValue({
+          version: 1,
           'Up/testQuestionId': '',
         });
       });
@@ -125,6 +126,7 @@ describe('Edit section page', () => {
           sectionId: 'testSectionId',
           questionId: 'testQuestionId',
           increment: -1,
+          version: 1,
         });
       });
 

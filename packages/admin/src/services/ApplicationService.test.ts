@@ -9,6 +9,7 @@ import {
   getApplicationFormSummary,
   getApplicationStatus,
   getLastEditedEmail,
+  handleQuestionOrdering,
   handleSectionOrdering,
   updateApplicationFormStatus,
 } from './ApplicationService';
@@ -35,6 +36,7 @@ describe('ApplicationService', () => {
   const SCHEME_ID = 'a028d000004Ops2AAC';
   const APPLICATION_ID = 'a028d000004Osy3BEA';
   const SECTION_ID = 'SECTIONID';
+  const QUESTION_ID = 'QUESTIONID';
   const SESSION_ID = 'testSessionId';
 
   describe('createNewApplicationForm function', () => {
@@ -202,6 +204,28 @@ describe('ApplicationService', () => {
       expect(mockedAxios.patch).toHaveBeenCalledWith(
         `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/order`,
         { increment, sectionId: SECTION_ID },
+        { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
+      );
+      expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('handleQuestionOrdering', () => {
+    it('Should call the expected endpoint to update an application forms section order', async () => {
+      const increment = 1;
+      const version = 1;
+      await handleQuestionOrdering({
+        increment,
+        questionId: QUESTION_ID,
+        sectionId: SECTION_ID,
+        applicationId: APPLICATION_ID,
+        sessionId: SESSION_ID,
+        version,
+      });
+
+      expect(mockedAxios.patch).toHaveBeenCalledWith(
+        `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/${SECTION_ID}/questions/${QUESTION_ID}/order/${increment}?version=${version}`,
+        {},
         { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
       );
       expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
