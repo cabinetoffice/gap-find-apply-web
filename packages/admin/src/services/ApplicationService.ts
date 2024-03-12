@@ -97,7 +97,6 @@ const handleSectionOrdering = async (
   sessionId: string,
   version: string
 ) => {
-  console.log('moving section', version);
   await axios.patch(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/order`,
     {
