@@ -259,7 +259,6 @@ describe('AdvertPageService', () => {
       );
     });
 
-    //this
     it('Should return the data returned from axios', async () => {
       mockedAxios.get.mockResolvedValue(getExpectedResponse());
 
