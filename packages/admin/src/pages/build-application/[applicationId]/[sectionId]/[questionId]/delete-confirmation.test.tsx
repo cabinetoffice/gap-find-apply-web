@@ -32,7 +32,7 @@ const customProps = {
   defaultValue: '',
   csrfToken: '',
   deleteConfirmationUrl: 'some-url',
-  backTo: '',
+  previewPageUrl: 'some-url',
 };
 
 const expectedRedirectObject = {
@@ -49,6 +49,7 @@ const getContext = (overrides = {}) =>
     {
       query: {
         backTo: 'dashboard',
+        version: '1',
       },
       params: {
         applicationId: APPLICATION_ID,
@@ -157,7 +158,13 @@ describe('Delete question page', () => {
         getPostContext()
       )) as NextGetServerSidePropsResponse;
 
-      expect(deleteQuestion).toHaveBeenCalled();
+      expect(deleteQuestion).toHaveBeenCalledWith(
+        'testSessionId',
+        'testApplicationId',
+        'testSectionId',
+        'testQuestionId',
+        '1'
+      );
       expect(value).toStrictEqual({
         redirect: {
           destination: `/build-application/${APPLICATION_ID}/dashboard`,
