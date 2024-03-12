@@ -81,6 +81,7 @@ const EditSectionPage = ({
         csrfToken={csrfToken}
         fullPageWidth
       >
+        <input type="hidden" name="version" value={version} />
         <Table
           caption="Questions"
           tHeadColumns={[
