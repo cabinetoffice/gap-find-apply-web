@@ -57,14 +57,17 @@ describe('Publish success page', () => {
       screen.getByRole('button', { name: 'Manage this grant' })
     ).toHaveAttribute(
       'href',
-      '/apply/build-application/testApplicationId/survey'
+      '/apply/build-application/testApplicationId/survey?redirect=manage-grant'
     );
   });
 
   it('Should render an "Add a new grant" link', () => {
     expect(
       screen.getByRole('link', { name: 'Add a new grant' })
-    ).toHaveAttribute('href', '/apply/new-scheme/name');
+    ).toHaveAttribute(
+      'href',
+      '/apply/build-application/testApplicationId/survey?redirect=add-grant'
+    );
   });
 });
 

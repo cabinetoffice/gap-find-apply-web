@@ -1,15 +1,15 @@
-import { GetServerSidePropsContext } from 'next';
 import { FlexibleQuestionPageLayout, Radio } from 'gap-web-ui';
+import { GetServerSidePropsContext } from 'next';
+import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';
 import {
   getChangeDepartmentPage,
   updateDepartment,
   updateUserRoles,
 } from '../../../../services/SuperAdminService';
-import { getUserTokenFromCookies } from '../../../../utils/session';
 import InferProps from '../../../../types/InferProps';
-import CustomLink from '../../../../components/custom-link/CustomLink';
 import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
+import { getUserTokenFromCookies } from '../../../../utils/session';
 
 type PageBodyResponse = {
   department: number;
@@ -58,6 +58,9 @@ const UserPage = ({
   fieldErrors,
 }: InferProps<typeof getServerSideProps>) => {
   const { user, departments } = pageData;
+  const newUserRolesList = formAction.split('newRoles=');
+  const newUserRoles = newUserRolesList ? newUserRolesList[1] : null;
+
   return (
     <>
       <Meta
@@ -96,7 +99,11 @@ const UserPage = ({
             </button>
 
             <CustomLink
-              href={`/super-admin-dashboard/manage-departments?userId=${user.gapUserId}`}
+              href={
+                newUserRoles
+                  ? `/super-admin-dashboard/manage-departments?userId=${user.gapUserId}&newRoles=${newUserRoles}`
+                  : `/super-admin-dashboard/manage-departments?userId=${user.gapUserId}`
+              }
             >
               Manage departments
             </CustomLink>

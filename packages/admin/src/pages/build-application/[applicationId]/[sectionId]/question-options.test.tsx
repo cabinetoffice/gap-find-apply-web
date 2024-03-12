@@ -1,16 +1,17 @@
 import '@testing-library/jest-dom';
+
 import { render, screen } from '@testing-library/react';
-import { QuestionSummary } from '../../../../types/QuestionSummary';
-import QuestionOptions, { getServerSideProps } from './question-options.page';
+import { ValidationError } from 'gap-web-ui';
 import { merge } from 'lodash';
 import { Redirect } from 'next';
+
 import { getApplicationFormSummary } from '../../../../services/ApplicationService';
-import { getSummaryFromSession } from '../../../../services/SessionService';
 import { postQuestion } from '../../../../services/QuestionService';
+import { getSummaryFromSession } from '../../../../services/SessionService';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
+import { QuestionSummary } from '../../../../types/QuestionSummary';
 import { parseBody } from '../../../../utils/parseBody';
-import { ValidationError } from 'gap-web-ui';
-import { post } from 'cypress/types/jquery';
+import QuestionOptions, { getServerSideProps } from './question-options.page';
 
 jest.mock('../../../../services/ApplicationService');
 jest.mock('../../../../services/QuestionService');
@@ -274,12 +275,12 @@ describe('Question Options', () => {
         );
       });
 
-      it('Should return a single blank option', async () => {
+      it('Should return two blank options', async () => {
         const result = (await getServerSideProps(
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(result.props.options).toStrictEqual(['']);
+        expect(result.props.options).toStrictEqual(['', '']);
       });
 
       it('Should redirect to error page if we are unable to get application summary', async () => {

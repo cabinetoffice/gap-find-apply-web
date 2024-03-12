@@ -1,8 +1,10 @@
 import { ValidationError } from 'gap-web-ui';
-import { NextRedirect } from './QuestionPageGetServerSidePropsTypes';
 import ServiceError from '../types/ServiceError';
 import { parseBody } from './parseBody';
-import { generateErrorPageRedirectV2 } from './serviceErrorHelpers';
+import {
+  generateErrorPageMultipleEditors,
+  generateErrorPageRedirectV2,
+} from './serviceErrorHelpers';
 import { GetServerSidePropsContext, Redirect } from 'next';
 
 type Body<T> = T & {
@@ -69,6 +71,15 @@ export default async function callServiceMethod<
         body: body!,
         fieldErrors: fieldErrors as ValidationError[],
       };
+    }
+
+    // If we want to display the Multiple Editors error page
+    if (err?.response?.data?.error?.message === 'MULTIPLE_EDITORS') {
+      const applicationId = err.config.url
+        .split('/application-forms/')
+        .pop()
+        .split('/')[0];
+      return generateErrorPageMultipleEditors(applicationId);
     }
 
     // If we encounter an error that conforms to the new way of handling form validation errors

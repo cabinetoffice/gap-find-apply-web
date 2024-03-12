@@ -7,22 +7,26 @@ import {
   getContext,
   mockServiceMethod,
 } from 'gap-web-ui';
-import InferProps from '../../../../../types/InferProps';
+import { GetServerSidePropsContext } from 'next';
+import ResponseTypeEnum from '../../../../../enums/ResponseType';
 import {
   getApplicationFormSummary,
+  getApplicationStatus,
   handleQuestionOrdering,
 } from '../../../../../services/ApplicationService';
-import EditSectionPage, { getServerSideProps } from '../index.page';
-import { GetServerSidePropsContext } from 'next';
 import { getPageProps } from '../../../../../testUtils/unitTestHelpers';
-import ResponseTypeEnum from '../../../../../enums/ResponseType';
+import InferProps from '../../../../../types/InferProps';
 import { parseBody } from '../../../../../utils/parseBody';
+import { getSessionIdFromCookies } from '../../../../../utils/session';
+import EditSectionPage, { getServerSideProps } from '../index.page';
 
 jest.mock('../../../../../services/ApplicationService');
 jest.mock('../../../../../utils/parseBody');
+jest.mock('../../../../../utils/session');
 
 const mockedGetApplicationFormSummary = jest.mocked(getApplicationFormSummary);
 const mockedHandleQuestionOrdering = jest.mocked(handleQuestionOrdering);
+const mockedGetApplicationStatus = jest.mocked(getApplicationStatus);
 
 const getDefaultAppFormSummary = (): InferServiceMethodResponse<
   typeof getApplicationFormSummary
@@ -31,9 +35,10 @@ const getDefaultAppFormSummary = (): InferServiceMethodResponse<
   applicationStatus: 'DRAFT',
   audit: {
     created: '2021-08-09T14:00:00.000Z',
+    createdBy: 'some-user',
     lastPublished: '2021-08-09T14:00:00.000Z',
-    lastUpdatedBy: 'some-user',
-    lastUpdatedDate: '2021-08-09T14:00:00.000Z',
+    lastUpdateBy: 'some-user',
+    lastUpdated: '2021-08-09T14:00:00.000Z',
     version: 1,
   },
   grantApplicationId: 'testApplicationId',
@@ -70,9 +75,11 @@ const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
         profileField: '',
         questionSuffix: '',
         validation: {},
+        optional: 'false',
       },
     ],
   },
+  version: 1,
 });
 
 describe('Edit section page', () => {
@@ -103,6 +110,7 @@ describe('Edit section page', () => {
       });
 
       it('Should call handleQuestionOrdering with correct params', async () => {
+        (getSessionIdFromCookies as jest.Mock).mockReturnValue('testSessionId');
         await getServerSideProps(
           getContext(getDefaultContext, {
             req: {
@@ -160,7 +168,18 @@ describe('Edit section page', () => {
     });
 
     describe('getServerSideProps "GET" context', () => {
+      it('Should call getApplicationStatus with correct params', async () => {
+        (getSessionIdFromCookies as jest.Mock).mockReturnValue('testSessionId');
+        await getServerSideProps(getContext(getDefaultContext));
+
+        expect(mockedGetApplicationStatus).toHaveBeenCalledWith(
+          'testApplicationId',
+          'testSessionId'
+        );
+      });
+
       it('Should call getApplicationFormSummary with correct params', async () => {
+        (getSessionIdFromCookies as jest.Mock).mockReturnValue('testSessionId');
         await getServerSideProps(getContext(getDefaultContext));
 
         expect(mockedGetApplicationFormSummary).toHaveBeenCalledWith(
@@ -185,6 +204,30 @@ describe('Edit section page', () => {
               sectionTitle: 'some-section-title',
               questions: [],
             },
+            version: 1,
+          },
+        });
+      });
+
+      it('Should redirect to build application dashboard if application has PUBLISHED status', async () => {
+        (getApplicationStatus as jest.Mock).mockReturnValue('PUBLISHED');
+
+        const result = await getServerSideProps(
+          getContext(() => ({
+            params: {
+              applicationId: 'testApplicationId',
+              sectionId: 'testSectionId',
+            },
+            query: {
+              scrollPosition: '0',
+            },
+          }))
+        );
+
+        expectObjectEquals(result, {
+          redirect: {
+            destination: '/build-application/testApplicationId/dashboard',
+            permanent: false,
           },
         });
       });
@@ -267,7 +310,7 @@ describe('Edit section page', () => {
       ],
       [
         'Delete section',
-        '/apply/build-application/some-application-id/testSectionId/delete-confirmation',
+        '/apply/build-application/some-application-id/testSectionId/delete-confirmation?version=1',
       ],
       [
         'Save and go back',
