@@ -65,6 +65,9 @@ const getGetResponse = (overrides = {}) =>
             ],
           },
         ],
+        audit: {
+          version: 1,
+        },
       },
     },
     overrides
@@ -126,6 +129,7 @@ describe('Eligibility question page page', () => {
             pageCaption: 'Test App Name',
             csrfToken: 'testCSRFToken',
             applicationStatus: 'DRAFT',
+            version: 1,
           },
         });
       });
@@ -172,6 +176,7 @@ describe('Eligibility question page page', () => {
             pageCaption: 'Test App Name',
             csrfToken: 'testCSRFToken',
             applicationStatus: 'DRAFT',
+            version: 1,
           },
         });
       });
@@ -191,6 +196,9 @@ describe('Eligibility question page page', () => {
                   ],
                 },
               ],
+              audit: {
+                version: 1,
+              },
             },
           })
         );
@@ -208,6 +216,7 @@ describe('Eligibility question page page', () => {
             pageCaption: 'Test App Name',
             csrfToken: 'testCSRFToken',
             applicationStatus: 'DRAFT',
+            version: 1,
           },
         });
       });

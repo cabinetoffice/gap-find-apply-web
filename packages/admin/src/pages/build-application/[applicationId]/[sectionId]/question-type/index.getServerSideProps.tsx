@@ -211,6 +211,7 @@ export const getServerSideProps = async (
         ? `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`
         : `/build-application/${applicationId}/${sectionId}/question-content`,
       isEdit: questionId !== undefined,
+      version: applicationFormSummary.audit.version,
     };
   };
 

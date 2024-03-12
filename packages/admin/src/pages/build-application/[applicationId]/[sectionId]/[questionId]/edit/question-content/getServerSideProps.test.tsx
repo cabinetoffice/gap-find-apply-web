@@ -32,9 +32,10 @@ const getDefaultAppFormSummary = (): InferServiceMethodResponse<
   applicationStatus: 'DRAFT',
   audit: {
     created: '2021-08-09T14:00:00.000Z',
+    createdBy: '1',
     lastPublished: '2021-08-09T14:00:00.000Z',
-    lastUpdatedBy: 'some-user',
-    lastUpdatedDate: '2021-08-09T14:00:00.000Z',
+    lastUpdateBy: 'some-user',
+    lastUpdated: '2021-08-09T14:00:00.000Z',
     version: 1,
   },
   grantApplicationId: 'testApplicationId',
@@ -62,6 +63,7 @@ const getDefaultQuestion = (): InferServiceMethodResponse<
   fieldPrefix: '',
   questionSuffix: '',
   displayText: '',
+  optional: 'true',
 });
 
 const expectedGetRedirectObject = {
@@ -109,6 +111,28 @@ describe('getServerSideProps', () => {
 
     expect(value.props.pageData.backButtonHref).toStrictEqual(
       '/build-application/testApplicationId/dashboard'
+    );
+  });
+
+  it('delete confirmation href', async () => {
+    const value = (await getServerSideProps(
+      getContext(getDefaultContext, { query: { version: '1' } })
+    )) as GetServerSideProps;
+
+    expect(value.props.pageData.deleteConfirmationUrl).toStrictEqual(
+      '/build-application/testApplicationId/testSectionId/testQuestionId/delete-confirmation?version=1'
+    );
+  });
+
+  it('delete confirmation href should include backTo if present', async () => {
+    const value = (await getServerSideProps(
+      getContext(getDefaultContext, {
+        query: { version: '1', backTo: 'dashboard' },
+      })
+    )) as GetServerSideProps;
+
+    expect(value.props.pageData.deleteConfirmationUrl).toStrictEqual(
+      '/build-application/testApplicationId/testSectionId/testQuestionId/delete-confirmation?backTo=dashboard&version=1'
     );
   });
 
