@@ -1,5 +1,5 @@
-ARG NODE_VERSION=18.17.0
-FROM --platform=linux/amd64 node:${NODE_VERSION}-alpine as build
+ARG IMAGE_NAME=18.19-alpine3.18
+FROM --platform=linux/amd64 node:${IMAGE_NAME} as build
 
 ARG APP_NAME
 
@@ -20,7 +20,7 @@ RUN yarn workspace gap-web-ui build
 
 RUN yarn workspace ${APP_NAME} build
 
-FROM --platform=linux/amd64 node:${NODE_VERSION}-alpine
+FROM --platform=linux/amd64 node:${IMAGE_NAME}
 
 ARG APP_NAME
 
