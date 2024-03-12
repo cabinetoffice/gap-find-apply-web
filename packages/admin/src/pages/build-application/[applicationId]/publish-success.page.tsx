@@ -72,7 +72,7 @@ const PublishSuccessPage = ({
 
             <div className="govuk-button-group govuk-!-margin-top-9">
               <CustomLink
-                href={`/build-application/${applicationId}/survey`}
+                href={`/build-application/${applicationId}/survey?redirect=manage-grant`}
                 isButton
                 dataCy="cy_publishSuccess-manageThisGrant-button"
               >
@@ -80,7 +80,7 @@ const PublishSuccessPage = ({
               </CustomLink>
 
               <CustomLink
-                href="/new-scheme/name"
+                href={`/build-application/${applicationId}/survey?redirect=add-grant`}
                 dataCy="cy_publishSuccess-AddANewGrant-link"
               >
                 Add a new grant
