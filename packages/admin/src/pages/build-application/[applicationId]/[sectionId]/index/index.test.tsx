@@ -79,6 +79,7 @@ const getDefaultProps = (): InferProps<typeof getServerSideProps> => ({
       },
     ],
   },
+  version: 1,
 });
 
 describe('Edit section page', () => {
@@ -203,6 +204,7 @@ describe('Edit section page', () => {
               sectionTitle: 'some-section-title',
               questions: [],
             },
+            version: 1,
           },
         });
       });
@@ -308,7 +310,7 @@ describe('Edit section page', () => {
       ],
       [
         'Delete section',
-        '/apply/build-application/some-application-id/testSectionId/delete-confirmation',
+        '/apply/build-application/some-application-id/testSectionId/delete-confirmation?version=1',
       ],
       [
         'Save and go back',
