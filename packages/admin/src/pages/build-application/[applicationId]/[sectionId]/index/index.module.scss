@@ -4,3 +4,17 @@
     bottom: 7px;
     min-width: 72px;
 }
+
+@media (max-width: 849px) {
+    .wrap {
+        margin-right: 4.5rem;
+    }
+}
+
+@media (max-width: 715px) {
+    .wrap {
+        margin-right: 2rem;
+        margin-left: 2rem;
+    }
+}
+  
