@@ -96,6 +96,8 @@ const formatEditableSchemeObject = async ([key, schemes]: [
 ]) => [key, await Promise.all(schemes.map(decryptLastUpdatedBy))];
 
 export const decryptLastUpdatedBy = async (scheme: Scheme) => {
+  if (scheme.lastUpdatedBy === 'Deleted User') return scheme;
+
   if (scheme.encryptedLastUpdatedBy)
     scheme.lastUpdatedBy = await decrypt(scheme.encryptedLastUpdatedBy);
 
