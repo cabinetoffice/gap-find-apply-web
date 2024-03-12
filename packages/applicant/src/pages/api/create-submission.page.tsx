@@ -1,16 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { GrantApplicantOrganisationProfile } from '../../types/models/GrantApplicantOrganisationProfile';
 import { GrantApplicantOrganisationProfileService } from '../../services/GrantApplicantOrganisationProfileService';
 import { GrantApplicantService } from '../../services/GrantApplicantService';
 import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,
 } from '../../services/GrantMandatoryQuestionService';
+import { GrantSchemeService } from '../../services/GrantSchemeService';
 import { createSubmission } from '../../services/SubmissionService';
+import { GrantApplicantOrganisationProfile } from '../../types/models/GrantApplicantOrganisationProfile';
+import { APIGlobalHandler } from '../../utils/apiErrorHandler';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
-import { GrantSchemeService } from '../../services/GrantSchemeService';
-import { APIGlobalHandler } from '../../utils/apiErrorHandler';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const grantMandatoryQuestionService =
@@ -38,12 +38,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       grantApplicant.organisation,
       mandatoryQuestionData
     );
+
     await grantApplicantOrganisationProfileService.updateOrganisation(
       updateOrganisationDetailsDto,
       jwt
     );
 
-    if (!grantApplication.id) {
+    if (
+      !grantApplication.id ||
+      grantApplication.applicationStatus !== 'PUBLISHED'
+    ) {
+      console.log(
+        'Grant application does not exist or is not published. Redirecting to external application.'
+      );
       await grantMandatoryQuestionService.updateMandatoryQuestion(
         jwt,
         mandatoryQuestionId,
@@ -58,6 +65,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         )}?url=${grantAdverts[0].externalSubmissionUrl}`
       );
     }
+    console.log('Grant has an internal application. Creating submission');
 
     const { submissionId } = await createSubmission(grantApplication.id, jwt);
 
