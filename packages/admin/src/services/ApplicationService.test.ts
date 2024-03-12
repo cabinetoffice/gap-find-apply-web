@@ -36,6 +36,7 @@ describe('ApplicationService', () => {
   const APPLICATION_ID = 'a028d000004Osy3BEA';
   const SECTION_ID = 'SECTIONID';
   const SESSION_ID = 'testSessionId';
+  const VERSION = '1';
 
   describe('createNewApplicationForm function', () => {
     it('Should create a new application scheme', async () => {
@@ -196,12 +197,13 @@ describe('ApplicationService', () => {
         increment,
         SECTION_ID,
         APPLICATION_ID,
-        SESSION_ID
+        SESSION_ID,
+        VERSION
       );
 
       expect(mockedAxios.patch).toHaveBeenCalledWith(
         `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/order`,
-        { increment, sectionId: SECTION_ID },
+        { increment, sectionId: SECTION_ID, version: VERSION },
         { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
       );
       expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
