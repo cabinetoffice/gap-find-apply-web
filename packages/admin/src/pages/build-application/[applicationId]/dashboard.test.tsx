@@ -74,6 +74,8 @@ describe('Dashboard', () => {
       applicationId: '87654321',
       grantSchemeId: '12345678',
       applicationStatus: 'DRAFT' as ApplicationFormSummary['applicationStatus'],
+      version: 1,
+      scrollPosition: 0,
       recentlyUnpublished: false,
       applyToApplicationUrl: '/applications/87654321',
       resolvedUrl: '/build-application/87654321',
@@ -219,6 +221,8 @@ describe('Dashboard', () => {
         ggisReference: 'testGgisReference',
         funderId: 'GRANT',
         createdDate: 'testCreatedDate',
+        lastUpdatedBy: 'some-user',
+        lastUpdatedDate: 'some-date',
       });
 
       mockedGetApplicationFormSummary.mockResolvedValue({
@@ -232,6 +236,7 @@ describe('Dashboard', () => {
           createdBy: 'createdBy',
           lastUpdated: 'lastUpdatedDate',
           lastUpdateBy: 'lastUpdatedBy',
+          lastPublished: 'lastPublished',
         },
         sections: sections,
       });
@@ -323,6 +328,8 @@ describe('Dashboard', () => {
         ggisReference: 'testGgisReference',
         funderId: 'GRANT',
         createdDate: 'testCreatedDate',
+        lastUpdatedBy: 'some-user',
+        lastUpdatedDate: 'some-date',
       });
       const response = (await getServerSideProps(
         getContext()
