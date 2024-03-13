@@ -56,11 +56,13 @@ export const getServerSideProps = async ({
     },
   } = grantAdvertData;
 
+  const isPublished = grantAdvertStatus === 'PUBLISHED';
+
   return {
     props: {
       backToAccountLink: `/scheme/${schemeId}/advert/${advertId}/section-overview`,
       linkToAdvertInFindAGrant: `${process.env.FIND_A_GRANT_URL}/grants/${contentfulSlug}`,
-      grantAdvertStatus,
+      isPublished,
       lastEditedDate,
       editorEmail,
     },
@@ -70,7 +72,7 @@ export const getServerSideProps = async ({
 const ErrorMultipleEditorsPage = ({
   backToAccountLink,
   linkToAdvertInFindAGrant,
-  grantAdvertStatus,
+  isPublished,
   lastEditedDate,
   editorEmail,
 }: InferProps<typeof getServerSideProps>) => {
@@ -80,7 +82,7 @@ const ErrorMultipleEditorsPage = ({
       <div className="govuk-!-padding-top-7">
         <h1 className="govuk-heading-l">Your changes could not be saved</h1>
         <p className="govuk-body">
-          {grantAdvertStatus === 'PUBLISHED'
+          {isPublished
             ? 'Another editor has published your advert, so your changes could not be saved.'
             : 'Another editor has scheduled your advert to go live, so your changes could not be saved.'}
         </p>
@@ -88,16 +90,27 @@ const ErrorMultipleEditorsPage = ({
           The last edit was made by {editorEmail} on{' '}
           {formatDateTimeForSentence(lastEditedDate as unknown as Date)}.
         </p>
-        <p className="govuk-body">
-          To unpublish and make changes to the advert,{' '}
-          <Link href={backToAccountLink}>return to the advert overview.</Link>
-        </p>
-        <p className="govuk-body">
-          You can view the advert on Find a grant here:{' '}
-          <Link href={linkToAdvertInFindAGrant}>
-            {linkToAdvertInFindAGrant}
-          </Link>
-        </p>
+        {isPublished ? (
+          <>
+            <p className="govuk-body">
+              To unpublish and make changes to the advert,{' '}
+              <Link href={backToAccountLink}>
+                return to the advert overview.
+              </Link>
+            </p>
+            <p className="govuk-body">
+              You can view the advert on Find a grant here:{' '}
+              <Link href={linkToAdvertInFindAGrant}>
+                {linkToAdvertInFindAGrant}
+              </Link>
+            </p>
+          </>
+        ) : (
+          <p className="govuk-body">
+            To unschedule and make changes to the advert,{' '}
+            <Link href={backToAccountLink}>return to the advert overview.</Link>
+          </p>
+        )}
       </div>
     </>
   );
