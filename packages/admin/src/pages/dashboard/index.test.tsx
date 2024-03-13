@@ -2,14 +2,15 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { Optional, expectObjectEquals, getContext, getProps } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
-import { getOwnedAndEditableSchemes } from '../../services/SchemeService';
 import { getLoggedInUsersDetails } from '../../services/UserService';
 import InferProps from '../../types/InferProps';
 import UserDetails from '../../types/UserDetails';
 import Dashboard, { getServerSideProps } from './index.page';
+import { getOwnedAndEditableSchemes } from '../../services/SchemeEditorService';
 
 jest.mock('../../services/SchemeService');
 jest.mock('../../services/UserService');
+jest.mock('../../services/SchemeEditorService');
 
 const mockSchemeList = {
   ownedSchemes: [

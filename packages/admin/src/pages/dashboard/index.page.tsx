@@ -2,7 +2,7 @@ import { ImportantBanner } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../components/custom-link/CustomLink';
 import Meta from '../../components/layout/Meta';
-import { getOwnedAndEditableSchemes } from '../../services/SchemeService';
+import { getOwnedAndEditableSchemes } from '../../services/SchemeEditorService';
 import { getLoggedInUsersDetails } from '../../services/UserService';
 import InferProps from '../../types/InferProps';
 import Pagination from '../../types/Pagination';

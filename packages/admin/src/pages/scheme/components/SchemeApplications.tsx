@@ -184,7 +184,7 @@ const SchemeApplications = ({
   );
 };
 
-type SchemeApplicationsProps = {
+export type SchemeApplicationsProps = {
   applicationForm: ApplicationFormSummary;
   applicationFormStats: FindApplicationFormStatsResponse;
   schemeVersion?: string;

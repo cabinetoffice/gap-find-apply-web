@@ -43,7 +43,7 @@ export const getServerSideProps = async ({
   let schemeApplicationsData = null;
   let grantAdvertPublishData = null;
   let isOwner;
-  let editorOrPublisherEmail = null;
+  let editorOrPublisherEmail = '';
 
   try {
     scheme = await getGrantScheme(schemeId, sessionCookie);
