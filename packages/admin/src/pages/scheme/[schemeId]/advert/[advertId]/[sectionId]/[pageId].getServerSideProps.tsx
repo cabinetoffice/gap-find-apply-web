@@ -3,6 +3,7 @@ import { htmlToRichText } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 import {
   getAdvertSectionPageContent,
+  getAdvertStatusBySchemeId,
   patchAdvertSectionPage,
 } from '../../../../../../services/AdvertPageService';
 import {
@@ -12,6 +13,7 @@ import {
 import CustomError from '../../../../../../types/CustomError';
 import callServiceMethod from '../../../../../../utils/callServiceMethod';
 import {
+  generateErrorPageAdvertAlreadyPublished,
   generateErrorPageParams,
   generateErrorPageRedirectV2,
 } from '../../../../../../utils/serviceErrorHelpers';
@@ -28,6 +30,18 @@ export const getServerSideProps = async ({
     string
   >;
   const sessionCookie = getSessionIdFromCookies(req);
+
+  const isAdvertPublishedOrScheduled = await getAdvertStatusBySchemeId(
+    sessionCookie,
+    schemeId
+  ).then((res) => res.data?.grantAdvertStatus);
+
+  if (
+    isAdvertPublishedOrScheduled == 'PUBLISHED' ||
+    isAdvertPublishedOrScheduled == 'SCHEDULED'
+  ) {
+    return generateErrorPageAdvertAlreadyPublished(schemeId, advertId);
+  }
 
   // Fetch page contents from the backend
   let serviceResponse;
