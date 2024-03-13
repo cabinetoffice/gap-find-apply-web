@@ -1,8 +1,30 @@
+import { IncomingMessage } from 'http';
 import callServiceMethod from './callServiceMethod';
 import { parseBody } from './parseBody';
 import ServiceError from '../types/ServiceError';
+import { NextIncomingMessage } from 'next/dist/server/request-meta';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 jest.mock('./parseBody');
+
+const getMultipleEditorsServiceFunc = (
+  applicationId: number,
+  message = 'MULTIPLE_EDITORS'
+) =>
+  jest.fn(() => {
+    throw {
+      response: {
+        data: {
+          error: {
+            message,
+          },
+        },
+      },
+      config: {
+        url: `/application-forms/${applicationId}/sectionId`,
+      },
+    };
+  });
 
 describe('callServiceMethod', () => {
   it('redirects to the provided url when the call was successful', async () => {
@@ -191,20 +213,7 @@ describe('callServiceMethod', () => {
       testBody: true,
     });
     const applicationId = 123;
-    const serviceFunc = jest.fn(() => {
-      throw {
-        response: {
-          data: {
-            error: {
-              message: 'MULTIPLE_EDITORS',
-            },
-          },
-        },
-        config: {
-          url: `/application-forms/${applicationId}/sectionId`,
-        },
-      };
-    });
+    const serviceFunc = getMultipleEditorsServiceFunc(applicationId);
     const redirectTo = jest.fn(() => 'testDestination');
     const req = { testReq: true, method: 'POST' } as any;
     const res = {} as any;
@@ -216,6 +225,36 @@ describe('callServiceMethod', () => {
     expect(result).toEqual({
       redirect: {
         destination: `/build-application/${applicationId}/error-multiple-editors`,
+        statusCode: 302,
+      },
+    });
+  });
+
+  it('redirects to an Multiple Editors with a custom error message', async () => {
+    (parseBody as jest.Mock).mockResolvedValue({
+      testBody: true,
+    });
+    const applicationId = 123;
+
+    const serviceFunc = getMultipleEditorsServiceFunc(
+      applicationId,
+      'MULTIPLE_EDITORS_SECTION_DELETED'
+    );
+
+    const redirectTo = jest.fn(() => 'testDestination');
+    const req = {
+      testReq: true,
+      method: 'POST',
+    } as unknown as NextApiRequest;
+    const res = {} as NextApiResponse;
+
+    const result = await callServiceMethod(req, res, serviceFunc, redirectTo, {
+      errorInformation: 'something happened',
+    } as ServiceError);
+
+    expect(result).toEqual({
+      redirect: {
+        destination: `/build-application/${applicationId}/error-multiple-editors?error=The section or question you were editing has been deleted and your changes could not be saved.`,
         statusCode: 302,
       },
     });

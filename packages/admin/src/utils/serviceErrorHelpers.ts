@@ -47,12 +47,23 @@ const generateErrorPageAdvertAlreadyPublished = (
   } as Redirect,
 });
 
-const generateErrorPageMultipleEditors = (applicationId: string) => ({
-  redirect: {
-    statusCode: 302,
-    destination: `/build-application/${applicationId}/error-multiple-editors`,
-  } as Redirect,
-});
+const generateErrorPageMultipleEditors = (
+  applicationId: string,
+  isSectionDeletedError: boolean
+) => {
+  const errorMessage =
+    isSectionDeletedError &&
+    'The section or question you were editing has been deleted and your changes could not be saved.';
+
+  return {
+    redirect: {
+      statusCode: 302,
+      destination: `/build-application/${applicationId}/error-multiple-editors${
+        errorMessage ? `?error=${errorMessage}` : ''
+      }`,
+    } as Redirect,
+  };
+};
 
 const generateErrorMessageFromStatusCode = (errorCode: string): string => {
   switch (errorCode.toString()) {

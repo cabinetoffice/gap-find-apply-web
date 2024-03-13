@@ -21,6 +21,7 @@ const getContext = (overrides: any = {}) =>
   merge(
     {
       params: { applicationId: 'applicationId' },
+      query: { error: '' },
     },
     overrides
   );
@@ -52,6 +53,7 @@ describe('getServerSideProps', () => {
           applicationId: 'applicationId',
           lastEditedDate: '6 March 2024 at 5:05pm',
           lastEditedBy: 'test@email.com',
+          errorText: '',
         },
       },
     });
@@ -65,6 +67,7 @@ describe('getServerSideProps', () => {
           applicationId: 'applicationId',
           lastEditedDate: 'unknown',
           lastEditedBy: 'test@email.com',
+          errorText: '',
         },
       },
     });
@@ -75,6 +78,25 @@ describe('getServerSideProps', () => {
     expect(await getServerSideProps(getContext())).toEqual({
       props: {
         pageData: {
+          applicationId: 'applicationId',
+          lastEditedDate: '6 March 2024 at 5:05pm',
+          lastEditedBy: 'unknown',
+          errorText: '',
+        },
+      },
+    });
+  });
+
+  it('should pass error text from query string', async () => {
+    mockGetLastEditedEmail.mockRejectedValue({});
+    expect(
+      await getServerSideProps(
+        getContext({ query: { error: 'Custom error text' } })
+      )
+    ).toEqual({
+      props: {
+        pageData: {
+          errorText: 'Custom error text',
           applicationId: 'applicationId',
           lastEditedDate: '6 March 2024 at 5:05pm',
           lastEditedBy: 'unknown',
@@ -150,5 +172,10 @@ describe('Error page', () => {
       })
     );
     screen.getByText(/The last edit was made by unknown on unknown./i);
+  });
+
+  it('Should render a custom error message', () => {
+    render(errorPage({ pageData: { errorText: 'Custom error message' } }));
+    expect(screen.getByText('Custom error message')).toBeVisible();
   });
 });
