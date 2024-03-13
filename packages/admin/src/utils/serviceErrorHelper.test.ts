@@ -97,10 +97,20 @@ describe('generateErrorPage functions', () => {
   });
 
   test('generateErrorPageMultipleEditors', () => {
-    expect(generateErrorPageMultipleEditors('appId')).toEqual({
+    expect(generateErrorPageMultipleEditors('appId', false)).toEqual({
       redirect: {
         statusCode: 302,
         destination: `/build-application/appId/error-multiple-editors`,
+      },
+    });
+  });
+
+  test('generateErrorPageMultipleEditors - section deleted case', () => {
+    expect(generateErrorPageMultipleEditors('appId', true)).toEqual({
+      redirect: {
+        statusCode: 302,
+        destination:
+          '/build-application/appId/error-multiple-editors?error=The section or question you were editing has been deleted and your changes could not be saved.',
       },
     });
   });

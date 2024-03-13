@@ -82,6 +82,22 @@ describe('getServerSideProps', () => {
       },
     });
   });
+
+  it('should pass error text from query string', async () => {
+    mockGetLastEditedEmail.mockRejectedValue({});
+    expect(
+      await getServerSideProps(getContext({ error: 'Custom error text' }))
+    ).toEqual({
+      props: {
+        pageData: {
+          errorText: 'Custom error text',
+          applicationId: 'applicationId',
+          lastEditedDate: '6 March 2024 at 5:05pm',
+          lastEditedBy: 'unknown',
+        },
+      },
+    });
+  });
 });
 
 const getProps = (overrides: any = {}) =>
@@ -150,5 +166,10 @@ describe('Error page', () => {
       })
     );
     screen.getByText(/The last edit was made by unknown on unknown./i);
+  });
+
+  it('Should render a custom error message', () => {
+    render(errorPage({ pageData: { errorText: 'Custom error message' } }));
+    expect(screen.getByText('Custom error message')).toBeVisible();
   });
 });
