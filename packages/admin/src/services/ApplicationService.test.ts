@@ -14,6 +14,7 @@ import {
   handleSectionOrdering,
   updateApplicationFormStatus,
 } from './ApplicationService';
+import { decrypt } from '../utils/encryption';
 
 jest.mock('next/config', () => () => {
   return {
@@ -27,6 +28,10 @@ jest.mock('next/config', () => () => {
   };
 });
 jest.mock('axios');
+
+jest.mock('../utils/encryption', () => ({
+  decrypt: jest.fn(),
+}));
 
 describe('ApplicationService', () => {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -241,10 +246,12 @@ describe('ApplicationService', () => {
       const sessionCookie = 'testSessionId';
 
       mockedAxios.get.mockResolvedValue({
-        data: { lastUpdatedEmail: 'test@test.gov' },
+        data: { encryptedEmail: 'test@test.gov' },
       });
 
       await getLastEditedEmail(grantApplicationId, sessionCookie);
+
+      expect(decrypt).toHaveBeenCalledWith('test@test.gov');
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
         `${BASE_APPLICATION_URL}/${grantApplicationId}/lastUpdated/email`,

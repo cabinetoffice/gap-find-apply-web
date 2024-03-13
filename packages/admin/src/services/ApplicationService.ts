@@ -6,6 +6,7 @@ import {
 } from '../types/ApplicationForm';
 import ApplicationQueryObject from '../types/ApplicationQueryObject';
 import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
+import { decrypt } from '../utils/encryption';
 import { axiosSessionConfig } from '../utils/session';
 
 const { serverRuntimeConfig } = getConfig();
@@ -133,11 +134,19 @@ const handleQuestionOrdering = async ({
 };
 
 const getLastEditedEmail = async (applicationId: string, sessionId: string) => {
-  const response = await axios.get(
+  const {
+    data: { encryptedEmail, deletedUser },
+  } = await axios.get<{
+    encryptedEmail: string;
+    deletedUser: boolean;
+  }>(
     `${BASE_APPLICATION_URL}/${applicationId}/lastUpdated/email`,
     axiosSessionConfig(sessionId)
   );
-  return response.data;
+
+  if (deletedUser) return 'Deleted user';
+
+  return decrypt(encryptedEmail);
 };
 
 const getApplicationStatus = async (

@@ -10,6 +10,7 @@ import {
   PatchAdvertSectionPageResponseBody,
   PreviewPageContent,
 } from './AdvertPageService.d';
+import { decrypt } from '../utils/encryption';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -140,6 +141,11 @@ const getGrantAdvertPublishInformationBySchemeId = async (
       grantSchemeId,
     },
   });
+
+  res.data.lastUpdatedByEmail = res.data.lastUpdatedByEmail
+    ? await decrypt(res.data.lastUpdatedByEmail)
+    : 'Deleted user';
+
   return { status: res.status, data: res.data };
 };
 

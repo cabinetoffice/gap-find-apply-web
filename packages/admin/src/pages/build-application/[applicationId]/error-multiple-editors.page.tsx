@@ -59,13 +59,14 @@ export const getServerSideProps = async (
         applicationId,
         lastEditedBy,
         lastEditedDate,
+        errorText: context.query?.error || '',
       },
     },
   };
 };
 
 export default function ErrorMultipleEditorsPage({
-  pageData: { applicationId, lastEditedBy, lastEditedDate },
+  pageData: { errorText, applicationId, lastEditedBy, lastEditedDate },
 }: InferProps<typeof getServerSideProps>) {
   return (
     <>
@@ -74,8 +75,8 @@ export default function ErrorMultipleEditorsPage({
       <div className="govuk-!-padding-top-7">
         <h1 className="govuk-heading-l">Your changes could not be saved</h1>
         <p className="govuk-body">
-          Another editor has made changes to the grant and your changes could
-          not be saved.
+          {errorText ||
+            'Another editor has made changes to the grant and your changes could not be saved.'}
         </p>
         <p className="govuk-body">
           The last edit was made by {lastEditedBy} on {lastEditedDate}.
