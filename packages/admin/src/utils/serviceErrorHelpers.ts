@@ -43,7 +43,7 @@ const generateErrorPageAdvertAlreadyPublished = (
 ) => ({
   redirect: {
     statusCode: 302,
-    destination: `scheme/${schemeId}/advert/${advertId}/error-multiple-editors`,
+    destination: `/scheme/${schemeId}/advert/${advertId}/error-multiple-editors`,
   } as Redirect,
 });
 
