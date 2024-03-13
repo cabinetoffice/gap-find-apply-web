@@ -21,6 +21,7 @@ const getContext = (overrides: any = {}) =>
   merge(
     {
       params: { applicationId: 'applicationId' },
+      query: { error: '' },
     },
     overrides
   );
@@ -52,6 +53,7 @@ describe('getServerSideProps', () => {
           applicationId: 'applicationId',
           lastEditedDate: '6 March 2024 at 5:05pm',
           lastEditedBy: 'test@email.com',
+          errorText: '',
         },
       },
     });
@@ -65,6 +67,7 @@ describe('getServerSideProps', () => {
           applicationId: 'applicationId',
           lastEditedDate: 'unknown',
           lastEditedBy: 'test@email.com',
+          errorText: '',
         },
       },
     });
@@ -78,6 +81,7 @@ describe('getServerSideProps', () => {
           applicationId: 'applicationId',
           lastEditedDate: '6 March 2024 at 5:05pm',
           lastEditedBy: 'unknown',
+          errorText: '',
         },
       },
     });
@@ -86,7 +90,9 @@ describe('getServerSideProps', () => {
   it('should pass error text from query string', async () => {
     mockGetLastEditedEmail.mockRejectedValue({});
     expect(
-      await getServerSideProps(getContext({ error: 'Custom error text' }))
+      await getServerSideProps(
+        getContext({ query: { error: 'Custom error text' } })
+      )
     ).toEqual({
       props: {
         pageData: {
