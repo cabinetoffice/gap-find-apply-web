@@ -74,12 +74,20 @@ export default async function callServiceMethod<
     }
 
     // If we want to display the Multiple Editors error page
-    if (err?.response?.data?.error?.message === 'MULTIPLE_EDITORS') {
+    if (err?.response?.data?.error?.message.includes('MULTIPLE_EDITORS')) {
+      const isSectionDeletedError =
+        err?.response?.data?.error?.message ===
+        'MULTIPLE_EDITORS_SECTION_DELETED';
+
       const applicationId = err.config.url
         .split('/application-forms/')
         .pop()
         .split('/')[0];
-      return generateErrorPageMultipleEditors(applicationId);
+
+      return generateErrorPageMultipleEditors(
+        applicationId,
+        isSectionDeletedError
+      );
     }
 
     // If we encounter an error that conforms to the new way of handling form validation errors
