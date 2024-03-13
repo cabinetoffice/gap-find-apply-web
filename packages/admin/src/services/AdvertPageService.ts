@@ -142,7 +142,9 @@ const getGrantAdvertPublishInformationBySchemeId = async (
     },
   });
 
-  res.data.lastUpdatedByEmail = await decrypt(res.data.lastUpdatedByEmail);
+  res.data.lastUpdatedByEmail = res.data.lastUpdatedByEmail
+    ? await decrypt(res.data.lastUpdatedByEmail)
+    : 'Deleted user';
 
   return { status: res.status, data: res.data };
 };
