@@ -151,6 +151,19 @@ const getApplicationStatus = async (
   return response.data;
 };
 
+export async function downloadSummary(
+  applicationId: string,
+  sessionId: string
+) {
+  return await axios.get(
+    `${BASE_APPLICATION_URL}/${applicationId}/download-summary`,
+    {
+      ...axiosSessionConfig(sessionId),
+      responseType: 'arraybuffer',
+    }
+  );
+}
+
 export {
   createNewApplicationForm,
   findMatchingApplicationForms,
