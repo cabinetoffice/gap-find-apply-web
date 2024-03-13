@@ -41,11 +41,9 @@ const generateErrorPageMultipleEditors = (
   applicationId: string,
   isSectionDeletedError: boolean
 ) => {
-  let errorMessage;
-  if (isSectionDeletedError) {
-    errorMessage =
-      'The section or question you were editing has been deleted and your changes could not be saved.';
-  }
+  const errorMessage =
+    isSectionDeletedError &&
+    'The section or question you were editing has been deleted and your changes could not be saved.';
 
   return {
     redirect: {
