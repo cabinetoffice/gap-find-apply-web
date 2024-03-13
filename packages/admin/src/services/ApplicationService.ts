@@ -95,13 +95,15 @@ const handleSectionOrdering = async (
   increment: number,
   sectionId: string,
   applicationId: string,
-  sessionId: string
+  sessionId: string,
+  version: string
 ) => {
   await axios.patch(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/order`,
     {
       sectionId,
       increment,
+      version,
     },
     axiosSessionConfig(sessionId)
   );
@@ -113,6 +115,7 @@ type HandleQuestionOrderingProps = {
   sectionId: string;
   questionId: string;
   increment: number;
+  version: number;
 };
 
 const handleQuestionOrdering = async ({
@@ -121,9 +124,10 @@ const handleQuestionOrdering = async ({
   sectionId,
   questionId,
   increment,
+  version,
 }: HandleQuestionOrderingProps) => {
   await axios.patch(
-    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}/order/${increment}`,
+    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}/order/${increment}?version=${version}`,
     {},
     axiosSessionConfig(sessionId)
   );
