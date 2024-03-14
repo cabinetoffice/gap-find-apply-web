@@ -157,6 +157,15 @@ describe('Dashboard', () => {
         })
       ).toBeFalsy();
     });
+
+    it('should render correct download link', () => {
+      render(<Dashboard {...mockDashboardParams} />);
+      expect(
+        screen.getByRole('link', {
+          name: 'download a preview of your application form (ODT)',
+        })
+      ).toHaveAttribute('href', '/api/applications/87654321/download-summary');
+    });
   });
 
   describe('getServerSideProps', () => {
