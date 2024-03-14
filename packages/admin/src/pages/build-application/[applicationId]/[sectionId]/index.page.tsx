@@ -59,11 +59,7 @@ const EditSectionPage = ({
         rows={[
           {
             key: 'Section title',
-            value: (
-              <div className="govuk-!-padding-left-2">
-                {section.sectionTitle}
-              </div>
-            ),
+            value: <div>{section.sectionTitle}</div>,
             action: (
               <CustomLink
                 href={`/build-application/${applicationId}/${section.sectionId}/edit-title`}
@@ -82,18 +78,25 @@ const EditSectionPage = ({
         fullPageWidth
       >
         <input type="hidden" name="version" value={version} />
+
         <Table
           caption="Questions"
           tHeadColumns={[
             {
               name: 'Question title',
               isVisuallyHidden: true,
+              width: 'one-half',
             },
             {
               name: 'Question type',
               isVisuallyHidden: true,
+              width: 'one-quarter',
             },
-            { name: 'Actions', isVisuallyHidden: true },
+            {
+              name: 'Actions',
+              isVisuallyHidden: true,
+              width: 'one-quarter',
+            },
           ]}
           rows={questionTableRows(
             section,
