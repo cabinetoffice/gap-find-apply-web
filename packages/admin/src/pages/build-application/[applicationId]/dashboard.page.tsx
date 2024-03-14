@@ -240,10 +240,11 @@ const Dashboard = ({
           </div>
         </div>
 
-        {/* //temp link for local dev */}
+        {/* //temp link for local dev*/}
         <CustomLink isBackButton={false} href={dummyUrlForDev}>
           This is a link for local dev - please delete me when done
         </CustomLink>
+
         {applicationStatus === 'PUBLISHED' ? (
           <UnpublishSummary
             applicationId={applicationId}
