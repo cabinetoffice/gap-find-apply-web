@@ -51,7 +51,7 @@ const QuestionRowActionComponent = ({
 
       <CustomLink
         href={`/build-application/${applicationId}/${section.sectionId}/${question.questionId}/edit/question-content`}
-        customStyle={`${styles['wrap']}`}
+        customStyle={styles['wrap']}
       >
         Edit
       </CustomLink>
