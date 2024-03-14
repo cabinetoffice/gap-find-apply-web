@@ -3,7 +3,6 @@ import { htmlToRichText } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
 import {
   getAdvertSectionPageContent,
-  getAdvertStatusBySchemeId,
   patchAdvertSectionPage,
 } from '../../../../../../services/AdvertPageService';
 import {
@@ -13,7 +12,6 @@ import {
 import CustomError from '../../../../../../types/CustomError';
 import callServiceMethod from '../../../../../../utils/callServiceMethod';
 import {
-  generateErrorPageAdvertAlreadyPublished,
   generateErrorPageParams,
   generateErrorPageRedirectV2,
 } from '../../../../../../utils/serviceErrorHelpers';
