@@ -175,7 +175,7 @@ describe('SchemeService', () => {
       expect(mockPost).toHaveBeenCalledWith(
         BASE_SCHEME_URL,
         {
-          name: 'mockSchemeName',
+          grantName: 'mockSchemeName',
           ggisReference: 'mockGGiSReference',
         },
         {
