@@ -1,4 +1,4 @@
-import { GetServerSidePropsContext } from 'next';
+import next, { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../../components/layout/Meta';
 import { generateErrorPageRedirect } from '../../../../../../utils/serviceErrorHelpers';
@@ -7,6 +7,8 @@ import PreviewInputSwitch from '../preview-input-switch';
 import styles from '../preview.module.scss';
 import InferProps from '../../../../../../types/InferProps';
 import { getQuestion } from '../../../../../../services/QuestionService';
+import { getApplicationFormSection } from '../../../../../../services/ApplicationService';
+import { ApplicationFormQuestion } from '../../../../../../types/ApplicationForm';
 
 export { getServerSideProps };
 
@@ -21,11 +23,12 @@ const getServerSideProps = async ({
   >;
   const backHref = `/build-application/${applicationId}/dashboard`;
 
-  //get the section
-
-  //getQuestionCount = count number of questions for length
-
-  //
+  //get the section question array = returns a question[]
+  const section = await getApplicationFormSection(
+    applicationId,
+    sectionId,
+    sessionId
+  );
 
   const currentQuestion = await getQuestion(
     sessionId,
@@ -40,14 +43,35 @@ const getServerSideProps = async ({
     );
   }
 
+  //get all questions in an array
+  const questionIds = section?.questions?.map((q) => q.questionId);
+
+  // TODO: Must handle the case where the question is not found (undefined)
+  const nextQuestion = getNextQuestionId(
+    currentQuestion.questionId,
+    questionIds
+  );
+
   return {
     props: {
       question: currentQuestion,
       pageData: { sectionId, questionId },
       backHref: backHref,
+      nextQuestion: nextQuestion,
     },
   };
 };
+
+function getNextQuestionId(
+  currentQuestionId: string,
+  allQuestionIds: string[]
+) {
+  const currentIndex = allQuestionIds.findIndex(
+    (id) => id === currentQuestionId
+  );
+
+  return currentIndex === -1 ? null : allQuestionIds[currentIndex + 1];
+}
 
 export default function DummyComponent({
   question,
