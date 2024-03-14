@@ -78,9 +78,8 @@ export default async function callServiceMethod<
     if (
       err?.response?.data?.error?.message === 'GRANT_ADVERT_MULTIPLE_EDITORS'
     ) {
-      const url = req.url;
-      const schemeId = url.split('/')[2];
-      const advertId = url.split('/')[4];
+      const url = req.url as string;
+      const [, , schemeId, , advertId] = url.split('/');
       return generateErrorPageAdvertAlreadyPublished(schemeId, advertId);
     }
 
