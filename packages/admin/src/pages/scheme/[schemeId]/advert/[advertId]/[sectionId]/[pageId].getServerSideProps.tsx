@@ -31,18 +31,6 @@ export const getServerSideProps = async ({
   >;
   const sessionCookie = getSessionIdFromCookies(req);
 
-  const isAdvertPublishedOrScheduled = await getAdvertStatusBySchemeId(
-    sessionCookie,
-    schemeId
-  ).then((res) => res.data?.grantAdvertStatus);
-
-  if (
-    isAdvertPublishedOrScheduled == 'PUBLISHED' ||
-    isAdvertPublishedOrScheduled == 'SCHEDULED'
-  ) {
-    return generateErrorPageAdvertAlreadyPublished(schemeId, advertId);
-  }
-
   // Fetch page contents from the backend
   let serviceResponse;
   try {
