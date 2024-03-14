@@ -5,16 +5,14 @@
     min-width: 72px;
 }
 
-@media (max-width: 849px) {
-    .wrap {
-        margin-right: 4.5rem;
-    }
+.question-controls {
+    display: flex;
+    justify-content: center;
 }
 
-@media (max-width: 715px) {
-    .wrap {
-        margin-right: 2rem;
-        margin-left: 2rem;
+  
+@media (max-width: 640px) {
+    .question-controls {
+        flex-wrap: wrap;
     }
 }
-  

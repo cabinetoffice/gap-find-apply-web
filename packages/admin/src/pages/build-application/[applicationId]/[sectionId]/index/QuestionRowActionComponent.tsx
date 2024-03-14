@@ -25,7 +25,9 @@ const QuestionRowActionComponent = ({
   handleOnUpDownButtonClick,
 }: QuestionRowActionComponentProps) => {
   return (
-    <div className="govuk-!-text-align-right govuk-!-padding-top-4">
+    <div
+      className={`govuk-!-text-align-right govuk-!-padding-top-4 ${styles['question-controls']}`}
+    >
       <button
         className={`govuk-button govuk-button--secondary govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
         data-module="govuk-button"
@@ -51,7 +53,6 @@ const QuestionRowActionComponent = ({
 
       <CustomLink
         href={`/build-application/${applicationId}/${section.sectionId}/${question.questionId}/edit/question-content`}
-        customStyle={styles['wrap']}
       >
         Edit
       </CustomLink>
