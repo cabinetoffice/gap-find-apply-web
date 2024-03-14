@@ -16,6 +16,7 @@ import InferProps from '../../../types/InferProps';
 import callServiceMethod from '../../../utils/callServiceMethod';
 import { generateErrorPageParams } from '../../../utils/serviceErrorHelpers';
 import { useLayoutEffect, useState, useRef } from 'react';
+import Link from 'next/link';
 
 export const getServerSideProps = async ({
   params,
@@ -217,6 +218,28 @@ const Dashboard = ({
           setNewScrollPosition={setNewScrollPosition}
           formRef={formRef}
         />
+
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds">
+            <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
+            <h1 className="govuk-heading-s" data-cy="cy-download-header">
+              Preview your application form
+            </h1>
+            <p className="govuk-body">
+              You can{' '}
+              <Link
+                href={`/api/applications/${applicationId}/download-summary`}
+                className="govuk-link govuk-link--no-visited-state"
+              >
+                download a preview of your application form (ODT)
+              </Link>{' '}
+              to share with others. This includes a copy of all of your
+              questions and any associated hint text.
+            </p>
+
+            <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
+          </div>
+        </div>
 
         {applicationStatus === 'PUBLISHED' ? (
           <UnpublishSummary
