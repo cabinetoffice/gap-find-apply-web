@@ -1,4 +1,3 @@
-import Meta from '../../../../../components/layout/Meta';
 import {
   Button,
   FlexibleQuestionPageLayout,
@@ -6,19 +5,20 @@ import {
   ValidationError,
 } from 'gap-web-ui';
 import { GetServerSidePropsContext } from 'next';
-import { patchQuestion } from '../../../../../services/QuestionService';
-import callServiceMethod from '../../../../../utils/callServiceMethod';
-import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
-import { updateSectionStatus } from '../../../../../services/SectionService';
-import { getSessionIdFromCookies } from '../../../../../utils/session';
 import CustomLink from '../../../../../components/custom-link/CustomLink';
+import Meta from '../../../../../components/layout/Meta';
+import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
+import { patchQuestion } from '../../../../../services/QuestionService';
+import { getGrantScheme } from '../../../../../services/SchemeService';
+import { updateSectionStatus } from '../../../../../services/SectionService';
 import InferProps from '../../../../../types/InferProps';
-import styles from './eligibility-statement.module.scss';
+import callServiceMethod from '../../../../../utils/callServiceMethod';
 import {
   generateErrorPageParams,
   generateErrorPageRedirect,
 } from '../../../../../utils/serviceErrorHelpers';
-import { getGrantScheme } from '../../../../../services/SchemeService';
+import { getSessionIdFromCookies } from '../../../../../utils/session';
+import styles from './eligibility-statement.module.scss';
 
 type RequestBody = {
   displayText: string;
@@ -96,7 +96,10 @@ export const getServerSideProps = async ({
     );
   }
 
-  if (appForm.applicationStatus === 'PUBLISHED') {
+  if (
+    appForm.applicationStatus === 'PUBLISHED' ||
+    appForm.applicationStatus === 'REMOVED'
+  ) {
     let grantName;
     try {
       grantName = (await getGrantScheme(appForm.grantSchemeId, sessionId)).name;
@@ -145,7 +148,7 @@ const EligibilityStatement = ({
   applicationStatus,
   version,
 }: InferProps<typeof getServerSideProps>) => {
-  if (applicationStatus === 'PUBLISHED') {
+  if (applicationStatus === 'PUBLISHED' || applicationStatus === 'REMOVED') {
     return (
       <>
         <Meta title={`Eligibility statement preview - Manage a grant`} />
