@@ -14,7 +14,7 @@ describe('Next API Handler', () => {
   it('should handle the request and send the file', async () => {
     const applicationId = 'exampleapplicationId';
 
-    (axios.get as jest.Mock).mockResolvedValue({
+    jest.mocked(axios.get).mockResolvedValue({
       data: 'mocked file data',
     });
 
