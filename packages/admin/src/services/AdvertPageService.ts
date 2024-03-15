@@ -20,11 +20,11 @@ const BASE_ADVERT_URL = BACKEND_HOST + '/grant-advert';
 const createNewAdvert = async (
   sessionId: string,
   schemeId: string,
-  schemeName: string
+  advertName: string
 ) => {
   const requestBody = {
     grantSchemeId: schemeId,
-    name: schemeName,
+    advertName,
   };
 
   const res = await axios.post(
