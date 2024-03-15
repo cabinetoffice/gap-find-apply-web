@@ -52,7 +52,12 @@ const getServerSideProps = async ({
     applicationId,
     sessionId
   );
-  if (applicationStatus === 'PUBLISHED') {
+
+  if (
+    applicationStatus === 'PUBLISHED' ||
+    sectionId.toUpperCase() === 'ELIGIBILITY' ||
+    sectionId.toUpperCase() === 'ESSENTIAL'
+  ) {
     return {
       redirect: {
         destination: `/build-application/${applicationId}/dashboard`,
