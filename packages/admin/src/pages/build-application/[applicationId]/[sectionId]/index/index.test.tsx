@@ -234,7 +234,7 @@ describe('Edit section page', () => {
         });
       });
 
-      it('Should redirect to build application dashboard if section ID is ELIGIBILITY', async () => {
+      it('Should redirect to build application dashboard if sectionId is ELIGIBILITY', async () => {
         const result = await getServerSideProps(
           getContext(() => ({
             params: {
@@ -255,7 +255,7 @@ describe('Edit section page', () => {
         });
       });
 
-      it('Should redirect to build application dashboard if section ID is ESSENTIAL', async () => {
+      it('Should redirect to build application dashboard if sectionId is ESSENTIAL', async () => {
         const result = await getServerSideProps(
           getContext(() => ({
             params: {
