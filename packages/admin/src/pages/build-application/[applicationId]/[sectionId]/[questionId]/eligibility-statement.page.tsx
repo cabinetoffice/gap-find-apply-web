@@ -112,6 +112,9 @@ export const getServerSideProps = async ({
 
     return {
       props: {
+        fieldErrors: fieldErrors,
+        formAction: process.env.SUB_PATH + resolvedUrl,
+        csrfToken: res.getHeader('x-csrf-token') as string,
         backButtonHref: `/build-application/${applicationId}/dashboard`,
         grantName: grantName,
         defaultValue: existingDisplayText,
