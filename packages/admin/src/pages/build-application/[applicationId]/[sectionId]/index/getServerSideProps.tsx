@@ -64,6 +64,16 @@ const getServerSideProps = async ({
         permanent: false,
       },
     };
+  } else if (
+    applicationStatus === 'REMOVED' &&
+    (sectionId === 'ELIGIBILITY' || sectionId === 'ESSENTIAL')
+  ) {
+    return {
+      redirect: {
+        destination: `/build-application/${applicationId}/dashboard`,
+        permanent: false,
+      },
+    };
   }
 
   let applicationFormSummary;
