@@ -4,6 +4,7 @@ import ApplicationQueryObject from '../types/ApplicationQueryObject';
 import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
 import {
   createNewApplicationForm,
+  downloadSummary,
   findMatchingApplicationForms,
   getApplicationFormSection,
   getApplicationFormSummary,
@@ -273,6 +274,26 @@ describe('ApplicationService', () => {
       expect(mockedAxios.get).toHaveBeenCalledWith(
         `${BASE_APPLICATION_URL}/${grantApplicationId}/status`,
         { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
+      );
+    });
+  });
+
+  describe('downloadSummary', () => {
+    it('Should call the expected endpoint to download the summary', async () => {
+      const grantApplicationId = 'a028d000004Osy3BEA';
+      const sessionCookie = 'testSessionId';
+
+      mockedAxios.get.mockResolvedValue({});
+
+      await downloadSummary(grantApplicationId, sessionCookie);
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_APPLICATION_URL}/${grantApplicationId}/download-summary`,
+        {
+          headers: { Cookie: 'SESSION=testSessionId;' },
+          withCredentials: true,
+          responseType: 'arraybuffer',
+        }
       );
     });
   });

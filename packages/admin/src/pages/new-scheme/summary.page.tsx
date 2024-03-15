@@ -32,7 +32,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     () =>
       createNewScheme(
         sessionCookie,
-        schemeSummary['name'],
+        schemeSummary['grantName'],
         schemeSummary['ggisReference'],
         schemeSummary['contactEmail']
       ),
@@ -53,7 +53,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     rows: [
       {
         key: 'Grant name',
-        value: schemeSummary['name'],
+        value: schemeSummary['grantName'],
         action: {
           href: `/new-scheme/name?${changeDetailsQueryParams}`,
           label: 'Change',
