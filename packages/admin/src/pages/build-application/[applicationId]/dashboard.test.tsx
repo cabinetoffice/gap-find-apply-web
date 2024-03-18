@@ -174,7 +174,21 @@ describe('Dashboard', () => {
         screen.getByRole('link', {
           name: 'Download an overview (ODT)',
         })
-      ).toHaveAttribute('href', '/api/applications/87654321/download-summary');
+      ).toBeVisible();
+      expect(
+        screen.getByText(
+          'You can preview how your application will look to applicants and download a copy for your own reference.'
+        )
+      ).toBeVisible();
+    });
+
+    it('should render correct application preview form', () => {
+      render(<Dashboard {...mockDashboardParams} />);
+      expect(
+        screen.getByRole('button', {
+          name: 'Preview your application form',
+        })
+      ).toHaveAttribute('href', '/build-application/87654321/preview');
     });
   });
 
