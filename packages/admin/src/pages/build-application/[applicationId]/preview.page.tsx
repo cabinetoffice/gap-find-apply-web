@@ -23,7 +23,6 @@ export const getServerSideProps = async ({
   params,
 }: GetServerSidePropsContext) => {
   const applicationId = params!.applicationId as string;
-
   try {
     const { sections, grantSchemeId, applicationName } =
       await getApplicationFormSummary(
@@ -44,12 +43,13 @@ export const getServerSideProps = async ({
         applicationName,
       },
     };
-  } catch (error: unknown) {
-    console.error('Error rendering application preview -> ', error);
-    const axiosError = error as AxiosError<CustomError>;
+  } catch (err: unknown) {
+    console.error('Error rendering application preview -> ', err);
+    const error = err as AxiosError;
+    const errorMessageObject = error.response?.data as CustomError;
 
     return generateErrorPageRedirectV2(
-      axiosError.response?.data.code as string,
+      errorMessageObject.code,
       `/build-application/${applicationId}/dashboard`
     );
   }
@@ -69,9 +69,14 @@ const SectionInformation = ({
   questionId,
   currentIndex,
 }: SectionInformationProps) => (
-  <div className="govuk-summary-list__row" key={currentIndex}>
+  <div
+    data-testid="section-information"
+    className="govuk-summary-list__row"
+    key={currentIndex}
+  >
     <dt className="govuk-summary-list__key">
       <CustomLink
+        dataTestId="section-link"
         href={getPreviewSectionUrl(applicationId, sectionId, questionId)}
         customStyle="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
       >
