@@ -55,14 +55,12 @@ export async function middleware(req: NextRequest) {
 
     res.headers.set('Cache-Control', 'no-store');
     return res;
-  } else {
-    if (submissionDownloadPattern.test({ pathname: req.nextUrl.pathname })) {
-      const url = getLoginUrl() + req.nextUrl.pathname;
-      return NextResponse.redirect(url);
-    } else {
-      return NextResponse.redirect(getLoginUrl());
-    }
   }
+  let url = getLoginUrl();
+  if (submissionDownloadPattern.test({ pathname: req.nextUrl.pathname })) {
+    url = url + req.nextUrl.pathname;
+  }
+  return NextResponse.redirect(url);
 }
 
 const submissionDownloadPattern = new URLPattern({
