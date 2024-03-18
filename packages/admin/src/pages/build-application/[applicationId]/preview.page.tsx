@@ -22,9 +22,9 @@ export const getServerSideProps = async ({
   req,
   params,
 }: GetServerSidePropsContext) => {
-  try {
-    const applicationId = params!.applicationId as string;
+  const applicationId = params!.applicationId as string;
 
+  try {
     const { sections, grantSchemeId, applicationName } =
       await getApplicationFormSummary(
         applicationId,
@@ -45,12 +45,12 @@ export const getServerSideProps = async ({
       },
     };
   } catch (error: unknown) {
-    console.log('Error rendering application preview -> ', error);
+    console.error('Error rendering application preview -> ', error);
     const axiosError = error as AxiosError<CustomError>;
 
     return generateErrorPageRedirectV2(
       axiosError.response?.data.code as string,
-      `/build-application/${params!.applicationId as string}/dashboard`
+      `/build-application/${applicationId}/dashboard`
     );
   }
 };
