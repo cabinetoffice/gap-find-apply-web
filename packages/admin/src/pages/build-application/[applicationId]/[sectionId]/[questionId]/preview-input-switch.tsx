@@ -10,25 +10,27 @@ import {
 import ResponseTypeEnum from '../../../../../enums/ResponseType';
 import { ApplicationFormQuestion } from '../../../../../types/ApplicationForm';
 
-const PreviewInputSwitch = (question: ApplicationFormQuestion) => {
-  const questionTitle = `${question.fieldTitle}${
-    !question.validation.mandatory ? ' (optional)' : ''
+const PreviewInputSwitch = (
+  props: ApplicationFormQuestion & { disableTextBoxes?: boolean }
+) => {
+  const questionTitle = `${props.fieldTitle}${
+    !props.validation.mandatory ? ' (optional)' : ''
   }`;
 
   const inputProps = {
     questionTitle: questionTitle,
-    questionHintText: question.hintText,
+    questionHintText: props.hintText,
     fieldName: 'preview',
     fieldErrors: [],
   };
 
-  switch (question.responseType) {
+  switch (props.responseType) {
     case ResponseTypeEnum.ShortAnswer:
-      return <TextInput {...inputProps} />;
+      return <TextInput {...inputProps} disabled={props.disableTextBoxes} />;
     case ResponseTypeEnum.YesNo:
       return <Radio {...inputProps} />;
     case ResponseTypeEnum.LongAnswer:
-      return <TextArea {...inputProps} />;
+      return <TextArea {...inputProps} disabled={props.disableTextBoxes} />;
     case ResponseTypeEnum.Date:
       return <DateInput {...inputProps} />;
     case ResponseTypeEnum.SingleFileUpload:
@@ -37,12 +39,12 @@ const PreviewInputSwitch = (question: ApplicationFormQuestion) => {
       return (
         <SelectInput
           {...inputProps}
-          selectOptions={question.options}
-          defaultValue={question.options?.[0]}
+          selectOptions={props.options}
+          defaultValue={props.options?.[0]}
         />
       );
     case ResponseTypeEnum.MultipleSelection:
-      return <Checkboxes {...inputProps} options={question.options} />;
+      return <Checkboxes {...inputProps} options={props.options} />;
     default:
       throw new Error('Response type could not be mapped to an input');
   }

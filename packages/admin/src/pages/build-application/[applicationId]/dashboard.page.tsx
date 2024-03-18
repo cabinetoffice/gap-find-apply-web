@@ -153,11 +153,6 @@ const Dashboard = ({
       behavior: 'instant' as ScrollBehavior,
     });
   }, []);
-
-  const dummySectionIdForDev = sections[2].sectionId;
-  const dummyQuestionIdForDev = (sections[2] as any).questions[0].questionId;
-  const dummyUrlForDev = `/build-application/${applicationId}/${dummySectionIdForDev}/${dummyQuestionIdForDev}/unpublished-preview`;
-
   return (
     <>
       <Meta title="Build an application form - Manage a grant" />
@@ -239,11 +234,6 @@ const Dashboard = ({
             <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
           </div>
         </div>
-
-        {/* //temp link for local dev*/}
-        <CustomLink isBackButton={false} href={dummyUrlForDev}>
-          This is a link for local dev - please delete me when done
-        </CustomLink>
 
         {applicationStatus === 'PUBLISHED' ? (
           <UnpublishSummary

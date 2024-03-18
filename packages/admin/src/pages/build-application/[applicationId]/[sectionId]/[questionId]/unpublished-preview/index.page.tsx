@@ -23,41 +23,37 @@ const getServerSideProps = async ({
   >;
   const backHref = `/build-application/${applicationId}/dashboard`;
 
-  //get the section question array = returns a question[]
   const section = await getApplicationFormSection(
     applicationId,
     sectionId,
     sessionId
   );
-
   const currentQuestion = await getQuestion(
     sessionId,
     applicationId,
     sectionId,
     questionId
   );
-  if (!currentQuestion) {
-    return generateErrorPageRedirect(
-      `Could not find the question, please make sure the URL is correct`,
-      backHref
-    );
-  }
 
-  //get all questions in an array
-  const questionIds = section?.questions?.map((q) => q.questionId);
+  const questionIds = section?.questions!.map((q) => q.questionId);
 
-  // TODO: Must handle the case where the question is not found (undefined)
-  const nextQuestion = getNextQuestionId(
-    currentQuestion.questionId,
-    questionIds
-  );
+  const lastQuestion = isLastQuestion(currentQuestion.questionId, questionIds);
+
+  const nextQuestionId = lastQuestion
+    ? null
+    : getNextQuestionId(currentQuestion.questionId, questionIds);
+
+  const nextPreviewHref = nextQuestionId
+    ? `/build-application/${applicationId}/${sectionId}/${nextQuestionId}/unpublished-preview`
+    : null;
 
   return {
     props: {
       question: currentQuestion,
       pageData: { sectionId, questionId },
       backHref: backHref,
-      nextQuestion: nextQuestion,
+      nextQuestion: nextQuestionId,
+      nextPreviewHref: nextPreviewHref,
     },
   };
 };
@@ -69,13 +65,20 @@ function getNextQuestionId(
   const currentIndex = allQuestionIds.findIndex(
     (id) => id === currentQuestionId
   );
-
-  return currentIndex === -1 ? null : allQuestionIds[currentIndex + 1];
+  return allQuestionIds[currentIndex + 1];
 }
 
-export default function DummyComponent({
+function isLastQuestion(currentQuestionId: string, allQuestionIds: string[]) {
+  const size = allQuestionIds.length;
+  const lastQuestion = allQuestionIds[size - 1];
+  return lastQuestion === currentQuestionId;
+}
+
+export default function PreviewQuestion({
   question,
   backHref,
+  nextQuestion,
+  nextPreviewHref,
 }: InferProps<typeof getServerSideProps>) {
   return (
     <>
@@ -95,13 +98,22 @@ export default function DummyComponent({
                 Question preview
               </span>
 
-              <PreviewInputSwitch {...question} />
+              <PreviewInputSwitch {...question} disableTextBoxes={true} />
 
-              <div className="govuk-button-group">
-                <CustomLink href={backHref} isSecondaryButton={true}>
+              {nextQuestion !== null ? (
+                <div className="govuk-button-group">
+                  <CustomLink href={nextPreviewHref as string} isButton={true}>
+                    {'Preview next question'}
+                  </CustomLink>
+                  <CustomLink href={backHref} isSecondaryButton={true}>
+                    {'Back to overview'}
+                  </CustomLink>
+                </div>
+              ) : (
+                <CustomLink href={backHref} isButton={true}>
                   {'Back to overview'}
                 </CustomLink>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -109,7 +121,3 @@ export default function DummyComponent({
     </>
   );
 }
-
-// 1. create the page to figma (start by copy and pasting the existing preview page found here: packages/admin/src/pages/build-application/[applicationId]/[sectionId]/[questionId]/preview.page.tsx
-// 2. dynamically populate the 'Preview next question' button - it needs to link to the next question id. You can get the next question id by checking the location of the current questionid against the array. Find that index then add 1 to it.
-// 3. For last question behaviour - You'll know if you're on the last question  when the index of the current question is the same as the length of the question array - 1. (array index start at 0 in js)
