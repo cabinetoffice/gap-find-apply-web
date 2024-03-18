@@ -1,0 +1,10 @@
+@import '~govuk-frontend/govuk/helpers/colour';
+
+.wrapper {
+  word-break: break-all;
+}
+
+.breakLine {
+  background-color: govuk-colour('blue');
+  padding: 0.08rem;
+}

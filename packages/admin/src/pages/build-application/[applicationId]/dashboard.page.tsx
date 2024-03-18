@@ -226,16 +226,23 @@ const Dashboard = ({
               Preview your application form
             </h1>
             <p className="govuk-body">
-              You can{' '}
-              <Link
-                href={`/api/applications/${applicationId}/download-summary`}
-                className="govuk-link govuk-link--no-visited-state"
-              >
-                download a preview of your application form (ODT)
-              </Link>{' '}
-              to share with others. This includes a copy of all of your
-              questions and any associated hint text.
+              You can preview how your application will look to applicants and
+              download a copy for your own reference.
             </p>
+            <div className="govuk-button-group">
+              <CustomLink
+                isButton
+                href={`/build-application/${applicationId}/preview`}
+              >
+                Preview your application form
+              </CustomLink>
+              <CustomLink
+                href={`/api/applications/${applicationId}/download-summary`}
+                customStyle="govuk-link govuk-link--no-visited-state"
+              >
+                Download an overview (ODT)
+              </CustomLink>
+            </div>
 
             <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
           </div>
