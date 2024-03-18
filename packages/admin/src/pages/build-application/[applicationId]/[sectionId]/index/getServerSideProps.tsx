@@ -53,21 +53,7 @@ const getServerSideProps = async ({
     sessionId
   );
 
-  if (
-    applicationStatus === 'PUBLISHED' ||
-    sectionId.toUpperCase() === 'ELIGIBILITY' ||
-    sectionId.toUpperCase() === 'ESSENTIAL'
-  ) {
-    return {
-      redirect: {
-        destination: `/build-application/${applicationId}/dashboard`,
-        permanent: false,
-      },
-    };
-  } else if (
-    applicationStatus === 'REMOVED' &&
-    (sectionId === 'ELIGIBILITY' || sectionId === 'ESSENTIAL')
-  ) {
+  if (applicationStatus === 'PUBLISHED') {
     return {
       redirect: {
         destination: `/build-application/${applicationId}/dashboard`,
