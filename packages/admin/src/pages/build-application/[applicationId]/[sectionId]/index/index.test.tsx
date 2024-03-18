@@ -234,6 +234,48 @@ describe('Edit section page', () => {
         });
       });
 
+      it('Should redirect to build application dashboard if sectionId is ELIGIBILITY', async () => {
+        const result = await getServerSideProps(
+          getContext(() => ({
+            params: {
+              applicationId: 'testApplicationId',
+              sectionId: 'ELIGIBILITY',
+            },
+            query: {
+              scrollPosition: '0',
+            },
+          }))
+        );
+
+        expectObjectEquals(result, {
+          redirect: {
+            destination: '/build-application/testApplicationId/dashboard',
+            permanent: false,
+          },
+        });
+      });
+
+      it('Should redirect to build application dashboard if sectionId is ESSENTIAL', async () => {
+        const result = await getServerSideProps(
+          getContext(() => ({
+            params: {
+              applicationId: 'testApplicationId',
+              sectionId: 'ESSENTIAL',
+            },
+            query: {
+              scrollPosition: '0',
+            },
+          }))
+        );
+
+        expectObjectEquals(result, {
+          redirect: {
+            destination: '/build-application/testApplicationId/dashboard',
+            permanent: false,
+          },
+        });
+      });
+
       it('Should redirect to service error page if section is not found', async () => {
         const result = await getServerSideProps(
           getContext(() => ({
