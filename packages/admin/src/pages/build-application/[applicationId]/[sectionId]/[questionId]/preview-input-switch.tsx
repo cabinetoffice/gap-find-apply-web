@@ -9,6 +9,7 @@ import {
 } from 'gap-web-ui';
 import ResponseTypeEnum from '../../../../../enums/ResponseType';
 import { ApplicationFormQuestion } from '../../../../../types/ApplicationForm';
+import DisabledAddressInput from '../components/DisabledAddressInput';
 
 const PreviewInputSwitch = (
   props: ApplicationFormQuestion & { disableTextBoxes?: boolean }
@@ -25,6 +26,23 @@ const PreviewInputSwitch = (
   };
 
   switch (props.responseType) {
+    //covers funding amount input
+    case 'Numeric':
+      return (
+        <TextInput
+          {...inputProps}
+          textInputSubtype={'numeric'}
+          disabled={props.disableTextBoxes}
+        />
+      );
+    //covers organisation address input
+    case 'AddressInput':
+      return (
+        <DisabledAddressInput
+          {...inputProps}
+          disabled={true}
+        ></DisabledAddressInput>
+      );
     case ResponseTypeEnum.ShortAnswer:
       return <TextInput {...inputProps} disabled={props.disableTextBoxes} />;
     case ResponseTypeEnum.YesNo:
