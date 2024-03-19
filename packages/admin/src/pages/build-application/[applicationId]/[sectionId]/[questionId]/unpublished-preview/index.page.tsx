@@ -6,6 +6,7 @@ import PreviewInputSwitch from '../preview-input-switch';
 import InferProps from '../../../../../../types/InferProps';
 import { getQuestion } from '../../../../../../services/QuestionService';
 import { getApplicationFormSection } from '../../../../../../services/ApplicationService';
+import { generateErrorPageRedirect } from '../../../../../../utils/serviceErrorHelpers';
 
 export { getServerSideProps };
 
@@ -31,6 +32,12 @@ const getServerSideProps = async ({
     sectionId,
     questionId
   );
+  if (!currentQuestion) {
+    return generateErrorPageRedirect(
+      `Could not find the question, please make sure the URL is correct`,
+      `/build-application/${applicationId}/dashboard`
+    );
+  }
 
   const questionIds = section?.questions!.map((q) => q.questionId);
 
@@ -71,7 +78,7 @@ function isLastQuestion(currentQuestionId: string, allQuestionIds: string[]) {
   return lastQuestion === currentQuestionId;
 }
 
-export default function PreviewQuestion({
+export default function UnpublishedPreviewQuestion({
   question,
   backHref,
   nextQuestion,
