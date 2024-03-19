@@ -50,7 +50,7 @@ export default function SectionOverview({
     <>
       <Meta title="Application builder - Section overview" />
       <CustomLink href={backButtonHref} isBackButton />
-      <div className="govuk-grid-row">
+      <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds">
           <span className="govuk-caption-l" data-cy="cy-application-name">
             {applicationName}
