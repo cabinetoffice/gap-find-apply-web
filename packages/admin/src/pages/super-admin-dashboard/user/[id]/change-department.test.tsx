@@ -113,6 +113,7 @@ describe('Change department page', () => {
       expect(
         screen.getByText('There is a problem').nextSibling
       ).toHaveTextContent('Select a department');
+      expect(updateUserRoles).not.toHaveBeenCalled();
     });
   });
 
