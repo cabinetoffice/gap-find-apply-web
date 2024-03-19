@@ -292,7 +292,7 @@ describe('Edit section page', () => {
         expectObjectEquals(result, {
           redirect: {
             destination:
-              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/scheme-list","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
+              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/dashboard","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
             permanent: false,
           },
         });
@@ -308,7 +308,7 @@ describe('Edit section page', () => {
         expectObjectEquals(result, {
           redirect: {
             destination:
-              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/scheme-list","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
+              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/dashboard","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
             permanent: false,
           },
         });

@@ -173,7 +173,7 @@ describe('Dashboard', () => {
       errorInformation:
         'Something went wrong while trying to create an application',
       linkAttributes: {
-        href: `/scheme-list`,
+        href: `/dashboard`,
         linkText: 'Please find your scheme application form and continue.',
         linkInformation: 'Your previous progress has been saved.',
       },
