@@ -136,24 +136,24 @@ describe('SectionInformation', () => {
     applicationName: 'Test Application',
     applicationId: 'testAppId',
     contactEmail: 'test@example.com',
-  } as unknown as InferProps<typeof getServerSideProps>;
+  } as InferProps<typeof getServerSideProps>;
 
   it('renders component with correct content', () => {
     render(<ApplicationPreview {...props} />);
 
     expect(
       screen.getByText(`Previewing ${props.applicationName}`)
-    ).toBeInTheDocument();
+    ).toBeVisible();
 
     expect(
       screen.getByText('See an overview of the questions you will be asked')
-    ).toBeInTheDocument();
-    expect(screen.getByText('Exit preview')).toBeInTheDocument();
-    expect(screen.getByText('Help and support')).toBeInTheDocument();
+    ).toBeVisible();
+    expect(screen.getByText('Exit preview')).toBeVisible();
+    expect(screen.getByText('Help and support')).toBeVisible();
     expect(
       screen.getByText('If you have a question about this grant, contact:')
-    ).toBeInTheDocument();
-    expect(screen.getByText(props.contactEmail!)).toBeInTheDocument();
+    ).toBeVisible();
+    expect(screen.getByText(props.contactEmail!)).toBeVisible();
   });
 
   it('renders correct number of sections', () => {
