@@ -38,7 +38,7 @@ export const getServerSideProps = async ({
     return {
       props: {
         sections,
-        contactEmail,
+        contactEmail: contactEmail ?? null,
         applicationId,
         applicationName,
       },
@@ -147,20 +147,22 @@ export default function ApplicationPreview({
             </CustomLink>
           </div>
         </div>
-        <div className="govuk-grid-column-one-third ">
-          <hr
-            className={`govuk-section-break govuk-section-break--m govuk-section-break--visible ${styles.breakLine}`}
-          />
-          <h2 className="govuk-heading-m">Help and support</h2>
-          <p className="govuk-body">
-            If you have a question about this grant, contact:
-          </p>
-          <p className="govuk-body">
-            <a href={`mailto:${contactEmail}`} className={styles.wrapper}>
-              {contactEmail}
-            </a>
-          </p>
-        </div>
+        {contactEmail && (
+          <div className="govuk-grid-column-one-third ">
+            <hr
+              className={`govuk-section-break govuk-section-break--m govuk-section-break--visible ${styles.breakLine}`}
+            />
+            <h2 className="govuk-heading-m">Help and support</h2>
+            <p className="govuk-body">
+              If you have a question about this grant, contact:
+            </p>
+            <p className="govuk-body">
+              <a href={`mailto:${contactEmail}`} className={styles.wrapper}>
+                {contactEmail}
+              </a>
+            </p>
+          </div>
+        )}
       </div>
     </>
   );

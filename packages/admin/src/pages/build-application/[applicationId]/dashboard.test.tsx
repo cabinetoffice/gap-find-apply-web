@@ -174,7 +174,8 @@ describe('Dashboard', () => {
         screen.getByRole('link', {
           name: 'Download an overview (ODT)',
         })
-      ).toBeVisible();
+      ).toHaveAttribute('href', '/api/applications/87654321/download-summary');
+
       expect(
         screen.getByText(
           'You can preview how your application will look to applicants and download a copy for your own reference.'
