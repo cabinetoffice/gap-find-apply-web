@@ -99,7 +99,7 @@ export default function ApplicationPreview({
 
   return (
     <>
-      <Meta title="My application - Apply for a grant" />
+      <Meta title="Build Application - Preview Application Sections" />
       <CustomLink href={backButtonHref} isBackButton />
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
