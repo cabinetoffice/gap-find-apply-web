@@ -21,7 +21,7 @@ const getServerSideProps = async ({
     string,
     string
   >;
-  const backHref = `/build-application/${applicationId}/dashboard`;
+  const backHref = `/build-application/${applicationId}/preview`;
 
   const section = await getApplicationFormSection(
     applicationId,
