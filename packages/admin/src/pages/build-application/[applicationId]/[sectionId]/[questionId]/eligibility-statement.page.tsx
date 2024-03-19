@@ -96,10 +96,7 @@ export const getServerSideProps = async ({
     );
   }
 
-  if (
-    appForm.applicationStatus === 'PUBLISHED' ||
-    appForm.applicationStatus === 'REMOVED'
-  ) {
+  if (appForm.applicationStatus === 'PUBLISHED') {
     let grantName;
     try {
       grantName = (await getGrantScheme(appForm.grantSchemeId, sessionId)).name;
@@ -151,7 +148,7 @@ const EligibilityStatement = ({
   applicationStatus,
   version,
 }: InferProps<typeof getServerSideProps>) => {
-  if (applicationStatus === 'PUBLISHED' || applicationStatus === 'REMOVED') {
+  if (applicationStatus === 'PUBLISHED') {
     return (
       <>
         <Meta title={`Eligibility statement preview - Manage a grant`} />

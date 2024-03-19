@@ -181,8 +181,7 @@ const DueDiligence = ({
             disabled={disabled}
           />
 
-          {applicationStatus === 'PUBLISHED' ||
-          applicationStatus === 'REMOVED' ? (
+          {applicationStatus === 'PUBLISHED' ? (
             <CustomLink
               href={backButtonHref}
               customStyle="govuk-!-font-size-19"
