@@ -1,14 +1,11 @@
-import next, { GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../../components/layout/Meta';
-import { generateErrorPageRedirect } from '../../../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../../../utils/session';
 import PreviewInputSwitch from '../preview-input-switch';
-import styles from '../preview.module.scss';
 import InferProps from '../../../../../../types/InferProps';
 import { getQuestion } from '../../../../../../services/QuestionService';
 import { getApplicationFormSection } from '../../../../../../services/ApplicationService';
-import { ApplicationFormQuestion } from '../../../../../../types/ApplicationForm';
 
 export { getServerSideProps };
 
