@@ -64,5 +64,5 @@ export async function middleware(req: NextRequest) {
 }
 
 const submissionDownloadPattern = new URLPattern({
-  pathname: '/scheme/:schemeId([0-9]+)/:exportBatchId([0-9]+)',
+  pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
 });
