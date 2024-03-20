@@ -37,6 +37,16 @@ const generateErrorPageRedirectV2 = (
   } as Redirect,
 });
 
+const generateErrorPageAdvertAlreadyPublished = (
+  schemeId: string,
+  advertId: string
+) => ({
+  redirect: {
+    statusCode: 302,
+    destination: `/scheme/${schemeId}/advert/${advertId}/error-multiple-editors`,
+  } as Redirect,
+});
+
 const generateErrorPageMultipleEditors = (
   applicationId: string,
   isSectionDeletedError: boolean
@@ -76,4 +86,5 @@ export {
   generateErrorPageRedirectV2,
   generateErrorMessageFromStatusCode,
   generateErrorPageMultipleEditors,
+  generateErrorPageAdvertAlreadyPublished,
 };

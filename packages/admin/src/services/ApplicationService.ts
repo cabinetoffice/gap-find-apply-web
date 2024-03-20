@@ -55,14 +55,17 @@ const getApplicationFormSummary = async (
   withSections = true as boolean,
   withQuestions = true as boolean
 ) => {
-  const response = await axios.get(`${BASE_APPLICATION_URL}/${applicationId}`, {
-    params: {
-      withSections: withSections,
-      withQuestions: withQuestions,
-    },
-    ...axiosSessionConfig(sessionId),
-  });
-  return response.data as ApplicationFormSummary;
+  const response = await axios.get<ApplicationFormSummary>(
+    `${BASE_APPLICATION_URL}/${applicationId}`,
+    {
+      params: {
+        withSections: withSections,
+        withQuestions: withQuestions,
+      },
+      ...axiosSessionConfig(sessionId),
+    }
+  );
+  return response.data;
 };
 
 const getApplicationFormSection = async (

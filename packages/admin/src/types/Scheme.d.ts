@@ -9,7 +9,7 @@ interface Scheme {
   applicationFormId?: string;
   version?: string;
   lastUpdatedDate: string;
-  lastUpdatedByADeletedUser: string;
+  lastUpdatedByADeletedUser: boolean;
   lastUpdatedBy: string;
   encryptedLastUpdatedBy: string;
 }

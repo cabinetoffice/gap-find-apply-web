@@ -37,12 +37,12 @@ export const getAdminsSchemes = async (
 
 export const createNewScheme = async (
   sessionId: string,
-  schemeName: string,
+  grantName: string,
   ggisReference: string,
   contactEmail?: string
 ) => {
   const newScheme = {
-    name: schemeName,
+    grantName: grantName,
     ggisReference: ggisReference,
     contactEmail: contactEmail,
   };

@@ -51,7 +51,7 @@ describe('AdvertPageService', () => {
         `${BACKEND_HOST}/grant-advert/create`,
         {
           grantSchemeId: schemeId,
-          name: advertName,
+          advertName,
         },
         { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
       );

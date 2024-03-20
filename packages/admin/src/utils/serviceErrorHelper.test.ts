@@ -4,6 +4,7 @@ import {
   generateErrorPageParams,
   generateErrorPageRedirect,
   generateErrorPageRedirectV2,
+  generateErrorPageAdvertAlreadyPublished,
 } from './serviceErrorHelpers';
 
 // https://jestjs.io/docs/api#testeachtablename-fn-timeout
@@ -111,6 +112,17 @@ describe('generateErrorPage functions', () => {
         statusCode: 302,
         destination:
           '/build-application/appId/error-multiple-editors?error=The section or question you were editing has been deleted and your changes could not be saved.',
+      },
+    });
+  });
+
+  test('generateErrorPageAdvertIsAlreadyPublished', () => {
+    expect(
+      generateErrorPageAdvertAlreadyPublished('schemeId', 'advertId')
+    ).toEqual({
+      redirect: {
+        statusCode: 302,
+        destination: '/scheme/schemeId/advert/advertId/error-multiple-editors',
       },
     });
   });

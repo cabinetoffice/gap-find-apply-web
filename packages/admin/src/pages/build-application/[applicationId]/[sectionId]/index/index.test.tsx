@@ -234,6 +234,48 @@ describe('Edit section page', () => {
         });
       });
 
+      it('Should redirect to build application dashboard if sectionId is ELIGIBILITY', async () => {
+        const result = await getServerSideProps(
+          getContext(() => ({
+            params: {
+              applicationId: 'testApplicationId',
+              sectionId: 'ELIGIBILITY',
+            },
+            query: {
+              scrollPosition: '0',
+            },
+          }))
+        );
+
+        expectObjectEquals(result, {
+          redirect: {
+            destination: '/build-application/testApplicationId/dashboard',
+            permanent: false,
+          },
+        });
+      });
+
+      it('Should redirect to build application dashboard if sectionId is ESSENTIAL', async () => {
+        const result = await getServerSideProps(
+          getContext(() => ({
+            params: {
+              applicationId: 'testApplicationId',
+              sectionId: 'ESSENTIAL',
+            },
+            query: {
+              scrollPosition: '0',
+            },
+          }))
+        );
+
+        expectObjectEquals(result, {
+          redirect: {
+            destination: '/build-application/testApplicationId/dashboard',
+            permanent: false,
+          },
+        });
+      });
+
       it('Should redirect to service error page if section is not found', async () => {
         const result = await getServerSideProps(
           getContext(() => ({
@@ -250,7 +292,7 @@ describe('Edit section page', () => {
         expectObjectEquals(result, {
           redirect: {
             destination:
-              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/scheme-list","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
+              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/dashboard","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
             permanent: false,
           },
         });
@@ -266,7 +308,7 @@ describe('Edit section page', () => {
         expectObjectEquals(result, {
           redirect: {
             destination:
-              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/scheme-list","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
+              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to edit a section","linkAttributes":{"href":"/dashboard","linkText":"Please find your scheme application form and continue.","linkInformation":"Your previous progress has been saved."}}',
             permanent: false,
           },
         });

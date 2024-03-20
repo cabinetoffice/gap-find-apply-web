@@ -6,7 +6,6 @@ import InferProps from '../../../../../types/InferProps';
 import { generateErrorPageRedirect } from '../../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 import PreviewInputSwitch from './preview-input-switch';
-import styles from './preview.module.scss';
 
 export const getServerSideProps = async ({
   params,
@@ -65,52 +64,26 @@ const PreviewQuestion = ({
       <div className="govuk-grid-row">
         <div className="govuk-grid-column-two-thirds">
           <div className="govuk-!-padding-top-7">
-            <div
-              className={`govuk-!-padding-6 ${styles['gap-light-grey-background']}`}
+            <span
+              className="govuk-caption-l"
+              data-testid="question-page-caption"
+              data-cy="cy_questionPreviewPage-captionText"
             >
-              <span
-                className="govuk-caption-l"
-                data-testid="question-page-caption"
-                data-cy="cy_questionPreviewPage-captionText"
-              >
-                How this will look to the applicant
-              </span>
+              Question preview
+            </span>
 
-              <PreviewInputSwitch {...question} />
-
-              <div className="govuk-button-group">
-                <a
-                  role="button"
-                  draggable="false"
-                  className="govuk-button"
-                  data-module="govuk-button"
-                  data-cy="cy_questionPreviewPage-SaveandContinueButton"
-                >
-                  Save and continue
-                </a>
-                <a
-                  role="button"
-                  draggable="false"
-                  className="govuk-button govuk-button--secondary"
-                  data-module="govuk-button"
-                  data-cy="cy_questionPreviewPage-disabledSaveandExitButton"
-                >
-                  Save and exit
-                </a>
-              </div>
-            </div>
+            <PreviewInputSwitch {...question} />
           </div>
 
           {applicationFormStatus === 'PUBLISHED' ? (
-            <div className="govuk-!-padding-top-6">
-              <CustomLink
-                href={backHref}
-                customStyle="govuk-!-font-size-19"
-                dataCy="cy_questionPreview-returnToApplicationFormButton-published"
-              >
-                Return to application form
-              </CustomLink>
-            </div>
+            <CustomLink
+              href={backHref}
+              isSecondaryButton
+              customStyle="govuk-!-font-size-19"
+              dataCy="cy_questionPreview-returnToApplicationFormButton-published"
+            >
+              Exit preview
+            </CustomLink>
           ) : (
             <div>
               <h2
@@ -133,9 +106,11 @@ const PreviewQuestion = ({
                 </CustomLink>
                 <CustomLink
                   href={backHref}
-                  dataCy="cy_questionPreview-returnToApplicationFormButton"
+                  isSecondaryButton
+                  customStyle="govuk-!-font-size-19"
+                  dataCy="cy_questionPreview-returnToApplicationFormButton-published"
                 >
-                  Return to application form
+                  Exit preview
                 </CustomLink>
               </div>
             </div>
