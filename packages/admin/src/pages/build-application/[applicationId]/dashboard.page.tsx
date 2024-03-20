@@ -126,6 +126,7 @@ const Dashboard = ({
   scrollPosition,
 }: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
+
   const findAGrantLink = publicRuntimeConfig.FIND_A_GRANT_URL;
 
   const isPublishDisabled = sections.some((section) => {
@@ -152,7 +153,6 @@ const Dashboard = ({
       behavior: 'instant' as ScrollBehavior,
     });
   }, []);
-
   return (
     <>
       <Meta title="Build an application form - Manage a grant" />
@@ -173,7 +173,6 @@ const Dashboard = ({
             Published
           </strong>
         )}
-
         {recentlyUnpublished && (
           <div className="govuk-panel govuk-panel--confirmation">
             <h1
@@ -184,17 +183,13 @@ const Dashboard = ({
             </h1>
           </div>
         )}
-
         <span className="govuk-caption-l" data-cy="cyApplicationTitle">
           {grantApplicationName}
         </span>
-
         <h1 className="govuk-heading-l">Build an application form</h1>
-
         <p className="govuk-body">
           Use this service to set up an application form for your grant.
         </p>
-
         <p className="govuk-body">
           Applicants will use this application form to apply on{' '}
           <a
@@ -207,7 +202,6 @@ const Dashboard = ({
           </a>
           {'.'}
         </p>
-
         <Sections
           sections={sections}
           applicationId={applicationId}
