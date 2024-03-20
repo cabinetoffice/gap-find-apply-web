@@ -146,6 +146,11 @@ describe('SectionInformation', () => {
     ).toBeVisible();
 
     expect(
+      screen.getByText(
+        `This is a preview of your application form. You cannot enter any answers.`
+      )
+    ).toBeVisible();
+    expect(
       screen.getByText('See an overview of the questions you will be asked')
     ).toBeVisible();
     expect(screen.getByText('Exit preview')).toBeVisible();

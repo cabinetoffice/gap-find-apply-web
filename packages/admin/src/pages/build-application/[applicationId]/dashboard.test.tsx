@@ -24,6 +24,16 @@ const mockedGetGrantScheme = getGrantScheme as jest.MockedFn<
   typeof getGrantScheme
 >;
 
+jest.mock('next/config', () => () => ({
+  serverRuntimeConfig: {
+    backendHost: 'http://localhost:8080',
+  },
+  publicRuntimeConfig: {
+    SUB_PATH: '',
+    APPLICANT_DOMAIN: 'http://localhost:8080',
+  },
+}));
+
 describe('Dashboard', () => {
   describe('Dashboard page', () => {
     const mockDashboardParams = {
@@ -162,9 +172,24 @@ describe('Dashboard', () => {
       render(<Dashboard {...mockDashboardParams} />);
       expect(
         screen.getByRole('link', {
-          name: 'download a preview of your application form (ODT)',
+          name: 'Download an overview (ODT)',
         })
       ).toHaveAttribute('href', '/api/applications/87654321/download-summary');
+
+      expect(
+        screen.getByText(
+          'You can preview how your application will look to applicants and download a copy for your own reference.'
+        )
+      ).toBeVisible();
+    });
+
+    it('should render correct application preview form', () => {
+      render(<Dashboard {...mockDashboardParams} />);
+      expect(
+        screen.getByRole('button', {
+          name: 'Preview your application form',
+        })
+      ).toHaveAttribute('href', '/build-application/87654321/preview');
     });
   });
 
@@ -224,6 +249,8 @@ describe('Dashboard', () => {
 
     beforeEach(() => {
       mockedGetGrantScheme.mockResolvedValue({
+        encryptedLastUpdatedBy: 'some-user',
+        lastUpdatedByADeletedUser: false,
         schemeId: 'testSchemeId',
         version: '1',
         name: 'testSchemeName',
@@ -331,6 +358,8 @@ describe('Dashboard', () => {
     });
     it('Return correct applyToApplicationUrl when schemeversion is 2', async () => {
       mockedGetGrantScheme.mockResolvedValue({
+        encryptedLastUpdatedBy: 'some-user',
+        lastUpdatedByADeletedUser: false,
         schemeId: 'testSchemeId',
         version: '2',
         name: 'testSchemeName',

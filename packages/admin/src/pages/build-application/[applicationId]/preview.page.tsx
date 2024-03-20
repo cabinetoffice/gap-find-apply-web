@@ -9,6 +9,7 @@ import { GetServerSidePropsContext } from 'next';
 import { generateErrorPageRedirectV2 } from '../../../utils/serviceErrorHelpers';
 import CustomError from '../../../types/CustomError';
 import { AxiosError } from 'axios';
+import { ImportantBanner } from 'gap-web-ui';
 
 type SectionInformationProps = {
   sectionId: string;
@@ -104,6 +105,7 @@ export default function ApplicationPreview({
 
       <div className="govuk-grid-row govuk-!-padding-top-7">
         <div className="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+          <ImportantBanner bannerHeading="This is a preview of your application form. You cannot enter any answers." />
           <span className="govuk-caption-l">Previewing {applicationName}</span>
           <h1 className="govuk-heading-l" data-cy="cy-application-header">
             Your Application

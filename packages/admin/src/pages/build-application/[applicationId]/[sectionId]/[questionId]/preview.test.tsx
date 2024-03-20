@@ -47,19 +47,11 @@ describe('PreviewQuestion', () => {
       });
 
       it('Should render a preview page caption', () => {
-        screen.getByText('How this will look to the applicant');
+        screen.getByText('Question preview');
       });
 
       it('Should render the response of PreviewInputSwitch', () => {
         screen.getByRole('textbox');
-      });
-
-      it('Should render a "Save and continue" button', () => {
-        screen.getByRole('button', { name: 'Save and continue' });
-      });
-
-      it('Should render a "Save and exit" button', () => {
-        screen.getByRole('button', { name: 'Save and exit' });
       });
 
       it('Should render a heading', () => {
@@ -79,9 +71,9 @@ describe('PreviewQuestion', () => {
         );
       });
 
-      it('Should render an "Return to application form" link', () => {
-        const exitWithoutChangingButton = screen.getByRole('link', {
-          name: 'Return to application form',
+      it('Should render an "Exit preview" link', () => {
+        const exitWithoutChangingButton = screen.getByRole('button', {
+          name: 'Exit preview',
         });
         expect(exitWithoutChangingButton).toHaveAttribute(
           'href',
@@ -97,7 +89,7 @@ describe('PreviewQuestion', () => {
             {...getProps({ applicationFormStatus: 'PUBLISHED' })}
           />
         );
-        screen.getByRole('link', { name: 'Return to application form' });
+        screen.getByRole('button', { name: 'Exit preview' });
       });
     });
   });

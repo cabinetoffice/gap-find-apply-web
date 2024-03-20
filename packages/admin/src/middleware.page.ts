@@ -57,12 +57,15 @@ export async function middleware(req: NextRequest) {
     return res;
   }
   let url = getLoginUrl();
+  console.log('Middleware redirect URL: ' + url);
   if (submissionDownloadPattern.test({ pathname: req.nextUrl.pathname })) {
     url = url + req.nextUrl.pathname;
+    console.log('Getting submission export download redirect URL: ' + url);
   }
+  console.log('Final redirect URL from admin middleware: ' + url);
   return NextResponse.redirect(url);
 }
 
 const submissionDownloadPattern = new URLPattern({
-  pathname: '/scheme/:schemeId([0-9]+)/:exportBatchId([0-9]+)',
+  pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
 });
