@@ -125,9 +125,9 @@ export default function ApplicationPreview({
             </li>
           </ul>
           <CustomLink
-            href="#" //To be updated with GAP-2479
+            href={`/build-application/${applicationId}/section-overview`}
             customStyle="govuk-body govuk-link govuk-link--no-visited-state "
-            data-cy="cy-section-summary-link"
+            data-testid="section-summary-link"
           >
             See an overview of the questions you will be asked
           </CustomLink>

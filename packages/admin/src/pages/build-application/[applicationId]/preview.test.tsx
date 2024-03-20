@@ -144,6 +144,7 @@ describe('SectionInformation', () => {
     expect(
       screen.getByText(`Previewing ${props.applicationName}`)
     ).toBeVisible();
+
     expect(
       screen.getByText(
         `This is a preview of your application form. You cannot enter any answers.`
@@ -186,5 +187,16 @@ describe('SectionInformation', () => {
         `/apply/build-application/${props.applicationId}/${sections[index].sectionId}/${sections[index].questions[0].questionId}/unpublished-preview`
       );
     });
+  });
+
+  it('links to the section overview page', () => {
+    render(<ApplicationPreview {...props} />);
+    const link = screen.getByText(
+      'See an overview of the questions you will be asked'
+    );
+    expect(link).toHaveAttribute(
+      'href',
+      `/apply/build-application/${props.applicationId}/section-overview`
+    );
   });
 });
