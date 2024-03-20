@@ -1,18 +1,22 @@
 import '@testing-library/jest-dom';
-import { middleware } from './middleware.page';
-// eslint-disable-next-line  @next/next/no-server-import-in-page
+import { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
+// eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
+import { middleware } from './middleware.page';
 import { isAdminSessionValid } from './services/UserService';
 import { getLoginUrl } from './utils/general';
-import {
-  RequestCookie,
-  ResponseCookie,
-} from 'next/dist/compiled/@edge-runtime/cookies';
 
 jest.mock('./utils/csrfMiddleware');
 jest.mock('./utils/general');
 jest.mock('./services/UserService', () => ({
   isAdminSessionValid: jest.fn(),
+}));
+
+jest.mock('next/server', () => ({
+  ...jest.requireActual('next/server'),
+  URLPattern: jest.fn().mockImplementation(() => ({
+    test: jest.fn(),
+  })),
 }));
 
 describe('middleware', () => {

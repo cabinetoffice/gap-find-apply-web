@@ -64,16 +64,6 @@ const getServerSideProps = async ({
         permanent: false,
       },
     };
-  } else if (
-    applicationStatus === 'REMOVED' &&
-    (sectionId === 'ELIGIBILITY' || sectionId === 'ESSENTIAL')
-  ) {
-    return {
-      redirect: {
-        destination: `/build-application/${applicationId}/dashboard`,
-        permanent: false,
-      },
-    };
   }
 
   let applicationFormSummary;
@@ -110,7 +100,7 @@ const getServerSideProps = async ({
 const errorProps: ServiceError = {
   errorInformation: 'Something went wrong while trying to edit a section',
   linkAttributes: {
-    href: `/scheme-list`,
+    href: `/dashboard`,
     linkText: 'Please find your scheme application form and continue.',
     linkInformation: 'Your previous progress has been saved.',
   },

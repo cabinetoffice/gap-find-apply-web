@@ -93,7 +93,7 @@ describe('Change department page', () => {
       expect(screen.getByText('Manage departments')).toBeVisible();
     });
 
-    test('Should throw an error if no department is selected', async () => {
+    test('Should throw an error if no department is selected and do not update user role', async () => {
       const component = (
         <UserPage
           csrfToken="csrf"
@@ -113,6 +113,7 @@ describe('Change department page', () => {
       expect(
         screen.getByText('There is a problem').nextSibling
       ).toHaveTextContent('Select a department');
+      expect(updateUserRoles).not.toHaveBeenCalled();
     });
   });
 
