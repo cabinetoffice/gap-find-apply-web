@@ -6,7 +6,6 @@ import InferProps from '../../../../../types/InferProps';
 import { generateErrorPageRedirect } from '../../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 import PreviewInputSwitch from './preview-input-switch';
-import styles from './preview.module.scss';
 
 export const getServerSideProps = async ({
   params,
@@ -77,16 +76,14 @@ const PreviewQuestion = ({
           </div>
 
           {applicationFormStatus === 'PUBLISHED' ? (
-            <div className="govuk-!-padding-top-6">
-              <CustomLink
-                href={backHref}
-                isSecondaryButton
-                customStyle="govuk-!-font-size-19"
-                dataCy="cy_questionPreview-returnToApplicationFormButton-published"
-              >
-                Exit preview
-              </CustomLink>
-            </div>
+            <CustomLink
+              href={backHref}
+              isSecondaryButton
+              customStyle="govuk-!-font-size-19"
+              dataCy="cy_questionPreview-returnToApplicationFormButton-published"
+            >
+              Exit preview
+            </CustomLink>
           ) : (
             <div>
               <h2
