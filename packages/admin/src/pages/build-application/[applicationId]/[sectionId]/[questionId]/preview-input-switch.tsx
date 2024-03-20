@@ -27,7 +27,7 @@ const PreviewInputSwitch = (
 
   switch (props.responseType) {
     //covers funding amount input
-    case 'Numeric':
+    case ResponseTypeEnum.Numeric:
       return (
         <TextInput
           {...inputProps}
@@ -36,7 +36,7 @@ const PreviewInputSwitch = (
         />
       );
     //covers organisation address input
-    case 'AddressInput':
+    case ResponseTypeEnum.AddressInput:
       return (
         <DisabledAddressInput
           {...inputProps}

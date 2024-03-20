@@ -6,84 +6,94 @@ import PreviewInputSwitch from '../preview-input-switch';
 import InferProps from '../../../../../../types/InferProps';
 import { getQuestion } from '../../../../../../services/QuestionService';
 import { getApplicationFormSection } from '../../../../../../services/ApplicationService';
-import { generateErrorPageRedirect } from '../../../../../../utils/serviceErrorHelpers';
+import {
+  generateErrorPageRedirect,
+  generateErrorPageRedirectV2,
+} from '../../../../../../utils/serviceErrorHelpers';
+import CustomError from '../../../../../../types/CustomError';
+import { AxiosError } from 'axios';
 
 export { getServerSideProps };
 
-const getServerSideProps = async ({
-  params,
-  req,
-}: GetServerSidePropsContext) => {
-  const sessionId = getSessionIdFromCookies(req);
-  const { applicationId, sectionId, questionId } = params as Record<
-    string,
-    string
-  >;
-  const backHref = `/build-application/${applicationId}/preview`;
-
-  const section = await getApplicationFormSection(
-    applicationId,
-    sectionId,
-    sessionId
-  );
-  const currentQuestion = await getQuestion(
-    sessionId,
-    applicationId,
-    sectionId,
-    questionId
-  );
-  if (!currentQuestion) {
-    return generateErrorPageRedirect(
-      `Could not find the question, please make sure the URL is correct`,
-      `/build-application/${applicationId}/dashboard`
-    );
-  }
-
-  const questionIds = section?.questions!.map((q) => q.questionId);
-
-  const lastQuestion = isLastQuestion(currentQuestion.questionId, questionIds);
-
-  const nextQuestionId = lastQuestion
-    ? null
-    : getNextQuestionId(currentQuestion.questionId, questionIds);
-
-  const nextPreviewHref = nextQuestionId
-    ? `/build-application/${applicationId}/${sectionId}/${nextQuestionId}/unpublished-preview`
-    : null;
-
-  return {
-    props: {
-      question: currentQuestion,
-      pageData: { sectionId, questionId },
-      backHref: backHref,
-      nextQuestion: nextQuestionId,
-      nextPreviewHref: nextPreviewHref,
-    },
-  };
-};
+const isLastQuestion = (currentQuestionId: string, allQuestionIds: string[]) =>
+  allQuestionIds[allQuestionIds.length - 1] === currentQuestionId;
 
 function getNextQuestionId(
   currentQuestionId: string,
   allQuestionIds: string[]
 ) {
+  if (isLastQuestion(currentQuestionId, allQuestionIds)) return null;
   const currentIndex = allQuestionIds.findIndex(
     (id) => id === currentQuestionId
   );
   return allQuestionIds[currentIndex + 1];
 }
 
-function isLastQuestion(currentQuestionId: string, allQuestionIds: string[]) {
-  const size = allQuestionIds.length;
-  const lastQuestion = allQuestionIds[size - 1];
-  return lastQuestion === currentQuestionId;
-}
+const getServerSideProps = async ({
+  params,
+  req,
+}: GetServerSidePropsContext) => {
+  const { applicationId, sectionId, questionId } = params as Record<
+    string,
+    string
+  >;
+  const backHref = `/build-application/${applicationId}/preview`;
+  try {
+    const sessionId = getSessionIdFromCookies(req);
+
+    const section = await getApplicationFormSection(
+      applicationId,
+      sectionId,
+      sessionId
+    );
+    if (!section) {
+      return generateErrorPageRedirect(
+        `Could not find the section, please make sure the URL is correct`,
+        `/build-application/${applicationId}/dashboard`
+      );
+    }
+    const currentQuestion = await getQuestion(
+      sessionId,
+      applicationId,
+      sectionId,
+      questionId
+    );
+    if (!currentQuestion) {
+      return generateErrorPageRedirect(
+        `Could not find the question, please make sure the URL is correct`,
+        `/build-application/${applicationId}/dashboard`
+      );
+    }
+
+    const questionIds = section?.questions!.map((q) => q.questionId);
+
+    const nextQuestionId = getNextQuestionId(questionId, questionIds);
+
+    const nextPreviewHref = nextQuestionId
+      ? `/build-application/${applicationId}/${sectionId}/${nextQuestionId}/unpublished-preview`
+      : null;
+
+    return {
+      props: {
+        question: currentQuestion,
+        backHref: backHref,
+        nextPreviewHref: nextPreviewHref,
+      },
+    };
+  } catch (err: unknown) {
+    console.error('Error rendering application preview -> ', err);
+    const error = err as AxiosError;
+    const errorMessageObject = error.response?.data as CustomError;
+    return generateErrorPageRedirectV2(errorMessageObject.code, backHref);
+  }
+};
 
 export default function UnpublishedPreviewQuestion({
   question,
   backHref,
-  nextQuestion,
   nextPreviewHref,
 }: InferProps<typeof getServerSideProps>) {
+  const hasNextQuestion = nextPreviewHref !== null;
   return (
     <>
       <Meta title="Preview a question - Manage a grant" />
@@ -104,18 +114,18 @@ export default function UnpublishedPreviewQuestion({
 
               <PreviewInputSwitch {...question} disableTextBoxes={true} />
 
-              {nextQuestion !== null ? (
+              {hasNextQuestion ? (
                 <div className="govuk-button-group">
                   <CustomLink href={nextPreviewHref as string} isButton={true}>
-                    {'Preview next question'}
+                    Preview next question
                   </CustomLink>
                   <CustomLink href={backHref} isSecondaryButton={true}>
-                    {'Back to overview'}
+                    Back to overview
                   </CustomLink>
                 </div>
               ) : (
                 <CustomLink href={backHref} isButton={true}>
-                  {'Back to overview'}
+                  Back to overview
                 </CustomLink>
               )}
             </div>
