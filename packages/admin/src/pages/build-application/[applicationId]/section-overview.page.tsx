@@ -110,7 +110,7 @@ export const SingleSection = ({
               fieldTitle={fieldTitle}
               questionSuffix={questionSuffix}
               adminSummary={adminSummary}
-              eligibility={isEligibilitySection}
+              isEligibilitySection={isEligibilitySection}
             />
           )
         )}
@@ -124,7 +124,7 @@ type SummaryTextListItemProps = {
   fieldTitle: string;
   questionSuffix: string;
   adminSummary: string;
-  eligibility: boolean;
+  isEligibilitySection: boolean;
 };
 
 const SummaryTextListItem = ({
@@ -132,7 +132,7 @@ const SummaryTextListItem = ({
   fieldTitle,
   questionSuffix,
   adminSummary,
-  eligibility,
+  isEligibilitySection,
 }: SummaryTextListItemProps) => {
   const isAdminSummary = (questionId: string) => {
     const hasAdminSummary = [
@@ -144,7 +144,7 @@ const SummaryTextListItem = ({
   };
   return (
     <li key={`question-${questionId}`}>
-      {eligibility ? questionSuffix : isAdminSummary(questionId)}
+      {isEligibilitySection ? questionSuffix : isAdminSummary(questionId)}
     </li>
   );
 };
