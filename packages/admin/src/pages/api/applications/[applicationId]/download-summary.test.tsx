@@ -1,9 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import axios, {AxiosResponse} from 'axios';
+import { AxiosResponse } from 'axios';
 import handler from './download-summary.page';
-import {downloadSummary, getApplicationFormSummary} from "../../../../services/ApplicationService";
-import {ApplicationFormSummary} from "../../../../types/ApplicationForm";
-import {getSessionIdFromCookies} from "../../../../utils/session";
+import {
+  downloadSummary,
+  getApplicationFormSummary,
+} from '../../../../services/ApplicationService';
+import { ApplicationFormSummary } from '../../../../types/ApplicationForm';
+import { getSessionIdFromCookies } from '../../../../utils/session';
 
 jest.mock('axios');
 jest.mock('../../../../utils/session');

@@ -9,7 +9,9 @@ import { APIGlobalHandler } from '../../../../utils/apiErrorHandler';
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const sessionCookie = getSessionIdFromCookies(req);
   const applicationId = (req.query.applicationId || '').toString();
+
   const { data } = await downloadSummary(applicationId, sessionCookie);
+
   const application = await getApplicationFormSummary(
     applicationId,
     sessionCookie,
