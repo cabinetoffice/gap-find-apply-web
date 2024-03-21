@@ -8,6 +8,7 @@ import ApplicationQueryObject from '../types/ApplicationQueryObject';
 import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
 import { decrypt } from '../utils/encryption';
 import { axiosSessionConfig } from '../utils/session';
+import { mapSingleSection } from '../utils/applicationSummaryHelper';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -71,13 +72,30 @@ const getApplicationFormSummary = async (
 const getApplicationFormSection = async (
   applicationId: string,
   sectionId: string,
-  sessionId: string
+  sessionId: string,
+  isV2Scheme?: boolean
 ) => {
-  const response = await axios.get(
-    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}`,
+  const sectionsNeedMapped =
+    isV2Scheme &&
+    ['ORGANISATION_DETAILS', 'FUNDING_DETAILS'].includes(sectionId);
+
+  const { data } = await axios.get<ApplicationFormSection>(
+    `${BASE_APPLICATION_URL}/${applicationId}/sections/${
+      sectionsNeedMapped ? 'ESSENTIAL' : sectionId
+    }`,
     axiosSessionConfig(sessionId)
   );
-  return response.data as ApplicationFormSection;
+
+  let v2SectionData = null;
+
+  if (sectionsNeedMapped) {
+    v2SectionData = mapSingleSection(
+      data,
+      sectionId as 'ORGANISATION_DETAILS' | 'FUNDING_DETAILS'
+    );
+  }
+
+  return v2SectionData ?? data;
 };
 
 const updateApplicationFormStatus = async (
