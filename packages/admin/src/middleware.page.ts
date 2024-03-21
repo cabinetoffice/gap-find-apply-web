@@ -58,7 +58,7 @@ export async function middleware(req: NextRequest) {
   const jwt = parseJwt(jwtCookie.value);
   const jwtExpiry = new Date(jwt.exp * 1000);
 
-  if (isWithinNumberOfMinsOfExpiry(jwtExpiry, 1)) {
+  if (isWithinNumberOfMinsOfExpiry(jwtExpiry, 30)) {
     return NextResponse.redirect(
       `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}${
         req.nextUrl.pathname
