@@ -75,27 +75,23 @@ const getApplicationFormSection = async (
   sessionId: string,
   isV2Scheme?: boolean
 ) => {
-  const sectionsNeedMapped =
+  const sectionNeedsMapped =
     isV2Scheme &&
     ['ORGANISATION_DETAILS', 'FUNDING_DETAILS'].includes(sectionId);
 
   const { data } = await axios.get<ApplicationFormSection>(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/${
-      sectionsNeedMapped ? 'ESSENTIAL' : sectionId
+      sectionNeedsMapped ? 'ESSENTIAL' : sectionId
     }`,
     axiosSessionConfig(sessionId)
   );
 
-  let v2SectionData = null;
+  if (!sectionNeedsMapped) return data;
 
-  if (sectionsNeedMapped) {
-    v2SectionData = mapSingleSection(
-      data,
-      sectionId as 'ORGANISATION_DETAILS' | 'FUNDING_DETAILS'
-    );
-  }
-
-  return v2SectionData ?? data;
+  return mapSingleSection(
+    data,
+    sectionId as 'ORGANISATION_DETAILS' | 'FUNDING_DETAILS'
+  );
 };
 
 const updateApplicationFormStatus = async (
