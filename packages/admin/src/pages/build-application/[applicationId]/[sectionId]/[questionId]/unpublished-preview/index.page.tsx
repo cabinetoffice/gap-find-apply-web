@@ -16,24 +16,27 @@ import { AxiosError } from 'axios';
 export { getServerSideProps };
 
 interface IDParameters {
-  current: string;
-  all: string[];
+  currentId: string;
+  allIds: string[];
 }
 
-const isLastQuestion = (qIDs: IDParameters) =>
-  qIDs.all[qIDs.all.length - 1] === qIDs.current;
-const isFirstQuestion = (qIDs: IDParameters) => qIDs.all[0] === qIDs.current;
+const isLastQuestion = ({ currentId, allIds }: IDParameters) =>
+  allIds[allIds.length - 1] === currentId;
 
-const getCurrentIndex = (qIDs: IDParameters) =>
-  qIDs.all.findIndex((id) => id === qIDs.current);
+const isFirstQuestion = ({ currentId, allIds }: IDParameters) =>
+  allIds[0] === currentId;
 
-function getNextQuestionId(qIDs: IDParameters) {
-  if (isLastQuestion(qIDs)) return null;
-  return qIDs.all[getCurrentIndex(qIDs) + 1];
+const getCurrentIndex = ({ currentId, allIds }: IDParameters) =>
+  allIds.findIndex((id) => id === currentId);
+
+function getNextQuestionId(idParams: IDParameters) {
+  if (isLastQuestion(idParams)) return null;
+  const currentIndex = getCurrentIndex(idParams);
+  return idParams.allIds[currentIndex + 1];
 }
 
-const getPrevQuestionId = (qIDs: IDParameters) =>
-  qIDs.all[getCurrentIndex(qIDs) - 1];
+const getPrevQuestionId = (idParams: IDParameters) =>
+  idParams.allIds[getCurrentIndex(idParams) - 1];
 
 let backHref: string;
 
@@ -72,9 +75,12 @@ const getServerSideProps = async ({
       );
     }
 
-    const questionIds = section?.questions!.map((q) => q.questionId);
+    const allIds = section?.questions!.map((q) => q.questionId);
 
-    const idParams: IDParameters = { current: questionId, all: questionIds };
+    const idParams: IDParameters = {
+      currentId: questionId,
+      allIds,
+    };
 
     const nextQuestionId = getNextQuestionId(idParams);
 
