@@ -15,27 +15,25 @@ import { AxiosError } from 'axios';
 
 export { getServerSideProps };
 
-const isLastQuestion = (currentQuestionId: string, allQuestionIds: string[]) =>
-  allQuestionIds[allQuestionIds.length - 1] === currentQuestionId;
-
-const isFirstQuestion = (currentQuestionId: string, allQuestionIds: string[]) =>
-  allQuestionIds[0] === currentQuestionId;
-
-const currentIndex = (currentQuestionId: string, allQuestionIds: string[]) =>
-  allQuestionIds.findIndex((id) => id === currentQuestionId);
-
-function getNextQuestionId(
-  currentQuestionId: string,
-  allQuestionIds: string[]
-) {
-  if (isLastQuestion(currentQuestionId, allQuestionIds)) return null;
-  return allQuestionIds[currentIndex(currentQuestionId, allQuestionIds) + 1];
+interface IDParameters {
+  current: string;
+  all: string[];
 }
 
-const getPrevQuestionId = (
-  currentQuestionId: string,
-  allQuestionIds: string[]
-) => allQuestionIds[currentIndex(currentQuestionId, allQuestionIds) - 1];
+const isLastQuestion = (qIDs: IDParameters) =>
+  qIDs.all[qIDs.all.length - 1] === qIDs.current;
+const isFirstQuestion = (qIDs: IDParameters) => qIDs.all[0] === qIDs.current;
+
+const getCurrentIndex = (qIDs: IDParameters) =>
+  qIDs.all.findIndex((id) => id === qIDs.current);
+
+function getNextQuestionId(qIDs: IDParameters) {
+  if (isLastQuestion(qIDs)) return null;
+  return qIDs.all[getCurrentIndex(qIDs) + 1];
+}
+
+const getPrevQuestionId = (qIDs: IDParameters) =>
+  qIDs.all[getCurrentIndex(qIDs) - 1];
 
 let backHref: string;
 
@@ -76,21 +74,19 @@ const getServerSideProps = async ({
 
     const questionIds = section?.questions!.map((q) => q.questionId);
 
-    const nextQuestionId = getNextQuestionId(questionId, questionIds);
+    const idParams: IDParameters = { current: questionId, all: questionIds };
+
+    const nextQuestionId = getNextQuestionId(idParams);
 
     const nextPreviewHref = nextQuestionId
       ? `/build-application/${applicationId}/${sectionId}/${nextQuestionId}/unpublished-preview`
       : null;
 
-    const prevQuestionId = getPrevQuestionId(
-      currentQuestion.questionId,
-      questionIds
-    );
+    const prevQuestionId = getPrevQuestionId(idParams);
 
-    //determine backHref value
-    isFirstQuestion(currentQuestion.questionId, questionIds)
-      ? (backHref = `/build-application/${applicationId}/preview`)
-      : (backHref = `/build-application/${applicationId}/${sectionId}/${prevQuestionId}/unpublished-preview`);
+    backHref = isFirstQuestion(idParams)
+      ? `/build-application/${applicationId}/preview`
+      : `/build-application/${applicationId}/${sectionId}/${prevQuestionId}/unpublished-preview`;
 
     return {
       props: {
