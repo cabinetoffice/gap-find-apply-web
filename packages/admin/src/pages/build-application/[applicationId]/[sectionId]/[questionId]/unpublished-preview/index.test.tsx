@@ -208,6 +208,7 @@ describe('getServerSideProps for unpublished-preview index page', () => {
   const getContext = (overrides: any = {}) =>
     merge(
       {
+        query: {},
         params: {
           applicationId: mockApplicationId,
           sectionId: mockCustomSection.sectionId,
@@ -243,7 +244,8 @@ describe('getServerSideProps for unpublished-preview index page', () => {
         expect(getApplicationFormSection).toHaveBeenCalledWith(
           '1',
           'mockCustomSection',
-          'testSessionId'
+          'testSessionId',
+          false
         );
       });
 
@@ -282,7 +284,8 @@ describe('getServerSideProps for unpublished-preview index page', () => {
           'testSessionId',
           '1',
           'mockCustomSection',
-          'shortAnswer'
+          'shortAnswer',
+          false
         );
       });
 
