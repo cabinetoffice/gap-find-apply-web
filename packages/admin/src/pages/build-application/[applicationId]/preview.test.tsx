@@ -5,6 +5,7 @@ import { getGrantScheme } from '../../../services/SchemeService';
 import { render, screen } from '@testing-library/react';
 import ApplicationPreview, { getServerSideProps } from './preview.page';
 import InferProps from '../../../types/InferProps';
+import { ApplicationFormQuestion } from '../../../types/ApplicationForm';
 
 jest.mock('../../../utils/session');
 jest.mock('../../../services/ApplicationService');
@@ -23,7 +24,11 @@ jest.mock('next/config', () => () => ({
 describe('getServerSideProps', () => {
   const testApplicationFormSummary = {
     sections: [
-      { sectionId: 'testSectionId', sectionTitle: 'title', questions: [] },
+      {
+        sectionId: 'ESSENTIAL',
+        sectionTitle: 'title',
+        questions: [{ questionId: 'some-question' } as ApplicationFormQuestion],
+      },
     ],
     grantSchemeId: 'mockGrantSchemeId',
     applicationName: 'mockApplicationName',
@@ -39,7 +44,7 @@ describe('getServerSideProps', () => {
     grantApplicationId: 'mockGrantApplicationId',
   };
 
-  const testScheme = {
+  const getTestScheme = (version = '2') => ({
     contactEmail: 'mock@example.com',
     createdDate: '2021-07-01T00:00:00.000Z',
     encryptedLastUpdatedBy: 'mockEncryptedLastUpdatedBy',
@@ -50,7 +55,9 @@ describe('getServerSideProps', () => {
     funderId: 'mockFunderId',
     lastUpdatedDate: '2021-07-01T00:00:00.000Z',
     lastUpdatedByADeletedUser: false,
-  };
+    version,
+  });
+
   const context = {
     params: {
       applicationId: 'mockApplicationId',
@@ -64,22 +71,50 @@ describe('getServerSideProps', () => {
       .mocked(getApplicationFormSummary)
       .mockResolvedValue(testApplicationFormSummary);
 
-    jest.mocked(getGrantScheme).mockResolvedValue(testScheme);
+    jest.mocked(getGrantScheme).mockResolvedValue(getTestScheme());
 
     const result = await getServerSideProps(context);
 
     expect(result).toEqual({
       props: {
+        v2Scheme: true,
         sections: [
           {
-            sectionId: 'testSectionId',
-            sectionTitle: 'title',
+            sectionId: 'ORGANISATION_DETAILS',
+            sectionStatus: 'COMPLETE',
+            sectionTitle: 'Your details',
             questions: [],
+          },
+          {
+            questions: [],
+            sectionId: 'FUNDING_DETAILS',
+            sectionStatus: 'COMPLETE',
+            sectionTitle: 'Funding',
           },
         ],
         contactEmail: 'mock@example.com',
         applicationId: 'mockApplicationId',
         applicationName: 'mockApplicationName',
+      },
+    });
+  });
+
+  it('should return v1 scheme props', async () => {
+    jest
+      .mocked(getApplicationFormSummary)
+      .mockResolvedValue(testApplicationFormSummary);
+
+    jest.mocked(getGrantScheme).mockResolvedValue(getTestScheme('1'));
+
+    const result = await getServerSideProps(context);
+
+    expect(result).toEqual({
+      props: {
+        v2Scheme: false,
+        sections: testApplicationFormSummary.sections,
+        applicationId: 'mockApplicationId',
+        applicationName: 'mockApplicationName',
+        contactEmail: 'mock@example.com',
       },
     });
   });
