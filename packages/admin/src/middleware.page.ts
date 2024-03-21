@@ -3,6 +3,7 @@ import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { isAdminSessionValid } from './services/UserService';
 import { csrfMiddleware } from './utils/csrfMiddleware';
 import { getLoginUrl } from './utils/general';
+import { redirect } from 'next/dist/server/api-utils';
 
 // It will apply the middleware to all those paths
 // (if new folders at page root are created, they need to be included here)
@@ -17,12 +18,30 @@ export const config = {
   ],
 };
 
+const getLoginRedirect = () =>
+  NextResponse.redirect(getLoginUrl({ redirectToApplicant: true }), {
+    status: 302,
+  });
+
+function parseJwt(token: string) {
+  return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+}
+
+function isWithinNumberOfMinsOfExpiry(expiresAt: Date, numberOfMins: number) {
+  const now = new Date();
+  const nowPlusMins = new Date();
+  nowPlusMins.setMinutes(now.getMinutes() + numberOfMins);
+
+  return expiresAt >= now && expiresAt <= nowPlusMins;
+}
+
 export async function middleware(req: NextRequest) {
   const rewriteUrl = req.url;
   const res = NextResponse.rewrite(rewriteUrl);
   await csrfMiddleware(req, res);
 
   const auth_cookie = req.cookies.get('session_id');
+  const jwtCookie = req.cookies.get(process.env.JWT_COOKIE_NAME);
   //Feature flag redirects
   const advertBuilderPath = /\/scheme\/\d*\/advert/;
 
@@ -34,14 +53,24 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  if (jwtCookie === undefined) return getLoginRedirect();
+
+  const jwt = parseJwt(jwtCookie.value);
+  const jwtExpiry = new Date(jwt.exp * 1000);
+
+  if (isWithinNumberOfMinsOfExpiry(jwtExpiry, 1)) {
+    return NextResponse.redirect(
+      `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}${
+        req.nextUrl.pathname
+      }?${encodeURIComponent(req.nextUrl.searchParams.toString())}`
+    );
+  }
+
   if (auth_cookie !== undefined) {
     if (process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE === 'true') {
       const isValidAdminSession = await isAdminSessionValid(auth_cookie.value);
       if (!isValidAdminSession) {
-        return NextResponse.redirect(
-          getLoginUrl({ redirectToApplicant: true }),
-          { status: 302 }
-        );
+        return getLoginRedirect();
       }
     }
 
