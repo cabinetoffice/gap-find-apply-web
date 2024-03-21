@@ -18,16 +18,26 @@ export { getServerSideProps };
 const isLastQuestion = (currentQuestionId: string, allQuestionIds: string[]) =>
   allQuestionIds[allQuestionIds.length - 1] === currentQuestionId;
 
+const isFirstQuestion = (currentQuestionId: string, allQuestionIds: string[]) =>
+  allQuestionIds[0] === currentQuestionId;
+
+const currentIndex = (currentQuestionId: string, allQuestionIds: string[]) =>
+  allQuestionIds.findIndex((id) => id === currentQuestionId);
+
 function getNextQuestionId(
   currentQuestionId: string,
   allQuestionIds: string[]
 ) {
   if (isLastQuestion(currentQuestionId, allQuestionIds)) return null;
-  const currentIndex = allQuestionIds.findIndex(
-    (id) => id === currentQuestionId
-  );
-  return allQuestionIds[currentIndex + 1];
+  return allQuestionIds[currentIndex(currentQuestionId, allQuestionIds) + 1];
 }
+
+const getPrevQuestionId = (
+  currentQuestionId: string,
+  allQuestionIds: string[]
+) => allQuestionIds[currentIndex(currentQuestionId, allQuestionIds) - 1];
+
+let backHref: string;
 
 const getServerSideProps = async ({
   params,
@@ -37,7 +47,6 @@ const getServerSideProps = async ({
     string,
     string
   >;
-  const backHref = `/build-application/${applicationId}/preview`;
   try {
     const sessionId = getSessionIdFromCookies(req);
 
@@ -73,11 +82,22 @@ const getServerSideProps = async ({
       ? `/build-application/${applicationId}/${sectionId}/${nextQuestionId}/unpublished-preview`
       : null;
 
+    const prevQuestionId = getPrevQuestionId(
+      currentQuestion.questionId,
+      questionIds
+    );
+
+    //determine backHref value
+    isFirstQuestion(currentQuestion.questionId, questionIds)
+      ? (backHref = `/build-application/${applicationId}/preview`)
+      : (backHref = `/build-application/${applicationId}/${sectionId}/${prevQuestionId}/unpublished-preview`);
+
     return {
       props: {
         question: currentQuestion,
         backHref: backHref,
         nextPreviewHref: nextPreviewHref,
+        overviewHref: `/build-application/${applicationId}/preview`,
       },
     };
   } catch (err: unknown) {
@@ -92,6 +112,7 @@ export default function UnpublishedPreviewQuestion({
   question,
   backHref,
   nextPreviewHref,
+  overviewHref,
 }: InferProps<typeof getServerSideProps>) {
   const hasNextQuestion = nextPreviewHref !== null;
   return (
@@ -119,12 +140,12 @@ export default function UnpublishedPreviewQuestion({
                   <CustomLink href={nextPreviewHref as string} isButton={true}>
                     Preview next question
                   </CustomLink>
-                  <CustomLink href={backHref} isSecondaryButton={true}>
+                  <CustomLink href={overviewHref} isSecondaryButton={true}>
                     Back to overview
                   </CustomLink>
                 </div>
               ) : (
-                <CustomLink href={backHref} isButton={true}>
+                <CustomLink href={overviewHref} isButton={true}>
                   Back to overview
                 </CustomLink>
               )}
