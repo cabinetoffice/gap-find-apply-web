@@ -20,7 +20,7 @@ const getFundingDetails = (): ApplicationFormSection => ({
   questions: [] as ApplicationFormQuestion[],
 });
 
-const V2_QUESTION_MAP = {
+export const V2_QUESTION_MAP = {
   [ORGANISATION_DETAILS]: [
     'APPLICANT_TYPE',
     'APPLICANT_ORG_NAME',
