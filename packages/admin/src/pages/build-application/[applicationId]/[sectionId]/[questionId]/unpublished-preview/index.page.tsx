@@ -100,7 +100,9 @@ const getServerSideProps = async ({
 
     backHref = isFirstQuestion(idParams)
       ? `/build-application/${applicationId}/preview`
-      : `/build-application/${applicationId}/${sectionId}/${prevQuestionId}/unpublished-preview`;
+      : `/build-application/${applicationId}/${sectionId}/${prevQuestionId}/unpublished-preview${
+          isV2Scheme ? '?v2=true' : ''
+        }`;
 
     return {
       props: {
