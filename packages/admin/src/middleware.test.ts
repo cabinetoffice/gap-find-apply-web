@@ -4,9 +4,10 @@ import { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { NextRequest, NextResponse } from 'next/server';
 import { middleware } from './middleware.page';
 import { isAdminSessionValid } from './services/UserService';
-import { getLoginUrl } from './utils/general';
+import { getLoginUrl, parseJwt } from './utils/general';
 
 jest.mock('./utils/csrfMiddleware');
+
 jest.mock('./utils/general');
 jest.mock('./services/UserService', () => ({
   isAdminSessionValid: jest.fn(),
@@ -19,6 +20,8 @@ jest.mock('next/server', () => ({
   })),
 }));
 
+const loginUrl = 'http://localhost:8082/login';
+
 describe('middleware', () => {
   const req = new NextRequest('http://localhost:3000/apply/test/destination');
 
@@ -29,36 +32,39 @@ describe('middleware', () => {
     process.env.V2_LOGIN_URL = 'http://localhost:8082/login';
     process.env.FEATURE_ADVERT_BUILDER = 'enabled';
     process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE = 'true';
+    process.env.JWT_COOKIE_NAME = 'user-service-token';
   });
 
   it('Should redirect to the logout page when the user is not authorized', async () => {
-    const expectedUrl = 'http://localhost:8082/login';
-    (getLoginUrl as jest.Mock).mockReturnValue(expectedUrl);
+    (getLoginUrl as jest.Mock).mockReturnValue(loginUrl);
     const result = await middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
 
     // basePath from nextjs config does not apply to jest tests, thus no subpaths
-    expect(result.headers.get('Location')).toStrictEqual(expectedUrl);
+    expect(result.headers.get('Location')).toStrictEqual(loginUrl);
   });
 
   it('should redirect to the logout page when the admin session is invalid', async () => {
-    const expectedUrl = 'http://localhost:8082/login';
     req.cookies.set('session_id', 'session_id_value');
     (isAdminSessionValid as jest.Mock).mockImplementation(async () => false);
-    (getLoginUrl as jest.Mock).mockReturnValue(expectedUrl);
+    (getLoginUrl as jest.Mock).mockReturnValue(loginUrl);
 
     const result = await middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
 
-    expect(result.headers.get('Location')).toStrictEqual(expectedUrl);
+    expect(result.headers.get('Location')).toStrictEqual(loginUrl);
   });
 
   it('Should reset auth cookie correctly when the user is authorised', async () => {
+    jest.mocked(parseJwt).mockReturnValue({
+      exp: 1000000000,
+    });
     (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
-
+    (getLoginUrl as jest.Mock).mockReturnValue(loginUrl);
     req.cookies.set('session_id', 'session_id_value');
+    req.cookies.set('user-service-token', 'user-service-value');
 
     const result = await middleware(req);
 

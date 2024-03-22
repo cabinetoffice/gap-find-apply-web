@@ -2,8 +2,7 @@
 import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { isAdminSessionValid } from './services/UserService';
 import { csrfMiddleware } from './utils/csrfMiddleware';
-import { getLoginUrl } from './utils/general';
-import { redirect } from 'next/dist/server/api-utils';
+import { getLoginUrl, parseJwt } from './utils/general';
 
 // It will apply the middleware to all those paths
 // (if new folders at page root are created, they need to be included here)
@@ -22,10 +21,6 @@ const getLoginRedirect = () =>
   NextResponse.redirect(getLoginUrl({ redirectToApplicant: true }), {
     status: 302,
   });
-
-function parseJwt(token: string) {
-  return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-}
 
 function isWithinNumberOfMinsOfExpiry(expiresAt: Date, numberOfMins: number) {
   const now = new Date();
