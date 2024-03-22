@@ -19,63 +19,64 @@ const shortAnswerQ = {
   responseType: ResponseTypeEnum.ShortAnswer,
   validation: {},
 };
-const longAnswerQ: ApplicationFormQuestion = {
+const longAnswerQ = {
   questionId: 'longAnswer',
   fieldTitle: 'Question 2 - long',
   hintText: 'long answer question',
-  responseType: 'LongAnswer',
+  responseType: ResponseTypeEnum.LongAnswer,
   validation: {},
 };
-const yesNoQ: ApplicationFormQuestion = {
+
+const yesNoQ = {
   questionId: 'yesNo',
   fieldTitle: 'Question 3 - Yes/No',
   hintText: 'Yes/No question',
-  responseType: 'YesNo',
+  responseType: ResponseTypeEnum.YesNo,
   validation: {},
 };
-const multipleChoiceQ: ApplicationFormQuestion = {
+const multipleChoiceQ = {
   questionId: 'multiChoice',
   fieldTitle: 'Question 4 - Multiple Choice',
   hintText: 'Multiple choice question',
-  responseType: 'Dropdown',
+  responseType: ResponseTypeEnum.Dropdown,
   options: ['One', 'Two', 'Three'],
   validation: {},
 };
-const multipleSelectQ: ApplicationFormQuestion = {
+const multipleSelectQ = {
   questionId: 'multiSelect',
   fieldTitle: 'Question 5 - Multiple Select',
   hintText: 'Multiple select question',
-  responseType: 'MultipleSelection',
+  responseType: ResponseTypeEnum.MultipleSelection,
   options: ['One', 'Two', 'Three'],
   validation: {},
 };
-const docUploadQ: ApplicationFormQuestion = {
+const docUploadQ = {
   questionId: '0c92d26f-d2c6-4ae3-8cfb-b244ee579153',
   fieldTitle: 'Question 6 - Document Upload',
   hintText: 'Document upload question',
-  responseType: 'SingleFileUpload',
+  responseType: ResponseTypeEnum.SingleFileUpload,
   validation: {},
 };
-const dateSelectQ: ApplicationFormQuestion = {
+const dateSelectQ = {
   questionId: '8466844a-25ff-475e-aa2f-fe69ef747add',
   fieldTitle: 'Question 7 - Date ',
   hintText: 'Date selection question',
-  responseType: 'Date',
+  responseType: ResponseTypeEnum.Date,
   validation: {},
 };
-const addressInputQ: ApplicationFormQuestion = {
+const addressInputQ = {
   questionId: 'orgAddress',
   profileField: 'ORG_ADDRESS',
   fieldTitle: "Enter your organisation's address",
-  responseType: 'AddressInput',
+  responseType: ResponseTypeEnum.AddressInput,
   validation: {},
 };
-const fundAmountQ: ApplicationFormQuestion = {
+const fundAmountQ = {
   questionId: 'fundingAmount',
   fieldPrefix: '£',
   fieldTitle: 'How much does your organisation require as a grant?',
   hintText: 'Please enter whole pounds only',
-  responseType: 'Numeric',
+  responseType: ResponseTypeEnum.Numeric,
   validation: {},
 };
 
@@ -131,6 +132,7 @@ const getQuestionProps = (questionIndex: number) => {
 const previewText = screen.findByText('Question preview');
 const previewNext = screen.findByText('Preview next question');
 const backToOverview = screen.findByText('Back to overview');
+
 describe('UnpublishedPreviewQuestion component', () => {
   describe('Rendering of buttons and text', () => {
     it('Should render a meta title', () => {
@@ -234,6 +236,7 @@ describe('getServerSideProps for unpublished-preview index page', () => {
   const getContext = (overrides: any = {}) =>
     merge(
       {
+        query: {},
         params: {
           applicationId: mockApplicationId,
           sectionId: mockCustomSection.sectionId,
@@ -249,13 +252,28 @@ describe('getServerSideProps for unpublished-preview index page', () => {
 
   describe('Fetching question data', () => {
     describe('Service call to get the current section', () => {
+      it('should pass isV2Scheme into props', async () => {
+        const res = (await getServerSideProps(
+          getContext({ query: { v2: 'true' } })
+        )) as {
+          props: {
+            nextPreviewHref: string | null;
+          };
+        };
+
+        expect(res.props.nextPreviewHref).toEqual(
+          '/build-application/1/mockCustomSection/longAnswer/unpublished-preview?v2=true'
+        );
+      });
+
       it('should fetch the relevant section', async () => {
         await getServerSideProps(getContext());
         expect(getApplicationFormSection).toHaveBeenCalledTimes(1);
         expect(getApplicationFormSection).toHaveBeenCalledWith(
           '1',
           'mockCustomSection',
-          'testSessionId'
+          'testSessionId',
+          false
         );
       });
 
@@ -294,7 +312,8 @@ describe('getServerSideProps for unpublished-preview index page', () => {
           'testSessionId',
           '1',
           'mockCustomSection',
-          'shortAnswer'
+          'shortAnswer',
+          false
         );
       });
 

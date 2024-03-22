@@ -56,11 +56,18 @@ const getQuestion = async (
   sessionId: string,
   applicationId: string,
   sectionId: string,
-  questionId: string
+  questionId: string,
+  isV2Scheme?: boolean
 ): Promise<ApplicationFormQuestion> => {
+  const isEssentialQuestion =
+    isV2Scheme &&
+    ['ORGANISATION_DETAILS', 'FUNDING_DETAILS'].includes(sectionId);
+
+  const section = isEssentialQuestion ? 'ESSENTIAL' : sectionId;
+
   return (
     await axios.get(
-      `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}`,
+      `${BASE_APPLICATION_URL}/${applicationId}/sections/${section}/questions/${questionId}`,
       axiosSessionConfig(sessionId)
     )
   ).data;

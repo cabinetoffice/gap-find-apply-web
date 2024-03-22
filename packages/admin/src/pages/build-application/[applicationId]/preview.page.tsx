@@ -10,6 +10,7 @@ import { generateErrorPageRedirectV2 } from '../../../utils/serviceErrorHelpers'
 import CustomError from '../../../types/CustomError';
 import { AxiosError } from 'axios';
 import { ImportantBanner } from 'gap-web-ui';
+import { mapV2Sections } from '../../../utils/applicationSummaryHelper';
 
 type SectionInformationProps = {
   sectionId: string;
@@ -17,6 +18,7 @@ type SectionInformationProps = {
   applicationId: string;
   questionId: string;
   currentIndex: number;
+  v2Scheme: boolean;
 };
 
 export const getServerSideProps = async ({
@@ -31,17 +33,24 @@ export const getServerSideProps = async ({
         getSessionIdFromCookies(req)
       );
 
-    const { contactEmail } = await getGrantScheme(
+    const { contactEmail, version } = await getGrantScheme(
       grantSchemeId,
       getSessionIdFromCookies(req)
     );
 
+    let v2SchemeMappedSections;
+
+    if (version !== '1') {
+      v2SchemeMappedSections = mapV2Sections(sections);
+    }
+
     return {
       props: {
-        sections,
+        sections: v2SchemeMappedSections ?? sections,
         contactEmail: contactEmail ?? null,
         applicationId,
         applicationName,
+        v2Scheme: version !== '1',
       },
     };
   } catch (err: unknown) {
@@ -59,9 +68,12 @@ export const getServerSideProps = async ({
 const getPreviewSectionUrl = (
   applicationId: string,
   sectionId: string,
-  questionId: string
+  questionId: string,
+  v2Scheme: boolean
 ) =>
-  `/build-application/${applicationId}/${sectionId}/${questionId}/unpublished-preview`;
+  `/build-application/${applicationId}/${sectionId}/${questionId}/unpublished-preview${
+    v2Scheme ? '?v2=true' : ''
+  }`;
 
 const SectionInformation = ({
   sectionId,
@@ -69,6 +81,7 @@ const SectionInformation = ({
   applicationId,
   questionId,
   currentIndex,
+  v2Scheme,
 }: SectionInformationProps) => (
   <div
     data-testid="section-information"
@@ -78,7 +91,12 @@ const SectionInformation = ({
     <dt className="govuk-summary-list__key">
       <CustomLink
         dataTestId="section-link"
-        href={getPreviewSectionUrl(applicationId, sectionId, questionId)}
+        href={getPreviewSectionUrl(
+          applicationId,
+          sectionId,
+          questionId,
+          v2Scheme
+        )}
         customStyle="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
       >
         {sectionTitle}
@@ -95,6 +113,7 @@ export default function ApplicationPreview({
   applicationName,
   applicationId,
   contactEmail,
+  v2Scheme,
 }: InferProps<typeof getServerSideProps>) {
   const backButtonHref = `/build-application/${applicationId}/dashboard`;
 
@@ -140,6 +159,7 @@ export default function ApplicationPreview({
                 currentIndex={index}
                 questionId={section.questions![0].questionId}
                 applicationId={applicationId}
+                v2Scheme={v2Scheme}
               />
             ))}
           </dl>
