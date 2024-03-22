@@ -102,22 +102,33 @@ const mockNextHref = (nextQuestionId: string) => {
     ? `/build-application/${mockApplicationId}/${mockCustomSection.sectionId}/${nextQuestionId}/unpublished-preview`
     : null;
 };
+const mockBackHref = (
+  currentQuestionIndex: number,
+  allQuestionIds: string[]
+) => {
+  const prevQuestionId = allQuestionIds[currentQuestionIndex - 1];
+  return currentQuestionIndex === 0
+    ? `/build-application/${mockApplicationId}/preview`
+    : `/build-application/${mockApplicationId}/${mockCustomSection.sectionId}/${prevQuestionId}/unpublished-preview`;
+};
 
 const getQuestionProps = (questionIndex: number) => {
+  const allQuestionIds = mockCustomSection.questions.map((q) => q.questionId);
   return {
     question: mockCustomSection.questions[questionIndex],
     pageData: {
       sectionId: mockCustomSection.sectionId,
       questionId: mockCustomSection.questions[questionIndex].questionId,
     },
-    backHref: `/build-application/${mockApplicationId}/preview`,
+    backHref: mockBackHref(questionIndex, allQuestionIds),
     nextPreviewHref: mockNextHref(
       mockCustomSection.questions[questionIndex + 1]?.questionId
     ),
+    overviewHref: `/build-application/${mockApplicationId}/preview`,
   };
 };
 
-//Buttons that (possibly) appear on the page
+//Buttons that can appear on the page
 const previewText = screen.findByText('Question preview');
 const previewNext = screen.findByText('Preview next question');
 const backToOverview = screen.findByText('Back to overview');
@@ -143,6 +154,24 @@ describe('UnpublishedPreviewQuestion component', () => {
       expect(previewNext).toBeVisible;
       expect(backToOverview).toBeInTheDocument;
       expect(backToOverview).toBeVisible;
+    });
+
+    it('Should render correct href for "Back" button on the FIRST QUESTION (Overview page)', () => {
+      render(<UnpublishedPreviewQuestion {...getQuestionProps(0)} />);
+      const backButton = screen.getByText('Back');
+      expect(backButton).toHaveAttribute(
+        'href',
+        '/apply/build-application/1/preview'
+      );
+    });
+
+    it('Should render correct href for "Back" button on questions that ARE NOT the first question (previous question)', () => {
+      render(<UnpublishedPreviewQuestion {...getQuestionProps(1)} />);
+      const backButton = screen.getByText('Back');
+      expect(backButton).toHaveAttribute(
+        'href',
+        '/apply/build-application/1/mockCustomSection/shortAnswer/unpublished-preview'
+      );
     });
 
     it('Should only render "Back to overview" button when there is not a question in the section', () => {
@@ -192,7 +221,6 @@ describe('UnpublishedPreviewQuestion component', () => {
 });
 
 describe('getServerSideProps for unpublished-preview index page', () => {
-  const backHref = `/build-application/${mockApplicationId}/preview`;
   const axiosError = { response: { data: { code: 500 } } } as AxiosError;
 
   beforeEach(() => {
@@ -325,6 +353,7 @@ describe('getServerSideProps for unpublished-preview index page', () => {
             question: mockCustomSection.questions[0],
             backHref: `/build-application/${mockApplicationId}/preview`,
             nextPreviewHref: `/build-application/${mockApplicationId}/${mockCustomSection.sectionId}/${mockCustomSection.questions[1].questionId}/unpublished-preview`,
+            overviewHref: `/build-application/1/preview`,
           },
         });
       });
@@ -346,8 +375,9 @@ describe('getServerSideProps for unpublished-preview index page', () => {
         expect(response).toStrictEqual({
           props: {
             question: mockCustomSection.questions[8],
-            backHref: backHref,
+            backHref: `/build-application/1/mockCustomSection/orgAddress/unpublished-preview`,
             nextPreviewHref: null,
+            overviewHref: `/build-application/1/preview`,
           },
         });
       });
