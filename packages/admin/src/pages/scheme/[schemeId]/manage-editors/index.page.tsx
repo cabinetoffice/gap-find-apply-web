@@ -68,7 +68,10 @@ const ManageEditors = ({
           <br />
           <p className="govuk-body">
             If you need to change the owner of this grant, contact{' '}
-            <a className="govuk-link" href="findagrant@cabinetoffice.gov.uk">
+            <a
+              className="govuk-link"
+              href="mailto:findagrant@cabinetoffice.gov.uk"
+            >
               findagrant@cabinetoffice.gov.uk
             </a>
             .
