@@ -24,12 +24,11 @@ const redirectToAppliantLogin = () =>
 
 function redirectToLogin(req: NextRequest) {
   const url = getLoginUrl();
-  console.log('Middleware redirect URL: ' + url);
   if (submissionDownloadPattern.test({ pathname: req.nextUrl.pathname })) {
     console.log('Getting submission export download redirect URL: ' + url);
     return NextResponse.redirect(url + req.nextUrl.pathname);
   }
-  console.log('Final redirect URL from admin middleware: ' + url);
+  console.log('Redirect URL from admin middleware: ' + url);
   return NextResponse.redirect(url);
 }
 
