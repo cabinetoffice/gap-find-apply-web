@@ -23,9 +23,12 @@ jest.mock('next/server', () => ({
 const loginUrl = 'http://localhost:8082/login';
 
 describe('middleware', () => {
-  const req = new NextRequest('http://localhost:3000/apply/test/destination');
+  const req = new NextRequest(
+    'http://localhost:3000/apply/test/destination?scheme=1&grant=2'
+  );
 
   beforeEach(() => {
+    jest.clearAllMocks();
     process.env.MAX_COOKIE_AGE = '21600';
     process.env.ONE_LOGIN_ENABLED = 'false';
     process.env.LOGIN_URL = 'http://localhost:8082/login';
@@ -33,9 +36,11 @@ describe('middleware', () => {
     process.env.FEATURE_ADVERT_BUILDER = 'enabled';
     process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE = 'true';
     process.env.JWT_COOKIE_NAME = 'user-service-token';
+    process.env.HOST = 'http://localhost:3003';
+    process.env.REFRESH_URL = 'http://localhost:8082/refresh';
   });
 
-  it('Should redirect to the logout page when the user is not authorized', async () => {
+  it('Redirect to the login page when the user is not authorized', async () => {
     (getLoginUrl as jest.Mock).mockReturnValue(loginUrl);
     const result = await middleware(req);
 
@@ -45,8 +50,15 @@ describe('middleware', () => {
     expect(result.headers.get('Location')).toStrictEqual(loginUrl);
   });
 
-  it('should redirect to the logout page when the admin session is invalid', async () => {
+  it('Redirect to the login page when the admin session is invalid', async () => {
     req.cookies.set('session_id', 'session_id_value');
+    req.cookies.set('user-service-token', 'user-service-value');
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1); // Expiring in 1 hour
+
+    jest.mocked(parseJwt).mockReturnValue({
+      exp: expiresAt.getTime() / 1000,
+    });
     (isAdminSessionValid as jest.Mock).mockImplementation(async () => false);
     (getLoginUrl as jest.Mock).mockReturnValue(loginUrl);
 
@@ -57,7 +69,20 @@ describe('middleware', () => {
     expect(result.headers.get('Location')).toStrictEqual(loginUrl);
   });
 
-  it('Should reset auth cookie correctly when the user is authorised', async () => {
+  it('Redirect to the login page with an undefined user-service jwt', async () => {
+    req.cookies.clear();
+    req.cookies.set('session_id', 'session_id_value');
+    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
+    (getLoginUrl as jest.Mock).mockReturnValue(loginUrl);
+
+    const result = await middleware(req);
+
+    expect(result).toBeInstanceOf(NextResponse);
+
+    expect(result.headers.get('Location')).toStrictEqual(loginUrl);
+  });
+
+  it('Should set auth cookie correctly when the user is authorised', async () => {
     jest.mocked(parseJwt).mockReturnValue({
       exp: 1000000000,
     });
@@ -79,15 +104,41 @@ describe('middleware', () => {
   it('Should redirect to the original requests URL when we are authorised', async () => {
     (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
     req.cookies.set('session_id', 'session_id_value');
+    req.cookies.set('user-service-token', 'user_service_token_value');
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1); // Expiring in 1 hour
+
+    jest.mocked(parseJwt).mockReturnValue({
+      exp: expiresAt.getTime() / 1000,
+    });
     const result = await middleware(req);
 
     expect(result.headers.get('x-middleware-rewrite')).toStrictEqual(
-      'http://localhost:3000/apply/test/destination'
+      'http://localhost:3000/apply/test/destination?scheme=1&grant=2'
+    );
+  });
+
+  it('Redirects to refresh URL if JWT is close to expiration', async () => {
+    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
+    req.cookies.set('session_id', 'session_id_value');
+    req.cookies.set('user-service-token', 'user_service_token_value');
+
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10); // Expiring in 10 minutes
+
+    jest.mocked(parseJwt).mockReturnValue({
+      exp: expiresAt.getTime() / 1000,
+    });
+    const res = await middleware(req);
+
+    expect(res.status).toBe(307);
+    expect(res.headers.get('Location')).toBe(
+      `http://localhost:8082/refresh?redirectUrl=http://localhost:3003/apply/test/destination?scheme%3D1%26grant%3D2`
     );
   });
 });
 
-describe('middleware', () => {
+describe('advert builder middleware', () => {
   const req = new NextRequest(
     'http://localhost:3000/apply/admin/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
   );
@@ -96,6 +147,14 @@ describe('middleware', () => {
     (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
     req.cookies.set('session_id', 'session_id_value');
     process.env.FEATURE_ADVERT_BUILDER = 'enabled';
+    req.cookies.set('user-service-token', 'user_service_token_value');
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1); // Expiring in 1 hour
+
+    jest.mocked(parseJwt).mockReturnValue({
+      exp: expiresAt.getTime() / 1000,
+    });
+
     const result = await middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
