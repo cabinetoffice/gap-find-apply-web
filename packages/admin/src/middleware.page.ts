@@ -25,7 +25,11 @@ const redirectToAppliantLogin = () =>
 function redirectToLogin(req: NextRequest) {
   const url = getLoginUrl();
   if (submissionDownloadPattern.test({ pathname: req.nextUrl.pathname })) {
-    console.log('Getting submission export download redirect URL: ' + url);
+    console.log(
+      'Redirect to submission export download URL: ' +
+        url +
+        req.nextUrl.pathname
+    );
     return NextResponse.redirect(url + req.nextUrl.pathname);
   }
   console.log('Redirect URL from admin middleware: ' + url);
