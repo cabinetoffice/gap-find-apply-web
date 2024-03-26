@@ -19,63 +19,64 @@ const shortAnswerQ = {
   responseType: ResponseTypeEnum.ShortAnswer,
   validation: {},
 };
-const longAnswerQ: ApplicationFormQuestion = {
+const longAnswerQ = {
   questionId: 'longAnswer',
   fieldTitle: 'Question 2 - long',
   hintText: 'long answer question',
-  responseType: 'LongAnswer',
+  responseType: ResponseTypeEnum.LongAnswer,
   validation: {},
 };
-const yesNoQ: ApplicationFormQuestion = {
+
+const yesNoQ = {
   questionId: 'yesNo',
   fieldTitle: 'Question 3 - Yes/No',
   hintText: 'Yes/No question',
-  responseType: 'YesNo',
+  responseType: ResponseTypeEnum.YesNo,
   validation: {},
 };
-const multipleChoiceQ: ApplicationFormQuestion = {
+const multipleChoiceQ = {
   questionId: 'multiChoice',
   fieldTitle: 'Question 4 - Multiple Choice',
   hintText: 'Multiple choice question',
-  responseType: 'Dropdown',
+  responseType: ResponseTypeEnum.Dropdown,
   options: ['One', 'Two', 'Three'],
   validation: {},
 };
-const multipleSelectQ: ApplicationFormQuestion = {
+const multipleSelectQ = {
   questionId: 'multiSelect',
   fieldTitle: 'Question 5 - Multiple Select',
   hintText: 'Multiple select question',
-  responseType: 'MultipleSelection',
+  responseType: ResponseTypeEnum.MultipleSelection,
   options: ['One', 'Two', 'Three'],
   validation: {},
 };
-const docUploadQ: ApplicationFormQuestion = {
+const docUploadQ = {
   questionId: '0c92d26f-d2c6-4ae3-8cfb-b244ee579153',
   fieldTitle: 'Question 6 - Document Upload',
   hintText: 'Document upload question',
-  responseType: 'SingleFileUpload',
+  responseType: ResponseTypeEnum.SingleFileUpload,
   validation: {},
 };
-const dateSelectQ: ApplicationFormQuestion = {
+const dateSelectQ = {
   questionId: '8466844a-25ff-475e-aa2f-fe69ef747add',
   fieldTitle: 'Question 7 - Date ',
   hintText: 'Date selection question',
-  responseType: 'Date',
+  responseType: ResponseTypeEnum.Date,
   validation: {},
 };
-const addressInputQ: ApplicationFormQuestion = {
+const addressInputQ = {
   questionId: 'orgAddress',
   profileField: 'ORG_ADDRESS',
   fieldTitle: "Enter your organisation's address",
-  responseType: 'AddressInput',
+  responseType: ResponseTypeEnum.AddressInput,
   validation: {},
 };
-const fundAmountQ: ApplicationFormQuestion = {
+const fundAmountQ = {
   questionId: 'fundingAmount',
   fieldPrefix: '£',
   fieldTitle: 'How much does your organisation require as a grant?',
   hintText: 'Please enter whole pounds only',
-  responseType: 'Numeric',
+  responseType: ResponseTypeEnum.Numeric,
   validation: {},
 };
 
@@ -101,26 +102,37 @@ const mockNextHref = (nextQuestionId: string) => {
     ? `/build-application/${mockApplicationId}/${mockCustomSection.sectionId}/${nextQuestionId}/unpublished-preview`
     : null;
 };
+const mockBackHref = (
+  currentQuestionIndex: number,
+  allQuestionIds: string[]
+) => {
+  const prevQuestionId = allQuestionIds[currentQuestionIndex - 1];
+  return currentQuestionIndex === 0
+    ? `/build-application/${mockApplicationId}/preview`
+    : `/build-application/${mockApplicationId}/${mockCustomSection.sectionId}/${prevQuestionId}/unpublished-preview`;
+};
 
 const getQuestionProps = (questionIndex: number) => {
+  const allQuestionIds = mockCustomSection.questions.map((q) => q.questionId);
   return {
     question: mockCustomSection.questions[questionIndex],
     pageData: {
       sectionId: mockCustomSection.sectionId,
       questionId: mockCustomSection.questions[questionIndex].questionId,
     },
-    backHref: `/build-application/${mockApplicationId}/preview`,
+    backHref: mockBackHref(questionIndex, allQuestionIds),
     nextPreviewHref: mockNextHref(
       mockCustomSection.questions[questionIndex + 1]?.questionId
     ),
+    overviewHref: `/build-application/${mockApplicationId}/preview`,
   };
 };
 
-//Buttons that (possibly) appear on the page
+//Buttons that can appear on the page
 const previewText = screen.findByText('Question preview');
 const previewNext = screen.findByText('Preview next question');
 const backToOverview = screen.findByText('Back to overview');
-const backButton = screen.findByText('Back');
+
 describe('UnpublishedPreviewQuestion component', () => {
   describe('Rendering of buttons and text', () => {
     it('Should render a meta title', () => {
@@ -142,6 +154,24 @@ describe('UnpublishedPreviewQuestion component', () => {
       expect(previewNext).toBeVisible;
       expect(backToOverview).toBeInTheDocument;
       expect(backToOverview).toBeVisible;
+    });
+
+    it('Should render correct href for "Back" button on the FIRST QUESTION (Overview page)', () => {
+      render(<UnpublishedPreviewQuestion {...getQuestionProps(0)} />);
+      const backButton = screen.getByText('Back');
+      expect(backButton).toHaveAttribute(
+        'href',
+        '/apply/build-application/1/preview'
+      );
+    });
+
+    it('Should render correct href for "Back" button on questions that ARE NOT the first question (previous question)', () => {
+      render(<UnpublishedPreviewQuestion {...getQuestionProps(1)} />);
+      const backButton = screen.getByText('Back');
+      expect(backButton).toHaveAttribute(
+        'href',
+        '/apply/build-application/1/mockCustomSection/shortAnswer/unpublished-preview'
+      );
     });
 
     it('Should only render "Back to overview" button when there is not a question in the section', () => {
@@ -191,7 +221,6 @@ describe('UnpublishedPreviewQuestion component', () => {
 });
 
 describe('getServerSideProps for unpublished-preview index page', () => {
-  const backHref = `/build-application/${mockApplicationId}/preview`;
   const axiosError = { response: { data: { code: 500 } } } as AxiosError;
 
   beforeEach(() => {
@@ -207,6 +236,7 @@ describe('getServerSideProps for unpublished-preview index page', () => {
   const getContext = (overrides: any = {}) =>
     merge(
       {
+        query: {},
         params: {
           applicationId: mockApplicationId,
           sectionId: mockCustomSection.sectionId,
@@ -222,13 +252,28 @@ describe('getServerSideProps for unpublished-preview index page', () => {
 
   describe('Fetching question data', () => {
     describe('Service call to get the current section', () => {
+      it('should pass isV2Scheme into props', async () => {
+        const res = (await getServerSideProps(
+          getContext({ query: { v2: 'true' } })
+        )) as {
+          props: {
+            nextPreviewHref: string | null;
+          };
+        };
+
+        expect(res.props.nextPreviewHref).toEqual(
+          '/build-application/1/mockCustomSection/longAnswer/unpublished-preview?v2=true'
+        );
+      });
+
       it('should fetch the relevant section', async () => {
         await getServerSideProps(getContext());
         expect(getApplicationFormSection).toHaveBeenCalledTimes(1);
         expect(getApplicationFormSection).toHaveBeenCalledWith(
           '1',
           'mockCustomSection',
-          'testSessionId'
+          'testSessionId',
+          false
         );
       });
 
@@ -267,7 +312,8 @@ describe('getServerSideProps for unpublished-preview index page', () => {
           'testSessionId',
           '1',
           'mockCustomSection',
-          'shortAnswer'
+          'shortAnswer',
+          false
         );
       });
 
@@ -307,6 +353,7 @@ describe('getServerSideProps for unpublished-preview index page', () => {
             question: mockCustomSection.questions[0],
             backHref: `/build-application/${mockApplicationId}/preview`,
             nextPreviewHref: `/build-application/${mockApplicationId}/${mockCustomSection.sectionId}/${mockCustomSection.questions[1].questionId}/unpublished-preview`,
+            overviewHref: `/build-application/1/preview`,
           },
         });
       });
@@ -328,8 +375,9 @@ describe('getServerSideProps for unpublished-preview index page', () => {
         expect(response).toStrictEqual({
           props: {
             question: mockCustomSection.questions[8],
-            backHref: backHref,
+            backHref: `/build-application/1/mockCustomSection/orgAddress/unpublished-preview`,
             nextPreviewHref: null,
+            overviewHref: `/build-application/1/preview`,
           },
         });
       });

@@ -9,6 +9,8 @@ import InferProps from '../../../types/InferProps';
 import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import { ApplicationFormSection } from '../../../types/ApplicationForm';
+import { getGrantScheme } from '../../../services/SchemeService';
+import { mapV2Sections } from '../../../utils/applicationSummaryHelper';
 
 export const getServerSideProps = async ({
   req,
@@ -16,15 +18,27 @@ export const getServerSideProps = async ({
 }: GetServerSidePropsContext) => {
   const applicationId = params!.applicationId as string;
   try {
-    const { sections, applicationName } = await getApplicationFormSummary(
-      applicationId,
+    const { sections, grantSchemeId, applicationName } =
+      await getApplicationFormSummary(
+        applicationId,
+        getSessionIdFromCookies(req)
+      );
+
+    const { version } = await getGrantScheme(
+      grantSchemeId,
       getSessionIdFromCookies(req)
     );
+
+    let v2SchemeMappedSections;
+
+    if (version !== '1') {
+      v2SchemeMappedSections = mapV2Sections(sections);
+    }
 
     return {
       props: {
         applicationId,
-        sections,
+        sections: v2SchemeMappedSections ?? sections,
         applicationName,
       },
     };
