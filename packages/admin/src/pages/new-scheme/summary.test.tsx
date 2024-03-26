@@ -166,18 +166,6 @@ describe('Scheme summary page', () => {
         });
       });
 
-      it('Should redirect to the dashboard when creating the scheme succeeds and there is no body', async () => {
-        (createNewScheme as jest.Mock).mockResolvedValue({});
-        const result = await getServerSideProps(getPostContext());
-
-        expect(result).toStrictEqual({
-          redirect: {
-            destination: '/dashboard',
-            statusCode: 302,
-          },
-        });
-      });
-
       it('Should redirect to the service page when an error is thrown (and it is NOT a validation error', async () => {
         (createNewScheme as jest.Mock).mockRejectedValue({});
 

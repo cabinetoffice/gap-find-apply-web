@@ -36,10 +36,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         schemeSummary['ggisReference'],
         schemeSummary['contactEmail']
       ),
-    (result) =>
-      result.data && typeof result.data === 'number'
-        ? `/scheme/${result.data}`
-        : '/dashboard',
+    (result) => `/scheme/${result.data}`,
     errorPageParams
   );
 
