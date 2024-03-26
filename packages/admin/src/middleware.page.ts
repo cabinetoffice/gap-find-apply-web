@@ -66,7 +66,7 @@ export async function middleware(req: NextRequest) {
   if (userJwtCookie === undefined) return redirectToLogin(req);
 
   const jwt = parseJwt(userJwtCookie.value);
-  const jwtExpiry = new Date(jwt.exp * 1000);
+  const jwtExpiry = new Date(jwt.exp * 1000); //jwt.exp is stored in seconds, this converts to ms as expected in Date
 
   if (isWithinNumberOfMinsOfExpiry(jwtExpiry, 30)) {
     return NextResponse.redirect(
