@@ -1,3 +1,4 @@
+import { RefObject } from 'react';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import {
@@ -52,6 +53,12 @@ const mockSectionParams = {
   ] as ApplicationFormSection[],
   applicationId: '87654321',
   applicationStatus: 'DRAFT' as ApplicationFormSummary['applicationStatus'],
+  version: 1,
+  setNewScrollPosition: () => {
+    /* do nothing */
+  },
+  formAction: 'formAction',
+  formRef: null as unknown as RefObject<HTMLFormElement>,
   resolvedUrl: '/build-application/87654321',
   csrfToken: 'mockCsrfToken',
 };

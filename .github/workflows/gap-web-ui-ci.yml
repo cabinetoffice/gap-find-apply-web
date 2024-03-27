@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - develop
+      - feat/**
+      - feature/**
     paths:
       - "packages/gap-web-ui/**"
       - ".github/workflows/gap-web-ui-ci.yml"

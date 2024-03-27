@@ -96,6 +96,7 @@ const Survey = ({
             formAction={formAction}
             fieldErrors={fieldErrors}
             csrfToken={csrfToken}
+            fullPageWidth={true}
           >
             <Radio
               TitleTag="h1"

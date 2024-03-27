@@ -78,6 +78,41 @@ describe('Organisation name page', () => {
     screen.getByText('Your name will appear on your application.');
   });
 
+  it('should display a different heading if user is a local authority', () => {
+    renderWithRouter(
+      <MandatoryQuestionOrganisationNamePage
+        {...getPageProps(getDefaultProps, {
+          mandatoryQuestion: {
+            schemeId: 1,
+            orgType: MQ_ORG_TYPES.LOCAL_AUTHORITY,
+          },
+        })}
+      />
+    );
+
+    screen.getByRole('heading', {
+      name: 'Enter the name of your local authority',
+      level: 1,
+    });
+  });
+
+  it('should display a different question hint text if user is a local authority', () => {
+    renderWithRouter(
+      <MandatoryQuestionOrganisationNamePage
+        {...getPageProps(getDefaultProps, {
+          mandatoryQuestion: {
+            schemeId: 1,
+            orgType: MQ_ORG_TYPES.LOCAL_AUTHORITY,
+          },
+        })}
+      />
+    );
+
+    screen.getByText(
+      'Enter the full name of your local authority. For example "Essex County Council" rather than "Essex"'
+    );
+  });
+
   it('should display text input with no default', () => {
     renderWithRouter(
       <MandatoryQuestionOrganisationNamePage

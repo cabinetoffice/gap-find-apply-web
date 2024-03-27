@@ -1,8 +1,8 @@
 // eslint-disable-next-line  @next/next/no-server-import-in-page
-import { NextRequest, NextResponse } from 'next/server';
-import { getLoginUrl } from './utils/general';
+import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { isAdminSessionValid } from './services/UserService';
 import { csrfMiddleware } from './utils/csrfMiddleware';
+import { getLoginUrl } from './utils/general';
 
 // It will apply the middleware to all those paths
 // (if new folders at page root are created, they need to be included here)
@@ -54,9 +54,18 @@ export async function middleware(req: NextRequest) {
     });
 
     res.headers.set('Cache-Control', 'no-store');
-
     return res;
-  } else {
-    return NextResponse.redirect(getLoginUrl());
   }
+  let url = getLoginUrl();
+  console.log('Middleware redirect URL: ' + url);
+  if (submissionDownloadPattern.test({ pathname: req.nextUrl.pathname })) {
+    url = url + req.nextUrl.pathname;
+    console.log('Getting submission export download redirect URL: ' + url);
+  }
+  console.log('Final redirect URL from admin middleware: ' + url);
+  return NextResponse.redirect(url);
 }
+
+const submissionDownloadPattern = new URLPattern({
+  pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
+});

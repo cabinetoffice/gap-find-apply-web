@@ -116,6 +116,7 @@ export const MQ_ORG_TYPES = {
   NON_LIMITED_COMPANY: 'Non-limited company',
   LIMITED_COMPANY: 'Limited company',
   CHARITY: 'Charity',
+  LOCAL_AUTHORITY: 'Local authority',
   OTHER: 'Other',
 };
 

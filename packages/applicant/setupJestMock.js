@@ -11,6 +11,7 @@ jest.mock('next/config', () => () => {
     publicRuntimeConfig: {
       subPath: '',
       FIND_A_GRANT_URL: 'https://www.find-government-grants.service.gov.uk',
+      ADMIN_FRONTEND_URL: 'http://localhost:3000/apply/admin',
     },
   };
 });

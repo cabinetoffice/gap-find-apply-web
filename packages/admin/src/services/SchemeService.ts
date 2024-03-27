@@ -5,6 +5,7 @@ import Pagination from '../types/Pagination';
 import Scheme from '../types/Scheme';
 import { axiosSessionConfig } from '../utils/session';
 import { findMatchingApplicationForms } from './ApplicationService';
+import { decryptLastUpdatedBy } from './SchemeEditorService';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -36,12 +37,12 @@ export const getAdminsSchemes = async (
 
 export const createNewScheme = async (
   sessionId: string,
-  schemeName: string,
+  grantName: string,
   ggisReference: string,
   contactEmail?: string
 ) => {
   const newScheme = {
-    name: schemeName,
+    grantName: grantName,
     ggisReference: ggisReference,
     contactEmail: contactEmail,
   };
@@ -54,12 +55,12 @@ export const createNewScheme = async (
 };
 
 export const getGrantScheme = async (schemeId: string, sessionId: string) => {
-  const response = await axios.get(
+  const { data } = await axios.get<Scheme>(
     `${BASE_SCHEME_URL}/${schemeId}`,
     axiosSessionConfig(sessionId)
   );
 
-  return response.data as Scheme;
+  return decryptLastUpdatedBy(data);
 };
 
 export const findApplicationFormFromScheme = (

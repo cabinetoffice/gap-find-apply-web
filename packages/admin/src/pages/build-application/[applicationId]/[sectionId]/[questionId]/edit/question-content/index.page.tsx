@@ -20,17 +20,20 @@ const QuestionContent = ({
   pageData: {
     backButtonHref,
     questionData,
+    version,
     deleteConfirmationUrl,
-    backTo,
     previewUrl,
+    editQuestionTypeUrl,
   },
   previousValues,
 }: InferProps<typeof getServerSideProps>) => {
   const optionalRadioDefault = () => {
-    if (previousValues?.optional) return previousValues?.optional;
-    if (questionData.validation.mandatory !== undefined) {
-      return questionData.validation.mandatory === 'false' ? 'Yes' : 'No';
-    }
+    if (previousValues?.optional)
+      return previousValues?.optional === 'true' ? 'Yes' : 'No';
+    if (questionData.validation.mandatory !== undefined)
+      return Boolean(questionData.validation.mandatory) === false
+        ? 'Yes'
+        : 'No';
     return undefined;
   };
 
@@ -97,13 +100,15 @@ const QuestionContent = ({
             defaultChecked={optionalRadioDefault()}
           />
 
+          <input type="hidden" name="version" value={version} />
+
           <div className="govuk-button-group">
             <Button
               text="Save changes"
               data-cy="cy_questionEdit_saveAndContinueButton"
             />
             <CustomLink
-              href={'#change-question-type'} //Implemented with GAP-2105
+              href={editQuestionTypeUrl}
               isSecondaryButton
               dataCy="cy_questionEdit_cancelChangesButton"
             >
@@ -126,7 +131,7 @@ const QuestionContent = ({
             isSecondaryButton
             dataCy="cy_questionEdit_cancelChangesButton"
           >
-            Preview Question
+            Preview question
           </CustomLink>
 
           <hr className="govuk-section-break govuk-section-break--visible govuk-section-break--xl" />
@@ -138,7 +143,7 @@ const QuestionContent = ({
           </p>
 
           <CustomLink
-            href={deleteConfirmationUrl + '?backTo=' + backTo}
+            href={deleteConfirmationUrl}
             isButton
             customStyle="govuk-button--warning"
           >

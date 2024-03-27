@@ -10,6 +10,7 @@ const Checkboxes = ({
   fieldName,
   fieldErrors,
   options,
+  disabledCheckboxes,
   defaultCheckboxes,
   disabled = false,
   divideLastCheckboxOption = false,
@@ -113,7 +114,11 @@ const Checkboxes = ({
                         defaultCheckboxes &&
                         defaultCheckboxes.indexOf(value) >= 0
                       }
-                      disabled={disabled}
+                      disabled={
+                        disabled ||
+                        (disabledCheckboxes &&
+                          disabledCheckboxes.indexOf(value) >= 0)
+                      }
                       data-behaviour={getDataBehaviour()}
                       data-cy={`cy-checkbox-value-${value}`}
                       data-aria-controls={
@@ -174,6 +179,7 @@ type CheckboxOption =
 export interface CheckboxesProps extends InputComponentProps {
   options?: string[] | CheckboxOption[];
   defaultCheckboxes?: string[];
+  disabledCheckboxes?: string[];
   disabled?: boolean;
   divideLastCheckboxOption?: boolean;
   divideCheckboxIndex?: number;

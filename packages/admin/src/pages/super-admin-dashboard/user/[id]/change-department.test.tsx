@@ -1,15 +1,17 @@
 import '@testing-library/jest-dom';
-import { getContext } from 'gap-web-ui';
-import UserPage, { getServerSideProps } from './change-department.page';
-import { Department, Role, User } from '../../types';
 import { render, screen } from '@testing-library/react';
-import { parseBody } from '../../../../utils/parseBody';
+import { getContext } from 'gap-web-ui';
 import {
   getChangeDepartmentPage,
   updateUserRoles,
 } from '../../../../services/SuperAdminService';
+import { parseBody } from '../../../../utils/parseBody';
+import { getUserTokenFromCookies } from '../../../../utils/session';
+import { Department, Role, User } from '../../types';
+import UserPage, { getServerSideProps } from './change-department.page';
 
 jest.mock('../../../../utils/parseBody');
+jest.mock('../../../../utils/session');
 
 jest.mock('../../../../services/SuperAdminService', () => ({
   getUserById: jest.fn(),
@@ -91,7 +93,7 @@ describe('Change department page', () => {
       expect(screen.getByText('Manage departments')).toBeVisible();
     });
 
-    test('Should throw an error if no department is selected', async () => {
+    test('Should throw an error if no department is selected and do not update user role', async () => {
       const component = (
         <UserPage
           csrfToken="csrf"
@@ -111,6 +113,7 @@ describe('Change department page', () => {
       expect(
         screen.getByText('There is a problem').nextSibling
       ).toHaveTextContent('Select a department');
+      expect(updateUserRoles).not.toHaveBeenCalled();
     });
   });
 
@@ -139,6 +142,7 @@ describe('Change department page', () => {
     });
 
     test('Should update roles if user is being promoted to ADMIN', async () => {
+      (getUserTokenFromCookies as jest.Mock).mockReturnValue('testJWT');
       mockGetChangeDepartmentPage.mockResolvedValueOnce({
         user: getMockUser([getMockRoles()[0], getMockRoles()[1]]),
         departments: [{ id: '4', name: 'hello world' }],
@@ -161,7 +165,7 @@ describe('Change department page', () => {
       expect(updateUserRoles).toHaveBeenCalledWith(
         'someId',
         ['3', ' 4'],
-        '',
+        'testJWT',
         1
       );
     });

@@ -80,7 +80,7 @@ const mockedGetSectionOverviewPageContentResponse: GetSectionOverviewPageContent
 
 const expectedGetServerSideRedirection = {
   redirect: {
-    destination: '/error-page/code/GRANT_ADVERT_NOT_FOUND?href=/scheme-list',
+    destination: '/error-page/code/GRANT_ADVERT_NOT_FOUND?href=/dashboard',
     statusCode: 302,
   },
 };

@@ -17,8 +17,10 @@ const patchQuestion = (
     fieldTitle: string;
     displayText: string;
     hintText: string;
-    validation: { mandatory: boolean; maxWords?: string };
+    validation: { mandatory: boolean; maxWords?: string | number };
     options: string[];
+    responseType: ResponseType;
+    version: number;
   }>
 ): Promise<void> => {
   return axios.patch(
@@ -54,11 +56,18 @@ const getQuestion = async (
   sessionId: string,
   applicationId: string,
   sectionId: string,
-  questionId: string
+  questionId: string,
+  isV2Scheme?: boolean
 ): Promise<ApplicationFormQuestion> => {
+  const isEssentialQuestion =
+    isV2Scheme &&
+    ['ORGANISATION_DETAILS', 'FUNDING_DETAILS'].includes(sectionId);
+
+  const section = isEssentialQuestion ? 'ESSENTIAL' : sectionId;
+
   return (
     await axios.get(
-      `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}`,
+      `${BASE_APPLICATION_URL}/${applicationId}/sections/${section}/questions/${questionId}`,
       axiosSessionConfig(sessionId)
     )
   ).data;
@@ -68,10 +77,11 @@ const deleteQuestion = (
   sessionId: string,
   applicationId: string,
   sectionId: string,
-  questionId: string
+  questionId: string,
+  version: string
 ): Promise<void> => {
   return axios.delete(
-    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}`,
+    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}?version=${version}`,
     axiosSessionConfig(sessionId)
   );
 };

@@ -13,6 +13,7 @@ const EditSectionPage = ({
   section,
   grantApplicationName,
   applicationId,
+  version,
   scrollPosition,
   resolvedUrl,
   csrfToken,
@@ -58,11 +59,7 @@ const EditSectionPage = ({
         rows={[
           {
             key: 'Section title',
-            value: (
-              <div className="govuk-!-padding-left-2">
-                {section.sectionTitle}
-              </div>
-            ),
+            value: <div>{section.sectionTitle}</div>,
             action: (
               <CustomLink
                 href={`/build-application/${applicationId}/${section.sectionId}/edit-title`}
@@ -80,18 +77,26 @@ const EditSectionPage = ({
         csrfToken={csrfToken}
         fullPageWidth
       >
+        <input type="hidden" name="version" value={version} />
+
         <Table
           caption="Questions"
           tHeadColumns={[
             {
               name: 'Question title',
               isVisuallyHidden: true,
+              width: 'one-half',
             },
             {
               name: 'Question type',
               isVisuallyHidden: true,
+              width: 'one-quarter',
             },
-            { name: 'Actions', isVisuallyHidden: true },
+            {
+              name: 'Actions',
+              isVisuallyHidden: true,
+              width: 'one-quarter',
+            },
           ]}
           rows={questionTableRows(
             section,
@@ -118,7 +123,7 @@ const EditSectionPage = ({
       </p>
 
       <CustomLink
-        href={`/build-application/${applicationId}/${section.sectionId}/delete-confirmation`}
+        href={`/build-application/${applicationId}/${section.sectionId}/delete-confirmation?version=${version}`}
         isButton
         customStyle="govuk-button--warning"
       >

@@ -6,7 +6,10 @@ import { GetServerSidePropsResult, Redirect } from 'next';
 import AdvertStatusEnum from '../../../enums/AdvertStatus';
 import { getGrantAdvertPublishInformationBySchemeId } from '../../../services/AdvertPageService';
 import { getAdvertPublishInformationBySchemeIdResponse } from '../../../services/AdvertPageService.d';
-import { getApplicationFormSummary } from '../../../services/ApplicationService';
+import {
+  getApplicationFormSummary,
+  getLastEditedEmail,
+} from '../../../services/ApplicationService';
 import {
   findApplicationFormFromScheme,
   getGrantScheme,
@@ -21,6 +24,7 @@ const applicationForm = {
   audit: {
     created: '2022-01-03T00:00:00.00Z',
     lastPublished: '2022-01-04T00:00:00.00Z',
+    lastUpdated: '2022-01-05T00:00:00.00Z',
   },
 } as ApplicationFormSummary;
 
@@ -71,9 +75,14 @@ const mockScheme: Scheme = {
 const mockGrantadvertData: getAdvertPublishInformationBySchemeIdResponse = {
   status: 200,
   data: {
+    created: '2022-7-12T17:00:00',
+    validLastUpdated: true,
+    lastUpdatedByEmail: 'my-email',
     grantAdvertId: 'dummy-id',
     grantAdvertStatus: AdvertStatusEnum.DRAFT,
     contentfulSlug: null,
+    lastPublishedDate: null,
+    lastUpdated: '2022-7-12T17:00:00',
     openingDate: null,
     closingDate: null,
     firstPublishedDate: null,
@@ -83,28 +92,38 @@ const mockGrantadvertData: getAdvertPublishInformationBySchemeIdResponse = {
 };
 
 jest.mock('../../../services/SchemeService');
+jest.mock('../../../services/SchemeEditorService');
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../services/AdvertPageService');
 
 describe('scheme/[schemeId]', () => {
   describe('getServerSideProps', () => {
-    const mockedGetScheme = getGrantScheme as jest.MockedFn<
-      typeof getGrantScheme
-    >;
-    const mockedFindApplicationFormFromScheme =
-      findApplicationFormFromScheme as jest.MockedFn<
-        typeof findApplicationFormFromScheme
-      >;
-    const mockGetAdvertPublishInformationBySchemeId =
-      getGrantAdvertPublishInformationBySchemeId as jest.MockedFn<
-        typeof getGrantAdvertPublishInformationBySchemeId
-      >;
+    const mockedGetScheme = jest.mocked(getGrantScheme);
 
-    it('Should get the scheme id from the path param', async () => {
+    const mockedFindApplicationFormFromScheme = jest.mocked(
+      findApplicationFormFromScheme
+    );
+
+    const mockGetLastEditedEmail = jest.mocked(getLastEditedEmail);
+
+    const mockGetAdvertPublishInformationBySchemeId = jest.mocked(
+      getGrantAdvertPublishInformationBySchemeId
+    );
+
+    const mockGetApplicationFormSummary = jest.mocked(
+      getApplicationFormSummary
+    );
+
+    beforeEach(() => {
       mockedGetScheme.mockResolvedValue(mockScheme);
       mockedFindApplicationFormFromScheme.mockResolvedValue([
         applicationFormFoundStats(),
       ]);
+      mockGetApplicationFormSummary.mockResolvedValue(applicationForm);
+      mockGetLastEditedEmail.mockResolvedValue('test@test.gov');
+    });
+
+    it('Should get the scheme id from the path param', async () => {
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
@@ -113,11 +132,6 @@ describe('scheme/[schemeId]', () => {
     });
 
     it('Should return scheme to view as a prop', async () => {
-      mockedGetScheme.mockResolvedValue(mockScheme);
-      mockedFindApplicationFormFromScheme.mockResolvedValue([
-        applicationFormFoundStats(),
-      ]);
-
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
@@ -128,14 +142,6 @@ describe('scheme/[schemeId]', () => {
     });
 
     it('Should return an applicationForm as a prop', async () => {
-      mockedGetScheme.mockResolvedValue(mockScheme);
-      mockedFindApplicationFormFromScheme.mockResolvedValue([
-        applicationFormFoundStats(),
-      ]);
-      (getApplicationFormSummary as jest.Mock).mockResolvedValue(
-        applicationForm
-      );
-
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
@@ -147,16 +153,12 @@ describe('scheme/[schemeId]', () => {
         audit: {
           created: '2022-01-03T00:00:00.00Z',
           lastPublished: '2022-01-04T00:00:00.00Z',
+          lastUpdated: '2022-01-05T00:00:00.00Z',
         },
       });
     });
 
     it('Should return the first application form stats as a prop when application is found', async () => {
-      mockedGetScheme.mockResolvedValue(mockScheme);
-      mockedFindApplicationFormFromScheme.mockResolvedValue([
-        applicationFormFoundStats(),
-      ]);
-
       const response = (await getServerSideProps(
         getContext()
       )) as NextGetServerSidePropsResponse;
@@ -200,7 +202,7 @@ describe('scheme/[schemeId]', () => {
     });
 
     it('Should redirect to service error when error occurs fetching an application from the application ids', async () => {
-      (getApplicationFormSummary as jest.Mock).mockRejectedValue({});
+      mockGetApplicationFormSummary.mockRejectedValue({});
       const response = (await getServerSideProps(
         getContext()
       )) as GetServerSidePropsResult<Redirect>;
@@ -228,12 +230,17 @@ describe('scheme/[schemeId]', () => {
       expect(response.props.grantAdvertPublishData).toStrictEqual({
         status: 200,
         data: {
+          lastUpdatedByEmail: 'my-email',
           grantAdvertId: 'dummy-id',
-          grantAdvertStatus: 'DRAFT',
+          grantAdvertStatus: AdvertStatusEnum.DRAFT,
           contentfulSlug: null,
+          created: '2022-7-12T17:00:00',
+          lastPublishedDate: null,
+          lastUpdated: '2022-7-12T17:00:00',
           openingDate: null,
           closingDate: null,
           firstPublishedDate: null,
+          validLastUpdated: true,
           lastUnpublishedDate: null,
           unpublishedDate: null,
         },
@@ -263,6 +270,7 @@ describe('scheme/[schemeId]', () => {
     it('Should render back button', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
@@ -278,6 +286,7 @@ describe('scheme/[schemeId]', () => {
     it('Should render a "Grant summary" heading', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
@@ -285,16 +294,33 @@ describe('scheme/[schemeId]', () => {
         />
       );
       screen.getByRole('heading', { name: 'Grant summary' });
+      const sidebarLink = screen.getByRole('button', {
+        name: 'Add or manage editors',
+      });
+      expect(sidebarLink).toHaveAttribute(
+        'href',
+        `/scheme/${mockScheme.schemeId}/manage-editors`
+      );
     });
 
     it('Should render a ggis reference number summary list row', () => {
       render(
         <ViewScheme
+          isOwner={false}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
+      );
+
+      const sidebarLink = screen.getByRole('button', {
+        name: 'View editors',
+      });
+      expect(sidebarLink).toHaveAttribute(
+        'href',
+        `/scheme/${mockScheme.schemeId}/view-editors`
       );
       screen.getByText('GGIS Scheme Reference Number');
       screen.getByText('SCH 000003589');
@@ -304,10 +330,12 @@ describe('scheme/[schemeId]', () => {
     it('Should render a support email address summary list row', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       screen.getByText('Support email address');
@@ -318,10 +346,12 @@ describe('scheme/[schemeId]', () => {
     it('Should render the "SchemeApplications" component when there is an application form', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       screen.getByTestId('scheme-application-component');
@@ -330,6 +360,7 @@ describe('scheme/[schemeId]', () => {
     it('Should NOT render the "SchemeApplications" component when there is no application form', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={{
             applicationForm: null,
@@ -360,10 +391,12 @@ describe('scheme/[schemeId]', () => {
     it('Should NOT render the "BuildApplicationForm" component when there is an application form', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       expect(
@@ -374,10 +407,12 @@ describe('scheme/[schemeId]', () => {
     it('Should render Build Advert section when enabledAdBuilder value is set to "enabled"', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'enabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
 
@@ -387,10 +422,12 @@ describe('scheme/[schemeId]', () => {
     it('Should NOT render Build Advert section when enabledAdBuilder value is set to null (not provided)', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
 
@@ -400,10 +437,12 @@ describe('scheme/[schemeId]', () => {
     it('Should render a "Due diligence checks" section for internal applications', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={schemeApplicationsData}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       screen.getByRole('heading', { name: 'Due diligence checks' });
@@ -422,10 +461,12 @@ describe('scheme/[schemeId]', () => {
     it('Should render a "Due diligence checks" section for external applications', () => {
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={null}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       screen.getByRole('heading', { name: 'Due diligence checks' });
@@ -445,10 +486,12 @@ describe('scheme/[schemeId]', () => {
       mockScheme.version = '1';
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={null}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={mockGrantadvertData}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       expect(
@@ -460,10 +503,12 @@ describe('scheme/[schemeId]', () => {
       mockScheme.version = '2';
       render(
         <ViewScheme
+          isOwner={true}
           scheme={mockScheme}
           schemeApplicationsData={null}
           enabledAdBuilder={'disabled'}
           grantAdvertPublishData={{ status: 404 }}
+          editorOrPublisherEmail={'test@test.gov'}
         />
       );
       expect(

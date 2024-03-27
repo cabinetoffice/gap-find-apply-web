@@ -1,9 +1,14 @@
 import { ValidationError } from 'gap-web-ui';
-import { NextRedirect } from './QuestionPageGetServerSidePropsTypes';
 import ServiceError from '../types/ServiceError';
 import { parseBody } from './parseBody';
-import { generateErrorPageRedirectV2 } from './serviceErrorHelpers';
+import {
+  generateErrorPageAdvertAlreadyPublished,
+  generateErrorPageMultipleEditors,
+  generateErrorPageRedirectV2,
+  handleMultipleEditorsError,
+} from './serviceErrorHelpers';
 import { GetServerSidePropsContext, Redirect } from 'next';
+import { advertIsPublishedOrScheduled } from '../pages/scheme/[schemeId]/advert/[advertId]/summary/components/util';
 
 type Body<T> = T & {
   _csrf: string;
@@ -70,6 +75,18 @@ export default async function callServiceMethod<
         fieldErrors: fieldErrors as ValidationError[],
       };
     }
+
+    if (
+      err?.response?.data?.error?.message === 'GRANT_ADVERT_MULTIPLE_EDITORS'
+    ) {
+      const url = req.url as string;
+      const [, , schemeId, , advertId] = url.split('/');
+      return generateErrorPageAdvertAlreadyPublished(schemeId, advertId);
+    }
+
+    // If we want to display the Multiple Editors error page
+    const multipleEditorsErrorRedirect = handleMultipleEditorsError(err);
+    if (multipleEditorsErrorRedirect) return multipleEditorsErrorRedirect;
 
     // If we encounter an error that conforms to the new way of handling form validation errors
     if (err.code) {

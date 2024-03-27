@@ -8,6 +8,7 @@ import {
   generateValidationPropsType,
   NextRedirect,
 } from './QuestionPageGetServerSidePropsTypes';
+import { handleMultipleEditorsError } from './serviceErrorHelpers';
 
 /**
  * Abstracts away how we handle redirects, fetch & update data.
@@ -16,13 +17,8 @@ import {
  * @template K - The response of the 'fetchPageData' function
  * @template V - The response of the 'handleRequest' function
  *
- * @param context - GetServerSidePropsContext
- * @param fetchPageData - A function that takes in a jwt and returns data asynchronously
- * @param handleRequest - A function that takes in a jwt and the body the page returns, then updates/posts this data
- * @param jwt - A JWT needed for calls to the backend
- * @param onSuccessRedirectHref - Where to redirect to after successfully updating data
- * @param onErrorMessage - An error message to display if getting/updating data fails
  *
+ * @param props
  * @returns A redirect to the relevant location, or a set of props needed to load a page
  */
 
@@ -76,6 +72,9 @@ async function fetchAndHandlePageData<K extends FetchPageData>(
   try {
     return await fetchPageData(jwt);
   } catch (err: any) {
+    const multipleEditorsRedirect = handleMultipleEditorsError(err);
+    if (multipleEditorsRedirect) return multipleEditorsRedirect;
+
     if (err?.response?.data?.code) {
       return generateRedirect(
         `/error-page/code/${err.response.data.code}?href=${

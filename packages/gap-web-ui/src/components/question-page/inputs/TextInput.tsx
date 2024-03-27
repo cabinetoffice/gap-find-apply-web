@@ -54,6 +54,7 @@ const TextInput = ({
   const hasError = fieldErrors.some((fieldError) =>
     fieldError.fieldName.startsWith(fieldName)
   );
+  const shouldRenderInputWithWrapper = !!fieldPrefix || !!fieldSuffix;
   const requiredProps = {
     id: fieldName,
     className: `govuk-input govuk-js-character-count${
@@ -204,7 +205,11 @@ const TextInput = ({
         )}
         <ErrorMessage fieldErrors={fieldErrors} fieldName={fieldName} />
 
-        {limit ? <InputComponent /> : <InputWithWrapperComponent />}
+        {shouldRenderInputWithWrapper ? (
+          <InputWithWrapperComponent />
+        ) : (
+          <InputComponent />
+        )}
         {children}
       </div>
 

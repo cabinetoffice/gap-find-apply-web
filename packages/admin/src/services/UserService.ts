@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { axiosSessionConfig } from '../utils/session';
+import { axiosUserServiceConfig, axiosSessionConfig } from '../utils/session';
 import UserDetails from '../types/UserDetails';
 
 const BASE_USERS_URL = process.env.BACKEND_HOST + '/users';
@@ -40,4 +40,18 @@ export async function checkNewAdminEmailIsValid(
     }
   );
   return response.data;
+}
+
+export async function getUserRoles(token: string) {
+  const { data } = await axios.get<UserRolesResponse>(
+    `${process.env.USER_SERVICE_URL}/user/roles`,
+    axiosUserServiceConfig(token)
+  );
+  return data;
+}
+export interface UserRolesResponse {
+  isValid: boolean;
+  isSuperAdmin?: boolean;
+  isAdmin: boolean;
+  isApplicant: boolean;
 }
