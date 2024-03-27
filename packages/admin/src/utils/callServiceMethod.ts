@@ -5,6 +5,7 @@ import {
   generateErrorPageAdvertAlreadyPublished,
   generateErrorPageMultipleEditors,
   generateErrorPageRedirectV2,
+  handleMultipleEditorsError,
 } from './serviceErrorHelpers';
 import { GetServerSidePropsContext, Redirect } from 'next';
 import { advertIsPublishedOrScheduled } from '../pages/scheme/[schemeId]/advert/[advertId]/summary/components/util';
@@ -84,21 +85,8 @@ export default async function callServiceMethod<
     }
 
     // If we want to display the Multiple Editors error page
-    if (err?.response?.data?.error?.message.includes('MULTIPLE_EDITORS')) {
-      const isSectionDeletedError =
-        err?.response?.data?.error?.message ===
-        'MULTIPLE_EDITORS_SECTION_DELETED';
-
-      const applicationId = err.config.url
-        .split('/application-forms/')
-        .pop()
-        .split('/')[0];
-
-      return generateErrorPageMultipleEditors(
-        applicationId,
-        isSectionDeletedError
-      );
-    }
+    const multipleEditorsErrorRedirect = handleMultipleEditorsError(err);
+    if (multipleEditorsErrorRedirect) return multipleEditorsErrorRedirect;
 
     // If we encounter an error that conforms to the new way of handling form validation errors
     if (err.code) {
