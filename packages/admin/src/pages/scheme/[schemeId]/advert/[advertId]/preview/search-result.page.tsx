@@ -36,7 +36,7 @@ export const getServerSideProps = async ({
   }
 };
 
-const AdvertPreview = ({
+const SearchResultPreview = ({
   grant,
   schemeId,
   advertId,
@@ -68,11 +68,11 @@ const AdvertPreview = ({
         <PreviewDetailsTab tabs={tabs} />
         <div className="govuk-grid-column-full govuk-button-group">
           <CustomLink
-            href={`/scheme/${schemeId}/advert/${advertId}/section-overview`}
+            href={`/scheme/${schemeId}/advert/${advertId}/preview/advert-details`}
             isButton
             dataCy="cy-back-to-create-advert-button"
           >
-            Back to create your advert
+            Preview Advert
           </CustomLink>
         </div>
       </div>
@@ -80,4 +80,4 @@ const AdvertPreview = ({
   );
 };
 
-export default AdvertPreview;
+export default SearchResultPreview;

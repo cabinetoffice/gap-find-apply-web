@@ -5,7 +5,9 @@ import { Redirect } from 'next';
 import * as AdvertPageService from '../../../../../../services/AdvertPageService';
 import * as serviceErrorHelpers from '../../../../../../utils/serviceErrorHelpers';
 import * as sessionUtils from '../../../../../../utils/session';
-import AdvertPreview, { getServerSideProps } from './preview';
+import AdvertDetailsPreview, {
+  getServerSideProps,
+} from './advert-details.page';
 
 jest.mock('../../../../../../utils/session');
 jest.mock('../../../../../../services/AdvertPageService');
@@ -161,7 +163,7 @@ describe('getServerSideProps', () => {
 });
 describe('Advert Preview page', () => {
   beforeEach(() => {
-    render(<AdvertPreview {...props} />);
+    render(<AdvertDetailsPreview {...props} />);
   });
   it('Should render back button', () => {
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
