@@ -3,13 +3,13 @@ import Link from 'next/link';
 import { FC } from 'react';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
+import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { GrantApplicant } from '../../types/models/GrantApplicant';
 import { GrantApplicantOrganisationProfile } from '../../types/models/GrantApplicantOrganisationProfile';
-import { GrantApplicantService } from '../../services/GrantApplicantService';
+import { MQ_ORG_TYPES } from '../../utils/constants';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import ProcessAddress from './processAddress';
-import { MQ_ORG_TYPES } from '../../utils/constants';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -129,6 +129,10 @@ type OrganisationDataRowProps = {
   noBorderBottom?: boolean;
 };
 
+const urlToFormattedString = (url: string) => {
+  return url.replaceAll('/', ' ').trim();
+};
+
 const OrganisationDataRow = ({
   organisationDetail,
   noBorderBottom,
@@ -166,7 +170,9 @@ const OrganisationDataRow = ({
         data-cy={`cy-organisation-details-navigation-${organisationDetail.id}`}
       >
         {organisationDetail.status}
-        <span className="govuk-visually-hidden">{organisationDetail.url}</span>
+        <span className="govuk-visually-hidden">
+          {urlToFormattedString(organisationDetail.url)}
+        </span>
       </Link>
     </dd>
   </div>
