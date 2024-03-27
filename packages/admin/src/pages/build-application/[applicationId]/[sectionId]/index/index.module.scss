@@ -4,3 +4,15 @@
     bottom: 7px;
     min-width: 72px;
 }
+
+.question-controls {
+    display: flex;
+    justify-content: center;
+}
+
+  
+@media (max-width: 640px) {
+    .question-controls {
+        flex-wrap: wrap;
+    }
+}

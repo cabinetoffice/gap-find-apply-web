@@ -60,7 +60,7 @@ const getServerSideProps = async ({
   }
 
   let fieldErrors: ValidationError[] = [];
-  let options: string[] = [''];
+  let options: string[] = ['', ''];
   let applicationFormSummary: ApplicationFormSummary;
   let questionData: ApplicationFormQuestion;
   let questionSummary: QuestionWithOptionsSummary;
@@ -133,6 +133,7 @@ const getServerSideProps = async ({
           await patchQuestion(sessionId, applicationId, sectionId, questionId, {
             ...questionSummary,
             options: options,
+            version: body.version,
           });
 
           return {
@@ -195,6 +196,7 @@ const getServerSideProps = async ({
     props: {
       pageCaption: sectionName,
       questionSummary,
+      version: applicationFormSummary.audit.version,
       backButtonHref: getBackButtonHref(),
       formAction: `${publicRuntimeConfig.SUB_PATH}/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-options${formActionQueryString}`,
       fieldErrors,

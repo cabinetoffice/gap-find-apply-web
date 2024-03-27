@@ -19,7 +19,7 @@ import { getSessionIdFromCookies } from '../../../../utils/session';
 import { NoJSAssistedJourneyMessage } from './[advertId]/components/NoJSAssistedJourneyMessage.tsx';
 
 type RequestBody = {
-  name: string;
+  advertName: string;
 };
 
 export const getServerSideProps = async ({
@@ -43,7 +43,7 @@ export const getServerSideProps = async ({
     req,
     res,
     (body: RequestBody) =>
-      createNewAdvert(getSessionIdFromCookies(req), schemeId, body.name),
+      createNewAdvert(getSessionIdFromCookies(req), schemeId, body.advertName),
     (result) => {
       return `/scheme/${schemeId}/advert/${result.id}/section-overview`;
     },
@@ -59,7 +59,7 @@ export const getServerSideProps = async ({
   } else if ('body' in result) {
     // If adding the name to the session failed due to a validation error, pass these errors to the page
     fieldErrors = result.fieldErrors;
-    defaultValue = result.body.name;
+    defaultValue = result.body.advertName;
   }
 
   return {
@@ -105,7 +105,7 @@ const AdvertName = ({
           >
             <TextInput
               questionTitle="What is the name of your grant?"
-              fieldName="name"
+              fieldName="advertName"
               fieldErrors={fieldErrors}
               defaultValue={defaultValue}
             />

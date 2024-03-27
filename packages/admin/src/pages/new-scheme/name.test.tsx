@@ -128,7 +128,7 @@ describe('Scheme name page', () => {
     describe('when handling a POST request', () => {
       beforeEach(() => {
         (parseBody as jest.Mock).mockResolvedValue({
-          name: 'testName',
+          grantName: 'testName',
         });
         (addToSession as jest.Mock).mockResolvedValue({
           session_id: 'SESSION',

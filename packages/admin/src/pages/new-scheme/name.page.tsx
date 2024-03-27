@@ -13,7 +13,7 @@ import { getSessionIdFromCookies } from '../../utils/session';
 import { errorPageParams } from './newSchemeServiceError';
 
 type RequestBody = {
-  name: string;
+  grantName: string;
 };
 
 export const getServerSideProps: GetServerSideProps = async ({
@@ -36,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     req,
     res,
     (body: RequestBody) =>
-      addToSession('newScheme', 'name', body.name, sessionCookie),
+      addToSession('newScheme', 'grantName', body.grantName, sessionCookie),
     successRedirect,
     errorPageParams
   );
@@ -53,7 +53,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   let defaultValue = '';
   if (body) {
-    defaultValue = body.name;
+    defaultValue = body.grantName;
   } else if (sessionId) {
     defaultValue = await getValueFromSession(
       'newScheme',
@@ -99,7 +99,7 @@ const SchemeName = ({
         <QuestionPageLayout
           formAction={formAction}
           questionTitle="What is the name of your grant?"
-          fieldName="name"
+          fieldName="grantName"
           fieldErrors={fieldErrors}
           csrfToken={csrfToken}
           inputType={{

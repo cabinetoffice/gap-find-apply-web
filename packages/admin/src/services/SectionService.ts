@@ -26,10 +26,11 @@ const postSection = async (
 const deleteSection = (
   sessionId: string,
   applicationId: string,
-  sectionId: string
+  sectionId: string,
+  version: string
 ): Promise<void> => {
   return axios.delete(
-    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}`,
+    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}?version=${version}`,
     axiosSessionConfig(sessionId)
   );
 };
@@ -56,11 +57,11 @@ const updateSectionTitle = async ({
   sessionId,
   applicationId,
   sectionId,
-  body: { sectionTitle },
+  body: { sectionTitle, version },
 }: UpdateSectionTitleProps) => {
   await axios.patch(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/title`,
-    { sectionTitle },
+    { sectionTitle, version },
     axiosSessionConfig(sessionId)
   );
 };

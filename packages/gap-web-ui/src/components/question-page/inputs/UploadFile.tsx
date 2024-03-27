@@ -9,6 +9,7 @@ export interface UploadProps {
   fieldName: string;
   uploadedFile?: FileType;
   deleteUrl?: string;
+  disabled?: boolean;
 }
 
 const UploadFile: FC<UploadProps> = ({
@@ -18,6 +19,7 @@ const UploadFile: FC<UploadProps> = ({
   uploadedFile,
   fieldName,
   deleteUrl,
+  disabled,
 }) => {
   const hasError = fieldErrors.length > 0;
 
@@ -57,6 +59,7 @@ const UploadFile: FC<UploadProps> = ({
             type="file"
             aria-describedby={`${!hasError ? fieldName : `${fieldName}-error`}`}
             data-testid="file-upload-input"
+            disabled={disabled}
           />
           <input
             type="hidden"

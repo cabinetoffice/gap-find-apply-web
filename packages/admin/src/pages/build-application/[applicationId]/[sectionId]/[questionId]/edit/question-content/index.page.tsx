@@ -20,8 +20,8 @@ const QuestionContent = ({
   pageData: {
     backButtonHref,
     questionData,
+    version,
     deleteConfirmationUrl,
-    backTo,
     previewUrl,
     editQuestionTypeUrl,
   },
@@ -100,6 +100,8 @@ const QuestionContent = ({
             defaultChecked={optionalRadioDefault()}
           />
 
+          <input type="hidden" name="version" value={version} />
+
           <div className="govuk-button-group">
             <Button
               text="Save changes"
@@ -141,7 +143,7 @@ const QuestionContent = ({
           </p>
 
           <CustomLink
-            href={deleteConfirmationUrl + '?backTo=' + backTo}
+            href={deleteConfirmationUrl}
             isButton
             customStyle="govuk-button--warning"
           >

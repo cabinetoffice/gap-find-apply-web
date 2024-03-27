@@ -68,7 +68,7 @@ export const getServerSideProps = async ({
   } catch (err) {
     const error = err as AxiosError;
     const errorMessageObject = error.response?.data as CustomError;
-    return generateErrorPageRedirectV2(errorMessageObject.code, '/scheme-list');
+    return generateErrorPageRedirectV2(errorMessageObject.code, '/dashboard');
   }
 };
 

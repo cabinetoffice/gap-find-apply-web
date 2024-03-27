@@ -1,4 +1,8 @@
-import { Checkboxes, FlexibleQuestionPageLayout } from 'gap-web-ui';
+import {
+  Checkboxes,
+  FlexibleQuestionPageLayout,
+  ValidationError,
+} from 'gap-web-ui';
 
 import { GetServerSidePropsContext } from 'next';
 import { getUserTokenFromCookies } from '../../../../utils/session';
@@ -11,6 +15,7 @@ import Meta from '../../../../components/layout/Meta';
 import InferProps from '../../../../types/InferProps';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import QuestionPageGetServerSideProps from '../../../../utils/QuestionPageGetServerSideProps';
+import { Role, User } from '../../types';
 
 type PageBodyResponse = {
   newUserRoles: string | string[];
@@ -18,8 +23,20 @@ type PageBodyResponse = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
-  const APPLICANT_ROLES_IDS = ['1', '2'];
-  const ADMIN_ROLES_IDS = ['3', '4', '5'];
+  const isOwner = (context.query?.isOwner === 'true') as boolean;
+  const ROLE_IDS = {
+    FIND: '1',
+    APPLICANT: '2',
+    ADMIN: '3',
+    SUPER_ADMIN: '4',
+    TECH_SUPPORT: '5',
+  };
+  const APPLICANT_ROLES_IDS = [ROLE_IDS.FIND, ROLE_IDS.APPLICANT];
+  const ADMIN_ROLES_IDS = [
+    ROLE_IDS.ADMIN,
+    ROLE_IDS.SUPER_ADMIN,
+    ROLE_IDS.TECH_SUPPORT,
+  ];
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
     let departmentPageUrl = `/super-admin-dashboard/user/${userId}/change-department`;
@@ -27,6 +44,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       String(role.id)
     );
     const newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
+    //case where admin checkbox is disabled (role isn't auto selected)
+    isOwner ? newUserRoles.push(ROLE_IDS.ADMIN) : null;
+
     const userDepartment = (await getUserById(userId, jwt)).department;
 
     if (hasAdminRole(newUserRoles) && !hasAdminRole(oldUserRoles)) {
@@ -47,6 +67,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         ({ name }) => name !== 'APPLICANT' && name !== 'FIND'
       ),
       userId,
+      isOwner,
     };
   }
 
@@ -88,7 +109,7 @@ const EditRoleWithId = ({
   formAction,
   fieldErrors,
 }: InferProps<typeof getServerSideProps>) => {
-  const { user, roles } = pageData;
+  const { user, roles, isOwner } = pageData;
   return (
     <>
       <Meta
@@ -111,21 +132,7 @@ const EditRoleWithId = ({
           >
             <span className="govuk-caption-l">{user.emailAddress}</span>
             <h1 className="govuk-heading-l">Change the user&apos;s Role</h1>
-
-            <Checkboxes
-              fieldErrors={fieldErrors}
-              fieldName="newUserRoles"
-              options={roles.map(({ id, label, description }) => ({
-                value: String(id),
-                label: (
-                  <>
-                    <span>{label}</span>
-                    <p className="govuk-hint">{description}</p>
-                  </>
-                ),
-              }))}
-              defaultCheckboxes={user.roles.map(({ id }) => String(id))}
-            />
+            {renderConditionalCheckboxes(isOwner, fieldErrors, roles, user)}
 
             <div className="govuk-button-group">
               <button className="govuk-button" data-module="govuk-button">
@@ -138,5 +145,51 @@ const EditRoleWithId = ({
     </>
   );
 };
+
+function renderConditionalCheckboxes(
+  isOwner: boolean,
+  fieldErrors: ValidationError[],
+  roles: Role[],
+  user: User
+) {
+  const adminCheckboxes = roles.filter(({ name }) => name === 'ADMIN');
+  if (isOwner) {
+    return (
+      <>
+        <div>
+          <p className="govuk-body govuk-!-margin-bottom-0">
+            While this user owns grants, you cannot demote them to an applicant.
+          </p>
+          <Checkboxes
+            fieldErrors={fieldErrors}
+            fieldName="newUserRoles"
+            options={roles.map(renderCheckbox)}
+            defaultCheckboxes={user.roles.map(({ id }) => String(id))}
+            disabledCheckboxes={adminCheckboxes.map(({ id }) => String(id))}
+          />
+        </div>
+      </>
+    );
+  } else {
+    return (
+      <Checkboxes
+        fieldErrors={fieldErrors}
+        fieldName="newUserRoles"
+        options={roles.map(renderCheckbox)}
+        defaultCheckboxes={user.roles.map(({ id }) => String(id))}
+      />
+    );
+  }
+}
+
+const renderCheckbox = ({ id, label, description }: Role) => ({
+  value: String(id),
+  label: (
+    <div>
+      <span>{label}</span>
+      <p className="govuk-hint">{description}</p>
+    </div>
+  ),
+});
 
 export default EditRoleWithId;

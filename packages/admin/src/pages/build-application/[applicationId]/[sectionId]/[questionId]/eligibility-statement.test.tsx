@@ -1,14 +1,14 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import axios from 'axios';
+import { merge } from 'lodash';
+import { GetServerSidePropsContext } from 'next';
+import { getGrantScheme } from '../../../../../services/SchemeService';
+import { updateSectionStatus } from '../../../../../services/SectionService';
+import { parseBody } from '../../../../../utils/parseBody';
 import EligibilityStatement, {
   getServerSideProps,
 } from './eligibility-statement.page';
-import { parseBody } from '../../../../../utils/parseBody';
-import { merge } from 'lodash';
-import { updateSectionStatus } from '../../../../../services/SectionService';
-import { getGrantScheme } from '../../../../../services/SchemeService';
-import { GetServerSidePropsContext } from 'next';
 
 jest.mock('axios');
 jest.mock('../../../../../utils/parseBody');
@@ -65,6 +65,9 @@ const getGetResponse = (overrides = {}) =>
             ],
           },
         ],
+        audit: {
+          version: 1,
+        },
       },
     },
     overrides
@@ -126,6 +129,7 @@ describe('Eligibility question page page', () => {
             pageCaption: 'Test App Name',
             csrfToken: 'testCSRFToken',
             applicationStatus: 'DRAFT',
+            version: 1,
           },
         });
       });
@@ -172,6 +176,7 @@ describe('Eligibility question page page', () => {
             pageCaption: 'Test App Name',
             csrfToken: 'testCSRFToken',
             applicationStatus: 'DRAFT',
+            version: 1,
           },
         });
       });
@@ -191,6 +196,9 @@ describe('Eligibility question page page', () => {
                   ],
                 },
               ],
+              audit: {
+                version: 1,
+              },
             },
           })
         );
@@ -208,6 +216,7 @@ describe('Eligibility question page page', () => {
             pageCaption: 'Test App Name',
             csrfToken: 'testCSRFToken',
             applicationStatus: 'DRAFT',
+            version: 1,
           },
         });
       });
@@ -240,6 +249,9 @@ describe('Eligibility question page page', () => {
 
         expect(result).toEqual({
           props: {
+            fieldErrors: [],
+            formAction: process.env.SUB_PATH + '/resolvedUrl',
+            csrfToken: 'testCSRFToken',
             backButtonHref: '/build-application/testAppId/dashboard',
             defaultValue: 'test display text',
             grantName: 'testGrantName',

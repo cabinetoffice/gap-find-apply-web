@@ -1,4 +1,11 @@
-import { generateErrorMessageFromStatusCode } from './serviceErrorHelpers';
+import {
+  generateErrorMessageFromStatusCode,
+  generateErrorPageMultipleEditors,
+  generateErrorPageParams,
+  generateErrorPageRedirect,
+  generateErrorPageRedirectV2,
+  generateErrorPageAdvertAlreadyPublished,
+} from './serviceErrorHelpers';
 
 // https://jestjs.io/docs/api#testeachtablename-fn-timeout
 describe('generateErrorMessageFromStatusCode', () => {
@@ -17,4 +24,106 @@ describe('generateErrorMessageFromStatusCode', () => {
       expect(generateErrorMessageFromStatusCode(code)).toEqual(expectedResult);
     }
   );
+});
+
+describe('generateErrorPage functions', () => {
+  const expectedErrorPageParams = {
+    errorInformation: 'some info',
+    linkAttributes: {
+      href: 'some-url',
+      linkText: 'Please return',
+      linkInformation: ' and try again.',
+    },
+  };
+  test('generateErrorPageParams', () => {
+    expect(
+      generateErrorPageParams(
+        expectedErrorPageParams.errorInformation,
+        expectedErrorPageParams.linkAttributes.href
+      )
+    ).toEqual(expectedErrorPageParams);
+  });
+
+  describe('generateErrorPageRedirect', () => {
+    test('exclude sub path', () => {
+      expect(
+        generateErrorPageRedirect(
+          expectedErrorPageParams.errorInformation,
+          expectedErrorPageParams.linkAttributes.href,
+          true
+        )
+      ).toEqual({
+        redirect: {
+          destination:
+            '/service-error?serviceErrorProps={"errorInformation":"some info","linkAttributes":{"href":"some-url","linkText":"Please return","linkInformation":" and try again."}}&excludeSubPath=true',
+          statusCode: 302,
+        },
+      });
+    });
+    test("don't exclude subpath", () => {
+      expect(
+        generateErrorPageRedirect(
+          expectedErrorPageParams.errorInformation,
+          expectedErrorPageParams.linkAttributes.href
+        )
+      ).toEqual({
+        redirect: {
+          destination:
+            '/service-error?serviceErrorProps={"errorInformation":"some info","linkAttributes":{"href":"some-url","linkText":"Please return","linkInformation":" and try again."}}',
+          statusCode: 302,
+        },
+      });
+    });
+  });
+
+  describe('generateErrorPageRedirectV2', () => {
+    test('renders params', () => {
+      expect(generateErrorPageRedirectV2('CODE', 'param_string')).toEqual({
+        redirect: {
+          destination: '/error-page/code/CODE?href=param_string',
+          statusCode: 302,
+        },
+      });
+    });
+    test('renders link', () => {
+      expect(
+        generateErrorPageRedirectV2('CODE', expectedErrorPageParams)
+      ).toEqual({
+        redirect: {
+          destination: '/error-page/code/CODE?href=some-url',
+          statusCode: 302,
+        },
+      });
+    });
+  });
+
+  test('generateErrorPageMultipleEditors', () => {
+    expect(generateErrorPageMultipleEditors('appId', false)).toEqual({
+      redirect: {
+        statusCode: 302,
+        destination: `/build-application/appId/error-multiple-editors`,
+      },
+    });
+  });
+
+  test('generateErrorPageMultipleEditors - section deleted case', () => {
+    expect(generateErrorPageMultipleEditors('appId', true)).toEqual({
+      redirect: {
+        statusCode: 302,
+        destination:
+          '/build-application/appId/error-multiple-editors?error=The section or question you were editing has been deleted and your changes could not be saved.',
+      },
+    });
+  });
+
+  test('generateErrorPageAdvertIsAlreadyPublished', () => {
+    expect(
+      generateErrorPageAdvertAlreadyPublished('schemeId', 'advertId')
+    ).toEqual({
+      redirect: {
+        statusCode: 302,
+        destination: '/scheme/schemeId/advert/advertId/error-multiple-editors',
+      },
+    });
+  });
 });

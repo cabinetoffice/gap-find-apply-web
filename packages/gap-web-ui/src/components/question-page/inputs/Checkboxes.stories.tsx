@@ -115,3 +115,9 @@ WithADivider.args = {
   options: ['Yes', 'No', 'Maybe? :O'],
   divideLastCheckboxOption: true,
 };
+
+export const WithPartiallyDisabledCheckboxes = Template.bind({});
+WithPartiallyDisabledCheckboxes.args = {
+  ...props,
+  disabledCheckboxes: ['British', 'Irish'],
+};

@@ -67,8 +67,8 @@ describe('should return the correct data for the multiResponse', () => {
     expect(screen.getByText('test2')).toBeDefined();
   });
 
-  it('should return a dash separated string if responseType is Date', () => {
+  it('should return an en-UK formatted date string if responseType is Date', () => {
     render(componentWithDateArray);
-    expect(screen.getByText('01-10-2015')).toBeDefined();
+    expect(screen.getByText('1 October 2015')).toBeDefined();
   });
 });

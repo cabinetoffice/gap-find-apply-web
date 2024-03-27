@@ -57,6 +57,8 @@ export const getServerSideProps = async (
       backButtonHref: `/build-application/${applicationId}/${sectionId}/question-type${queryString}`,
       sectionTitle,
       maxWords,
+      isEdit: !!questionId,
+      version: applicationFormSummary.audit.version,
     };
   }
 
@@ -117,7 +119,6 @@ export const getServerSideProps = async (
     jwt: sessionCookie,
     onErrorMessage: 'Something went wrong while trying to load this page.',
     handleRequest,
-    isEdit: !!questionId,
   });
 };
 
@@ -125,7 +126,7 @@ export default function AddWordCount({
   fieldErrors,
   formAction,
   previousValues,
-  pageData: { sectionTitle, backButtonHref, maxWords },
+  pageData: { sectionTitle, backButtonHref, maxWords, version },
   csrfToken,
 }: InferProps<typeof getServerSideProps>) {
   return (
@@ -162,6 +163,7 @@ export default function AddWordCount({
                 }
               />
             </div>
+            <input type="hidden" name="version" value={version} />
             <div className="govuk-grid-row govuk-button-group">
               <Button text="Save and continue" />
             </div>

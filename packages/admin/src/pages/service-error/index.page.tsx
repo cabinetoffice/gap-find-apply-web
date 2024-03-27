@@ -9,6 +9,9 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   );
   const excludeSubPath = query.excludeSubPath === 'true';
 
+  if (serviceError.linkAttributes === undefined)
+    serviceError.linkAttributes = {};
+
   if (serviceError.linkAttributes.href === undefined)
     serviceError.linkAttributes.href = '/dashboard';
 
@@ -40,15 +43,19 @@ const ServiceErrorPage = ({
               <p className="govuk-body">Try again later.</p>
               <p className="govuk-body">{serviceError.errorInformation}</p>
               {serviceError.linkAttributes && (
-                <p className="govuk-body">
-                  <CustomLink
-                    href={serviceError.linkAttributes.href}
-                    excludeSubPath={excludeSubPath}
-                  >
-                    {serviceError.linkAttributes.linkText}
-                  </CustomLink>
-                  {serviceError.linkAttributes.linkInformation}
-                </p>
+                <>
+                  <p className="govuk-body">
+                    <CustomLink
+                      href={serviceError.linkAttributes.href}
+                      excludeSubPath={excludeSubPath}
+                    >
+                      {serviceError.linkAttributes.linkText}
+                    </CustomLink>
+                  </p>
+                  <p className="govuk-body">
+                    {serviceError.linkAttributes.linkInformation}
+                  </p>
+                </>
               )}
             </div>
           </div>

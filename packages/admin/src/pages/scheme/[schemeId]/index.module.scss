@@ -1,0 +1,12 @@
+@import '~govuk-frontend/govuk/helpers/colour';
+
+.breakLine {
+  background-color: govuk-colour('blue');
+  padding: 0.08rem;
+}
+
+@media (min-width: 768px) {
+  .mb-sm-32 {
+    margin-bottom: 32px;
+  }
+}

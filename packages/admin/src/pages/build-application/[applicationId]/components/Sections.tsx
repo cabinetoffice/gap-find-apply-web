@@ -12,6 +12,7 @@ interface SectionsProps {
   sections: ApplicationFormSection[];
   applicationId: string;
   applicationStatus: ApplicationFormSummary['applicationStatus'];
+  version: number;
   formAction: string;
   csrfToken: string;
   formRef: React.RefObject<HTMLFormElement>;
@@ -24,6 +25,7 @@ const Sections = ({
   sections,
   applicationId,
   applicationStatus,
+  version,
   formAction,
   csrfToken,
   formRef,
@@ -42,6 +44,7 @@ const Sections = ({
       fullPageWidth={true}
       formRef={formRef}
     >
+      <input type="hidden" name="version" value={version} />
       {sections.map((section, sectionIndex) => {
         const isSectionEligibilityOrEssential =
           section.sectionId === 'ELIGIBILITY' ||

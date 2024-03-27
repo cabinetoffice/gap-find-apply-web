@@ -1,4 +1,5 @@
 import { FC } from 'react';
+
 interface ProcessMultiResponseProps {
   data: string | string[];
   id: string;
@@ -18,8 +19,20 @@ export const ProcessMultiResponse: FC<ProcessMultiResponseProps> = ({
     ? multiResponseData
     : multiResponseData.split(',');
   const isDate = questionType === 'Date';
-  const formatDate = (date: string[] | string) =>
-    Array.isArray(date) && date.some(Boolean) ? date.join('-') : '-';
+  const formatDate = (date: string[] | string) => {
+    if (Array.isArray(date) && date.some(Boolean)) {
+      return new Date(`${date[1]}-${date[0]}-${date[2]}`).toLocaleDateString(
+        'en-UK',
+        {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }
+      );
+    }
+
+    return '-';
+  };
 
   const displayMultiResponse = (
     <>

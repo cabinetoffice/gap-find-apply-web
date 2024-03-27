@@ -102,6 +102,13 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
           <div className="govuk-grid-column-two-thirds">
             <span className="govuk-caption-l">{pageData.emailAddress}</span>
             <h1 className="govuk-heading-l">Manage a user</h1>
+            {userHasSchemes && (
+              <p className="govuk-body">
+                While this user owns grants, you cannot demote them to an
+                applicant or delete their account. You must transfer those
+                grants to another owner first.
+              </p>
+            )}
             <h2 className="govuk-heading-m">User Information</h2>
             <SummaryList
               rows={[
@@ -120,7 +127,7 @@ const UserPage = (pageData: InferProps<typeof getServerSideProps>) => {
                   value: pageData.role?.label || 'Blocked',
                   action: pageData.role?.label ? (
                     <Link
-                      href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-roles`}
+                      href={`/super-admin-dashboard/user/${pageData.gapUserId}/change-roles?isOwner=${userHasSchemes}`}
                       className="govuk-link"
                     >
                       Change

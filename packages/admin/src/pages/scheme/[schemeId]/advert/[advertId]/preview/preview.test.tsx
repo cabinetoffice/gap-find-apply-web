@@ -87,7 +87,7 @@ describe('getServerSideProps', () => {
       const expectedResult = {
         redirect: {
           destination:
-            '/error-page/code/GRANT_ADVERT_NOT_FOUND?href=/scheme-list',
+            '/error-page/code/GRANT_ADVERT_NOT_FOUND?href=/dashboard',
           statusCode: 302,
         } as Redirect,
       };

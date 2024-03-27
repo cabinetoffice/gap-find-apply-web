@@ -15,11 +15,10 @@ const getPageTitle = (fieldErrors: string | any[], isEdit: boolean) =>
   } - Manage a grant`;
 
 const QuestionType = ({
-  pageData: { sectionName, defaultRadio, backButtonHref },
+  pageData: { sectionName, defaultRadio, backButtonHref, isEdit, version },
   formAction,
   fieldErrors,
   csrfToken,
-  isEdit,
 }: InferProps<typeof getServerSideProps>) => {
   return (
     <>
@@ -139,6 +138,7 @@ const QuestionType = ({
               },
             ]}
           />
+          <input type="hidden" name="version" value={version} />
           <Button text="Save and continue" />
         </FlexibleQuestionPageLayout>
       </div>

@@ -1,22 +1,22 @@
-import Meta from '../../../../components/layout/Meta';
 import {
+  Button,
   Checkboxes,
   FlexibleQuestionPageLayout,
-  Button,
   ValidationError,
 } from 'gap-web-ui';
-import { getApplicationFormSummary } from '../../../../services/ApplicationService';
-import { ApplicationFormSummary } from '../../../../types/ApplicationForm';
-import { updateSectionStatus } from '../../../../services/SectionService';
-import callServiceMethod from '../../../../utils/callServiceMethod';
-import { getSessionIdFromCookies } from '../../../../utils/session';
+import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../../components/custom-link/CustomLink';
+import Meta from '../../../../components/layout/Meta';
+import { getApplicationFormSummary } from '../../../../services/ApplicationService';
+import { updateSectionStatus } from '../../../../services/SectionService';
+import { ApplicationFormSummary } from '../../../../types/ApplicationForm';
+import InferProps from '../../../../types/InferProps';
+import callServiceMethod from '../../../../utils/callServiceMethod';
 import {
   generateErrorPageParams,
   generateErrorPageRedirect,
 } from '../../../../utils/serviceErrorHelpers';
-import InferProps from '../../../../types/InferProps';
-import { GetServerSidePropsContext } from 'next';
+import { getSessionIdFromCookies } from '../../../../utils/session';
 
 export const getServerSideProps = async ({
   resolvedUrl,

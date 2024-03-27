@@ -78,7 +78,7 @@ describe('PreviewInputSwitch', () => {
         {...getQuestion({ responseType: 'SingleFileUpload' })}
       />
     );
-    screen.getByTestId('document-upload');
+    screen.getByTestId('file-upload-input');
   });
 
   it('Should render a select input when the responseType is "Dropdown"', () => {

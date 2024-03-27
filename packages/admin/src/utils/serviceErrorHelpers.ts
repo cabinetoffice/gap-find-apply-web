@@ -37,31 +37,73 @@ const generateErrorPageRedirectV2 = (
   } as Redirect,
 });
 
+const generateErrorPageAdvertAlreadyPublished = (
+  schemeId: string,
+  advertId: string
+) => ({
+  redirect: {
+    statusCode: 302,
+    destination: `/scheme/${schemeId}/advert/${advertId}/error-multiple-editors`,
+  } as Redirect,
+});
+
+const generateErrorPageMultipleEditors = (
+  applicationId: string,
+  isSectionDeletedError: boolean
+) => {
+  const errorMessage =
+    isSectionDeletedError &&
+    'The section or question you were editing has been deleted and your changes could not be saved.';
+
+  return {
+    redirect: {
+      statusCode: 302,
+      destination: `/build-application/${applicationId}/error-multiple-editors${
+        errorMessage ? `?error=${errorMessage}` : ''
+      }`,
+    } as Redirect,
+  };
+};
+
 const generateErrorMessageFromStatusCode = (errorCode: string): string => {
-  let message = '';
   switch (errorCode.toString()) {
     case 'GRANT_ADVERT_NOT_FOUND':
-      message = 'The advert you are trying to access has not been found.';
-      break;
+      return 'The advert you are trying to access has not been found.';
     case 'GRANT_SCHEME_NOT_FOUND':
-      message = 'The scheme you are trying to access has not been found.';
-      break;
+      return 'The scheme you are trying to access has not been found.';
     case 'ACCESS_DENIED':
-      message = "You don't have permission to visit this page.";
-      break;
+      return "You don't have permission to visit this page.";
     case 'WRONG_ARGUMENT_TYPE_PASSED':
-      message = 'You supplied invalid data to our server.';
-      break;
+      return 'You supplied invalid data to our server.';
     default:
-      message = 'Something went wrong when trying to load the page.';
-      break;
+      return 'Something went wrong when trying to load the page.';
   }
-  return message;
+};
+
+const handleMultipleEditorsError = (err: any) => {
+  if (err?.response?.data?.error?.message.includes('MULTIPLE_EDITORS')) {
+    const isSectionDeletedError =
+      err?.response?.data?.error?.message ===
+      'MULTIPLE_EDITORS_SECTION_DELETED';
+
+    const applicationId = err.config.url
+      .split('/application-forms/')
+      .pop()
+      .split('/')[0];
+
+    return generateErrorPageMultipleEditors(
+      applicationId,
+      isSectionDeletedError
+    );
+  }
 };
 
 export {
+  handleMultipleEditorsError,
   generateErrorPageParams,
   generateErrorPageRedirect,
   generateErrorPageRedirectV2,
   generateErrorMessageFromStatusCode,
+  generateErrorPageMultipleEditors,
+  generateErrorPageAdvertAlreadyPublished,
 };

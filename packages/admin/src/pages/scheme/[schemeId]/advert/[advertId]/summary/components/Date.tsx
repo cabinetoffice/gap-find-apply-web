@@ -54,7 +54,7 @@ export function Date({
         } else {
           date.add(1, 'minute');
           formattedDateTime = date.format(
-            `D MMMM YYYY, ${midnightString} \\0:mm A`
+            `D MMMM YYYY, ${midnightString} \\12:mm A`
           );
         }
       } else {

@@ -7,6 +7,7 @@ import {
 import { GetServerSideProps } from 'next';
 import getConfig from 'next/config';
 import { toWordsOrdinal } from 'number-to-words';
+
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';
 import { getApplicationFormSummary } from '../../../../services/ApplicationService';
@@ -32,7 +33,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   const sessionCookie = getSessionIdFromCookies(req);
 
   let fieldErrors: ValidationError[] = [];
-  let options: string[] = [''];
+  let options: string[] = ['', ''];
   let applicationFormSummary: ApplicationFormSummary;
   let questionSummary: QuestionWithOptionsSummary;
 
@@ -56,21 +57,29 @@ export const getServerSideProps: GetServerSideProps = async ({
     (section) => section.sectionId === sectionId
   )?.sectionTitle;
 
-  const result = await callServiceMethod(
-    req,
-    res,
-    async (body: any) => {
-      options = body.options;
+  function processBody(body: any) {
+    return Object.keys(body).reduce((array, key) => {
+      if (key.startsWith('options')) {
+        array.push(...body[key]);
+      } else if (key.startsWith('delete_')) {
+        const deleteOptionIndex = Number(key.split('_')[1]);
+        array.splice(deleteOptionIndex, 1);
+      }
+      return array;
+    }, [] as string[]);
+  }
 
-      if ('add-another-option' in body) {
+  async function handleOptions(body: any, options: string[]) {
+    const { optional, ...restOfQuestionSummary } = questionSummary;
+    // switch expression 'true' for evaluation of boolean case labels
+    switch (true) {
+      case 'add-another-option' in body:
         options.push('');
 
         return {
           data: 'OPTION_ADDED',
         };
-      } else {
-        const { optional, ...restOfQuestionSummary } = questionSummary;
-
+      case 'save-question' in body:
         await postQuestion(
           getSessionIdFromCookies(req),
           applicationId,
@@ -85,7 +94,19 @@ export const getServerSideProps: GetServerSideProps = async ({
         return {
           data: 'QUESTION_SAVED',
         };
-      }
+      default:
+        return {
+          data: 'OPTION_REMOVED',
+        };
+    }
+  }
+  const result = await callServiceMethod(
+    req,
+    res,
+    async (body: any) => {
+      options = processBody(body);
+
+      return handleOptions(body, options);
     },
     (response: { data: string }) => {
       return response.data === 'QUESTION_SAVED'
@@ -183,8 +204,21 @@ const QuestionOptions = ({
                 fieldName={`options[${index}]`}
                 defaultValue={option}
                 fieldErrors={fieldErrors}
+                fluidWidth="three-quarters"
                 TitleTag="h2"
-              />
+              >
+                {options.length > 2 && (
+                  <button
+                    name={`delete_${index}`}
+                    className="button--tertiary govuk-!-margin-left-3"
+                    aria-label={`Delete option ${toWordsOrdinal(index + 1)}`}
+                    data-module="govuk-button"
+                    data-cy={`cy_questionOptions-deleteOption-${index + 1}`}
+                  >
+                    Delete
+                  </button>
+                )}
+              </TextInput>
             );
           })}
 

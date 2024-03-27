@@ -1,3 +1,4 @@
+import { LastUpdatedBy } from './../pages/scheme/components/BuildAdvertContentHelper';
 import axios from 'axios';
 import getConfig from 'next/config';
 import AdvertStatusEnum from '../enums/AdvertStatus';
@@ -16,8 +17,11 @@ import {
   unscheduleAdvert,
 } from './AdvertPageService';
 import { PatchAdvertSectionPageResponseBody } from './AdvertPageService.d';
+import { decrypt } from '../utils/encryption';
 
 jest.mock('axios');
+
+jest.mock('../utils/encryption');
 
 describe('AdvertPageService', () => {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -47,7 +51,7 @@ describe('AdvertPageService', () => {
         `${BACKEND_HOST}/grant-advert/create`,
         {
           grantSchemeId: schemeId,
-          name: advertName,
+          advertName,
         },
         { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
       );
@@ -211,11 +215,16 @@ describe('AdvertPageService', () => {
   });
 
   describe('getAdvertPublishInformation function', () => {
-    const expectedResponse: InferServiceMethodResponse<
+    const getExpectedResponse = (): InferServiceMethodResponse<
       typeof getGrantAdvertPublishInformationBySchemeId
-    > = {
+    > => ({
       status: 200,
       data: {
+        created: '2023-03-30T23:01:00Z',
+        validLastUpdated: true,
+        lastPublishedDate: '2023-03-30T23:01:00Z',
+        lastUpdatedByEmail: 'testUser',
+        lastUpdated: '2023-03-30T23:01:00Z',
         grantAdvertId: '2476958a-c9ab-447b-8b48-8b34b87dee0c',
         grantAdvertStatus: AdvertStatusEnum.DRAFT,
         contentfulSlug: null,
@@ -225,19 +234,23 @@ describe('AdvertPageService', () => {
         lastUnpublishedDate: null,
         unpublishedDate: null,
       },
-    };
+    });
 
     it('Should send valid get request to backend', async () => {
       mockedAxios.get.mockResolvedValue({
-        data: expectedResponse,
+        data: getExpectedResponse(),
       });
 
-      await getGrantAdvertPublishInformationBySchemeId(sessionId, advertId);
+      await getGrantAdvertPublishInformationBySchemeId(
+        sessionId,
+        'jwt',
+        advertId
+      );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
         `${BASE_ADVERT_URL}/publish-information`,
         {
-          headers: { Cookie: 'SESSION=testSessionId;' },
+          headers: { Cookie: 'SESSION=testSessionId; user-service-token=jwt' },
           withCredentials: true,
           params: {
             grantSchemeId: 'testAdvertId',
@@ -247,19 +260,24 @@ describe('AdvertPageService', () => {
     });
 
     it('Should return the data returned from axios', async () => {
-      mockedAxios.get.mockResolvedValue(expectedResponse);
+      mockedAxios.get.mockResolvedValue(getExpectedResponse());
+
+      (decrypt as jest.Mock).mockResolvedValue('testUser');
 
       const response = await getGrantAdvertPublishInformationBySchemeId(
         sessionId,
+        'jwt',
         advertId
       );
 
-      expect(response).toStrictEqual(
+      expect(decrypt).toHaveBeenCalledWith('testUser');
+
+      expect(response).toMatchObject(
         expect.objectContaining<
           InferServiceMethodResponse<
             typeof getGrantAdvertPublishInformationBySchemeId
           >
-        >(expectedResponse)
+        >(getExpectedResponse())
       );
     });
   });

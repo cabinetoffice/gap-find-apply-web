@@ -4,8 +4,20 @@
   font-weight: $govuk-font-weight-regular;
 }
 
+.fw-bold {
+  font-weight: bold !important;
+}
+
 @media (min-width: 40.0625em) {
   .key-width-45percent-sm {
-        width: 45% !important;
+    width: 45% !important;
+  }
+
+  .equal-columns {
+    width: 30% !important;
+  }
+
+  .text-left {
+    text-align: left !important;
   }
 }

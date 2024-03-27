@@ -1,6 +1,5 @@
 import {
   Button,
-  ErrorBanner,
   FlexibleQuestionPageLayout,
   Radio,
   TextArea,
@@ -50,6 +49,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     ? decodeURIComponent(context.query.comment as string)
     : null;
 
+  const redirect: () => string = () => {
+    switch (context.query.redirect) {
+      case 'manage-grant':
+        return `/scheme/${schemeId}`;
+      case 'add-grant':
+        return `/new-scheme/name`;
+      default:
+        return '/';
+    }
+  };
+
   const url = `${getConfig().serverRuntimeConfig.backendHost}/feedback/add`;
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
@@ -82,7 +92,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     jwt: getSessionIdFromCookies(context.req),
     onErrorMessage: 'Failed to send feedback.',
     onSuccessRedirectHref: () => {
-      return `/scheme/${schemeId}`;
+      return redirect();
     },
   });
 }
@@ -113,6 +123,7 @@ const Survey = ({
             formAction={formAction}
             fieldErrors={fieldErrors}
             csrfToken={csrfToken}
+            fullPageWidth={true}
           >
             <Radio
               TitleTag="h1"

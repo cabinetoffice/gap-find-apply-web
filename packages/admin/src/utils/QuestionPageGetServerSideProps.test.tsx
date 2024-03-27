@@ -38,7 +38,6 @@ describe('QuestionPageGetServerSideProps', () => {
           formAction: process.env.SUB_PATH + '/testResolvedURL',
           previousValues: null,
           pageData: { '1': 'testResponse' },
-          isEdit: false,
         },
       });
     });
@@ -61,6 +60,29 @@ describe('QuestionPageGetServerSideProps', () => {
       expectObjectEquals(response, {
         redirect: {
           destination: '/error-page/code/401?href=/testResolvedURL',
+          statusCode: 302,
+        },
+      });
+    });
+
+    it('should redirect to the multiple editors error page', async () => {
+      mockGetDataFunction.mockRejectedValueOnce({
+        config: { url: '/application-forms/application-id' },
+        response: {
+          data: {
+            error: { message: 'MULTIPLE_EDITORS_SECTION_DELETED' },
+          },
+        },
+      });
+
+      const response = await QuestionPageGetServerSideProps(
+        getProps(getDefaultProps)
+      );
+
+      expectObjectEquals(response, {
+        redirect: {
+          destination:
+            '/build-application/application-id/error-multiple-editors?error=The section or question you were editing has been deleted and your changes could not be saved.',
           statusCode: 302,
         },
       });
@@ -209,7 +231,6 @@ describe('QuestionPageGetServerSideProps', () => {
           formAction: process.env.SUB_PATH + '/testResolvedURL',
           previousValues: { '1': 'testNewResponse' },
           pageData: { '1': 'testResponse' },
-          isEdit: false,
         },
       });
     });

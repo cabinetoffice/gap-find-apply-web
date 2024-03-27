@@ -18,12 +18,13 @@ export const getServerSideProps: GetServerSideProps = async ({
   resolvedUrl,
   req,
   res,
-  query: { backTo },
+  query,
 }) => {
   const { applicationId, sectionId, questionId } = params as Record<
     string,
     string
   >;
+  const { backTo, version } = query as Record<string, string>;
   const errorPageParams = {
     errorInformation: 'Something went wrong while trying to delete a question',
     linkAttributes: {
@@ -45,7 +46,8 @@ export const getServerSideProps: GetServerSideProps = async ({
           getSessionIdFromCookies(req),
           applicationId,
           sectionId,
-          questionId
+          questionId,
+          version
         );
       } else if (body.deleteBool === 'false') {
         // do nothing, redirect back to overview

@@ -78,7 +78,7 @@ describe('PreviewInputSwitch', () => {
         {...getQuestion({ responseType: 'SingleFileUpload' })}
       />
     );
-    screen.getByTestId('document-upload');
+    screen.getByTestId('file-upload-input');
   });
 
   it('Should render a select input when the responseType is "Dropdown"', () => {
@@ -99,5 +99,30 @@ describe('PreviewInputSwitch', () => {
     );
     screen.getByRole('checkbox', { name: 'Option 1' });
     screen.getByRole('checkbox', { name: 'Option 2' });
+  });
+
+  it('Should render a disabled textboxes when responseType is "Numeric"', () => {
+    render(
+      <PreviewInputSwitch
+        {...getQuestion({
+          responseType: 'Numeric',
+        })}
+      />
+    );
+    const disabledTextbox = screen.getByRole('textbox');
+    expect(disabledTextbox).toBeDisabled;
+  });
+
+  it('Should render several disabled textboxes when responseType is "AddressInput"', () => {
+    render(
+      <PreviewInputSwitch
+        {...getQuestion({
+          responseType: 'AddressInput',
+        })}
+      />
+    );
+    const disabledTextboxes: HTMLElement[] = screen.getAllByRole('textbox');
+    expect(disabledTextboxes).toHaveLength(5);
+    expect(disabledTextboxes).toBeDisabled;
   });
 });

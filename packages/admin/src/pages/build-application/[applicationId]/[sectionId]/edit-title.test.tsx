@@ -15,6 +15,9 @@ beforeEach(() => {
       { sectionId: 'testSectionId', sectionTitle: 'Custom section name' },
     ],
     applicationStatus: 'DRAFT',
+    audit: {
+      version: 1,
+    },
   });
 });
 

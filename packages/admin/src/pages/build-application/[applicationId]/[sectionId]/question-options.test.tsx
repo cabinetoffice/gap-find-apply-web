@@ -1,15 +1,17 @@
 import '@testing-library/jest-dom';
+
 import { render, screen } from '@testing-library/react';
-import { QuestionSummary } from '../../../../types/QuestionSummary';
-import QuestionOptions, { getServerSideProps } from './question-options.page';
+import { ValidationError } from 'gap-web-ui';
 import { merge } from 'lodash';
 import { Redirect } from 'next';
+
 import { getApplicationFormSummary } from '../../../../services/ApplicationService';
-import { getSummaryFromSession } from '../../../../services/SessionService';
 import { postQuestion } from '../../../../services/QuestionService';
+import { getSummaryFromSession } from '../../../../services/SessionService';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
+import { QuestionSummary } from '../../../../types/QuestionSummary';
 import { parseBody } from '../../../../utils/parseBody';
-import { ValidationError } from 'gap-web-ui';
+import QuestionOptions, { getServerSideProps } from './question-options.page';
 
 jest.mock('../../../../services/ApplicationService');
 jest.mock('../../../../services/QuestionService');
@@ -155,6 +157,24 @@ describe('Question Options', () => {
       );
       expect(document.title).toBe('Error: Add a question - Manage a grant');
     });
+
+    it('Should NOT render "Delete" button for each option when there are 2 or less options present', () => {
+      render(component);
+      expect(screen.queryByRole('button', { name: 'Delete' })).toBeFalsy();
+    });
+
+    it('Should render "Delete" button for each option when there are 3 or more options present', () => {
+      render(
+        <QuestionOptions
+          {...getProps({
+            options: ['Option one', 'Option two', 'Option three'],
+          })}
+        />
+      );
+      screen.getByRole('button', { name: 'Delete option first' });
+      screen.getByRole('button', { name: 'Delete option second' });
+      screen.getByRole('button', { name: 'Delete option third' });
+    });
   });
 
   describe('getServerSideProps', () => {
@@ -255,12 +275,12 @@ describe('Question Options', () => {
         );
       });
 
-      it('Should return a single blank option', async () => {
+      it('Should return two blank options', async () => {
         const result = (await getServerSideProps(
           getContext()
         )) as NextGetServerSidePropsResponse;
 
-        expect(result.props.options).toStrictEqual(['']);
+        expect(result.props.options).toStrictEqual(['', '']);
       });
 
       it('Should redirect to error page if we are unable to get application summary', async () => {
@@ -337,6 +357,7 @@ describe('Question Options', () => {
         it('Should redirect to dashboard after successfully adding question with options', async () => {
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
+            'save-question': '',
           });
 
           (postQuestion as jest.Mock).mockResolvedValue({});
@@ -363,6 +384,7 @@ describe('Question Options', () => {
         it('Should redirect to service error page if saving throws an error', async () => {
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
+            'save-question': '',
           });
 
           (postQuestion as jest.Mock).mockRejectedValue({});
@@ -377,6 +399,7 @@ describe('Question Options', () => {
         it('Should return field errors if they are returned from the backend.', async () => {
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
+            'save-question': '',
           });
           (postQuestion as jest.Mock).mockRejectedValue({
             response: { data: { fieldErrors: validationErrors } },
@@ -394,6 +417,7 @@ describe('Question Options', () => {
         it('Should parse class level errors into field level errors', async () => {
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
+            'save-question': '',
           });
           (postQuestion as jest.Mock).mockRejectedValue({
             response: { data: { fieldErrors: validationErrors } },
@@ -406,6 +430,34 @@ describe('Question Options', () => {
           expect(result.props.fieldErrors).toStrictEqual(
             parsedValidationErrors
           );
+        });
+      });
+      describe('Delete an option', () => {
+        it('Should return an array of current options minus one option when "Delete" button for the option is clicked', async () => {
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two', 'option three'],
+            delete_0: '',
+          });
+
+          const result = (await getServerSideProps(
+            postContext()
+          )) as NextGetServerSidePropsResponse;
+
+          expect(result.props.options).toStrictEqual([
+            'option two',
+            'option three',
+          ]);
+        });
+
+        it('Should NOT try to update the question options when "Delete" button is clicked', async () => {
+          mockParseBody.mockResolvedValue({
+            options: ['option one', 'option two', 'option three'],
+            delete_0: '',
+          });
+
+          await getServerSideProps(postContext());
+
+          expect(postQuestion).not.toHaveBeenCalled();
         });
       });
     });

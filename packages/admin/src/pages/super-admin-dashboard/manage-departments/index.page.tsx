@@ -1,19 +1,20 @@
 import { SummaryList } from 'gap-web-ui';
-import { getAllDepartments } from '../../../services/SuperAdminService';
-import { getUserTokenFromCookies } from '../../../utils/session';
-import InferProps from '../../../types/InferProps';
-import Meta from '../../../components/layout/Meta';
-import CustomLink from '../../../components/custom-link/CustomLink';
-import { GetServerSidePropsContext } from 'next';
-import { Department } from '../types';
 import { Row } from 'gap-web-ui/dist/cjs/components/summary-list/SummaryList';
-import styles from './manage-departments.module.scss';
+import { GetServerSidePropsContext } from 'next';
+import CustomLink from '../../../components/custom-link/CustomLink';
+import Meta from '../../../components/layout/Meta';
+import { getAllDepartments } from '../../../services/SuperAdminService';
+import InferProps from '../../../types/InferProps';
 import { fetchDataOrGetRedirect } from '../../../utils/fetchDataOrGetRedirect';
+import { getUserTokenFromCookies } from '../../../utils/session';
+import { Department } from '../types';
+import styles from './manage-departments.module.scss';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const getDepartmentsAndUserId = async (jwt: string) => ({
     departments: await getAllDepartments(jwt),
     userId: context.query?.userId || '',
+    newUserRoles: context.query?.newRoles || '',
   });
 
   const getPageData = () =>
@@ -25,6 +26,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const ManageDepartmentsPage = ({
   departments,
   userId,
+  newUserRoles,
 }: InferProps<typeof getServerSideProps>) => {
   const rows = departments.map((dept) => getDepartmentRow(dept));
   rows.splice(0, 0, getManageDepartmentsHeadingRow());
@@ -36,7 +38,9 @@ const ManageDepartmentsPage = ({
         isBackButton
         href={
           userId
-            ? `/super-admin-dashboard/user/${userId}/change-department`
+            ? newUserRoles.length > 0
+              ? `/super-admin-dashboard/user/${userId}/change-department?newRoles=${newUserRoles}`
+              : `/super-admin-dashboard/user/${userId}/change-department`
             : '/super-admin-dashboard/'
         }
       />

@@ -2,20 +2,45 @@ import CustomLink from '../../../components/custom-link/CustomLink';
 import { getAdvertPublishInformationBySchemeIdResponse } from '../../../services/AdvertPageService.d';
 import Scheme from '../../../types/Scheme';
 import getConfig from 'next/config';
-import moment from 'moment';
 import AdvertStatusEnum from '../../../enums/AdvertStatus';
+import {
+  ValidAdvertData,
+  getAdvertLink,
+  LastUpdatedBy,
+  GrantStatus,
+  AdvertData,
+} from './BuildAdvertContentHelper';
 
-const publishedFindAGrantLinkInformation = (
-  linkToAdvertInFindAGrant: string
-) => (
+type PublishedGrantInfoProps = {
+  linkToAdvertInFindAGrant: string;
+  grantAdvertData: ValidAdvertData;
+};
+
+type BuildAdvertProps = {
+  schemeId: Scheme['schemeId'];
+  grantAdvert: getAdvertPublishInformationBySchemeIdResponse;
+};
+
+type ViewAdvertContentProps = {
+  schemeId: string;
+  linkToAdvertInFindAGrant: string;
+  grantAdvertData: ValidAdvertData;
+};
+
+const PublishedGrantInfo = ({
+  linkToAdvertInFindAGrant,
+  grantAdvertData,
+}: PublishedGrantInfoProps) => (
   <div
     className="govuk-!-margin-bottom-6"
     data-cy="cy-published-advert-extra-information"
   >
     <p className="govuk-body">
-      An advert for this grant is live on Find a grant. The link for your advert
-      is below:
+      An advert for this grant is live on Find a grant.
     </p>
+
+    <LastUpdatedBy grantAdvertData={grantAdvertData} />
+    <p className="govuk-body">The link for your advert is below:</p>
     <CustomLink
       href={linkToAdvertInFindAGrant}
       customStyle="govuk-!-font-size-19 break-all-words"
@@ -27,46 +52,79 @@ const publishedFindAGrantLinkInformation = (
   </div>
 );
 
-const informationForGrantAdvertStatus = (
-  grantAdvertData: getAdvertPublishInformationBySchemeIdResponse
-) => {
-  const scheduledDate = moment(grantAdvertData?.data?.openingDate)
-    .utc()
-    .format('D MMMM YYYY');
-  return grantAdvertData?.data?.grantAdvertStatus === AdvertStatusEnum.PUBLISHED
-    ? 'You can make changes to your advert, or unpublish it, here:'
-    : grantAdvertData?.data?.grantAdvertStatus === AdvertStatusEnum.SCHEDULED
-    ? `Your advert is scheduled to be published on ${scheduledDate}`
-    : 'You have created an advert, but it is not live on Find a grant';
-};
-
-const advertLinkRedirectBasedOnStatus = (
-  grantAdvertData: getAdvertPublishInformationBySchemeIdResponse
-) => {
-  return grantAdvertData?.data?.grantAdvertStatus === AdvertStatusEnum.PUBLISHED
-    ? 'summary'
-    : grantAdvertData?.data?.grantAdvertStatus === AdvertStatusEnum.SCHEDULED
-    ? 'summary'
-    : 'section-overview';
-};
-
-const viewOrChangeLink = (
-  redirectDestinationBasedOnStatus: any,
-  schemeId: string,
-  grantAdvertId: string | undefined
-) => (
-  <CustomLink
-    href={`/scheme/${schemeId}/advert/${grantAdvertId}/${redirectDestinationBasedOnStatus}`}
-    customStyle="govuk-!-font-size-19"
-    dataCy="cyViewOrChangeYourAdvert-link"
-  >
-    View or change your advert
-  </CustomLink>
+const PublishedAdvertHeader = ({
+  linkToAdvertInFindAGrant,
+  grantAdvertData,
+}: PublishedGrantInfoProps) => (
+  <>
+    <PublishedGrantInfo
+      linkToAdvertInFindAGrant={linkToAdvertInFindAGrant}
+      grantAdvertData={grantAdvertData}
+    />
+    <GrantStatus grantAdvertData={grantAdvertData} />
+  </>
 );
 
-const BuildAdvert = ({ schemeId, grantAdvertData }: BuildAdvertProps) => {
+const GenericAdvertHeader = ({ grantAdvertData }: AdvertData) => (
+  <>
+    <GrantStatus grantAdvertData={grantAdvertData} />
+    <LastUpdatedBy grantAdvertData={grantAdvertData} />
+  </>
+);
+
+const AdvertContent = ({
+  schemeId,
+  linkToAdvertInFindAGrant,
+  grantAdvertData,
+}: ViewAdvertContentProps) => {
+  const viewAdvertHref = `/scheme/${schemeId}/advert/${
+    grantAdvertData.grantAdvertId
+  }/${getAdvertLink(grantAdvertData)}`;
+
+  return (
+    <div className="govuk-!-margin-bottom-6">
+      {grantAdvertData.grantAdvertStatus === AdvertStatusEnum.PUBLISHED ? (
+        <PublishedAdvertHeader
+          linkToAdvertInFindAGrant={linkToAdvertInFindAGrant}
+          grantAdvertData={grantAdvertData}
+        />
+      ) : (
+        <GenericAdvertHeader grantAdvertData={grantAdvertData} />
+      )}
+
+      <CustomLink
+        href={viewAdvertHref}
+        customStyle="govuk-!-font-size-19"
+        dataCy="cyViewOrChangeYourAdvert-link"
+      >
+        View or change your advert
+      </CustomLink>
+    </div>
+  );
+};
+
+const CreateAdvert = ({ schemeId }: { schemeId: string }) => (
+  <div>
+    <p className="govuk-body" data-cy="cy-create-an-advert-text">
+      Create and publish an advert for your grant.
+    </p>
+    <CustomLink
+      href={`/scheme/${schemeId}/advert/name`}
+      dataCy="cyBuildAdvert"
+      isButton
+    >
+      Create advert
+    </CustomLink>
+  </div>
+);
+
+const BuildAdvert = ({
+  schemeId,
+  grantAdvert: { status, data },
+}: BuildAdvertProps) => {
   const { publicRuntimeConfig } = getConfig();
-  const linkToAdvertInFindAGrant = `${publicRuntimeConfig.FIND_A_GRANT_URL}/grants/${grantAdvertData?.data?.contentfulSlug}`;
+  const linkToAdvertInFindAGrant = `${publicRuntimeConfig.FIND_A_GRANT_URL}/grants/${data?.contentfulSlug}`;
+
   return (
     <>
       <h2
@@ -77,47 +135,17 @@ const BuildAdvert = ({ schemeId, grantAdvertData }: BuildAdvertProps) => {
         Grant advert
       </h2>
 
-      {grantAdvertData?.status === 200 ? (
-        <div className="govuk-!-margin-bottom-6">
-          {grantAdvertData?.data?.grantAdvertStatus ===
-            AdvertStatusEnum.PUBLISHED &&
-            publishedFindAGrantLinkInformation(linkToAdvertInFindAGrant)}
-
-          <div>
-            <p
-              className="govuk-body"
-              data-cy="cy-information-published-status-tag-line"
-            >
-              {informationForGrantAdvertStatus(grantAdvertData)}
-            </p>
-            {viewOrChangeLink(
-              advertLinkRedirectBasedOnStatus(grantAdvertData),
-              schemeId,
-              grantAdvertData?.data?.grantAdvertId
-            )}
-          </div>
-        </div>
+      {status === 200 && data ? (
+        <AdvertContent
+          grantAdvertData={data}
+          schemeId={schemeId}
+          linkToAdvertInFindAGrant={linkToAdvertInFindAGrant}
+        />
       ) : (
-        <div>
-          <p className="govuk-body" data-cy="cy-create-an-advert-text">
-            Create and publish an advert for your grant.
-          </p>
-          <CustomLink
-            href={`/scheme/${schemeId}/advert/name`}
-            dataCy="cyBuildAdvert"
-            isButton
-          >
-            Create advert
-          </CustomLink>
-        </div>
+        <CreateAdvert schemeId={schemeId} />
       )}
     </>
   );
-};
-
-type BuildAdvertProps = {
-  schemeId: Scheme['schemeId'];
-  grantAdvertData: getAdvertPublishInformationBySchemeIdResponse;
 };
 
 export default BuildAdvert;

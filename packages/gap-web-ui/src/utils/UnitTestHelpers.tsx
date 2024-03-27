@@ -35,7 +35,11 @@ const getContext = (
     {
       req: {
         method: 'GET',
-        cookies: { 'gap-test': 'testSessionId' },
+        cookies: {
+          'gap-test': 'testSessionId',
+          'user-service-token': 'testJWT',
+          sessionId: 'testSessionId',
+        },
       },
       res: {
         getHeader: () => 'some-csrf-token',

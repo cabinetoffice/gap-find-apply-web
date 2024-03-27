@@ -25,37 +25,37 @@ const QuestionRowActionComponent = ({
   handleOnUpDownButtonClick,
 }: QuestionRowActionComponentProps) => {
   return (
-    <div className="govuk-!-text-align-right govuk-width-container govuk-!-padding-top-4 govuk-!-padding-right-2">
-      <div className="govuk-grid-row">
-        <button
-          className={`govuk-button govuk-button--secondary govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
-          data-module="govuk-button"
-          data-cy="cyUpButton"
-          name={`Up/${question.questionId}`}
-          disabled={questionIndex === 0}
-          onClick={handleOnUpDownButtonClick}
-          aria-label={`Move question ${question.fieldTitle} up`}
-        >
-          Up
-        </button>
-        <button
-          className={`govuk-button govuk-button--secondary govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
-          data-module="govuk-button"
-          data-cy="cyDownButton"
-          name={`Down/${question.questionId}`}
-          disabled={questionIndex === questions.length - 1}
-          onClick={handleOnUpDownButtonClick}
-          aria-label={`Move question ${question.fieldTitle} down`}
-        >
-          Down
-        </button>
+    <div
+      className={`govuk-!-text-align-right govuk-!-padding-top-4 ${styles['question-controls']}`}
+    >
+      <button
+        className={`govuk-button govuk-button--secondary govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
+        data-module="govuk-button"
+        data-cy="cyUpButton"
+        name={`Up/${question.questionId}`}
+        disabled={questionIndex === 0}
+        onClick={handleOnUpDownButtonClick}
+        aria-label={`Move question ${question.fieldTitle} up`}
+      >
+        Up
+      </button>
+      <button
+        className={`govuk-button govuk-button--secondary govuk-!-margin-right-2 govuk-!-margin-bottom-0 ${styles['button']}`}
+        data-module="govuk-button"
+        data-cy="cyDownButton"
+        name={`Down/${question.questionId}`}
+        disabled={questionIndex === questions.length - 1}
+        onClick={handleOnUpDownButtonClick}
+        aria-label={`Move question ${question.fieldTitle} down`}
+      >
+        Down
+      </button>
 
-        <CustomLink
-          href={`/build-application/${applicationId}/${section.sectionId}/${question.questionId}/edit/question-content`}
-        >
-          Edit
-        </CustomLink>
-      </div>
+      <CustomLink
+        href={`/build-application/${applicationId}/${section.sectionId}/${question.questionId}/edit/question-content`}
+      >
+        Edit
+      </CustomLink>
     </div>
   );
 };

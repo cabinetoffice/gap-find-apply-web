@@ -76,7 +76,7 @@ describe('Scheme summary page', () => {
 
     beforeEach(() => {
       mockedGetSummaryFromSession.mockResolvedValue({
-        name: 'mockName',
+        grantName: 'mockName',
         ggisReference: 'mockGGiSReference',
       });
       process.env.SESSION_COOKIE_NAME = 'session_id';

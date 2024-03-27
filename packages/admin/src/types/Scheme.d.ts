@@ -8,6 +8,10 @@ interface Scheme {
   contactEmail?: string;
   applicationFormId?: string;
   version?: string;
+  lastUpdatedDate: string;
+  lastUpdatedByADeletedUser: boolean;
+  lastUpdatedBy: string;
+  encryptedLastUpdatedBy: string;
 }
 
 export default Scheme;

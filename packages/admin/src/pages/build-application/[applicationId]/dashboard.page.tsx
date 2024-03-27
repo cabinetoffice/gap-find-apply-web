@@ -16,6 +16,7 @@ import InferProps from '../../../types/InferProps';
 import callServiceMethod from '../../../utils/callServiceMethod';
 import { generateErrorPageParams } from '../../../utils/serviceErrorHelpers';
 import { useLayoutEffect, useState, useRef } from 'react';
+import Link from 'next/link';
 
 export const getServerSideProps = async ({
   params,
@@ -35,14 +36,15 @@ export const getServerSideProps = async ({
     res,
     async (body) => {
       const sessionId = getSessionIdFromCookies(req);
-      const params = Object.keys(body)[0].split('/');
+      const params = Object.keys(body)[1].split('/');
       const increment = params[0] === 'Up' ? -1 : 1;
       const sectionId = params[1];
       await handleSectionOrdering(
         increment,
         sectionId,
         applicationId,
-        sessionId
+        sessionId,
+        body.version
       );
     },
     `/build-application/${applicationId}/dashboard?scrollPosition=${scrollPosition}`,
@@ -72,7 +74,7 @@ export const getServerSideProps = async ({
       errorInformation:
         'Something went wrong while trying to create an application',
       linkAttributes: {
-        href: `/scheme-list`,
+        href: `/dashboard`,
         linkText: 'Please find your scheme application form and continue.',
         linkInformation: 'Your previous progress has been saved.',
       },
@@ -100,6 +102,7 @@ export const getServerSideProps = async ({
       applicationId: applicationFormSummary.grantApplicationId,
       grantSchemeId: applicationFormSummary.grantSchemeId,
       applicationStatus: applicationFormSummary.applicationStatus,
+      version: applicationFormSummary.audit.version,
       recentlyUnpublished: !!recentlyUnpublished,
       applyToApplicationUrl,
       resolvedUrl: process.env.SUB_PATH + resolvedUrl,
@@ -115,6 +118,7 @@ const Dashboard = ({
   applicationId,
   grantSchemeId,
   applicationStatus,
+  version,
   recentlyUnpublished,
   applyToApplicationUrl,
   resolvedUrl,
@@ -122,6 +126,7 @@ const Dashboard = ({
   scrollPosition,
 }: InferProps<typeof getServerSideProps>) => {
   const { publicRuntimeConfig } = getConfig();
+
   const findAGrantLink = publicRuntimeConfig.FIND_A_GRANT_URL;
 
   const isPublishDisabled = sections.some((section) => {
@@ -148,7 +153,6 @@ const Dashboard = ({
       behavior: 'instant' as ScrollBehavior,
     });
   }, []);
-
   return (
     <>
       <Meta title="Build an application form - Manage a grant" />
@@ -169,7 +173,6 @@ const Dashboard = ({
             Published
           </strong>
         )}
-
         {recentlyUnpublished && (
           <div className="govuk-panel govuk-panel--confirmation">
             <h1
@@ -180,17 +183,13 @@ const Dashboard = ({
             </h1>
           </div>
         )}
-
         <span className="govuk-caption-l" data-cy="cyApplicationTitle">
           {grantApplicationName}
         </span>
-
         <h1 className="govuk-heading-l">Build an application form</h1>
-
         <p className="govuk-body">
           Use this service to set up an application form for your grant.
         </p>
-
         <p className="govuk-body">
           Applicants will use this application form to apply on{' '}
           <a
@@ -203,16 +202,45 @@ const Dashboard = ({
           </a>
           {'.'}
         </p>
-
         <Sections
           sections={sections}
           applicationId={applicationId}
           applicationStatus={applicationStatus}
+          version={version}
           formAction={formAction}
           csrfToken={csrfToken}
           setNewScrollPosition={setNewScrollPosition}
           formRef={formRef}
         />
+
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds">
+            <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
+            <h1 className="govuk-heading-s" data-cy="cy-download-header">
+              Preview your application form
+            </h1>
+            <p className="govuk-body">
+              You can preview how your application will look to applicants and
+              download a copy for your own reference.
+            </p>
+            <div className="govuk-button-group">
+              <CustomLink
+                isButton
+                href={`/build-application/${applicationId}/preview`}
+              >
+                Preview your application form
+              </CustomLink>
+              <CustomLink
+                href={`/api/applications/${applicationId}/download-summary`}
+                customStyle="govuk-link govuk-link--no-visited-state"
+              >
+                Download an overview (ODT)
+              </CustomLink>
+            </div>
+
+            <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
+          </div>
+        </div>
 
         {applicationStatus === 'PUBLISHED' ? (
           <UnpublishSummary

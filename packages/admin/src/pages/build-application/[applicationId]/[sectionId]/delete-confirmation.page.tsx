@@ -18,9 +18,11 @@ export const getServerSideProps: GetServerSideProps = async ({
   resolvedUrl,
   req,
   res,
+  query,
 }) => {
   const sessionId = getSessionIdFromCookies(req);
   const { applicationId, sectionId } = params as Record<string, string>;
+  const version = query.version as string;
   const errorPageParams = {
     errorInformation: 'Something went wrong while trying to delete a section',
     linkAttributes: {
@@ -38,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     async (body: RequestBody) => {
       // if the user has Yes radio selected, run delete service call. else, do nothing
       if (body.deleteBool === 'true') {
-        await deleteSection(sessionId, applicationId, sectionId);
+        await deleteSection(sessionId, applicationId, sectionId, version);
         return true;
       } else if (body.deleteBool === 'false') {
         return false;

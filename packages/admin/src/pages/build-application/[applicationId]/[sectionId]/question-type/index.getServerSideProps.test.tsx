@@ -61,6 +61,9 @@ describe('getServerSideProps', () => {
       sections: [
         { sectionId: 'sectionId', sectionTitle: 'Custom section name' },
       ],
+      audit: {
+        version: 1,
+      },
     });
     process.env.SESSION_COOKIE_NAME = 'test-session-id';
     process.env.SUB_PATH = '/apply';

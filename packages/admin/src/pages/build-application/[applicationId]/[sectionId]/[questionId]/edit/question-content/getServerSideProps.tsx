@@ -8,6 +8,7 @@ import { getSessionIdFromCookies } from '../../../../../../../utils/session';
 import QuestionPageGetServerSideProps from '../../../../../../../utils/QuestionPageGetServerSideProps';
 import { NextRedirect } from '../../../../../../../utils/QuestionPageGetServerSidePropsTypes';
 import ResponseTypeEnum from '../../../../../../../enums/ResponseType';
+import { buildQueryStringWithoutUndefinedValues } from '../../../../../../../utils/general';
 
 type RequestBody = {
   fieldTitle: string;
@@ -56,13 +57,19 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
       questionId,
     });
 
+    const queryString = buildQueryStringWithoutUndefinedValues({
+      backTo,
+      version: applicationFormSummary.audit.version,
+    });
+
     return {
       questionData,
-      backTo: backTo ?? '',
+      version: applicationFormSummary.audit.version,
       backButtonHref: getBackToRedirect(),
-      deleteConfirmationUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/delete-confirmation`,
+      deleteConfirmationUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/delete-confirmation${queryString}`,
       previewUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/preview`,
       editQuestionTypeUrl: `/build-application/${applicationId}/${sectionId}/question-type?${editQuestionSearchParams}`,
+      isEdit: true,
     };
   }
 
@@ -100,7 +107,6 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
     jwt: getSessionIdFromCookies(context.req),
     onSuccessRedirectHref,
     onErrorMessage: 'Something went wrong while trying to update the question.',
-    isEdit: true,
   });
 };
 

@@ -3,6 +3,7 @@ import {
   buildClient,
   CommitmentPolicy,
   RawAesWrappingSuiteIdentifier,
+  KmsKeyringNode,
 } from '@aws-crypto/client-node';
 import { TextEncoder } from 'util';
 
@@ -17,13 +18,6 @@ const unencryptedMasterKey = encoder.encode(
 const wrappingSuite =
   RawAesWrappingSuiteIdentifier.AES256_GCM_IV12_TAG16_NO_PADDING;
 
-const keyRing = new RawAesKeyringNode({
-  keyName,
-  keyNamespace,
-  unencryptedMasterKey,
-  wrappingSuite,
-});
-
 const encryptionClient = buildClient(
   CommitmentPolicy.REQUIRE_ENCRYPT_REQUIRE_DECRYPT
 );
@@ -35,6 +29,13 @@ const context = {
 };
 
 export async function encrypt(cleartext) {
+  const keyRing = new RawAesKeyringNode({
+    keyName,
+    keyNamespace,
+    unencryptedMasterKey,
+    wrappingSuite,
+  });
+
   const { result } = await encryptionClient.encrypt(keyRing, cleartext, {
     encryptionContext: context,
   });
@@ -43,9 +44,14 @@ export async function encrypt(cleartext) {
 }
 
 export async function decrypt(cipherText) {
+  const text = b64Decode(cipherText);
+
+  const keyIds = [keyNamespace];
+
+  const keyRing = new KmsKeyringNode({ keyIds });
   const { plaintext, messageHeader } = await encryptionClient.decrypt(
     keyRing,
-    b64Decode(cipherText)
+    text
   );
   const { encryptionContext } = messageHeader;
   Object.entries(context).forEach(([key, value]) => {
