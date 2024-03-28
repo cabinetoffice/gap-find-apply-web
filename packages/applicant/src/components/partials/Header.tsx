@@ -117,21 +117,12 @@ const Header: FC<HeaderProps> = ({ isUserLoggedIn, oneLoginEnabledInFind }) => {
         <p
           className={`govuk-phase-banner__content govuk-!-margin-right-0 govuk-phase-banner__text ${styles['float-right']} govuk-!-font-size-19`}
         >
-          {isUserLoggedIn ? (
-            <Link
-              href={'/api/logout'}
-              className="govuk-link govuk-link--no-visited-state"
-            >
-              Sign out
-            </Link>
-          ) : (
-            <a
-              href={getLoginUrl()}
-              className="govuk-link govuk-link--no-visited-state"
-            >
-              Sign in
-            </a>
-          )}
+          <a
+            href={isUserLoggedIn ? '/api/logout' : getLoginUrl()}
+            className="govuk-link govuk-link--no-visited-state"
+          >
+            {isUserLoggedIn ? 'Sign out' : 'Sign in'}
+          </a>
         </p>
       </div>
       {/* BETA BLOCK */}
