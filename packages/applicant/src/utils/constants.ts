@@ -119,3 +119,7 @@ export const MQ_ORG_TYPES = {
   LOCAL_AUTHORITY: 'Local authority',
   OTHER: 'Other',
 };
+
+export const HEADERS = {
+  CORRELATION_ID: 'x-correlation-id',
+} as const;

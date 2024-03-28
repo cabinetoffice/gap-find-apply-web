@@ -47,7 +47,7 @@ export const createNewScheme = async (
     contactEmail: contactEmail,
   };
 
-  await axios.post(
+  return await axios.post(
     `${BASE_SCHEME_URL}`,
     newScheme,
     axiosSessionConfig(sessionId)
