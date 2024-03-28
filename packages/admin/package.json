@@ -19,7 +19,7 @@
     "@contentful/rich-text-from-markdown": "15.16.6",
     "@contentful/rich-text-react-renderer": "^15.12.1",
     "@tinymce/tinymce-react": "4.3.2",
-    "axios": "^0.27.2",
+    "axios": "^0.28.0",
     "body-parser": "1.20.2",
     "cookie-parser": "^1.4.6",
     "cypress-recurse": "^1.18.0",
