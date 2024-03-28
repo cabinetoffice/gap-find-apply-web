@@ -26,6 +26,8 @@ const req = (overrides?: Overrides<jest.Mock>) =>
         slug: 'slug',
         grantWebpageUrl: 'grantWebpageUrl',
       },
+      headers: {},
+      cookies: { getAll: jest.fn() },
     },
     overrides || {}
   ) as unknown as NextApiRequest;

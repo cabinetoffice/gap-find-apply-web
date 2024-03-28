@@ -126,7 +126,7 @@ describe('getServerSideProps', () => {
 
   describe('When handling a POST request', () => {
     const getPostContext = (overrides: any = {}) =>
-      merge(getContext({ req: { method: 'POST' } }), overrides);
+      merge(getContext({ req: { method: 'POST', headers: {} } }), overrides);
 
     beforeEach(() => {
       (submit as jest.Mock).mockResolvedValue('');
@@ -151,7 +151,7 @@ describe('getServerSideProps', () => {
     });
 
     it('Should redirect to the error service page when submitting fails', async () => {
-      (submit as jest.Mock).mockRejectedValue('');
+      (submit as jest.Mock).mockRejectedValue(new Error());
 
       const response = await getServerSideProps(getPostContext());
 

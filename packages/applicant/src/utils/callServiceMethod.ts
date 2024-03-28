@@ -1,7 +1,8 @@
 import { ValidationError } from 'gap-web-ui';
-import { GetServerSidePropsContext, Redirect } from 'next';
+import { GetServerSidePropsContext, NextApiRequest, Redirect } from 'next';
 import { parseBody } from './parseBody';
 import { ServiceError } from '../pages/service-error/index.page';
+import { logger } from './logger';
 
 type Body<T> = T & {
   _csrf: string;
@@ -47,7 +48,6 @@ export default async function callServiceMethod<
     body = removeAllCarriageReturns(body);
 
     handleMandatoryQuestionFundingLocationAndOrgTypeSpecialCases<B>(req, body);
-
     const result = await serviceFunc(body);
     return {
       redirect: {
@@ -56,8 +56,11 @@ export default async function callServiceMethod<
         statusCode: 302,
       },
     };
-  } catch (err: any) {
-    console.log('err', err);
+  } catch (err) {
+    logger.error(
+      `Error encountered in callServiceMethod - search correlationId to find the request that triggered this error`,
+      logger.utils.addErrorInfo(err, req as NextApiRequest)
+    );
     // If there is a validation error
     if (err.response?.data?.errors) {
       return {
@@ -133,7 +136,7 @@ function removeAllCarriageReturns<T extends Record<string, string>>(obj: T) {
       acc[key] = typeof value === 'string' ? value.replaceAll('\r', '') : value;
       return acc;
     },
-    {} as any
+    {}
   ) as T;
 }
 

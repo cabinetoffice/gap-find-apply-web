@@ -7,6 +7,7 @@ import {
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import { APIGlobalHandler } from '../../utils/apiErrorHandler';
+import { logger } from '../../utils/logger';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const contentfulSlug = req.query.slug as string;
@@ -78,7 +79,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       );
     }
   } catch (e) {
-    console.log(e);
+    logger.error(
+      'Error redirecting from find',
+      logger.utils.addErrorInfo(e, req)
+    );
     redirectToServiceError();
   }
 

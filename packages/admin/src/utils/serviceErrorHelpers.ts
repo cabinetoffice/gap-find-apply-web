@@ -80,7 +80,26 @@ const generateErrorMessageFromStatusCode = (errorCode: string): string => {
   }
 };
 
+const handleMultipleEditorsError = (err: any) => {
+  if (err?.response?.data?.error?.message.includes('MULTIPLE_EDITORS')) {
+    const isSectionDeletedError =
+      err?.response?.data?.error?.message ===
+      'MULTIPLE_EDITORS_SECTION_DELETED';
+
+    const applicationId = err.config.url
+      .split('/application-forms/')
+      .pop()
+      .split('/')[0];
+
+    return generateErrorPageMultipleEditors(
+      applicationId,
+      isSectionDeletedError
+    );
+  }
+};
+
 export {
+  handleMultipleEditorsError,
   generateErrorPageParams,
   generateErrorPageRedirect,
   generateErrorPageRedirectV2,
