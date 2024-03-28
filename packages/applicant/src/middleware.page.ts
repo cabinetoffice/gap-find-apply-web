@@ -185,7 +185,7 @@ const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
       req,
       `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}${
         req.nextUrl.pathname
-      }?${req.nextUrl.searchParams.toString()}`
+      }?${encodeURIComponent(req.nextUrl.searchParams.toString())}`
     );
   }
   return res;

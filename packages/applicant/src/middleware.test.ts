@@ -92,7 +92,7 @@ describe('Middleware', () => {
 
     expect(res.status).toBe(307);
     expect(res.headers.get('Location')).toBe(
-      `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}/applications?scheme=1`
+      `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}/applications?scheme%3D1`
     );
   });
 
