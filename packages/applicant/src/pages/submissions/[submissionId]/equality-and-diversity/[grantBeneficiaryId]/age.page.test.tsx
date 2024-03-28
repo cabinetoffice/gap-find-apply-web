@@ -95,6 +95,7 @@ describe('Age page', () => {
           } as Record<string, string>,
           req: {
             method: 'GET',
+            headers: {},
           },
           res: {
             getHeader: () => 'testCSRFToken',
@@ -256,7 +257,7 @@ describe('Age page', () => {
       });
 
       const getPostContext = (overrides: any = {}) =>
-        getContext(merge({ req: { method: 'POST' } }, overrides));
+        getContext(merge({ req: { method: 'POST', headers: {} } }, overrides));
 
       it('Should call postGrantBeneficiaryResponse when the response contains "ageGroup", CASE: SOME', async () => {
         await getServerSideProps(getPostContext());

@@ -8,6 +8,7 @@ import postQuestion, {
   fieldsStartingWithQuestionIdInBody,
 } from './postQuestion';
 import { routes } from './routes';
+import { GetServerSidePropsContext } from 'next';
 
 jest.mock('./parseBody');
 
@@ -17,13 +18,19 @@ const submissionId = 'submissionId';
 const sectionId = 'sectionId';
 const questionId = 'questionId';
 const questionType = 'ShortAnswer';
+
+const getMockRequest = (overrides = {}) =>
+  ({
+    headers: {},
+    ...overrides,
+  } as GetServerSidePropsContext['req']);
+
 describe('callServiceMethod', () => {
   describe('no Error Cases', () => {
     it('redirects to the Check Your Answer Page when cancel is in the body', async () => {
-      const req = {
-        test: 'commission',
+      const req = getMockRequest({
         cancel: '',
-      } as any;
+      });
       mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
@@ -51,10 +58,9 @@ describe('callServiceMethod', () => {
       });
     });
     it('redirects to the next question page when the call was successful and save and continue is in the body and the referer is not checkYourAnswerPage', async () => {
-      const req = {
-        test: 'commission',
+      const req = getMockRequest({
         'save-and-continue': '',
-      } as any;
+      });
       mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
@@ -87,10 +93,9 @@ describe('callServiceMethod', () => {
     });
 
     it('redirects to the checkYourAnswer page when the call was successful, save and continue is in the body, but no next question is available', async () => {
-      const req = {
-        test: 'commission',
+      const req = getMockRequest({
         'save-and-continue': '',
-      } as any;
+      });
       mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
@@ -118,11 +123,10 @@ describe('callServiceMethod', () => {
       });
     });
     it('redirects to the checkYourAnswer page  when the call was successful and save and continue is in the body and the referer is checkYourAnswerPage', async () => {
-      const req = {
-        test: 'commission',
+      const req = getMockRequest({
         'save-and-continue': '',
         isRefererCheckYourAnswerScreen: '',
-      } as any;
+      });
       mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
@@ -150,10 +154,7 @@ describe('callServiceMethod', () => {
       });
     });
     it('redirects to the checkYourAnswer page  when the call was successful and save and continue is in the body and there is no nextNavigation in the backend response', async () => {
-      const req = {
-        test: 'commission',
-        'save-and-continue': '',
-      } as any;
+      const req = getMockRequest({ 'save-and-continue': '' });
       mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
@@ -181,10 +182,7 @@ describe('callServiceMethod', () => {
     });
 
     it('redirects to the section list when the call was successful and save and exit is in the body', async () => {
-      const req = {
-        test: 'commission',
-        'save-and-exit': '',
-      } as any;
+      const req = getMockRequest({ 'save-and-exit': '' });
       mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
@@ -213,10 +211,10 @@ describe('callServiceMethod', () => {
     });
 
     it('redirects to the submission summary page when the call was successful, fromSummarySubmissionPage is true and ELIGIBILITY is Yes', async () => {
-      const req = {
+      const req = getMockRequest({
         ELIGIBILITY: 'Yes',
         'save-and-continue': '',
-      } as any;
+      });
       (parseBody as jest.Mock).mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
@@ -244,10 +242,10 @@ describe('callServiceMethod', () => {
     });
 
     it('redirects to the submission summary page when the call was successful, fromSummarySubmissionPage is true and ELIGIBILITY is not present', async () => {
-      const req = {
+      const req = getMockRequest({
         FUNDING: 'Yes please',
         'save-and-continue': '',
-      } as any;
+      });
       mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
@@ -275,10 +273,10 @@ describe('callServiceMethod', () => {
     });
 
     it('redirects to the section list page when the call was successful and fromSummarySubmissionPage is true but ELIGIBILITY is No', async () => {
-      const req = {
+      const req = getMockRequest({
         ELIGIBILITY: 'No',
         'save-and-exit': '',
-      } as any;
+      });
       (parseBody as jest.Mock).mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.resolve({
@@ -307,10 +305,7 @@ describe('callServiceMethod', () => {
   });
   describe('with Errors', () => {
     it('create correct Validation error__single error', async () => {
-      const req = {
-        test: 'commission',
-        'save-and-continue': '',
-      } as any;
+      const req = getMockRequest({ 'save-and-continue': '' });
       mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.reject({
@@ -360,14 +355,14 @@ describe('callServiceMethod', () => {
     });
 
     it('create correct Validation error__Address error', async () => {
-      const req = {
+      const req = getMockRequest({
         'CUSTOM_APPLICANT_ORG_ADDRESS-address-line-1': '',
         'CUSTOM_APPLICANT_ORG_ADDRESS-address-line-2': '',
         'CUSTOM_APPLICANT_ORG_ADDRESS-town': '',
         'CUSTOM_APPLICANT_ORG_ADDRESS-county': '',
         'CUSTOM_APPLICANT_ORG_ADDRESS-postcode': '',
         'save-and-continue': '',
-      } as any;
+      });
       mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.reject({
@@ -433,12 +428,12 @@ describe('callServiceMethod', () => {
     });
 
     it('create correct Validation error__Date error', async () => {
-      const req = {
+      const req = getMockRequest({
         'CUSTOM_CUSTOM_QUESTION_4-day': '',
         'CUSTOM_CUSTOM_QUESTION_4-month': '',
         'CUSTOM_CUSTOM_QUESTION_4-year': '',
         'save-and-continue': '',
-      } as any;
+      });
       mockParseBody.mockResolvedValue(req);
       const serviceFunc = jest.fn(() =>
         Promise.reject({

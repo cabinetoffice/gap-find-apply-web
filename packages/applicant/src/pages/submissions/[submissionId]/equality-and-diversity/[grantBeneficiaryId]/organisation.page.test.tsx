@@ -80,6 +80,7 @@ describe('Organisation page', () => {
           },
           req: {
             method: 'GET',
+            headers: {},
           },
           res: {
             getHeader: () => 'testCSRFToken',
@@ -190,7 +191,9 @@ describe('Organisation page', () => {
       });
 
       const getPostContext = (overrides = {}) =>
-        getServerContext(merge({ req: { method: 'POST' } }, overrides));
+        getServerContext(
+          merge({ req: { method: 'POST', headers: {} } }, overrides)
+        );
 
       it('Should call postGrantBeneficiaryResponse when the response contains "organisation"', async () => {
         mockParseBody.mockResolvedValue({

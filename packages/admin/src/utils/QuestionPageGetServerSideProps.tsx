@@ -8,6 +8,7 @@ import {
   generateValidationPropsType,
   NextRedirect,
 } from './QuestionPageGetServerSidePropsTypes';
+import { handleMultipleEditorsError } from './serviceErrorHelpers';
 
 /**
  * Abstracts away how we handle redirects, fetch & update data.
@@ -71,6 +72,9 @@ async function fetchAndHandlePageData<K extends FetchPageData>(
   try {
     return await fetchPageData(jwt);
   } catch (err: any) {
+    const multipleEditorsRedirect = handleMultipleEditorsError(err);
+    if (multipleEditorsRedirect) return multipleEditorsRedirect;
+
     if (err?.response?.data?.code) {
       return generateRedirect(
         `/error-page/code/${err.response.data.code}?href=${

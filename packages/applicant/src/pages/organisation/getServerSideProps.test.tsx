@@ -50,6 +50,9 @@ describe('getServerSideProps', () => {
 
   describe('when handling a GET request', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
+      req: {
+        headers: {},
+      },
       res: {
         getHeader: () => 'testCSRFToken',
       },
@@ -88,6 +91,7 @@ describe('getServerSideProps', () => {
     const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
       req: {
         method: 'POST',
+        headers: {},
       },
       res: {
         getHeader: () => 'testCSRFToken',
@@ -136,7 +140,7 @@ describe('getServerSideProps', () => {
 
     it('Should redirect to the error service page if there is an error when updating', async () => {
       spiedGrantApplicantOrganisationProfileService.mockRejectedValueOnce(
-        'Error'
+        new Error()
       );
 
       const response = await getServerSideProps(getContext(getDefaultContext));
