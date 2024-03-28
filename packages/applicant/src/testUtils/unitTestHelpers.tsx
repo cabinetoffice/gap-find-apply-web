@@ -33,6 +33,7 @@ const getContext = (
       req: {
         method: 'GET',
         cookies: { 'gap-test': 'testSessionId' },
+        headers: { 'x-correlation-id': 'testCorrelationId' },
       },
       res: {
         getHeader: () => 'testCSRFToken',

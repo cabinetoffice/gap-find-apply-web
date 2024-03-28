@@ -98,6 +98,7 @@ describe('Equality and diversity start page', () => {
           } as Record<string, string>,
           req: {
             method: 'GET',
+            headers: {},
           },
           res: {
             getHeader: () => 'testCSRFToken',
@@ -213,7 +214,7 @@ describe('Equality and diversity start page', () => {
       });
 
       const getPostContext = (overrides: any = {}) =>
-        getContext(merge({ req: { method: 'POST' } }, overrides));
+        getContext(merge({ req: { method: 'POST', headers: {} } }, overrides));
 
       it('Should return correct props', async () => {
         const validationErrors = [
