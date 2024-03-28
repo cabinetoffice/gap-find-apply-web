@@ -17,7 +17,7 @@ export const config = {
   ],
 };
 
-const redirectToAppliantLogin = () =>
+const redirectToApplicantLogin = () =>
   NextResponse.redirect(getLoginUrl({ redirectToApplicant: true }), {
     status: 302,
   });
@@ -80,7 +80,7 @@ export async function middleware(req: NextRequest) {
     if (process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE === 'true') {
       const isValidAdminSession = await isAdminSessionValid(authCookie.value);
       if (!isValidAdminSession) {
-        return redirectToAppliantLogin();
+        return redirectToApplicantLogin();
       }
     }
 
