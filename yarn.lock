@@ -6318,7 +6318,7 @@ __metadata:
     react-dom: 18.2.0
     react-gtm-module: ^2.0.11
     sass: 1.62.1
-    tinymce: 6.8.2
+    tinymce: 7.0.0
     typescript: ^4.6.3
     urlpattern-polyfill: ^9.0.0
     uuid: 9.0.1
@@ -17895,7 +17895,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinymce@npm:6.8.2, tinymce@npm:^6.0.0 || ^5.5.1":
+"tinymce@npm:7.0.0":
+  version: 7.0.0
+  resolution: "tinymce@npm:7.0.0"
+  checksum: 1f2dc383c1c6f4efb8d3f4223577a8f2b450f6cc62b2861c80467495d68c2453cbd8b646416a0376282fb0b6341c194c698503149037347133b7b936fb7c717b
+  languageName: node
+  linkType: hard
+
+"tinymce@npm:^6.0.0 || ^5.5.1":
   version: 6.8.2
   resolution: "tinymce@npm:6.8.2"
   checksum: 57ed21bc0f59fac108a357f0a90d4336319be289f251befa373e06d993a8d6eb794692e39149ac6064e482f4129a02ec8cfcea91a1255800a5c267984ccaefd9
