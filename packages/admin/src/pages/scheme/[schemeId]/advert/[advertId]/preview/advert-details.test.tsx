@@ -65,7 +65,7 @@ const props = {
 describe('getServerSideProps', () => {
   beforeEach(() => {
     mockSessionUtils.getSessionIdFromCookies.mockReturnValue(sessionCookie);
-    mockAdvertPageService.getAdvertPreviewPageContent.mockResolvedValue(
+    mockAdvertPageService.getAdvertDetailsPreviewContent.mockResolvedValue(
       backendResponse
     );
   });
@@ -82,7 +82,7 @@ describe('getServerSideProps', () => {
       );
     });
     it('should have the expected redirection', async () => {
-      mockAdvertPageService.getAdvertPreviewPageContent.mockRejectedValue(
+      mockAdvertPageService.getAdvertDetailsPreviewContent.mockRejectedValue(
         axiosError
       );
 
@@ -113,21 +113,20 @@ describe('getServerSideProps', () => {
     });
 
     it('backed should have been called with the right params', async () => {
-      mockAdvertPageService.getAdvertPreviewPageContent.mockRejectedValue(
+      mockAdvertPageService.getAdvertDetailsPreviewContent.mockRejectedValue(
         axiosError
       );
       const context = getContext();
 
       await getServerSideProps(context);
-      expect(mockAdvertPageService.getAdvertPreviewPageContent).toBeCalledWith(
-        sessionCookie,
-        context.params.advertId
-      );
+      expect(
+        mockAdvertPageService.getAdvertDetailsPreviewContent
+      ).toBeCalledWith(sessionCookie, context.params.advertId);
     });
   });
   describe('request success', () => {
     it('should return the expected props ', async () => {
-      mockAdvertPageService.getAdvertPreviewPageContent.mockResolvedValue(
+      mockAdvertPageService.getAdvertDetailsPreviewContent.mockResolvedValue(
         backendResponse
       );
       const context = getContext();
@@ -138,17 +137,16 @@ describe('getServerSideProps', () => {
       });
     });
     it('backend should be called with the right params ', async () => {
-      mockAdvertPageService.getAdvertPreviewPageContent.mockResolvedValue(
+      mockAdvertPageService.getAdvertDetailsPreviewContent.mockResolvedValue(
         backendResponse
       );
       const context = getContext();
 
       await getServerSideProps(context);
 
-      expect(mockAdvertPageService.getAdvertPreviewPageContent).toBeCalledWith(
-        sessionCookie,
-        context.params.advertId
-      );
+      expect(
+        mockAdvertPageService.getAdvertDetailsPreviewContent
+      ).toBeCalledWith(sessionCookie, context.params.advertId);
     });
     it('session should be called with the right params ', async () => {
       const context = getContext();

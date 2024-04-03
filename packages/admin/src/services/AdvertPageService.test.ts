@@ -5,7 +5,7 @@ import AdvertStatusEnum from '../enums/AdvertStatus';
 import { InferServiceMethodResponse } from '../testUtils/unitTestHelpers';
 import {
   createNewAdvert,
-  getAdvertPreviewPageContent,
+  getAdvertDetailsPreviewContent,
   getAdvertSectionPageContent,
   getAdvertStatusBySchemeId,
   getSectionOverviewPageContent,
@@ -353,7 +353,10 @@ describe('AdvertPageService', () => {
           },
         },
       });
-      const response = await getAdvertPreviewPageContent(sessionId, advertId);
+      const response = await getAdvertDetailsPreviewContent(
+        sessionId,
+        advertId
+      );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
         getAdvertPreviewPageContentUrl,
