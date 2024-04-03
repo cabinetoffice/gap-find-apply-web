@@ -2,13 +2,13 @@ import { AxiosError } from 'axios';
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../../components/layout/Meta';
-import { getAdvertPreviewPageContent } from '../../../../../../services/AdvertPageService';
+import { getSummaryPageContent } from '../../../../../../services/AdvertPageService';
 import CustomError from '../../../../../../types/CustomError';
 import InferProps from '../../../../../../types/InferProps';
 import { generateErrorPageRedirectV2 } from '../../../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../../../utils/session';
-import { PreviewDetailsHeader } from './components/PreviewDetailsHeader';
-import { PreviewDetailsTab } from './components/PreviewDetailsTab';
+import PreviewSearchCard from './components/PreviewSearchCard';
+import Link from 'next/link';
 
 export const getServerSideProps = async ({
   req,
@@ -16,14 +16,56 @@ export const getServerSideProps = async ({
 }: GetServerSidePropsContext) => {
   const { schemeId, advertId } = params as Record<string, string>;
   const sessionCookie = getSessionIdFromCookies(req);
+  const findSearchUrl = process.env.FIND_A_GRANT_URL + '/grants';
 
   try {
-    const grant = await getAdvertPreviewPageContent(sessionCookie, advertId);
+    const grantSummary = await getSummaryPageContent(
+      sessionCookie,
+      schemeId,
+      advertId
+    );
+
+    const grantPreview = {
+      grantName: grantSummary.advertName || '',
+      grantShortDescription:
+        grantSummary.sections[0].pages[0].questions[0]?.response || '',
+      grantLocation:
+        grantSummary.sections[0].pages[1].questions[0]?.multiResponse || [],
+      grantFundingOrganisation:
+        grantSummary.sections[0].pages[2].questions[0]?.response || '',
+      grantApplicantType:
+        grantSummary.sections[0].pages[3].questions[0]?.multiResponse || [],
+      grantTotalAwardAmount:
+        grantSummary.sections[1].pages[0].questions[0]?.response || '',
+      grantMaximumAward:
+        grantSummary.sections[1].pages[0].questions[1]?.response || '',
+      grantMinimumAward:
+        grantSummary.sections[1].pages[0].questions[2]?.response || '',
+      grantApplicationOpenDate:
+        grantSummary.sections[2].pages[0].questions[0]?.multiResponse || [],
+      grantApplicationCloseDate:
+        grantSummary.sections[2].pages[0].questions[1]?.multiResponse || [],
+    };
+
+    // const grantPreview = {
+    //   grantName: 'Testing Props Grant',
+    //   grantShortDescription: 'Testing Props Short Description',
+    //   grantLocation: ['Scotland', 'Northern Ireland'],
+    //   grantFundingOrganisation: 'Testing Funding Organisation',
+    //   grantApplicantType: ['Personal / Individual', 'Public Sector'],
+    //   grantTotalAwardAmount: '£12,345',
+    //   grantMaximumAward: '£12,345',
+    //   grantMinimumAward: '£1',
+    //   grantApplicationOpenDate: ['01', '01', '2024', '00', '00'],
+    //   grantApplicationCloseDate: ['31', '12', '2024', '00', '00'],
+    // };
+
     return {
       props: {
-        grant,
+        grant: grantPreview,
         advertId,
         schemeId,
+        findSearchUrl,
       },
     };
   } catch (err) {
@@ -40,17 +82,12 @@ const SearchResultPreview = ({
   grant,
   schemeId,
   advertId,
+  findSearchUrl,
 }: InferProps<typeof getServerSideProps>) => {
-  const {
-    grantName,
-    grantShortDescription,
-    grantApplicationCloseDate,
-    grantApplicationOpenDate,
-    tabs,
-  } = grant;
+  console.log(grant);
   return (
     <>
-      <Meta title={`${grantName} preview - Manage a grant`} />
+      <Meta title={`${'GrantNameVar Here'} preview - Manage a grant`} />
 
       <CustomLink
         href={`/scheme/${schemeId}/advert/${advertId}/section-overview`}
@@ -59,20 +96,42 @@ const SearchResultPreview = ({
       />
 
       <div className="govuk-grid-row govuk-body">
-        <PreviewDetailsHeader
-          grantName={grantName}
-          grantShortDescription={grantShortDescription}
-          grantApplicationCloseDate={grantApplicationCloseDate}
-          grantApplicationOpenDate={grantApplicationOpenDate}
-        />
-        <PreviewDetailsTab tabs={tabs} />
+        <div className="govuk-grid-column-full">
+          <span className="govuk-caption-l" data-cy="cy-preview-page-caption">
+            How your advert looks to applicants
+          </span>
+
+          <h1 className="govuk-heading-l" data-cy="cy-preview-page-header">
+            Search results page
+          </h1>
+
+          <div
+            data-cy="cy-preview-page-inset-text"
+            className="govuk-inset-text"
+          >
+            <p>
+              This is how your advert will look on the{' '}
+              <Link className="govuk-link" href={findSearchUrl}>
+                search results page
+              </Link>
+              . It will be in a list alongside other grant adverts.
+            </p>
+            <p>
+              The preview below shows all the information you have entered so
+              far.
+            </p>
+          </div>
+        </div>
+
+        <PreviewSearchCard grant={grant} />
+
         <div className="govuk-grid-column-full govuk-button-group">
           <CustomLink
             href={`/scheme/${schemeId}/advert/${advertId}/preview/advert-details`}
             isButton
             dataCy="cy-back-to-create-advert-button"
           >
-            Preview Advert
+            Continue
           </CustomLink>
         </div>
       </div>
