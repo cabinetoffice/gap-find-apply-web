@@ -14,7 +14,7 @@ const PreviewSearchResultCard = ({ grant }: PreviewSearchResultCardProps) => {
     <div className="govuk-grid-column-two-thirds">
       <div>
         <h2 className="govuk-heading-m" data-cy="cyGrantName">
-          <Link href="#" className="govuk-link">
+          <Link href="javascript:void(0);" className="govuk-link">
             {grant.grantName}
           </Link>
         </h2>
@@ -52,7 +52,9 @@ const PreviewSearchResultCard = ({ grant }: PreviewSearchResultCardProps) => {
               {labels.size}
             </dt>
             <dd className="govuk-summary-list__value">
-              {`From ${grant?.grantMinimumAward} to ${grant.grantMaximumAward}`}
+              {grant?.grantMinimumAward && grant?.grantMaximumAward
+                ? `From ${grant?.grantMinimumAward} to ${grant.grantMaximumAward}`
+                : ''}
             </dd>
           </div>
           <div className="govuk-summary-list__row">
@@ -68,9 +70,13 @@ const PreviewSearchResultCard = ({ grant }: PreviewSearchResultCardProps) => {
               {labels.opens}
             </dt>
             <dd className="govuk-summary-list__value">
-              <Moment format="D MMMM YYYY, h:mma" tz="GMT">
-                {adjustedOpenDate}
-              </Moment>
+              {grant.grantApplicationOpenDate.length ? (
+                <Moment format="D MMMM YYYY, h:mma" tz="GMT">
+                  {adjustedOpenDate}
+                </Moment>
+              ) : (
+                ''
+              )}
             </dd>
           </div>
           <div className="govuk-summary-list__row">
@@ -78,9 +84,13 @@ const PreviewSearchResultCard = ({ grant }: PreviewSearchResultCardProps) => {
               {labels.closes}
             </dt>
             <dd className="govuk-summary-list__value">
-              <Moment format="D MMMM YYYY, h:mma" tz="GMT">
-                {adjustedCloseDate}
-              </Moment>
+              {grant.grantApplicationCloseDate.length ? (
+                <Moment format="D MMMM YYYY, h:mma" tz="GMT">
+                  {adjustedCloseDate}
+                </Moment>
+              ) : (
+                ''
+              )}
             </dd>
           </div>
         </dl>

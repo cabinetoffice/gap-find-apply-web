@@ -47,19 +47,6 @@ export const getServerSideProps = async ({
         grantSummary.sections[2].pages[0].questions[1]?.multiResponse || [],
     };
 
-    // const grantPreview = {
-    //   grantName: 'Testing Props Grant',
-    //   grantShortDescription: 'Testing Props Short Description',
-    //   grantLocation: ['Scotland', 'Northern Ireland'],
-    //   grantFundingOrganisation: 'Testing Funding Organisation',
-    //   grantApplicantType: ['Personal / Individual', 'Public Sector'],
-    //   grantTotalAwardAmount: '£12,345',
-    //   grantMaximumAward: '£12,345',
-    //   grantMinimumAward: '£1',
-    //   grantApplicationOpenDate: ['01', '01', '2024', '00', '00'],
-    //   grantApplicationCloseDate: ['31', '12', '2024', '00', '00'],
-    // };
-
     return {
       props: {
         grant: grantPreview,
@@ -84,10 +71,9 @@ const SearchResultPreview = ({
   advertId,
   findSearchUrl,
 }: InferProps<typeof getServerSideProps>) => {
-  console.log(grant);
   return (
     <>
-      <Meta title={`${'GrantNameVar Here'} preview - Manage a grant`} />
+      <Meta title={`${grant.grantName} preview - Manage a grant`} />
 
       <CustomLink
         href={`/scheme/${schemeId}/advert/${advertId}/section-overview`}
