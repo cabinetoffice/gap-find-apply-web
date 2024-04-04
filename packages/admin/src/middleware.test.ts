@@ -20,6 +20,10 @@ jest.mock('next/server', () => ({
   })),
 }));
 
+const mockedGetLoginUrl = jest.mocked(getLoginUrl);
+const mockedParseJwt = jest.mocked(parseJwt);
+const mockedIsAdminSessionValid = jest.mocked(isAdminSessionValid);
+
 const loginUrl = 'http://localhost:8082/login';
 
 describe('middleware', () => {
@@ -28,7 +32,6 @@ describe('middleware', () => {
   );
 
   beforeEach(() => {
-    jest.clearAllMocks();
     process.env.MAX_COOKIE_AGE = '21600';
     process.env.ONE_LOGIN_ENABLED = 'false';
     process.env.LOGIN_URL = 'http://localhost:8082/login';
@@ -41,7 +44,7 @@ describe('middleware', () => {
   });
 
   it('Redirect to the login page when the user is not authorized', async () => {
-    (getLoginUrl as jest.Mock).mockReturnValue(loginUrl);
+    mockedGetLoginUrl.mockReturnValue(loginUrl);
     const result = await middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
@@ -56,11 +59,11 @@ describe('middleware', () => {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1); // Expiring in 1 hour
 
-    jest.mocked(parseJwt).mockReturnValue({
+    mockedParseJwt.mockReturnValue({
       exp: expiresAt.getTime() / 1000,
     });
-    (isAdminSessionValid as jest.Mock).mockImplementation(async () => false);
-    (getLoginUrl as jest.Mock).mockReturnValue(loginUrl);
+    mockedIsAdminSessionValid.mockImplementation(async () => false);
+    mockedGetLoginUrl.mockReturnValue(loginUrl);
 
     const result = await middleware(req);
 
@@ -72,8 +75,8 @@ describe('middleware', () => {
   it('Redirect to the login page with an undefined user-service jwt', async () => {
     req.cookies.clear();
     req.cookies.set('session_id', 'session_id_value');
-    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
-    (getLoginUrl as jest.Mock).mockReturnValue(loginUrl);
+    mockedIsAdminSessionValid.mockImplementation(async () => true);
+    mockedGetLoginUrl.mockReturnValue(loginUrl);
 
     const result = await middleware(req);
 
@@ -83,11 +86,11 @@ describe('middleware', () => {
   });
 
   it('Should set auth cookie correctly when the user is authorised', async () => {
-    jest.mocked(parseJwt).mockReturnValue({
+    mockedParseJwt.mockReturnValue({
       exp: 1000000000,
     });
-    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
-    (getLoginUrl as jest.Mock).mockReturnValue(loginUrl);
+    mockedIsAdminSessionValid.mockImplementation(async () => true);
+    mockedGetLoginUrl.mockReturnValue(loginUrl);
     req.cookies.set('session_id', 'session_id_value');
     req.cookies.set('user-service-token', 'user-service-value');
 
@@ -102,13 +105,13 @@ describe('middleware', () => {
   });
 
   it('Should redirect to the original requests URL when we are authorised', async () => {
-    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
+    mockedIsAdminSessionValid.mockImplementation(async () => true);
     req.cookies.set('session_id', 'session_id_value');
     req.cookies.set('user-service-token', 'user_service_token_value');
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1); // Expiring in 1 hour
 
-    jest.mocked(parseJwt).mockReturnValue({
+    mockedParseJwt.mockReturnValue({
       exp: expiresAt.getTime() / 1000,
     });
     const result = await middleware(req);
@@ -119,14 +122,14 @@ describe('middleware', () => {
   });
 
   it('Redirects to refresh URL if JWT is close to expiration', async () => {
-    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
+    mockedIsAdminSessionValid.mockImplementation(async () => true);
     req.cookies.set('session_id', 'session_id_value');
     req.cookies.set('user-service-token', 'user_service_token_value');
 
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10); // Expiring in 10 minutes
 
-    jest.mocked(parseJwt).mockReturnValue({
+    mockedParseJwt.mockReturnValue({
       exp: expiresAt.getTime() / 1000,
     });
     const res = await middleware(req);
@@ -144,14 +147,14 @@ describe('advert builder middleware', () => {
   );
 
   it('Should allow the user to access the advert builder pages if the feature is enabled', async () => {
-    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
+    mockedIsAdminSessionValid.mockImplementation(async () => true);
     req.cookies.set('session_id', 'session_id_value');
     process.env.FEATURE_ADVERT_BUILDER = 'enabled';
     req.cookies.set('user-service-token', 'user_service_token_value');
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1); // Expiring in 1 hour
 
-    jest.mocked(parseJwt).mockReturnValue({
+    mockedParseJwt.mockReturnValue({
       exp: expiresAt.getTime() / 1000,
     });
 
@@ -164,7 +167,7 @@ describe('advert builder middleware', () => {
   });
 
   it('Should not allow the user to access the advert builder pages if the feature is enabled', async () => {
-    (isAdminSessionValid as jest.Mock).mockImplementation(async () => true);
+    mockedIsAdminSessionValid.mockImplementation(async () => true);
     req.cookies.set('session_id', 'session_id_value');
     process.env.FEATURE_ADVERT_BUILDER = 'disabled';
     const result = await middleware(req);

@@ -1,5 +1,5 @@
 // eslint-disable-next-line  @next/next/no-server-import-in-page
-import { NextRequest, NextResponse, URLPattern } from 'next/server';
+import { type NextRequest, NextResponse, URLPattern } from 'next/server';
 import { isAdminSessionValid } from './services/UserService';
 import { csrfMiddleware } from './utils/csrfMiddleware';
 import { getLoginUrl, parseJwt } from './utils/general';
@@ -17,87 +17,92 @@ export const config = {
   ],
 };
 
-const redirectToApplicantLogin = () =>
-  NextResponse.redirect(getLoginUrl({ redirectToApplicant: true }), {
-    status: 302,
-  });
-
-function redirectToLogin(req: NextRequest) {
-  const url = getLoginUrl();
-  if (submissionDownloadPattern.test({ pathname: req.nextUrl.pathname })) {
-    console.log(
-      'Redirect to submission export download URL: ' +
-        url +
-        req.nextUrl.pathname
-    );
-    return NextResponse.redirect(url + req.nextUrl.pathname);
-  }
-  console.log('Redirect URL from admin middleware: ' + url);
-  return NextResponse.redirect(url);
-}
-
-function isWithinNumberOfMinsOfExpiry(expiresAt: Date, numberOfMins: number) {
-  const now = new Date();
-  const nowPlusMins = new Date();
-  nowPlusMins.setMinutes(now.getMinutes() + numberOfMins);
-
-  return expiresAt >= now && expiresAt <= nowPlusMins;
-}
-
 export async function middleware(req: NextRequest) {
   const rewriteUrl = req.url;
   const res = NextResponse.rewrite(rewriteUrl);
-  await csrfMiddleware(req, res);
-
   const authCookie = req.cookies.get('session_id');
   const userJwtCookie = req.cookies.get(process.env.JWT_COOKIE_NAME);
 
-  //Feature flag redirects
-  const advertBuilderPath = /\/scheme\/\d*\/advert/;
+  await csrfMiddleware(req, res);
 
-  if (process.env.FEATURE_ADVERT_BUILDER === 'disabled') {
-    if (advertBuilderPath.test(req.nextUrl.pathname)) {
-      const url = req.nextUrl.clone();
-      url.pathname = `/404`;
-      return NextResponse.redirect(url);
+  if (!authCookie || !userJwtCookie) {
+    let url = getLoginUrl();
+    if (isSubmissionExportLink(req)) {
+      url += `?redirectUrl=${process.env.HOST}${req.nextUrl.pathname}`;
     }
+    console.log(`Not authorised - logging in via: ${url}`);
+    return NextResponse.redirect(url);
   }
 
-  if (userJwtCookie === undefined) return redirectToLogin(req);
+  const isValidSession = await isValidAdminSession(authCookie);
+  if (!isValidSession) {
+    const url = getLoginUrl({ redirectToApplicant: true });
+    console.log(`Not authorised - logging in via applicant app: ${url}`);
+    return NextResponse.redirect(url, {
+      status: 302,
+    });
+  }
 
-  const jwt = parseJwt(userJwtCookie.value);
-  const jwtExpiry = new Date(jwt.exp * 1000); //jwt.exp is stored in seconds, this converts to ms as expected in Date
+  if (isAdBuilderRedirectAndDisabled(req)) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/404';
+    console.log(`Ad builder disabled - redirecting to 404: ${url.toString()}`);
+    return NextResponse.redirect(url);
+  }
 
-  if (isWithinNumberOfMinsOfExpiry(jwtExpiry, 30)) {
+  if (isJwtExpiringSoon(userJwtCookie)) {
+    const url = process.env.REFRESH_URL;
+    const redirectUrl = process.env.HOST + req.nextUrl.pathname;
+    const redirectUrlSearchParams = encodeURIComponent(
+      req.nextUrl.searchParams.toString()
+    );
     return NextResponse.redirect(
-      `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}${
-        req.nextUrl.pathname
-      }?${encodeURIComponent(req.nextUrl.searchParams.toString())}`
+      `${url}?redirectUrl=${redirectUrl}?${redirectUrlSearchParams}`
     );
   }
 
-  if (authCookie !== undefined) {
-    if (process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE === 'true') {
-      const isValidAdminSession = await isAdminSessionValid(authCookie.value);
-      if (!isValidAdminSession) {
-        return redirectToApplicantLogin();
-      }
-    }
-
-    res.cookies.set('session_id', authCookie.value, {
-      path: '/',
-      secure: true,
-      httpOnly: true,
-      sameSite: 'lax',
-      maxAge: parseInt(process.env.MAX_COOKIE_AGE!),
-    });
-
-    res.headers.set('Cache-Control', 'no-store');
-    return res;
-  }
-  return redirectToLogin(req);
+  res.cookies.set('session_id', authCookie.value, {
+    path: '/',
+    secure: true,
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: parseInt(process.env.MAX_COOKIE_AGE!),
+  });
+  console.log('User is authorised');
+  res.headers.set('Cache-Control', 'no-store');
+  return res;
 }
 
-const submissionDownloadPattern = new URLPattern({
-  pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
-});
+function isAdBuilderRedirectAndDisabled(req: NextRequest) {
+  const advertBuilderPath = /\/scheme\/\d*\/advert/;
+  return (
+    process.env.FEATURE_ADVERT_BUILDER === 'disabled' &&
+    advertBuilderPath.test(req.nextUrl.pathname)
+  );
+}
+
+function isSubmissionExportLink(req: NextRequest) {
+  const submissionDownloadPattern = new URLPattern({
+    pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
+  });
+  return submissionDownloadPattern.test({ pathname: req.nextUrl.pathname });
+}
+
+type RequestCookie = Exclude<
+  ReturnType<NextRequest['cookies']['get']>,
+  undefined
+>;
+
+async function isValidAdminSession(authCookie: RequestCookie) {
+  if (process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE !== 'true') return true;
+  return await isAdminSessionValid(authCookie.value);
+}
+
+function isJwtExpiringSoon(jwtCookie: RequestCookie) {
+  const jwt = parseJwt(jwtCookie.value);
+  const expiresAt = new Date(jwt.exp * 1000); //jwt.exp is stored in seconds, this converts to ms as expected in Date
+  const now = new Date();
+  const nowPlusMins = new Date();
+  nowPlusMins.setMinutes(now.getMinutes() + 30);
+  return expiresAt >= now && expiresAt <= nowPlusMins;
+}
