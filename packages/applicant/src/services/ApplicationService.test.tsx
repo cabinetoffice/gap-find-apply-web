@@ -1,4 +1,3 @@
-import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import getConfig from 'next/config';
 import {
@@ -6,6 +5,8 @@ import {
   getApplicationById,
   getApplicationsListById,
 } from './ApplicationService';
+import { axios } from '../utils/axios';
+
 jest.mock('next/config', () => () => {
   return {
     serverRuntimeConfig: {

@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
 import { UserRolesResponse } from './UserRolesService';
+import { axios } from '../utils/axios';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;

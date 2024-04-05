@@ -1,7 +1,6 @@
-import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-
 import getConfig from 'next/config';
+import { axios } from '../utils/axios';
 import {
   GrantMandatoryQuestionDto,
   GrantMandatoryQuestionService,

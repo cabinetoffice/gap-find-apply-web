@@ -3,10 +3,10 @@ import { merge } from 'lodash';
 import { getSessionIdFromCookies } from '../../utils/session';
 import logout from './logout.page';
 import { NextApiRequest, NextApiResponse } from 'next';
-import axios from 'axios';
+import { axios } from '../../utils/axios';
 
 jest.mock('../../utils/session');
-jest.mock('axios');
+jest.mock('../../utils/axios');
 
 const mockedRedirect = jest.fn();
 const mockedSetHeader = jest.fn();

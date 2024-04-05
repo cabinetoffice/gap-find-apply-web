@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   AdvertDto,
   checkIfGrantExistsInContentful,
@@ -6,8 +5,9 @@ import {
   getAdvertBySlug,
   GrantExistsInContentfulDto,
 } from './GrantAdvertService';
+import { axios } from '../utils/axios';
 
-jest.mock('axios');
+jest.mock('../utils/axios');
 
 process.env.BACKEND_HOST = 'http://localhost:8080';
 const GRANT_ADVERT_BACKEND_BASE_URL =

@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { GrantApplicantOrganisationProfile } from '../types/models/GrantApplicantOrganisationProfile';
 import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
+import { axios } from '../utils/axios';
 
 export interface UpdateOrganisationDetailsDto {
   id?: string;

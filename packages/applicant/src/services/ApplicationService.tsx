@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { axios } from '../utils/axios';
 import getConfig from 'next/config';
 import { axiosConfig } from '../utils/jwt';
 import { GrantApplication } from '../types/models/GrantApplication';

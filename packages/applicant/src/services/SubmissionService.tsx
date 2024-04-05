@@ -1,9 +1,9 @@
-import axios from 'axios';
 import FormData from 'form-data';
 import { ValidationError } from 'gap-web-ui';
 import getConfig from 'next/config';
 import { MAX_FILE_UPLOAD_SIZE_BYTES } from '../utils/constants';
 import { axiosConfig } from '../utils/jwt';
+import { axios } from '../utils/axios';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;

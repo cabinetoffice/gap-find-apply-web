@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { axiosUserServiceConfig } from '../utils/jwt';
 import getConfig from 'next/config';
+import { axios } from '../utils/axios';
 
 const { serverRuntimeConfig } = getConfig();
 

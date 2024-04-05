@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { GrantScheme } from '../types/models/GrantScheme';
 import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
 import { GrantApplication } from '../types/models/GrantApplication';
 import { GrantAdvert } from '../types/models/GrantAdvert';
+import { axios } from '../utils/axios';
 
 export class GrantSchemeService {
   private static instance: GrantSchemeService;

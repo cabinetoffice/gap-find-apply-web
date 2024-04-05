@@ -1,11 +1,11 @@
-import axios from 'axios';
 import { GrantBeneficiary } from '../types/models/GrantBeneficiary';
 import {
   getGrantBeneficiary,
   postGrantBeneficiaryResponse,
 } from './GrantBeneficiaryService';
+import { axios } from '../utils/axios';
 
-jest.mock('axios');
+jest.mock('../utils/axios');
 
 const BACKEND_HOST = process.env.BACKEND_HOST + '/equality-and-diversity';
 const GRANT_BENEFICIARY_ID = 'testGrantBeneficiaryId';

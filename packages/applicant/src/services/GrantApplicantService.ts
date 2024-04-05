@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { GrantApplicant } from '../types/models/GrantApplicant';
 import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
+import { axios } from '../utils/axios';
 
 export interface RegisterAnApplicant {
   email: string;

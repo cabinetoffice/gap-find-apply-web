@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { FundingOrganisation } from '../types/models/FundingOrganisation';
 import { axiosConfig } from '../utils/jwt';
 import getConfig from 'next/config';
+import { axios } from '../utils/axios';
 
 export class FundingOrganisationService {
   private static instance: FundingOrganisationService;

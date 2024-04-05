@@ -1,6 +1,6 @@
-import axios from 'axios';
 import getConfig from 'next/config';
 import { axiosConfig } from '../utils/jwt';
+import { axios } from '../utils/axios';
 
 export class GrantMandatoryQuestionService {
   private static instance: GrantMandatoryQuestionService;

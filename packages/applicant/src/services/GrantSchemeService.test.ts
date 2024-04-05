@@ -1,8 +1,8 @@
-import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import getConfig from 'next/config';
 import { GrantScheme } from '../types/models/GrantScheme';
 import { GrantSchemeService } from './GrantSchemeService';
+import { axios } from '../utils/axios';
 
 jest.mock('next/config', () => () => {
   return {

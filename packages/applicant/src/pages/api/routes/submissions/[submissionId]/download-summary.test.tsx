@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import axios from 'axios';
+import { axios } from '../../../../../utils/axios';
 import handler from './download-summary.page';
 
-jest.mock('axios');
+jest.mock('../../../../../utils/axios');
 jest.mock('../../../../../middleware.page');
 jest.mock('../../../../../utils/jwt');
 jest.mock('next/config', () => () => ({

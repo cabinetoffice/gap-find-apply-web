@@ -1,7 +1,7 @@
-import axios from 'axios';
 import getConfig from 'next/config';
 import { axiosConfig } from '../utils/jwt';
 import { GrantAdvert } from '../types/models/GrantAdvert';
+import { axios } from '../utils/axios';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;

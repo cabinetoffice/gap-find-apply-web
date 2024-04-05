@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { GrantBeneficiary } from '../types/models/GrantBeneficiary';
 import { axiosConfig } from '../utils/jwt';
+import { axios } from '../utils/axios';
 
 const BASE_URL = process.env.BACKEND_HOST + '/equality-and-diversity';
 

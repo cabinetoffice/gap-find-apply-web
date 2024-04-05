@@ -1,9 +1,9 @@
-import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { GrantApplicant } from '../types/models/GrantApplicant';
 import { axiosConfig } from '../utils/jwt';
 import { GrantApplicantService } from './GrantApplicantService';
 import getConfig from 'next/config';
+import { axios } from '../utils/axios';
 
 jest.mock('../utils/jwt');
 jest.mock('next/config', () => () => {
