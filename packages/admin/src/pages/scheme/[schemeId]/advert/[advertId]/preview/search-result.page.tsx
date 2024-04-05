@@ -7,7 +7,7 @@ import CustomError from '../../../../../../types/CustomError';
 import InferProps from '../../../../../../types/InferProps';
 import { generateErrorPageRedirectV2 } from '../../../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../../../utils/session';
-import PreviewSearchCard from './components/PreviewSearchCard';
+import PreviewSearchResultCard from './components/PreviewSearchResultCard';
 import Link from 'next/link';
 
 export const getServerSideProps = async ({
@@ -94,6 +94,7 @@ const SearchResultPreview = ({
           <div
             data-cy="cy-preview-page-inset-text"
             className="govuk-inset-text"
+            data-testid="previewDetails"
           >
             <p>
               This is how your advert will look on the{' '}
@@ -109,7 +110,7 @@ const SearchResultPreview = ({
           </div>
         </div>
 
-        <PreviewSearchCard grant={grant} />
+        <PreviewSearchResultCard grant={grant} />
 
         <div className="govuk-grid-column-full govuk-button-group">
           <CustomLink

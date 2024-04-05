@@ -166,7 +166,7 @@ describe('Advert Preview page', () => {
   it('Should render back button', () => {
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
       'href',
-      `/apply/scheme/${props.schemeId}/advert/${props.advertId}/section-overview`
+      `/apply/scheme/${props.schemeId}/advert/${props.advertId}/preview/search-result`
     );
   });
   it('Should render Back to create your advert button', () => {
