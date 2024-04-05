@@ -56,6 +56,7 @@ export async function middleware(req: NextRequest) {
     const redirectUrlSearchParams = encodeURIComponent(
       req.nextUrl.searchParams.toString()
     );
+    console.log(`Refreshing JWT - redircting to: ${url}`);
     return NextResponse.redirect(
       `${url}?redirectUrl=${redirectUrl}?${redirectUrlSearchParams}`
     );
