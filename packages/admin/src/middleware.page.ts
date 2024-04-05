@@ -28,7 +28,7 @@ export async function middleware(req: NextRequest) {
   if (!authCookie || !userJwtCookie) {
     let url = getLoginUrl();
     if (isSubmissionExportLink(req)) {
-      url += `?redirectUrl=${process.env.HOST}${req.nextUrl.pathname}`;
+      url += `?${generateRedirectUrl(req)}`;
     }
     console.log(`Not authorised - logging in via: ${url}`);
     return NextResponse.redirect(url);
@@ -37,10 +37,22 @@ export async function middleware(req: NextRequest) {
   const isValidSession = await isValidAdminSession(authCookie);
   if (!isValidSession) {
     const url = getLoginUrl({ redirectToApplicant: true });
-    console.log(`Not authorised - logging in via applicant app: ${url}`);
+    console.log(`Admin session invalid - logging in via applicant app: ${url}`);
     return NextResponse.redirect(url, {
       status: 302,
     });
+  }
+
+  if (hasJwtExpired(userJwtCookie)) {
+    const url = `${getLoginUrl()}?${generateRedirectUrl(req)}`;
+    console.log(`Jwt expired - logging in via: ${url}`);
+    return NextResponse.redirect(url);
+  }
+
+  if (isJwtExpiringSoon(userJwtCookie)) {
+    const url = `${process.env.REFRESH_URL}?${generateRedirectUrl(req)}`;
+    console.log(`Refreshing JWT - redircting to: ${url}`);
+    return NextResponse.redirect(url);
   }
 
   if (isAdBuilderRedirectAndDisabled(req)) {
@@ -50,18 +62,21 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (isJwtExpiringSoon(userJwtCookie)) {
-    const url = process.env.REFRESH_URL;
-    const redirectUrl = process.env.HOST + req.nextUrl.pathname;
-    const redirectUrlSearchParams = encodeURIComponent(
-      req.nextUrl.searchParams.toString()
-    );
-    console.log(`Refreshing JWT - redircting to: ${url}`);
-    return NextResponse.redirect(
-      `${url}?redirectUrl=${redirectUrl}?${redirectUrlSearchParams}`
-    );
-  }
+  console.log('User is authorised');
+  addAdminSessionCookie(res, authCookie);
+  res.headers.set('Cache-Control', 'no-store');
+  return res;
+}
 
+function generateRedirectUrl(req: NextRequest) {
+  const redirectUrl = process.env.HOST + req.nextUrl.pathname;
+  const redirectUrlSearchParams = encodeURIComponent(
+    req.nextUrl.searchParams.toString()
+  );
+  return `redirectUrl=${redirectUrl}?${redirectUrlSearchParams}`;
+}
+
+function addAdminSessionCookie(res: NextResponse, authCookie: RequestCookie) {
   res.cookies.set('session_id', authCookie.value, {
     path: '/',
     secure: true,
@@ -69,9 +84,6 @@ export async function middleware(req: NextRequest) {
     sameSite: 'lax',
     maxAge: parseInt(process.env.MAX_COOKIE_AGE!),
   });
-  console.log('User is authorised');
-  res.headers.set('Cache-Control', 'no-store');
-  return res;
 }
 
 function isAdBuilderRedirectAndDisabled(req: NextRequest) {
@@ -83,28 +95,35 @@ function isAdBuilderRedirectAndDisabled(req: NextRequest) {
 }
 
 // Moving this into the functions scope apparently breaks 2 tests???
-const submissionDownloadPattern = new URLPattern({
-  pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
-});
 function isSubmissionExportLink(req: NextRequest) {
+  const submissionDownloadPattern = new URLPattern({
+    pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
+  });
   return submissionDownloadPattern.test({ pathname: req.nextUrl.pathname });
 }
-
-type RequestCookie = Exclude<
-  ReturnType<NextRequest['cookies']['get']>,
-  undefined
->;
 
 async function isValidAdminSession(authCookie: RequestCookie) {
   if (process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE !== 'true') return true;
   return await isAdminSessionValid(authCookie.value);
 }
 
+function hasJwtExpired(jwtCookie: RequestCookie) {
+  const jwt = parseJwt(jwtCookie.value);
+  const expiresAt = new Date(jwt.exp * 1000);
+  const now = new Date();
+  return expiresAt <= now;
+}
+
 function isJwtExpiringSoon(jwtCookie: RequestCookie) {
   const jwt = parseJwt(jwtCookie.value);
-  const expiresAt = new Date(jwt.exp * 1000); //jwt.exp is stored in seconds, this converts to ms as expected in Date
+  const expiresAt = new Date(jwt.exp * 1000);
   const now = new Date();
   const nowPlusMins = new Date();
   nowPlusMins.setMinutes(now.getMinutes() + 30);
   return expiresAt >= now && expiresAt <= nowPlusMins;
 }
+
+type RequestCookie = Exclude<
+  ReturnType<NextRequest['cookies']['get']>,
+  undefined
+>;
