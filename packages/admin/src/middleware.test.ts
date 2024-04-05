@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
+import { NextURL } from 'next/dist/server/web/next-url';
 import { middleware } from './middleware.page';
 import { isAdminSessionValid } from './services/UserService';
 import { getLoginUrl } from './utils/general';
@@ -12,15 +13,29 @@ jest.mock('./services/UserService', () => ({
   isAdminSessionValid: jest.fn(),
 }));
 
-jest.mock('next/server', () => ({
-  ...jest.requireActual('next/server'),
-  URLPattern: jest.fn().mockImplementation(() => ({
-    test: jest.fn(),
-  })),
-}));
+let cookieStore = {},
+  headerStore = {};
+
+const getMockRequest = (url: string) =>
+  ({
+    cookies: {
+      get: (key) => cookieStore[key],
+      getAll: () =>
+        Object.entries(cookieStore).map(([name, value]) => ({ name, value })),
+      set: (name, value) => (cookieStore[name] = { name, value }),
+    },
+    headers: {
+      get: (key) => headerStore[key],
+      entries: () => [],
+      set: (key, value) => (headerStore[key] = value),
+    },
+    url,
+    nextUrl: new NextURL(url),
+    method: 'GET',
+  } as unknown as NextRequest);
 
 describe('middleware', () => {
-  const req = new NextRequest('http://localhost:3000/dashboard');
+  const req = getMockRequest('http://localhost:3000/dashboard');
 
   beforeEach(() => {
     process.env.MAX_COOKIE_AGE = '21600';
@@ -29,6 +44,9 @@ describe('middleware', () => {
     process.env.V2_LOGIN_URL = 'http://localhost:8082/login';
     process.env.FEATURE_ADVERT_BUILDER = 'enabled';
     process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE = 'true';
+    jest.clearAllMocks();
+    cookieStore = {};
+    headerStore = {};
   });
 
   it('Should redirect to the logout page when the user is not authorized', async () => {
@@ -37,6 +55,7 @@ describe('middleware', () => {
     const result = await middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
+    console.log(result);
 
     // basePath from nextjs config does not apply to jest tests, thus no subpaths
     expect(result.headers.get('Location')).toStrictEqual(expectedUrl);
@@ -76,14 +95,14 @@ describe('middleware', () => {
     const result = await middleware(req);
 
     expect(result.headers.get('x-middleware-rewrite')).toStrictEqual(
-      'http://localhost:3000/apply/test/destination'
+      'http://localhost:3000/dashboard'
     );
   });
 });
 
 describe('middleware', () => {
-  const req = new NextRequest(
-    'http://localhost:3000/apply/admin/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
+  const req = getMockRequest(
+    'http://localhost:3000/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
   );
 
   it('Should allow the user to access the advert builder pages if the feature is enabled', async () => {
@@ -94,7 +113,7 @@ describe('middleware', () => {
 
     expect(result).toBeInstanceOf(NextResponse);
     expect(result.headers.get('x-middleware-rewrite')).toStrictEqual(
-      'http://localhost:3000/apply/admin/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
+      'http://localhost:3000/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
     );
   });
 

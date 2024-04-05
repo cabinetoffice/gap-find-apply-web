@@ -90,7 +90,7 @@ const authenticatedPaths = [
   '/scheme/:path*',
   '/scheme-list/:path*',
   '/super-admin-dashboard/:path*',
-].map((path) => new URLPattern({ pathname: path }));
+].map((pathname) => new URLPattern({ pathname }));
 
 const isAuthenticatedPath = (pathname: string) =>
   authenticatedPaths.some((authenticatedPath) =>
@@ -103,7 +103,10 @@ export async function middleware(req: NextRequest) {
   const rewriteUrl = req.url;
   let res = NextResponse.rewrite(rewriteUrl);
   logRequest(req, res);
-
+  console.log({
+    pathname: req.nextUrl.pathname,
+    isAuthenticatedPath: isAuthenticatedPath(req.nextUrl.pathname),
+  });
   if (isAuthenticatedPath(req.nextUrl.pathname)) {
     await csrfMiddleware(req, res);
     res = await authenticateRequest(req, res);
