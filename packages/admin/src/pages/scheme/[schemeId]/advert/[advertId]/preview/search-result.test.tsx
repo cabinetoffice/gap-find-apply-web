@@ -475,6 +475,13 @@ describe('Advert Search Preview page', () => {
     screen.getByTestId('previewDetails');
   });
 
+  it('should take you to find search page from preview details', () => {
+    expect(screen.getByTestId('searchPageLink')).toHaveAttribute(
+      'href',
+      'FIND-URL/grants'
+    );
+  });
+
   it('should render the PreviewSearchCard component', () => {
     screen.getByTestId('advert-preview-search-card-div');
   });

@@ -98,7 +98,11 @@ const SearchResultPreview = ({
           >
             <p>
               This is how your advert will look on the{' '}
-              <Link className="govuk-link" href={findSearchUrl}>
+              <Link
+                className="govuk-link"
+                href={findSearchUrl}
+                data-testid="searchPageLink"
+              >
                 search results page
               </Link>
               . It will be in a list alongside other grant adverts.
