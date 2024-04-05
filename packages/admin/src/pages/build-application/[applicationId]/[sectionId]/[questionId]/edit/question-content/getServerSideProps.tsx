@@ -7,6 +7,8 @@ import {
 import { getSessionIdFromCookies } from '../../../../../../../utils/session';
 import QuestionPageGetServerSideProps from '../../../../../../../utils/QuestionPageGetServerSideProps';
 import { NextRedirect } from '../../../../../../../utils/QuestionPageGetServerSidePropsTypes';
+import ResponseTypeEnum from '../../../../../../../enums/ResponseType';
+import { buildQueryStringWithoutUndefinedValues } from '../../../../../../../utils/general';
 
 type RequestBody = {
   fieldTitle: string;
@@ -22,7 +24,7 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
   >;
   const { backTo } = context.query as Record<string, string>;
 
-  function onSuccessRedirectHref() {
+  function getBackToRedirect() {
     return backTo === 'dashboard'
       ? `/build-application/${applicationId}/dashboard`
       : `/build-application/${applicationId}/${sectionId}`;
@@ -50,25 +52,52 @@ const getServerSideProps = (context: GetServerSidePropsContext) => {
       questionId
     );
 
+    const editQuestionSearchParams = new URLSearchParams({
+      ...context.query,
+      questionId,
+    });
+
+    const queryString = buildQueryStringWithoutUndefinedValues({
+      backTo,
+      version: applicationFormSummary.audit.version,
+    });
+
     return {
       questionData,
-      backTo: backTo ?? '',
-      backButtonHref: onSuccessRedirectHref(),
-      deleteConfirmationUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/delete-confirmation`,
+      version: applicationFormSummary.audit.version,
+      backButtonHref: getBackToRedirect(),
+      deleteConfirmationUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/delete-confirmation${queryString}`,
       previewUrl: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/preview`,
+      editQuestionTypeUrl: `/build-application/${applicationId}/${sectionId}/question-type?${editQuestionSearchParams}`,
+      isEdit: true,
     };
   }
 
-  async function handleRequest(body: RequestBody, jwt: string) {
+  async function handleRequest(
+    body: RequestBody,
+    jwt: string,
+    pageData: Exclude<Awaited<ReturnType<typeof fetchPageData>>, NextRedirect>
+  ) {
     const { optional, maxWords, ...restOfBody } = body;
 
-    return patchQuestion(jwt, applicationId, sectionId, questionId, {
+    await patchQuestion(jwt, applicationId, sectionId, questionId, {
       ...restOfBody,
       validation: {
         mandatory: optional !== 'true',
         maxWords,
       },
     });
+
+    return pageData.questionData.responseType;
+  }
+
+  function onSuccessRedirectHref(
+    responseType: Awaited<ReturnType<typeof handleRequest>>
+  ) {
+    return responseType === ResponseTypeEnum.MultipleSelection ||
+      responseType === ResponseTypeEnum.Dropdown
+      ? `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-options?backTo=${backTo}`
+      : getBackToRedirect();
   }
 
   return QuestionPageGetServerSideProps({

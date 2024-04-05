@@ -10,6 +10,7 @@ type ApplicationFormQuestion = {
   displayText: string;
   questionSuffix: string;
   responseType: ResponseType;
+  optional: string;
   validation: { [key: string]: string | undefined };
   options?: string[];
 };
@@ -31,8 +32,9 @@ type ApplicationFormSummary = {
   audit: {
     version: number;
     created: string;
-    lastUpdatedDate: string;
-    lastUpdatedBy: string;
+    createdBy: string;
+    lastUpdated: string;
+    lastUpdateBy: string;
     lastPublished: string;
   };
   sections: ApplicationFormSection[];

@@ -24,6 +24,16 @@ const mockedGetGrantScheme = getGrantScheme as jest.MockedFn<
   typeof getGrantScheme
 >;
 
+jest.mock('next/config', () => () => ({
+  serverRuntimeConfig: {
+    backendHost: 'http://localhost:8080',
+  },
+  publicRuntimeConfig: {
+    SUB_PATH: '',
+    APPLICANT_DOMAIN: 'http://localhost:8080',
+  },
+}));
+
 describe('Dashboard', () => {
   describe('Dashboard page', () => {
     const mockDashboardParams = {
@@ -74,6 +84,8 @@ describe('Dashboard', () => {
       applicationId: '87654321',
       grantSchemeId: '12345678',
       applicationStatus: 'DRAFT' as ApplicationFormSummary['applicationStatus'],
+      version: 1,
+      scrollPosition: 0,
       recentlyUnpublished: false,
       applyToApplicationUrl: '/applications/87654321',
       resolvedUrl: '/build-application/87654321',
@@ -155,6 +167,30 @@ describe('Dashboard', () => {
         })
       ).toBeFalsy();
     });
+
+    it('should render correct download link', () => {
+      render(<Dashboard {...mockDashboardParams} />);
+      expect(
+        screen.getByRole('link', {
+          name: 'Download an overview (ODT)',
+        })
+      ).toHaveAttribute('href', '/api/applications/87654321/download-summary');
+
+      expect(
+        screen.getByText(
+          'You can preview how your application will look to applicants and download a copy for your own reference.'
+        )
+      ).toBeVisible();
+    });
+
+    it('should render correct application preview form', () => {
+      render(<Dashboard {...mockDashboardParams} />);
+      expect(
+        screen.getByRole('button', {
+          name: 'Preview your application form',
+        })
+      ).toHaveAttribute('href', '/build-application/87654321/preview');
+    });
   });
 
   describe('getServerSideProps', () => {
@@ -162,7 +198,7 @@ describe('Dashboard', () => {
       errorInformation:
         'Something went wrong while trying to create an application',
       linkAttributes: {
-        href: `/scheme-list`,
+        href: `/dashboard`,
         linkText: 'Please find your scheme application form and continue.',
         linkInformation: 'Your previous progress has been saved.',
       },
@@ -213,12 +249,16 @@ describe('Dashboard', () => {
 
     beforeEach(() => {
       mockedGetGrantScheme.mockResolvedValue({
+        encryptedLastUpdatedBy: 'some-user',
+        lastUpdatedByADeletedUser: false,
         schemeId: 'testSchemeId',
         version: '1',
         name: 'testSchemeName',
         ggisReference: 'testGgisReference',
         funderId: 'GRANT',
         createdDate: 'testCreatedDate',
+        lastUpdatedBy: 'some-user',
+        lastUpdatedDate: 'some-date',
       });
 
       mockedGetApplicationFormSummary.mockResolvedValue({
@@ -229,9 +269,10 @@ describe('Dashboard', () => {
         audit: {
           version: 1,
           created: 'createdDate',
-          lastUpdatedDate: 'lastUpdatedDate',
-          lastUpdatedBy: 'lastUpdatedBy',
-          lastPublished: 'lastPublishedDate',
+          createdBy: 'createdBy',
+          lastUpdated: 'lastUpdatedDate',
+          lastUpdateBy: 'lastUpdatedBy',
+          lastPublished: 'lastPublished',
         },
         sections: sections,
       });
@@ -317,12 +358,16 @@ describe('Dashboard', () => {
     });
     it('Return correct applyToApplicationUrl when schemeversion is 2', async () => {
       mockedGetGrantScheme.mockResolvedValue({
+        encryptedLastUpdatedBy: 'some-user',
+        lastUpdatedByADeletedUser: false,
         schemeId: 'testSchemeId',
         version: '2',
         name: 'testSchemeName',
         ggisReference: 'testGgisReference',
         funderId: 'GRANT',
         createdDate: 'testCreatedDate',
+        lastUpdatedBy: 'some-user',
+        lastUpdatedDate: 'some-date',
       });
       const response = (await getServerSideProps(
         getContext()

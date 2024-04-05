@@ -211,25 +211,25 @@ describe('Manage organisation page should render properly', () => {
   it('should render the option to change the details', () => {
     expect(
       screen.getByRole('link', {
-        name: 'Change /organisation/name',
+        name: 'Change organisation name',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.name);
 
     expect(
       screen.getByRole('link', {
-        name: 'Change /organisation/address',
+        name: 'Change organisation address',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.address);
 
     expect(
       screen.getByRole('link', {
-        name: 'Change /organisation/type',
+        name: 'Change organisation type',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.type);
 
     expect(
       screen.getByRole('link', {
-        name: 'Change /organisation/charity-commission-number',
+        name: 'Change organisation charity-commission-number',
       })
     ).toHaveProperty(
       'href',
@@ -238,7 +238,7 @@ describe('Manage organisation page should render properly', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'Change /organisation/companies-house-number',
+        name: 'Change organisation companies-house-number',
       })
     ).toHaveProperty(
       'href',
@@ -312,25 +312,25 @@ describe('Manage page should render without an address', () => {
   it('should render the number option to add details', () => {
     expect(
       screen.getByRole('link', {
-        name: 'Add /organisation/name',
+        name: 'Add organisation name',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.name);
 
     expect(
       screen.getByRole('link', {
-        name: 'Add /organisation/address',
+        name: 'Add organisation address',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.address);
 
     expect(
       screen.getByRole('link', {
-        name: 'Add /organisation/type',
+        name: 'Add organisation type',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.type);
 
     expect(
       screen.getByRole('link', {
-        name: 'Add /organisation/charity-commission-number',
+        name: 'Add organisation charity-commission-number',
       })
     ).toHaveProperty(
       'href',
@@ -339,7 +339,7 @@ describe('Manage page should render without an address', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'Add /organisation/companies-house-number',
+        name: 'Add organisation companies-house-number',
       })
     ).toHaveProperty(
       'href',
@@ -476,6 +476,38 @@ describe('builds org data rows properly', () => {
         status: 'Change',
         url: '/organisation/type',
         value: 'I am applying as an individual',
+      },
+    });
+  });
+  it('should not return Companies House or Charity Commission rows for local authority', () => {
+    const response = getOrganisationData(profile, {
+      isIndividual: false,
+      isNonLimitedCompany: false,
+      isLocalAuthority: true,
+    });
+    expect(response).toStrictEqual({
+      generalOrganisationRows: [
+        {
+          id: 'organisationName',
+          label: 'Name',
+          status: 'Change',
+          url: '/organisation/name',
+          value: 'name',
+        },
+        {
+          id: 'organisationAddress',
+          label: 'Address',
+          status: 'Change',
+          url: '/organisation/address',
+          value: ['addressline1', 'addressline1', 'town', 'county', 'postcode'],
+        },
+      ],
+      typeOfOrganisationRow: {
+        id: 'organisationType',
+        label: 'Type of organisation',
+        status: 'Change',
+        url: '/organisation/type',
+        value: 'type',
       },
     });
   });

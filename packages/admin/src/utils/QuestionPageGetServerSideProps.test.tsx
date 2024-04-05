@@ -65,6 +65,29 @@ describe('QuestionPageGetServerSideProps', () => {
       });
     });
 
+    it('should redirect to the multiple editors error page', async () => {
+      mockGetDataFunction.mockRejectedValueOnce({
+        config: { url: '/application-forms/application-id' },
+        response: {
+          data: {
+            error: { message: 'MULTIPLE_EDITORS_SECTION_DELETED' },
+          },
+        },
+      });
+
+      const response = await QuestionPageGetServerSideProps(
+        getProps(getDefaultProps)
+      );
+
+      expectObjectEquals(response, {
+        redirect: {
+          destination:
+            '/build-application/application-id/error-multiple-editors?error=The section or question you were editing has been deleted and your changes could not be saved.',
+          statusCode: 302,
+        },
+      });
+    });
+
     it('Should redirect to the error service page if there is an error when getting data', async () => {
       mockGetDataFunction.mockRejectedValueOnce('Error');
 

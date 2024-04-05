@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LinkContent, links } from '.';
+import { LinkContent, authMobileLinks, links } from '.';
 import { useRouter } from 'next/router';
 
 const GovLinkMobile = ({ btn, index }: { btn: LinkContent; index: number }) => {
@@ -21,7 +21,7 @@ const GovLinkMobile = ({ btn, index }: { btn: LinkContent; index: number }) => {
   );
 };
 
-const MobileNavigationBar = () => (
+const MobileNavigationBar = (isSuperAdmin) => (
   <details className="menu-toggler-mobile govuk-body">
     <summary
       data-cy="cyMobileMenuBtn"
@@ -31,11 +31,19 @@ const MobileNavigationBar = () => (
       Menu
     </summary>
     <nav aria-label="menu">
-      <ul>
-        {links.map((btn, index) => (
-          <GovLinkMobile key={index} btn={btn} index={index} />
-        ))}
-      </ul>
+      {isSuperAdmin ? (
+        <ul>
+          {authMobileLinks.map((btn, index) => (
+            <GovLinkMobile key={index} btn={btn} index={index} />
+          ))}
+        </ul>
+      ) : (
+        <ul>
+          {links.map((btn, index) => (
+            <GovLinkMobile key={index} btn={btn} index={index} />
+          ))}
+        </ul>
+      )}
     </nav>
   </details>
 );

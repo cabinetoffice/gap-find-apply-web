@@ -1,4 +1,8 @@
-import { downloadFile, validateRedirectUrl } from './general';
+import {
+  buildQueryStringWithoutUndefinedValues,
+  downloadFile,
+  validateRedirectUrl,
+} from './general';
 
 describe('downloadFile', () => {
   it('Should download the file', () => {
@@ -39,5 +43,32 @@ describe('validateRedirectUrl', () => {
     const invalidPath =
       'https://www.not-the-realfindagrantservice.com/some-path/sub-path';
     expect(() => validateRedirectUrl(invalidPath)).toThrowError();
+  });
+});
+
+describe('buildQueryStringWithoutUndefinedValues', () => {
+  it('strips undefined', () => {
+    const input = {
+      a: '1',
+      b: undefined,
+      c: null,
+      d: 'something',
+    };
+    const expectedResult = '?a=1&c=null&d=something';
+    expect(buildQueryStringWithoutUndefinedValues(input)).toStrictEqual(
+      expectedResult
+    );
+  });
+  it('returns empty string if no values', () => {
+    const input = {};
+    expect(buildQueryStringWithoutUndefinedValues(input)).toStrictEqual('');
+  });
+  it('returns empty string if all values are undefined', () => {
+    const input = {
+      a: undefined,
+      b: undefined,
+      c: undefined,
+    };
+    expect(buildQueryStringWithoutUndefinedValues(input)).toStrictEqual('');
   });
 });

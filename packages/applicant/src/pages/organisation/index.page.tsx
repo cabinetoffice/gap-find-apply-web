@@ -3,13 +3,13 @@ import Link from 'next/link';
 import { FC } from 'react';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
+import { GrantApplicantService } from '../../services/GrantApplicantService';
 import { GrantApplicant } from '../../types/models/GrantApplicant';
 import { GrantApplicantOrganisationProfile } from '../../types/models/GrantApplicantOrganisationProfile';
-import { GrantApplicantService } from '../../services/GrantApplicantService';
+import { MQ_ORG_TYPES } from '../../utils/constants';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import ProcessAddress from './processAddress';
-import { MQ_ORG_TYPES } from '../../utils/constants';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -43,11 +43,14 @@ export const getServerSideProps = async ({ req }) => {
   const isIndividual = organisationData?.type === MQ_ORG_TYPES.INDIVIDUAL;
   const isNonLimitedCompany =
     organisationData?.type === MQ_ORG_TYPES.NON_LIMITED_COMPANY;
+  const isLocalAuthority =
+    organisationData?.type === MQ_ORG_TYPES.LOCAL_AUTHORITY;
 
   const { generalOrganisationRows, typeOfOrganisationRow } =
     getOrganisationData(organisationData, {
       isIndividual,
       isNonLimitedCompany,
+      isLocalAuthority,
     });
 
   return {
@@ -126,6 +129,10 @@ type OrganisationDataRowProps = {
   noBorderBottom?: boolean;
 };
 
+const urlToFormattedString = (url: string) => {
+  return url.replaceAll('/', ' ').trim();
+};
+
 const OrganisationDataRow = ({
   organisationDetail,
   noBorderBottom,
@@ -163,7 +170,9 @@ const OrganisationDataRow = ({
         data-cy={`cy-organisation-details-navigation-${organisationDetail.id}`}
       >
         {organisationDetail.status}
-        <span className="govuk-visually-hidden">{organisationDetail.url}</span>
+        <span className="govuk-visually-hidden">
+          {urlToFormattedString(organisationDetail.url)}
+        </span>
       </Link>
     </dd>
   </div>
@@ -176,7 +185,11 @@ type OrganisationData = {
 
 export const getOrganisationData = (
   organisationData: GrantApplicantOrganisationProfile,
-  { isIndividual, isNonLimitedCompany }: Record<string, boolean>
+  {
+    isIndividual,
+    isNonLimitedCompany,
+    isLocalAuthority,
+  }: Record<string, boolean>
 ): OrganisationData => {
   const typeOfOrganisationRow = {
     id: 'organisationType',
@@ -229,7 +242,7 @@ export const getOrganisationData = (
     },
   ];
 
-  if (isNonLimitedCompany || isIndividual) {
+  if (isNonLimitedCompany || isIndividual || isLocalAuthority) {
     generalOrganisationRows.splice(2, 3);
   }
 

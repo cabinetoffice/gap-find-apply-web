@@ -1,12 +1,14 @@
 import axios from 'axios';
-import ApplicationQueryObject from '../types/ApplicationQueryObject';
-import {
-  ApplicationFormSummary,
-  ApplicationFormSection,
-} from '../types/ApplicationForm';
 import getConfig from 'next/config';
-import { axiosSessionConfig } from '../utils/session';
+import {
+  ApplicationFormSection,
+  ApplicationFormSummary,
+} from '../types/ApplicationForm';
+import ApplicationQueryObject from '../types/ApplicationQueryObject';
 import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
+import { decrypt } from '../utils/encryption';
+import { axiosSessionConfig } from '../utils/session';
+import { mapSingleSection } from '../utils/applicationSummaryHelper';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -54,26 +56,42 @@ const getApplicationFormSummary = async (
   withSections = true as boolean,
   withQuestions = true as boolean
 ) => {
-  const response = await axios.get(`${BASE_APPLICATION_URL}/${applicationId}`, {
-    params: {
-      withSections: withSections,
-      withQuestions: withQuestions,
-    },
-    ...axiosSessionConfig(sessionId),
-  });
-  return response.data as ApplicationFormSummary;
+  const response = await axios.get<ApplicationFormSummary>(
+    `${BASE_APPLICATION_URL}/${applicationId}`,
+    {
+      params: {
+        withSections: withSections,
+        withQuestions: withQuestions,
+      },
+      ...axiosSessionConfig(sessionId),
+    }
+  );
+  return response.data;
 };
 
 const getApplicationFormSection = async (
   applicationId: string,
   sectionId: string,
-  sessionId: string
+  sessionId: string,
+  isV2Scheme?: boolean
 ) => {
-  const response = await axios.get(
-    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}`,
+  const sectionNeedsMapped =
+    isV2Scheme &&
+    ['ORGANISATION_DETAILS', 'FUNDING_DETAILS'].includes(sectionId);
+
+  const { data } = await axios.get<ApplicationFormSection>(
+    `${BASE_APPLICATION_URL}/${applicationId}/sections/${
+      sectionNeedsMapped ? 'ESSENTIAL' : sectionId
+    }`,
     axiosSessionConfig(sessionId)
   );
-  return response.data as ApplicationFormSection;
+
+  if (!sectionNeedsMapped) return data;
+
+  return mapSingleSection(
+    data,
+    sectionId as 'ORGANISATION_DETAILS' | 'FUNDING_DETAILS'
+  );
 };
 
 const updateApplicationFormStatus = async (
@@ -94,13 +112,15 @@ const handleSectionOrdering = async (
   increment: number,
   sectionId: string,
   applicationId: string,
-  sessionId: string
+  sessionId: string,
+  version: string
 ) => {
   await axios.patch(
     `${BASE_APPLICATION_URL}/${applicationId}/sections/order`,
     {
       sectionId,
       increment,
+      version,
     },
     axiosSessionConfig(sessionId)
   );
@@ -112,6 +132,7 @@ type HandleQuestionOrderingProps = {
   sectionId: string;
   questionId: string;
   increment: number;
+  version: number;
 };
 
 const handleQuestionOrdering = async ({
@@ -120,20 +141,63 @@ const handleQuestionOrdering = async ({
   sectionId,
   questionId,
   increment,
+  version,
 }: HandleQuestionOrderingProps) => {
   await axios.patch(
-    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}/order/${increment}`,
+    `${BASE_APPLICATION_URL}/${applicationId}/sections/${sectionId}/questions/${questionId}/order/${increment}?version=${version}`,
     {},
     axiosSessionConfig(sessionId)
   );
 };
 
+const getLastEditedEmail = async (applicationId: string, sessionId: string) => {
+  const {
+    data: { encryptedEmail, deletedUser },
+  } = await axios.get<{
+    encryptedEmail: string;
+    deletedUser: boolean;
+  }>(
+    `${BASE_APPLICATION_URL}/${applicationId}/lastUpdated/email`,
+    axiosSessionConfig(sessionId)
+  );
+
+  if (deletedUser) return 'Deleted user';
+
+  return decrypt(encryptedEmail);
+};
+
+const getApplicationStatus = async (
+  applicationId: string,
+  sessionId: string
+) => {
+  const response = await axios.get(
+    `${BASE_APPLICATION_URL}/${applicationId}/status`,
+    axiosSessionConfig(sessionId)
+  );
+  return response.data;
+};
+
+export async function downloadSummary(
+  applicationId: string,
+  sessionId: string
+) {
+  return await axios.get(
+    `${BASE_APPLICATION_URL}/${applicationId}/download-summary`,
+    {
+      ...axiosSessionConfig(sessionId),
+      responseType: 'arraybuffer',
+    }
+  );
+}
+
 export {
   createNewApplicationForm,
   findMatchingApplicationForms,
-  getApplicationFormSummary,
   getApplicationFormSection,
-  updateApplicationFormStatus,
-  handleSectionOrdering,
+  getApplicationFormSummary,
+  getApplicationStatus,
+  getLastEditedEmail,
   handleQuestionOrdering,
+  handleSectionOrdering,
+  updateApplicationFormStatus,
 };

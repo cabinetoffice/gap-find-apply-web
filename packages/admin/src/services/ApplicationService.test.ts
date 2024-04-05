@@ -1,15 +1,20 @@
 import axios, { AxiosError } from 'axios';
+import getConfig from 'next/config';
 import ApplicationQueryObject from '../types/ApplicationQueryObject';
+import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
 import {
   createNewApplicationForm,
+  downloadSummary,
   findMatchingApplicationForms,
   getApplicationFormSection,
   getApplicationFormSummary,
-  updateApplicationFormStatus,
+  getApplicationStatus,
+  getLastEditedEmail,
+  handleQuestionOrdering,
   handleSectionOrdering,
+  updateApplicationFormStatus,
 } from './ApplicationService';
-import getConfig from 'next/config';
-import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
+import { decrypt } from '../utils/encryption';
 
 jest.mock('next/config', () => () => {
   return {
@@ -24,6 +29,10 @@ jest.mock('next/config', () => () => {
 });
 jest.mock('axios');
 
+jest.mock('../utils/encryption', () => ({
+  decrypt: jest.fn(),
+}));
+
 describe('ApplicationService', () => {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
   const { serverRuntimeConfig } = getConfig();
@@ -33,7 +42,9 @@ describe('ApplicationService', () => {
   const SCHEME_ID = 'a028d000004Ops2AAC';
   const APPLICATION_ID = 'a028d000004Osy3BEA';
   const SECTION_ID = 'SECTIONID';
+  const QUESTION_ID = 'QUESTIONID';
   const SESSION_ID = 'testSessionId';
+  const VERSION = '1';
 
   describe('createNewApplicationForm function', () => {
     it('Should create a new application scheme', async () => {
@@ -194,15 +205,96 @@ describe('ApplicationService', () => {
         increment,
         SECTION_ID,
         APPLICATION_ID,
-        SESSION_ID
+        SESSION_ID,
+        VERSION
       );
 
       expect(mockedAxios.patch).toHaveBeenCalledWith(
         `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/order`,
-        { increment, sectionId: SECTION_ID },
+        { increment, sectionId: SECTION_ID, version: VERSION },
         { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
       );
       expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('handleQuestionOrdering', () => {
+    it('Should call the expected endpoint to update an application forms section order', async () => {
+      const increment = 1;
+      const version = 1;
+      await handleQuestionOrdering({
+        increment,
+        questionId: QUESTION_ID,
+        sectionId: SECTION_ID,
+        applicationId: APPLICATION_ID,
+        sessionId: SESSION_ID,
+        version,
+      });
+
+      expect(mockedAxios.patch).toHaveBeenCalledWith(
+        `${BASE_APPLICATION_URL}/${APPLICATION_ID}/sections/${SECTION_ID}/questions/${QUESTION_ID}/order/${increment}?version=${version}`,
+        {},
+        { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
+      );
+      expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getLastUpdatedEmail', () => {
+    it('Should call the expected endpoint to retrieve the last updated email', async () => {
+      const grantApplicationId = 'a028d000004Osy3BEA';
+      const sessionCookie = 'testSessionId';
+
+      mockedAxios.get.mockResolvedValue({
+        data: { encryptedEmail: 'test@test.gov' },
+      });
+
+      await getLastEditedEmail(grantApplicationId, sessionCookie);
+
+      expect(decrypt).toHaveBeenCalledWith('test@test.gov');
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_APPLICATION_URL}/${grantApplicationId}/lastUpdated/email`,
+        { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
+      );
+    });
+  });
+
+  describe('getApplicationStatus', () => {
+    it('Should call the expected endpoint to retrieve the application form status', async () => {
+      const grantApplicationId = 'a028d000004Osy3BEA';
+      const sessionCookie = 'testSessionId';
+
+      mockedAxios.get.mockResolvedValue({
+        data: { status: 'PUBLISHED' },
+      });
+
+      await getApplicationStatus(grantApplicationId, sessionCookie);
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_APPLICATION_URL}/${grantApplicationId}/status`,
+        { headers: { Cookie: 'SESSION=testSessionId;' }, withCredentials: true }
+      );
+    });
+  });
+
+  describe('downloadSummary', () => {
+    it('Should call the expected endpoint to download the summary', async () => {
+      const grantApplicationId = 'a028d000004Osy3BEA';
+      const sessionCookie = 'testSessionId';
+
+      mockedAxios.get.mockResolvedValue({});
+
+      await downloadSummary(grantApplicationId, sessionCookie);
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${BASE_APPLICATION_URL}/${grantApplicationId}/download-summary`,
+        {
+          headers: { Cookie: 'SESSION=testSessionId;' },
+          withCredentials: true,
+          responseType: 'arraybuffer',
+        }
+      );
     });
   });
 });

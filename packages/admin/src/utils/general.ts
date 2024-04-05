@@ -31,7 +31,7 @@ type GetLoginUrlOptions = {
 const getLoginUrl = (options?: GetLoginUrlOptions) => {
   const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
   if (options?.redirectToApplicant && oneLoginEnabled) {
-    return `${process.env.USER_SERVICE_URL}/v2/login?redirectUrl=${process.env.APPLICANT_DOMAIN}/dashboard`;
+    return `${process.env.V2_LOGIN_URL}?redirectUrl=${process.env.APPLICANT_DOMAIN}/dashboard`;
   }
   return oneLoginEnabled
     ? (process.env.V2_LOGIN_URL as string)
@@ -54,10 +54,22 @@ const validateRedirectUrl = (redirectUrl: string) => {
   }
 };
 
+const buildQueryStringWithoutUndefinedValues = (obj: { [x: string]: any }) => {
+  const strippedObj = Object.keys(obj).reduce(
+    (acc, key) =>
+      obj[key] === undefined ? { ...acc } : { ...acc, [key]: obj[key] },
+    {}
+  );
+  return Object.keys(strippedObj).length > 0
+    ? '?' + new URLSearchParams(strippedObj)
+    : '';
+};
+
 export {
   validateRedirectUrl,
   isJSEnabled,
   downloadFile,
   getObjEntriesByKeySubstr,
   getLoginUrl,
+  buildQueryStringWithoutUndefinedValues,
 };
