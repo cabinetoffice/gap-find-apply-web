@@ -94,7 +94,6 @@ function isAdBuilderRedirectAndDisabled(req: NextRequest) {
   );
 }
 
-// Moving this into the functions scope apparently breaks 2 tests???
 function isSubmissionExportLink(req: NextRequest) {
   const submissionDownloadPattern = new URLPattern({
     pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
