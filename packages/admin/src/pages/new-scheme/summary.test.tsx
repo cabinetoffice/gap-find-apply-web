@@ -152,15 +152,15 @@ describe('Scheme summary page', () => {
 
       beforeEach(() => {
         (parseBody as jest.Mock).mockResolvedValue({});
-        (createNewScheme as jest.Mock).mockResolvedValue({});
       });
 
-      it('Should redirect to the dashboard when creating the scheme succeeds', async () => {
+      it('Should redirect to the scheme when creating the scheme succeeds', async () => {
+        (createNewScheme as jest.Mock).mockResolvedValue({ data: 123 });
         const result = await getServerSideProps(getPostContext());
 
         expect(result).toStrictEqual({
           redirect: {
-            destination: '/dashboard',
+            destination: '/scheme/123',
             statusCode: 302,
           },
         });
@@ -180,7 +180,7 @@ describe('Scheme summary page', () => {
         });
       });
 
-      it('Should redirect to the service page when an error is thrown (and it is a validation error', async () => {
+      it('Should redirect to the service page when an error is thrown (and it is a validation error)', async () => {
         (createNewScheme as jest.Mock).mockRejectedValue({
           response: {
             data: {

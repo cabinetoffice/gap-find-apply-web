@@ -59,7 +59,7 @@ export async function middleware(req: NextRequest) {
   let url = getLoginUrl();
   console.log('Middleware redirect URL: ' + url);
   if (submissionDownloadPattern.test({ pathname: req.nextUrl.pathname })) {
-    url = url + req.nextUrl.pathname;
+    url = `${url}?redirectUrl=${process.env.HOST}${req.nextUrl.pathname}`;
     console.log('Getting submission export download redirect URL: ' + url);
   }
   console.log('Final redirect URL from admin middleware: ' + url);

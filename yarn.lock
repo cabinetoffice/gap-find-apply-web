@@ -6312,6 +6312,7 @@ __metadata:
     next-logger: 3.0.1
     nookies: ^2.5.2
     number-to-words: ^1.2.4
+    pino: ^8.18.0
     react: 18.2.0
     react-device-detect: ^2.1.2
     react-dom: 18.2.0
@@ -6320,6 +6321,7 @@ __metadata:
     tinymce: 6.8.2
     typescript: ^4.6.3
     urlpattern-polyfill: ^9.0.0
+    uuid: 9.0.1
   languageName: unknown
   linkType: soft
 
@@ -6543,6 +6545,7 @@ __metadata:
     next-logger: ^3.0.1
     nodemailer: ^6.7.3
     nookies: ^2.5.2
+    pino: 8.18.0
     react: 18.2.0
     react-device-detect: ^2.1.2
     react-dom: 18.2.0
@@ -6551,6 +6554,7 @@ __metadata:
     sass: 1.62.1
     typescript: ^4.6.3
     urlpattern-polyfill: 9.0.0
+    uuid: 9.0.1
   languageName: unknown
   linkType: soft
 
@@ -15060,6 +15064,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pino@npm:8.18.0, pino@npm:^8.18.0":
+  version: 8.18.0
+  resolution: "pino@npm:8.18.0"
+  dependencies:
+    atomic-sleep: ^1.0.0
+    fast-redact: ^3.1.1
+    on-exit-leak-free: ^2.1.0
+    pino-abstract-transport: v1.1.0
+    pino-std-serializers: ^6.0.0
+    process-warning: ^3.0.0
+    quick-format-unescaped: ^4.0.3
+    real-require: ^0.2.0
+    safe-stable-stringify: ^2.3.1
+    sonic-boom: ^3.7.0
+    thread-stream: ^2.0.0
+  bin:
+    pino: bin.js
+  checksum: 202ccbf947513925615df8ff51c1ff35c841f601192d67dc36208ece6dc0332673383969c19cd01b2fad0d3823966bd6163e20a40b886c14105fefc8e4f46201
+  languageName: node
+  linkType: hard
+
 "pino@npm:^7.0.2":
   version: 7.11.0
   resolution: "pino@npm:7.11.0"
@@ -18542,21 +18567,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:9.0.1, uuid@npm:^9.0.0":
+  version: 9.0.1
+  resolution: "uuid@npm:9.0.1"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 39931f6da74e307f51c0fb463dc2462807531dc80760a9bff1e35af4316131b4fc3203d16da60ae33f07fdca5b56f3f1dd662da0c99fea9aaeab2004780cc5f4
+  languageName: node
+  linkType: hard
+
 "uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:
     uuid: dist/bin/uuid
   checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^9.0.0":
-  version: 9.0.1
-  resolution: "uuid@npm:9.0.1"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 39931f6da74e307f51c0fb463dc2462807531dc80760a9bff1e35af4316131b4fc3203d16da60ae33f07fdca5b56f3f1dd662da0c99fea9aaeab2004780cc5f4
   languageName: node
   linkType: hard
 

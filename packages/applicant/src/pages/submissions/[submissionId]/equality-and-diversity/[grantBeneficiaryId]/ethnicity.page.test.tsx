@@ -105,6 +105,7 @@ describe('Ethnicity page', () => {
           } as Record<string, string>,
           req: {
             method: 'GET',
+            headers: [],
           },
           res: {
             getHeader: () => 'testCSRFToken',
