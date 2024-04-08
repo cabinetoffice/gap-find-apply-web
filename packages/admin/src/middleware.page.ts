@@ -1,8 +1,8 @@
 // eslint-disable-next-line  @next/next/no-server-import-in-page
-import { NextRequest, NextResponse, URLPattern } from 'next/server';
+import { type NextRequest, NextResponse, URLPattern } from 'next/server';
 import { isAdminSessionValid } from './services/UserService';
 import { csrfMiddleware } from './utils/csrfMiddleware';
-import { getLoginUrl } from './utils/general';
+import { getLoginUrl, parseJwt } from './utils/general';
 
 // It will apply the middleware to all those paths
 // (if new folders at page root are created, they need to be included here)
@@ -20,52 +20,109 @@ export const config = {
 export async function middleware(req: NextRequest) {
   const rewriteUrl = req.url;
   const res = NextResponse.rewrite(rewriteUrl);
+  const authCookie = req.cookies.get('session_id');
+  const userJwtCookie = req.cookies.get(process.env.JWT_COOKIE_NAME);
+
   await csrfMiddleware(req, res);
 
-  const auth_cookie = req.cookies.get('session_id');
-  //Feature flag redirects
-  const advertBuilderPath = /\/scheme\/\d*\/advert/;
-
-  if (process.env.FEATURE_ADVERT_BUILDER === 'disabled') {
-    if (advertBuilderPath.test(req.nextUrl.pathname)) {
-      const url = req.nextUrl.clone();
-      url.pathname = `/404`;
-      return NextResponse.redirect(url);
+  if (!authCookie || !userJwtCookie) {
+    let url = getLoginUrl();
+    if (isSubmissionExportLink(req)) {
+      url += `?${generateRedirectUrl(req)}`;
     }
+    console.log(`Not authorised - logging in via: ${url}`);
+    return NextResponse.redirect(url);
   }
 
-  if (auth_cookie !== undefined) {
-    if (process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE === 'true') {
-      const isValidAdminSession = await isAdminSessionValid(auth_cookie.value);
-      if (!isValidAdminSession) {
-        return NextResponse.redirect(
-          getLoginUrl({ redirectToApplicant: true }),
-          { status: 302 }
-        );
-      }
-    }
-
-    res.cookies.set('session_id', auth_cookie.value, {
-      path: '/',
-      secure: true,
-      httpOnly: true,
-      sameSite: 'lax',
-      maxAge: parseInt(process.env.MAX_COOKIE_AGE!),
+  const isValidSession = await isValidAdminSession(authCookie);
+  if (!isValidSession) {
+    const url = getLoginUrl({ redirectToApplicant: true });
+    console.log(`Admin session invalid - logging in via applicant app: ${url}`);
+    return NextResponse.redirect(url, {
+      status: 302,
     });
+  }
 
-    res.headers.set('Cache-Control', 'no-store');
-    return res;
+  if (hasJwtExpired(userJwtCookie)) {
+    const url = `${getLoginUrl()}?${generateRedirectUrl(req)}`;
+    console.log(`Jwt expired - logging in via: ${url}`);
+    return NextResponse.redirect(url);
   }
-  let url = getLoginUrl();
-  console.log('Middleware redirect URL: ' + url);
-  if (submissionDownloadPattern.test({ pathname: req.nextUrl.pathname })) {
-    url = `${url}?redirectUrl=${process.env.HOST}${req.nextUrl.pathname}`;
-    console.log('Getting submission export download redirect URL: ' + url);
+
+  if (isJwtExpiringSoon(userJwtCookie)) {
+    const url = `${process.env.REFRESH_URL}?${generateRedirectUrl(req)}`;
+    console.log(`Refreshing JWT - redircting to: ${url}`);
+    return NextResponse.redirect(url);
   }
-  console.log('Final redirect URL from admin middleware: ' + url);
-  return NextResponse.redirect(url);
+
+  if (isAdBuilderRedirectAndDisabled(req)) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/404';
+    console.log(`Ad builder disabled - redirecting to 404: ${url.toString()}`);
+    return NextResponse.redirect(url);
+  }
+
+  console.log('User is authorised');
+  addAdminSessionCookie(res, authCookie);
+  res.headers.set('Cache-Control', 'no-store');
+  return res;
 }
 
-const submissionDownloadPattern = new URLPattern({
-  pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
-});
+function generateRedirectUrl(req: NextRequest) {
+  const redirectUrl = process.env.HOST + req.nextUrl.pathname;
+  const redirectUrlSearchParams = encodeURIComponent(
+    req.nextUrl.searchParams.toString()
+  );
+  return `redirectUrl=${redirectUrl}?${redirectUrlSearchParams}`;
+}
+
+function addAdminSessionCookie(res: NextResponse, authCookie: RequestCookie) {
+  res.cookies.set('session_id', authCookie.value, {
+    path: '/',
+    secure: true,
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: parseInt(process.env.MAX_COOKIE_AGE!),
+  });
+}
+
+function isAdBuilderRedirectAndDisabled(req: NextRequest) {
+  const advertBuilderPath = /\/scheme\/\d*\/advert/;
+  return (
+    process.env.FEATURE_ADVERT_BUILDER === 'disabled' &&
+    advertBuilderPath.test(req.nextUrl.pathname)
+  );
+}
+
+function isSubmissionExportLink(req: NextRequest) {
+  const submissionDownloadPattern = new URLPattern({
+    pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
+  });
+  return submissionDownloadPattern.test({ pathname: req.nextUrl.pathname });
+}
+
+async function isValidAdminSession(authCookie: RequestCookie) {
+  if (process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE !== 'true') return true;
+  return await isAdminSessionValid(authCookie.value);
+}
+
+function hasJwtExpired(jwtCookie: RequestCookie) {
+  const jwt = parseJwt(jwtCookie.value);
+  const expiresAt = new Date(jwt.exp * 1000);
+  const now = new Date();
+  return expiresAt <= now;
+}
+
+function isJwtExpiringSoon(jwtCookie: RequestCookie) {
+  const jwt = parseJwt(jwtCookie.value);
+  const expiresAt = new Date(jwt.exp * 1000);
+  const now = new Date();
+  const nowPlusMins = new Date();
+  nowPlusMins.setMinutes(now.getMinutes() + 30);
+  return expiresAt >= now && expiresAt <= nowPlusMins;
+}
+
+type RequestCookie = Exclude<
+  ReturnType<NextRequest['cookies']['get']>,
+  undefined
+>;
