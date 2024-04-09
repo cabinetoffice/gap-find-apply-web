@@ -14,7 +14,8 @@ jest.mock('./services/UserService', () => ({
   isAdminSessionValid: jest.fn(),
 }));
 
-let cookieStore = {};
+let cookieStore = {},
+  headerStore = {};
 
 const getMockRequest = (url: string) =>
   ({
@@ -24,6 +25,11 @@ const getMockRequest = (url: string) =>
         Object.entries(cookieStore).map(([name, value]) => ({ name, value })),
       set: (name, value) => (cookieStore[name] = { name, value }),
       clear: () => (cookieStore = {}),
+    },
+    headers: {
+      get: (key) => headerStore[key],
+      entries: () => [],
+      set: (key, value) => (headerStore[key] = value),
     },
     setUrl(url) {
       this.nextUrl = new NextURL(url);
@@ -42,7 +48,7 @@ const expiresAt = new Date();
 expiresAt.setHours(expiresAt.getHours() + 1); // Expiring in 1 hour
 
 describe('middleware', () => {
-  const req = getMockRequest('http://localhost:3000/dashboard');
+  let req;
 
   beforeEach(() => {
     // cleanup
@@ -60,10 +66,12 @@ describe('middleware', () => {
     process.env.HOST = 'http://localhost:3003';
     process.env.REFRESH_URL = 'http://localhost:8082/refresh';
 
+    headerStore = {};
     req.cookies.clear();
     req.cookies.set('session_id', 'session_id_value');
     req.cookies.set('user-service-token', 'user-service-value');
 
+    req = getMockRequest('http://localhost:3000/dashboard');
     mockedParseJwt.mockReturnValue({
       exp: expiresAt.getTime() / 1000,
     });
