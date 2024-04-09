@@ -5,7 +5,9 @@ import { Redirect } from 'next';
 import * as AdvertPageService from '../../../../../../services/AdvertPageService';
 import * as serviceErrorHelpers from '../../../../../../utils/serviceErrorHelpers';
 import * as sessionUtils from '../../../../../../utils/session';
-import AdvertPreview, { getServerSideProps } from './preview';
+import AdvertDetailsPreview, {
+  getServerSideProps,
+} from './advert-details.page';
 
 jest.mock('../../../../../../utils/session');
 jest.mock('../../../../../../services/AdvertPageService');
@@ -63,7 +65,7 @@ const props = {
 describe('getServerSideProps', () => {
   beforeEach(() => {
     mockSessionUtils.getSessionIdFromCookies.mockReturnValue(sessionCookie);
-    mockAdvertPageService.getAdvertPreviewPageContent.mockResolvedValue(
+    mockAdvertPageService.getAdvertDetailsPreviewContent.mockResolvedValue(
       backendResponse
     );
   });
@@ -80,7 +82,7 @@ describe('getServerSideProps', () => {
       );
     });
     it('should have the expected redirection', async () => {
-      mockAdvertPageService.getAdvertPreviewPageContent.mockRejectedValue(
+      mockAdvertPageService.getAdvertDetailsPreviewContent.mockRejectedValue(
         axiosError
       );
 
@@ -111,21 +113,20 @@ describe('getServerSideProps', () => {
     });
 
     it('backed should have been called with the right params', async () => {
-      mockAdvertPageService.getAdvertPreviewPageContent.mockRejectedValue(
+      mockAdvertPageService.getAdvertDetailsPreviewContent.mockRejectedValue(
         axiosError
       );
       const context = getContext();
 
       await getServerSideProps(context);
-      expect(mockAdvertPageService.getAdvertPreviewPageContent).toBeCalledWith(
-        sessionCookie,
-        context.params.advertId
-      );
+      expect(
+        mockAdvertPageService.getAdvertDetailsPreviewContent
+      ).toBeCalledWith(sessionCookie, context.params.advertId);
     });
   });
   describe('request success', () => {
     it('should return the expected props ', async () => {
-      mockAdvertPageService.getAdvertPreviewPageContent.mockResolvedValue(
+      mockAdvertPageService.getAdvertDetailsPreviewContent.mockResolvedValue(
         backendResponse
       );
       const context = getContext();
@@ -136,17 +137,16 @@ describe('getServerSideProps', () => {
       });
     });
     it('backend should be called with the right params ', async () => {
-      mockAdvertPageService.getAdvertPreviewPageContent.mockResolvedValue(
+      mockAdvertPageService.getAdvertDetailsPreviewContent.mockResolvedValue(
         backendResponse
       );
       const context = getContext();
 
       await getServerSideProps(context);
 
-      expect(mockAdvertPageService.getAdvertPreviewPageContent).toBeCalledWith(
-        sessionCookie,
-        context.params.advertId
-      );
+      expect(
+        mockAdvertPageService.getAdvertDetailsPreviewContent
+      ).toBeCalledWith(sessionCookie, context.params.advertId);
     });
     it('session should be called with the right params ', async () => {
       const context = getContext();
@@ -161,12 +161,12 @@ describe('getServerSideProps', () => {
 });
 describe('Advert Preview page', () => {
   beforeEach(() => {
-    render(<AdvertPreview {...props} />);
+    render(<AdvertDetailsPreview {...props} />);
   });
   it('Should render back button', () => {
     expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
       'href',
-      `/apply/scheme/${props.schemeId}/advert/${props.advertId}/section-overview`
+      `/apply/scheme/${props.schemeId}/advert/${props.advertId}/preview/search-result`
     );
   });
   it('Should render Back to create your advert button', () => {
