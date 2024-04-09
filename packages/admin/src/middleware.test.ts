@@ -14,8 +14,7 @@ jest.mock('./services/UserService', () => ({
   isAdminSessionValid: jest.fn(),
 }));
 
-let cookieStore = {},
-  headerStore = {};
+let cookieStore = {};
 
 const getMockRequest = (url: string) =>
   ({
@@ -24,11 +23,7 @@ const getMockRequest = (url: string) =>
       getAll: () =>
         Object.entries(cookieStore).map(([name, value]) => ({ name, value })),
       set: (name, value) => (cookieStore[name] = { name, value }),
-    },
-    headers: {
-      get: (key) => headerStore[key],
-      entries: () => [],
-      set: (key, value) => (headerStore[key] = value),
+      clear: () => (cookieStore = {}),
     },
     setUrl(url) {
       this.nextUrl = new NextURL(url);
@@ -50,6 +45,10 @@ describe('middleware', () => {
   const req = getMockRequest('http://localhost:3000/dashboard');
 
   beforeEach(() => {
+    // cleanup
+    jest.clearAllMocks();
+
+    // setup
     process.env.MAX_COOKIE_AGE = '21600';
     process.env.ONE_LOGIN_ENABLED = 'false';
     process.env.LOGIN_URL = loginUrl;
@@ -61,13 +60,10 @@ describe('middleware', () => {
     process.env.HOST = 'http://localhost:3003';
     process.env.REFRESH_URL = 'http://localhost:8082/refresh';
 
-    cookieStore = {};
-    headerStore = {};
-
+    req.cookies.clear();
     req.cookies.set('session_id', 'session_id_value');
     req.cookies.set('user-service-token', 'user-service-value');
 
-    jest.clearAllMocks();
     mockedParseJwt.mockReturnValue({
       exp: expiresAt.getTime() / 1000,
     });
@@ -96,13 +92,14 @@ describe('middleware', () => {
   });
 
   it('Should redirect with a redirectUrl when user not authorised AND path is submissionExport', async () => {
+    req.setUrl('http://localhost:3000/scheme/1/a1b2');
     req.cookies.clear();
 
     const result = await middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
     expect(result.headers.get('Location')).toBe(
-      `${loginUrl}?redirectUrl=http://localhost:3003/dashboard`
+      `${loginUrl}?redirectUrl=http://localhost:3003/scheme/1/a1b2`
     );
   });
 
