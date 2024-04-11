@@ -123,7 +123,9 @@ function generateRedirectUrl(req: NextRequest) {
   const redirectUrlSearchParams = encodeURIComponent(
     req.nextUrl.searchParams.toString()
   );
-  return `redirectUrl=${redirectUrl}?${redirectUrlSearchParams}`;
+  return `redirectUrl=${redirectUrl}${
+    redirectUrlSearchParams ? '?' + redirectUrlSearchParams : ''
+  }`;
 }
 
 function addAdminSessionCookie(res: NextResponse, authCookie: RequestCookie) {

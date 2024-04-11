@@ -55,6 +55,7 @@ describe('middleware', () => {
     jest.clearAllMocks();
 
     // setup
+    req = getMockRequest('http://localhost:3000/dashboard');
     process.env.MAX_COOKIE_AGE = '21600';
     process.env.ONE_LOGIN_ENABLED = 'false';
     process.env.LOGIN_URL = loginUrl;
@@ -63,7 +64,7 @@ describe('middleware', () => {
     process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE = 'true';
 
     process.env.JWT_COOKIE_NAME = 'user-service-token';
-    process.env.HOST = 'http://localhost:3003';
+    process.env.HOST = 'http://localhost:3000';
     process.env.REFRESH_URL = 'http://localhost:8082/refresh';
 
     headerStore = {};
@@ -71,7 +72,6 @@ describe('middleware', () => {
     req.cookies.set('session_id', 'session_id_value');
     req.cookies.set('user-service-token', 'user-service-value');
 
-    req = getMockRequest('http://localhost:3000/dashboard');
     mockedParseJwt.mockReturnValue({
       exp: expiresAt.getTime() / 1000,
     });
@@ -107,7 +107,7 @@ describe('middleware', () => {
 
     expect(result).toBeInstanceOf(NextResponse);
     expect(result.headers.get('Location')).toBe(
-      `${loginUrl}?redirectUrl=http://localhost:3003/scheme/1/a1b2`
+      `${loginUrl}?redirectUrl=http://localhost:3000/scheme/1/a1b2`
     );
   });
 
@@ -147,13 +147,13 @@ describe('middleware', () => {
 
     expect(res.status).toBe(307);
     expect(res.headers.get('Location')).toBe(
-      `http://localhost:8082/refresh?redirectUrl=http://localhost:3003/dashboard`
+      `http://localhost:8082/refresh?redirectUrl=http://localhost:3000/dashboard`
     );
   });
 
   describe('Ad builder middleware', () => {
-    const adBuilderReq = new NextRequest(
-      'http://localhost:3000/apply/admin/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
+    const adBuilderReq = getMockRequest(
+      'http://localhost:3000/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
     );
 
     beforeEach(() => {
@@ -169,7 +169,7 @@ describe('middleware', () => {
 
       expect(result).toBeInstanceOf(NextResponse);
       expect(result.headers.get('x-middleware-rewrite')).toStrictEqual(
-        'http://localhost:3000/apply/admin/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
+        'http://localhost:3000/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
       );
     });
 
@@ -179,7 +179,7 @@ describe('middleware', () => {
       const result = await middleware(adBuilderReq);
 
       expect(result).toBeInstanceOf(NextResponse);
-      expect(result.headers.get('location')).toStrictEqual(
+      expect(result.headers.get('Location')).toStrictEqual(
         'http://localhost:3000/404'
       );
     });
