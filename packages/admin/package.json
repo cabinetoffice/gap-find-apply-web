@@ -27,6 +27,7 @@
     "gap-web-ui": "*",
     "govuk-frontend": "^4.8",
     "moment": "^2.29.4",
+    "moment-timezone": "^0.5.37",
     "next": "13.5.6",
     "next-logger": "3.0.1",
     "nookies": "^2.5.2",
