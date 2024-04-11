@@ -6288,6 +6288,7 @@ __metadata:
     react-device-detect: ^2.1.2
     react-dom: 18.2.0
     react-gtm-module: ^2.0.11
+    react-moment: ^1.1.1
     sass: 1.62.1
     tinymce: 6.8.2
     typescript: ^4.6.3
