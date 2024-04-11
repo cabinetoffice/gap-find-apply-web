@@ -16,7 +16,7 @@ import { getJwtFromCookies } from '../../utils/jwt';
 import MandatoryQuestionsBeforeYouStart, {
   getServerSideProps,
 } from './start.page';
-import { getApplicationStatusBySchemeId } from '../../services/ApplicationService';
+import { GrantSchemeService } from '../../services/GrantSchemeService';
 
 jest.mock('../../utils/parseBody');
 jest.mock('../../utils/jwt');
@@ -30,9 +30,15 @@ const spiedGetMandatoryQuestionBySchemeId = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
   'getMandatoryQuestionBySchemeId'
 );
-const mockedGetApplicationStatusBySchemeId = jest.mocked(
-  getApplicationStatusBySchemeId
+const spiedHasSchemeInternalApplication = jest.spyOn(
+  GrantSchemeService.prototype,
+  'hasSchemeInternalApplication'
 );
+
+const publishedInternalApplicationResponse = {
+  hasInternalApplication: true,
+  hasPublishedInternalApplication: true,
+};
 
 const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
   req: {
@@ -65,6 +71,10 @@ describe('Mandatory Questions Start', () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       const existBySchemeIdAndApplicantId =
         spiedExistBySchemeIdAndApplicantId.mockResolvedValue(false);
+      const hasSchemeInternalApplication =
+        spiedHasSchemeInternalApplication.mockResolvedValue(
+          publishedInternalApplicationResponse
+        );
 
       const response = await getServerSideProps(getContext(getDefaultContext));
 
@@ -78,6 +88,8 @@ describe('Mandatory Questions Start', () => {
         '1',
         'testJwt'
       );
+      expect(hasSchemeInternalApplication).toHaveBeenCalled();
+      expect(hasSchemeInternalApplication).toHaveBeenCalledWith('1', 'testJwt');
     });
 
     it('should return the scheme Id query param when mandatory Question does exist but not been completed', async () => {
@@ -87,6 +99,10 @@ describe('Mandatory Questions Start', () => {
       const getMandatoryQuestionBySchemeId =
         spiedGetMandatoryQuestionBySchemeId.mockResolvedValue(
           mandatoryQuestionData
+        );
+      const hasSchemeInternalApplication =
+        spiedHasSchemeInternalApplication.mockResolvedValue(
+          publishedInternalApplicationResponse
         );
 
       const response = await getServerSideProps(getContext(getDefaultContext));
@@ -106,6 +122,8 @@ describe('Mandatory Questions Start', () => {
         'testJwt',
         '1'
       );
+      expect(hasSchemeInternalApplication).toHaveBeenCalled();
+      expect(hasSchemeInternalApplication).toHaveBeenCalledWith('1', 'testJwt');
     });
 
     it('should redirect to submissions list when mandatory Question does exist and are completed', async () => {
@@ -155,7 +173,11 @@ describe('Mandatory Questions Start', () => {
     it('should redirect if the application form status is REMOVED', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       spiedExistBySchemeIdAndApplicantId.mockResolvedValue(false);
-      mockedGetApplicationStatusBySchemeId.mockResolvedValue('REMOVED');
+      const hasSchemeInternalApplication =
+        spiedHasSchemeInternalApplication.mockResolvedValue({
+          ...publishedInternalApplicationResponse,
+          hasPublishedInternalApplication: false,
+        });
 
       const response = await getServerSideProps(getContext(getDefaultContext));
 
@@ -165,6 +187,8 @@ describe('Mandatory Questions Start', () => {
           permanent: false,
         },
       });
+      expect(hasSchemeInternalApplication).toHaveBeenCalled();
+      expect(hasSchemeInternalApplication).toHaveBeenCalledWith('1', 'testJwt');
     });
   });
 

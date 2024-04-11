@@ -6,7 +6,7 @@ import { GrantMandatoryQuestionService } from '../../services/GrantMandatoryQues
 import InferProps from '../../types/InferProps';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
-import { getApplicationStatusBySchemeId } from '../../services/ApplicationService';
+import { GrantSchemeService } from '../../services/GrantSchemeService';
 
 export async function getServerSideProps({
   req,
@@ -15,6 +15,8 @@ export async function getServerSideProps({
   const { schemeId } = query as Record<string, string>;
   const jwt = getJwtFromCookies(req);
   const mandatoryQuestionService = GrantMandatoryQuestionService.getInstance();
+  const schemeService = GrantSchemeService.getInstance();
+
   try {
     const mandatoryQuestionExists =
       await mandatoryQuestionService.existBySchemeIdAndApplicantId(
@@ -45,9 +47,11 @@ export async function getServerSideProps({
       },
     };
   }
-  const applicationStatus = await getApplicationStatusBySchemeId(schemeId, jwt);
+  //hasInternalApplication check that the advert has the "apply" url set to a internal application
+  const { hasInternalApplication, hasPublishedInternalApplication } =
+    await schemeService.hasSchemeInternalApplication(schemeId, jwt);
 
-  if (applicationStatus === 'REMOVED') {
+  if (hasInternalApplication && !hasPublishedInternalApplication) {
     return {
       redirect: {
         destination: '/grant-is-closed',
@@ -55,7 +59,6 @@ export async function getServerSideProps({
       },
     };
   }
-
   return {
     props: {
       schemeId,
