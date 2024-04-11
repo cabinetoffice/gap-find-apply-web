@@ -8,6 +8,7 @@ import {
 import Meta from '../../../components/layout/Meta';
 import { getSessionIdFromCookies } from '../../../utils/session';
 import { formatDateTimeForSentence } from '../../../utils/dateFormatterGDS';
+import { logger } from '../../../utils/logger';
 
 const getLastEditedDate = async (
   applicationId: string,
@@ -25,7 +26,7 @@ const getLastEditedDate = async (
     } = application;
     return formatDateTimeForSentence(new Date(lastUpdated));
   } catch (e) {
-    console.log(e);
+    logger.error(e);
     return 'unknown';
   }
 };
@@ -39,7 +40,7 @@ const getLastEditedBy = async (
       (await getLastEditedEmail(applicationId, sessionCookie)) || 'unknown'
     );
   } catch (e) {
-    console.log(e);
+    logger.error(e);
     return 'unknown';
   }
 };

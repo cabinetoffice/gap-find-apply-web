@@ -11,6 +11,7 @@ import CustomError from '../../../types/CustomError';
 import { AxiosError } from 'axios';
 import { ImportantBanner } from 'gap-web-ui';
 import { mapV2Sections } from '../../../utils/applicationSummaryHelper';
+import { logger } from '../../../utils/logger';
 
 type SectionInformationProps = {
   sectionId: string;
@@ -54,7 +55,10 @@ export const getServerSideProps = async ({
       },
     };
   } catch (err: unknown) {
-    console.error('Error rendering application preview -> ', err);
+    logger.error(
+      'Error rendering application preview',
+      logger.utils.addErrorInfo(err, req)
+    );
     const error = err as AxiosError;
     const errorMessageObject = error.response?.data as CustomError;
 

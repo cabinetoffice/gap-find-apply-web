@@ -1,12 +1,15 @@
 import { NextApiRequest } from 'next';
 import { APIGlobalHandler } from './apiErrorHandler';
+import { logger } from './logger';
+
+jest.mock('./logger', () => ({
+  logger: { error: jest.fn(), utils: { addErrorInfo: (arg) => arg } },
+}));
 
 const mockReq = {} as NextApiRequest;
 const mockRes = {
   redirect: jest.fn(),
 } as any;
-
-console.error = jest.fn();
 
 describe('APIGlobalHandler', () => {
   afterEach(() => {
@@ -20,7 +23,7 @@ describe('APIGlobalHandler', () => {
 
     expect(mockHandler).toHaveBeenCalledWith(mockReq, mockRes);
 
-    expect(console.error).not.toHaveBeenCalled();
+    expect(logger.error).not.toHaveBeenCalled();
     expect(mockRes.redirect).not.toHaveBeenCalled();
   });
 
@@ -32,7 +35,7 @@ describe('APIGlobalHandler', () => {
     await APIGlobalHandler(mockReq, mockRes, mockHandler);
 
     expect(mockHandler).toHaveBeenCalledWith(mockReq, mockRes);
-    expect(console.error).toHaveBeenCalledWith(expect.any(Error));
+    expect(logger.error).toHaveBeenCalledWith(expect.any(Error));
     expect(mockRes.redirect).toHaveBeenCalledWith(
       expect.stringContaining('/service-error?serviceErrorProps=')
     );
