@@ -31,7 +31,7 @@ describe('PreviewDetailTabContent', () => {
     });
     expect(link).toHaveAttribute(
       'href',
-      `/apply/scheme/${props.schemeId}/advert/${props.advertId}/preview`
+      `/apply/scheme/${props.schemeId}/advert/${props.advertId}/preview/search-result`
     );
   });
 });
