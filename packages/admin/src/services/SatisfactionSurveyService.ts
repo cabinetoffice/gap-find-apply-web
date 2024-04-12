@@ -1,9 +1,4 @@
-import axios from 'axios';
-import getConfig from 'next/config';
-
-const { serverRuntimeConfig } = getConfig();
-const BACKEND_HOST = serverRuntimeConfig.backendHost;
-const BASE_FEEDBACK_URL = BACKEND_HOST + '/feedback';
+import { axios } from '../utils/axios';
 
 const postSurveyResponse = async (
   satisfaction: string,

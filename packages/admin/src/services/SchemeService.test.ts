@@ -1,7 +1,7 @@
-import axios from 'axios';
 import getConfig from 'next/config';
 import ApplicationQueryObject from '../types/ApplicationQueryObject';
 import Pagination from '../types/Pagination';
+import { axios } from '../utils/axios';
 import { axiosSessionConfig } from '../utils/session';
 import { findMatchingApplicationForms } from './ApplicationService';
 import {
@@ -26,7 +26,7 @@ jest.mock('next/config', () => () => {
   };
 });
 
-jest.mock('axios');
+jest.mock('../utils/axios');
 jest.mock('../services/ApplicationService');
 
 describe('SchemeService', () => {

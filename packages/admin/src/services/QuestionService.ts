@@ -1,7 +1,7 @@
-import axios from 'axios';
+import getConfig from 'next/config';
 import ResponseType from '../enums/ResponseType';
 import { ApplicationFormQuestion } from '../types/ApplicationForm';
-import getConfig from 'next/config';
+import { axios } from '../utils/axios';
 import { axiosSessionConfig } from '../utils/session';
 
 const { serverRuntimeConfig } = getConfig();

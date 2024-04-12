@@ -3,14 +3,13 @@ import { render, screen } from '@testing-library/react';
 import { GetServerSidePropsContext } from 'next';
 import NextGetServerSidePropsResponse from '../../../types/NextGetServerSidePropsResponse';
 import { merge } from 'lodash';
-import axios from 'axios';
 import { parseBody } from '../../../utils/parseBody';
 import { getApplicationFormSummary } from '../../../services/ApplicationService';
 import { postSection } from '../../../services/SectionService';
 import { ValidationError } from 'gap-web-ui';
 import SectionNameContent, { getServerSideProps } from './section-name.page';
 
-jest.mock('axios');
+jest.mock('../../../utils/axios');
 jest.mock('../../../utils/parseBody');
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../services/SectionService');

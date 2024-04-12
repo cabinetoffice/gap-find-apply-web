@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { authenticateUser, logoutUser } from './AuthService';
 import getConfig from 'next/config';
+import { axios } from '../utils/axios';
 
 jest.mock('next/config', () => () => {
   return {
@@ -14,7 +14,7 @@ jest.mock('next/config', () => () => {
   };
 });
 
-jest.mock('axios');
+jest.mock('../utils/axios');
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 

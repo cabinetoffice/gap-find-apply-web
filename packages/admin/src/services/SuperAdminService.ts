@@ -3,7 +3,7 @@ import {
   SuperAdminDashboardResponse,
 } from './../pages/super-admin-dashboard/types';
 import getConfig from 'next/config';
-import axios from 'axios';
+import { axios } from '../utils/axios';
 import { axiosUserServiceConfig } from '../utils/session';
 import {
   Department,
