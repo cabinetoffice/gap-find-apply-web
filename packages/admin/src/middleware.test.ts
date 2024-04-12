@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom';
 import { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 // eslint-disable-next-line @next/next/no-server-import-in-page
-import { NextRequest, NextResponse, URLPattern } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { NextURL } from 'next/dist/server/web/next-url';
 import { middleware } from './middleware.page';
 import { isAdminSessionValid } from './services/UserService';
 import { getLoginUrl, parseJwt } from './utils/general';
@@ -13,36 +14,60 @@ jest.mock('./services/UserService', () => ({
   isAdminSessionValid: jest.fn(),
 }));
 
-jest.mock('next/server', () => ({
-  ...jest.requireActual('next/server'),
-  URLPattern: jest.fn(),
-}));
+let cookieStore = {},
+  headerStore = {};
+
+const getMockRequest = (url: string) =>
+  ({
+    cookies: {
+      get: (key) => cookieStore[key],
+      getAll: () =>
+        Object.entries(cookieStore).map(([name, value]) => ({ name, value })),
+      set: (name, value) => (cookieStore[name] = { name, value }),
+      clear: () => (cookieStore = {}),
+    },
+    headers: {
+      get: (key) => headerStore[key],
+      entries: () => [],
+      set: (key, value) => (headerStore[key] = value),
+    },
+    setUrl(url) {
+      this.nextUrl = new NextURL(url);
+    },
+    url,
+    nextUrl: new NextURL(url),
+    method: 'GET',
+  } as unknown as NextRequest & { setUrl: (string) => string });
 
 const mockedGetLoginUrl = jest.mocked(getLoginUrl);
 const mockedParseJwt = jest.mocked(parseJwt);
 const mockedIsAdminSessionValid = jest.mocked(isAdminSessionValid);
-const mockedUrlPattern = jest.mocked(URLPattern);
 
 const loginUrl = 'http://localhost:8082/login';
 const expiresAt = new Date();
 expiresAt.setHours(expiresAt.getHours() + 1); // Expiring in 1 hour
 
 describe('middleware', () => {
-  const req = new NextRequest(
-    'http://localhost:3000/apply/test/destination?scheme=1&grant=2'
-  );
+  let req;
 
   beforeEach(() => {
+    // cleanup
+    jest.clearAllMocks();
+
+    // setup
+    req = getMockRequest('http://localhost:3000/dashboard');
     process.env.MAX_COOKIE_AGE = '21600';
     process.env.ONE_LOGIN_ENABLED = 'false';
     process.env.LOGIN_URL = loginUrl;
     process.env.V2_LOGIN_URL = loginUrl;
     process.env.FEATURE_ADVERT_BUILDER = 'enabled';
     process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE = 'true';
+
     process.env.JWT_COOKIE_NAME = 'user-service-token';
-    process.env.HOST = 'http://localhost:3003';
+    process.env.HOST = 'http://localhost:3000';
     process.env.REFRESH_URL = 'http://localhost:8082/refresh';
 
+    headerStore = {};
     req.cookies.clear();
     req.cookies.set('session_id', 'session_id_value');
     req.cookies.set('user-service-token', 'user-service-value');
@@ -52,9 +77,6 @@ describe('middleware', () => {
     });
     mockedIsAdminSessionValid.mockImplementation(async () => true);
     mockedGetLoginUrl.mockReturnValue(loginUrl);
-    mockedUrlPattern.mockReturnValue({
-      test: jest.fn().mockReturnValue(false),
-    });
   });
 
   it('Redirect to the login page when there is no authCookie', async () => {
@@ -78,21 +100,19 @@ describe('middleware', () => {
   });
 
   it('Should redirect with a redirectUrl when user not authorised AND path is submissionExport', async () => {
-    mockedUrlPattern.mockReturnValue({
-      test: jest.fn().mockReturnValue(true),
-    });
+    req.setUrl('http://localhost:3000/scheme/1/a1b2');
     req.cookies.clear();
 
     const result = await middleware(req);
 
     expect(result).toBeInstanceOf(NextResponse);
     expect(result.headers.get('Location')).toBe(
-      `${loginUrl}?redirectUrl=http://localhost:3003/apply/test/destination?scheme%3D1%26grant%3D2`
+      `${loginUrl}?redirectUrl=http://localhost:3000/scheme/1/a1b2`
     );
   });
 
   it('Redirect to the login page when the admin session is invalid', async () => {
-    mockedIsAdminSessionValid.mockImplementation(async () => false);
+    mockedIsAdminSessionValid.mockResolvedValue(false);
 
     const result = await middleware(req);
 
@@ -112,7 +132,7 @@ describe('middleware', () => {
 
     expect(res.status).toBe(307);
     expect(res.headers.get('Location')).toBe(
-      `${loginUrl}?redirectUrl=http://localhost:3003/apply/test/destination?scheme%3D1%26grant%3D2`
+      `${loginUrl}?redirectUrl=http://localhost:3000/dashboard`
     );
   });
 
@@ -127,13 +147,13 @@ describe('middleware', () => {
 
     expect(res.status).toBe(307);
     expect(res.headers.get('Location')).toBe(
-      `http://localhost:8082/refresh?redirectUrl=http://localhost:3003/apply/test/destination?scheme%3D1%26grant%3D2`
+      `http://localhost:8082/refresh?redirectUrl=http://localhost:3000/dashboard`
     );
   });
 
   describe('Ad builder middleware', () => {
-    const adBuilderReq = new NextRequest(
-      'http://localhost:3000/apply/admin/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
+    const adBuilderReq = getMockRequest(
+      'http://localhost:3000/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
     );
 
     beforeEach(() => {
@@ -149,7 +169,7 @@ describe('middleware', () => {
 
       expect(result).toBeInstanceOf(NextResponse);
       expect(result.headers.get('x-middleware-rewrite')).toStrictEqual(
-        'http://localhost:3000/apply/admin/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
+        'http://localhost:3000/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
       );
     });
 
@@ -159,7 +179,7 @@ describe('middleware', () => {
       const result = await middleware(adBuilderReq);
 
       expect(result).toBeInstanceOf(NextResponse);
-      expect(result.headers.get('location')).toStrictEqual(
+      expect(result.headers.get('Location')).toStrictEqual(
         'http://localhost:3000/404'
       );
     });
@@ -179,7 +199,7 @@ describe('middleware', () => {
     const result = await middleware(req);
 
     expect(result.headers.get('x-middleware-rewrite')).toStrictEqual(
-      'http://localhost:3000/apply/test/destination?scheme=1&grant=2'
+      'http://localhost:3000/dashboard'
     );
   });
 });

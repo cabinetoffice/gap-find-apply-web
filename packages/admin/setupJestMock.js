@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import 'isomorphic-fetch';
+import 'urlpattern-polyfill';
 
 jest.mock('next/head', () => {
   return {
