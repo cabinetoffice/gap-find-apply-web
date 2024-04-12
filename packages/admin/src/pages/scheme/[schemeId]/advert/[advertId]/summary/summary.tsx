@@ -48,21 +48,10 @@ export const getServerSideProps = async ({
   const sessionCookie = getSessionIdFromCookies(req);
 
   try {
-    const { sections, advertName, status } = await getSummaryPageContent(
-      sessionCookie,
-      schemeId,
-      advertId
-    );
+    const { sections, advertName, status, openingDate } =
+      await getSummaryPageContent(sessionCookie, schemeId, advertId);
 
-    const dateSection = sections?.find(
-      (section) => section.id === 'applicationDates'
-    );
-    const pageSection = dateSection?.pages.find((page) => page.id === '1');
-    const openingDateQuestion = pageSection?.questions.find(
-      (question) => question.id === 'grantApplicationOpenDate'
-    );
-    const futurePublishingDate =
-      checkIfOpeningDateIsInFuture(openingDateQuestion);
+    const futurePublishingDate = isOpeningDateIsInFuture(openingDate);
 
     const response = await callServiceMethod(
       req,
@@ -105,29 +94,11 @@ export const getServerSideProps = async ({
   }
 };
 
-const checkIfOpeningDateIsInFuture = (
-  question: GrantAdvertSummaryPageQuestion | undefined
-): boolean => {
-  if (
-    question?.multiResponse !== null &&
-    question?.multiResponse[0] &&
-    question?.multiResponse[1] &&
-    question?.multiResponse[2] &&
-    question?.multiResponse[3] &&
-    question?.multiResponse[4]
-  ) {
-    const [day, month, year, hour, minute] = question.multiResponse;
-    const openingDate = moment([
-      year,
-      Number.parseInt(month) - 1,
-      day,
-      hour,
-      minute,
-    ]);
-    return openingDate.isAfter(moment());
-  } else {
-    return false;
-  }
+const isOpeningDateIsInFuture = (openingDate: Date): boolean => {
+  console.log(openingDate);
+  console.log(moment(openingDate));
+
+  return moment(openingDate).isAfter(moment());
 };
 
 const RenderQuestion = (
