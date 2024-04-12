@@ -26,12 +26,16 @@ const getObjEntriesByKeySubstr = (substr: string, obj: object) => {
 
 type GetLoginUrlOptions = {
   redirectToApplicant?: boolean;
+  redirectTo404?: boolean;
 };
 
 const getLoginUrl = (options?: GetLoginUrlOptions) => {
   const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
   if (options?.redirectToApplicant && oneLoginEnabled) {
     return `${process.env.V2_LOGIN_URL}?redirectUrl=${process.env.APPLICANT_DOMAIN}/dashboard`;
+  }
+  if (options?.redirectTo404 && oneLoginEnabled) {
+    return `${process.env.V2_LOGIN_URL}?redirectUrl=/404`;
   }
   return oneLoginEnabled
     ? (process.env.V2_LOGIN_URL as string)

@@ -14,7 +14,15 @@ const authenticateRequest = async (req: NextRequest) => {
   const userJwtCookie = req.cookies.get(process.env.JWT_COOKIE_NAME);
 
   await csrfMiddleware(req, res);
-
+  //means that the user is logged in but not as an admin/superAdmin(otherwise they would have had the session_id cookie set)
+  if (!authCookie && userJwtCookie) {
+    const url = getLoginUrl({ redirectTo404: true });
+    logger.info(
+      `User is not an admin - redirecting it to appropriate app 404 page`
+    );
+    return NextResponse.redirect(url);
+  }
+  //means user is not logged in
   if (!authCookie || !userJwtCookie) {
     let url = getLoginUrl();
     if (isSubmissionExportLink(req)) {
@@ -25,6 +33,7 @@ const authenticateRequest = async (req: NextRequest) => {
   }
 
   const isValidSession = await isValidAdminSession(authCookie);
+  //user has the session_id cookie set but not valid
   if (!isValidSession) {
     const url = getLoginUrl({ redirectToApplicant: true });
     logger.info(`Admin session invalid - logging in via applicant app: ${url}`);
