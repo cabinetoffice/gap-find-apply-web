@@ -7,13 +7,9 @@ import { csrfMiddleware } from './utils/csrfMiddleware';
 import { logger } from './utils/logger';
 import { HEADERS } from './utils/constants';
 
-const authenticateRequest = async (req: NextRequest) => {
-  const rewriteUrl = req.url;
-  const res = NextResponse.rewrite(rewriteUrl);
+const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
   const authCookie = req.cookies.get('session_id');
   const userJwtCookie = req.cookies.get(process.env.JWT_COOKIE_NAME);
-
-  await csrfMiddleware(req, res);
 
   if (!authCookie || !userJwtCookie) {
     let url = getLoginUrl();
@@ -106,13 +102,12 @@ const isAuthenticatedPath = (pathname: string) =>
 export async function middleware(req: NextRequest) {
   const logRequest = getConditionalLogger(req, 'req');
   const logResponse = getConditionalLogger(req, 'res');
-  const rewriteUrl = req.url;
-  let res = NextResponse.rewrite(rewriteUrl);
+  let res = NextResponse.next();
   logRequest(req, res);
 
   if (isAuthenticatedPath(req.nextUrl.pathname)) {
+    res = await authenticateRequest(req, res);
     await csrfMiddleware(req, res);
-    res = await authenticateRequest(req);
   }
   logResponse(req, res);
   return res;
