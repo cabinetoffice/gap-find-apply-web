@@ -308,8 +308,8 @@ export const middleware = async (req: NextRequest) => {
 
   if (isAuthenticatedPath(req.nextUrl.pathname)) {
     try {
-      await csrfMiddleware(req, res);
       res = await authenticateRequest(req, res);
+      await csrfMiddleware(req, res);
     } catch (err) {
       console.error(err);
       // redirect to homepage on any middleware error
