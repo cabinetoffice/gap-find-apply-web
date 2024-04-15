@@ -195,7 +195,6 @@ describe('middleware', () => {
   });
 
   it('responds 200 when we are authorised', async () => {
-    console.log(req);
     const result = await middleware(req);
 
     expect(result.status).toBe(200);
