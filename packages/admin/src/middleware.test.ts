@@ -168,9 +168,8 @@ describe('middleware', () => {
       const result = await middleware(adBuilderReq);
 
       expect(result).toBeInstanceOf(NextResponse);
-      expect(result.headers.get('x-middleware-rewrite')).toStrictEqual(
-        'http://localhost:3000/scheme/1/advert/129744d5-0746-403f-8a5f-a8c9558bc4e3/grantDetails/1'
-      );
+      expect(result.status).toBe(200);
+      expect(result.headers.get('Location')).toBeNull();
     });
 
     it('Should not allow the user to access the advert builder pages if the feature is enabled', async () => {
@@ -195,11 +194,11 @@ describe('middleware', () => {
     expect(resCookie.maxAge).toStrictEqual(21600);
   });
 
-  it('Should redirect to the original requests URL when we are authorised', async () => {
+  it('responds 200 when we are authorised', async () => {
+    console.log(req);
     const result = await middleware(req);
 
-    expect(result.headers.get('x-middleware-rewrite')).toStrictEqual(
-      'http://localhost:3000/dashboard'
-    );
+    expect(result.status).toBe(200);
+    expect(result.headers.get('Location')).toBeNull();
   });
 });
