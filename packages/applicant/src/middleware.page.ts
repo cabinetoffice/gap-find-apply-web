@@ -293,7 +293,7 @@ const authenticatedPaths = [
   '/sign-in-details',
   '/api/redirect-from-find',
   '/mandatory-questions/:path*',
-].map((path) => new URLPattern({ pathname: path }));
+].map((pathname) => new URLPattern({ pathname }));
 
 const isAuthenticatedPath = (pathname: string) =>
   authenticatedPaths.some((authenticatedPath) =>

@@ -1,3 +1,4 @@
+import { Redirect } from 'next';
 import CallServiceMethod from './callServiceMethod';
 import {
   ValidationError,
@@ -50,7 +51,9 @@ export default async function QuestionPageGetServerSideProps<
     return postResponse;
   }
 
-  const { fieldErrors, previousValues } = generateValidationProps(postResponse);
+  const { fieldErrors, previousValues } = generateValidationProps(
+    postResponse as Exclude<typeof postResponse, { redirect: Redirect }>
+  );
 
   return {
     props: {
