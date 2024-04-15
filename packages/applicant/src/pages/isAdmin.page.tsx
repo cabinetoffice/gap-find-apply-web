@@ -4,6 +4,7 @@ import { getUserRoles, UserRolesResponse } from '../services/UserRolesService';
 import { getJwtFromCookies } from '../utils/jwt';
 import { routes } from '../utils/routes';
 import getConfig from 'next/config';
+import { logger } from '../utils/logger';
 
 const getRoleCheckService = (publicRuntimeConfig) =>
   publicRuntimeConfig.oneLoginEnabled ? getUserRoles : isAdmin;
@@ -37,8 +38,10 @@ export const getServerSideProps: GetServerSideProps = async ({
     const roleCheckService = getRoleCheckService(publicRuntimeConfig);
     result = await roleCheckService(userServiceJwt);
   } catch (error) {
-    console.error('Error determining user roles');
-    console.error(error);
+    logger.error(
+      'Error determining user roles',
+      logger.utils.addErrorInfo(error, req)
+    );
     return {
       redirect: {
         destination: publicRuntimeConfig.oneLoginEnabled

@@ -1,6 +1,7 @@
+/* eslint-disable no-console */
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
-import { NextApiRequest } from 'next';
+import { GetServerSidePropsContext, NextApiRequest } from 'next';
 import pino from 'pino';
 import { HEADERS } from './constants';
 
@@ -80,7 +81,10 @@ const getLoggerWithLevel =
     } else log[getProdLogLevel(level)](info, logMessage);
   };
 
-const addErrorInfo = (error, req: NextRequest | NextApiRequest) => {
+const addErrorInfo = (
+  error,
+  req: NextRequest | NextApiRequest | GetServerSidePropsContext['req']
+) => {
   if (req instanceof NextRequest)
     error.correlationId = req.headers.get(HEADERS.CORRELATION_ID);
   else error.correlationId = req.headers[HEADERS.CORRELATION_ID];

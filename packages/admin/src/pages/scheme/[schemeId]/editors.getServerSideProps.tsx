@@ -9,6 +9,7 @@ import {
   isSchemeOwner,
 } from '../../../services/SchemeEditorService';
 import { getGrantScheme } from '../../../services/SchemeService';
+import { logger } from '../../../utils/logger';
 
 export type Action = {
   href: string;
@@ -101,7 +102,10 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   try {
     return await getEditorsServerSideProps(ctx);
   } catch (error) {
-    console.error('Error getting grant editors: ', error);
+    logger.error(
+      'Error getting grant editors: ',
+      logger.utils.addErrorInfo(error, ctx.req)
+    );
 
     const destination = `/service-error?serviceErrorProps=${JSON.stringify({
       errorInformation:
