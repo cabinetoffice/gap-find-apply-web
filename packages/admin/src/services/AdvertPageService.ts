@@ -162,7 +162,7 @@ const getAdvertStatusBySchemeId = async (
   return { status: res.status, data: res.data };
 };
 
-const getAdvertPreviewPageContent = async (
+const getAdvertDetailsPreviewContent = async (
   sessionId: string,
   grantAdvertId: string
 ): Promise<PreviewPageContent> => {
@@ -188,5 +188,5 @@ export {
   getAdvertStatusBySchemeId,
   scheduleAdvert,
   getGrantAdvertPublishInformationBySchemeId,
-  getAdvertPreviewPageContent,
+  getAdvertDetailsPreviewContent,
 };

@@ -232,7 +232,7 @@ const authenticatedPaths = [
   '/sign-in-details',
   '/api/redirect-from-find',
   '/mandatory-questions/:path*',
-].map((path) => new URLPattern({ pathname: path }));
+].map((pathname) => new URLPattern({ pathname }));
 
 const isAuthenticatedPath = (pathname: string) =>
   authenticatedPaths.some((authenticatedPath) =>
@@ -247,10 +247,10 @@ export const middleware = async (req: NextRequest) => {
 
   if (isAuthenticatedPath(req.nextUrl.pathname)) {
     try {
-      await csrfMiddleware(req, res);
       res = await authenticateRequest(req, res);
+      await csrfMiddleware(req, res);
     } catch (err) {
-      console.error(err);
+      logger.error(logger.utils.addErrorInfo(err, req));
       // redirect to homepage on any middleware error
       res = buildMiddlewareResponse(req, HOST);
     }

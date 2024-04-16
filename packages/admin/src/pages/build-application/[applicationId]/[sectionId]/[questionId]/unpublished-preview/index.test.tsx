@@ -9,6 +9,7 @@ import { getQuestion } from '../../../../../../services/QuestionService';
 import { GetServerSidePropsContext } from 'next';
 
 import { AxiosError } from 'axios';
+import { HEADERS } from '../../../../../../utils/constants';
 
 jest.mock('../../../../../../services/ApplicationService');
 jest.mock('../../../../../../services/QuestionService');
@@ -245,6 +246,7 @@ describe('getServerSideProps for unpublished-preview index page', () => {
         req: {
           method: 'GET',
           cookies: { 'gap-test': 'testSessionId' },
+          headers: { [HEADERS.CORRELATION_ID]: 'test-id' },
         } as any,
       } as GetServerSidePropsContext,
       overrides
@@ -280,7 +282,6 @@ describe('getServerSideProps for unpublished-preview index page', () => {
       it('should error if the SECTION service call is rejected - GENERIC ERROR (try{} catch())', async () => {
         (getApplicationFormSection as jest.Mock).mockRejectedValue(axiosError);
         const response = await getServerSideProps(getContext());
-        console.log(response);
         expect(response).toStrictEqual({
           redirect: {
             destination:
@@ -293,7 +294,6 @@ describe('getServerSideProps for unpublished-preview index page', () => {
       it('should error if the SECTION service call returns null - SPECIFIC ERROR', async () => {
         (getApplicationFormSection as jest.Mock).mockResolvedValue(null);
         const response = await getServerSideProps(getContext());
-        console.log(response);
         expect(response).toStrictEqual({
           redirect: {
             destination:
@@ -320,7 +320,6 @@ describe('getServerSideProps for unpublished-preview index page', () => {
       it('should error if the QUESTION service call is rejected - GENERIC getServerSideProps ERROR (try{} catch())', async () => {
         (getQuestion as jest.Mock).mockRejectedValue(axiosError);
         const response = await getServerSideProps(getContext());
-        console.log(response);
         expect(response).toStrictEqual({
           redirect: {
             destination:
@@ -333,7 +332,6 @@ describe('getServerSideProps for unpublished-preview index page', () => {
       it('should error if the QUESTION service call returns null', async () => {
         (getQuestion as jest.Mock).mockResolvedValue(null);
         const response = await getServerSideProps(getContext());
-        console.log(response);
         expect(response).toStrictEqual({
           redirect: {
             destination:

@@ -22,7 +22,7 @@ export const PreviewSideBar = ({ schemeId, advertId }: SideBarProps) => {
 
       <p className="govuk-body">
         <CustomLink
-          href={`/scheme/${schemeId}/advert/${advertId}/preview`}
+          href={`/scheme/${schemeId}/advert/${advertId}/preview/search-result`}
           dataCy="cy-preview-advert-sidebar-link"
           aria-label="Preview the advert"
         >

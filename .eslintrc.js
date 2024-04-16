@@ -28,6 +28,7 @@ module.exports = {
   ],
   plugins: ['eslint-plugin-prettier'],
   rules: {
+    'no-console': 'error',
     'no-shadow-restricted-names': 'off',
     'no-prototype-builtins': 'off',
     'prettier/prettier': 'error',

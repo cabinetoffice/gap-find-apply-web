@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 import { GetServerSidePropsContext } from 'next';
 import CustomLink from '../../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../../components/layout/Meta';
-import { getAdvertPreviewPageContent } from '../../../../../../services/AdvertPageService';
+import { getAdvertDetailsPreviewContent } from '../../../../../../services/AdvertPageService';
 import CustomError from '../../../../../../types/CustomError';
 import InferProps from '../../../../../../types/InferProps';
 import { generateErrorPageRedirectV2 } from '../../../../../../utils/serviceErrorHelpers';
@@ -18,7 +18,7 @@ export const getServerSideProps = async ({
   const sessionCookie = getSessionIdFromCookies(req);
 
   try {
-    const grant = await getAdvertPreviewPageContent(sessionCookie, advertId);
+    const grant = await getAdvertDetailsPreviewContent(sessionCookie, advertId);
     return {
       props: {
         grant,
@@ -36,7 +36,7 @@ export const getServerSideProps = async ({
   }
 };
 
-const AdvertPreview = ({
+const AdvertDetailsPreview = ({
   grant,
   schemeId,
   advertId,
@@ -53,7 +53,7 @@ const AdvertPreview = ({
       <Meta title={`${grantName} preview - Manage a grant`} />
 
       <CustomLink
-        href={`/scheme/${schemeId}/advert/${advertId}/section-overview`}
+        href={`/scheme/${schemeId}/advert/${advertId}/preview/search-result`}
         isBackButton
         dataCy="cy-back-button"
       />
@@ -80,4 +80,4 @@ const AdvertPreview = ({
   );
 };
 
-export default AdvertPreview;
+export default AdvertDetailsPreview;

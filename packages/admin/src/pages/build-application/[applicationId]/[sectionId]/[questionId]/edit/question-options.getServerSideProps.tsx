@@ -125,11 +125,10 @@ const getServerSideProps = async ({
           };
 
         case 'save-and-continue' in body:
-          questionSummary =
-            ((await getSummaryFromSession(
-              'updatedQuestion',
-              sessionId
-            )) as unknown as QuestionWithOptionsSummary) || {};
+          questionSummary = ((await getSummaryFromSession(
+            'updatedQuestion',
+            sessionId
+          )) || {}) as unknown as QuestionWithOptionsSummary;
           await patchQuestion(sessionId, applicationId, sectionId, questionId, {
             ...questionSummary,
             options: options,
