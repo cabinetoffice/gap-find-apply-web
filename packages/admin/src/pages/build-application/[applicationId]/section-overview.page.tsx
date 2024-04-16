@@ -11,6 +11,7 @@ import Meta from '../../../components/layout/Meta';
 import { ApplicationFormSection } from '../../../types/ApplicationForm';
 import { getGrantScheme } from '../../../services/SchemeService';
 import { mapV2Sections } from '../../../utils/applicationSummaryHelper';
+import { logger } from '../../../utils/logger';
 
 export const getServerSideProps = async ({
   req,
@@ -43,7 +44,10 @@ export const getServerSideProps = async ({
       },
     };
   } catch (err) {
-    console.error('Error rendering section overview -> ', err);
+    logger.error(
+      'Error rendering section overview',
+      logger.utils.addErrorInfo(err, req)
+    );
     const error = err as AxiosError;
     const errorMessageObject = error.response?.data as CustomError;
 

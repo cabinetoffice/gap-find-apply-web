@@ -129,7 +129,61 @@ async function getIsSubmissionSubmitted(id: string, jwt: string) {
   const result = await data.text();
   return result === 'true';
 }
+async function schemeHasInternalApplicationForm(jwt: string, schemeId: string) {
+  try {
+    const url = `${BACKEND_HOST}/grant-schemes/${schemeId}/hasInternalApplication`;
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+        Accept: 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch schemeHasInternalApplicationForm');
+    }
 
+    const json = await response.json();
+    return json;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error fetching schemeHasInternalApplicationForm:', error);
+  }
+}
+async function getMandatoryQuestion(mandatoryQuestionId: string, jwt: string) {
+  try {
+    const url = `${BACKEND_HOST}/grant-mandatory-questions/${mandatoryQuestionId}`;
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+        Accept: 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch mandatory question');
+    }
+
+    const json = await response.json();
+    return json;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error fetching mandatory question:', error);
+  }
+}
+async function getMandatoryQuestionApplicationInfos(req: NextRequest, jwt) {
+  const uuidRegex = /\/([0-9a-fA-F-]+)\//;
+  const mandatoryQuestionId = uuidRegex.exec(req.nextUrl.pathname)[1];
+  const mandatoryQuestion = await getMandatoryQuestion(
+    mandatoryQuestionId,
+    jwt
+  );
+  const { hasInternalApplication, hasPublishedInternalApplication } =
+    await schemeHasInternalApplicationForm(jwt, mandatoryQuestion.schemeId);
+
+  return {
+    hasInternalApplication,
+    hasPublishedInternalApplication,
+  };
+}
 async function shouldRedirectToClosedGrantPage(jwt: string, req: NextRequest) {
   const { pathname } = req.nextUrl;
   const id = pathname.split('/')[2];
@@ -163,13 +217,22 @@ const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
 
   const jwt = await getJwtFromMiddlewareCookies(req);
 
-  if (
-    patterns.submissionJourney.test({ pathname: req.nextUrl.pathname }) ||
-    patterns.mandatoryQuestionsJourney.test({ pathname: req.nextUrl.pathname })
-  ) {
+  if (patterns.submissionJourney.test({ pathname: req.nextUrl.pathname })) {
     const shouldRedirect = await shouldRedirectToClosedGrantPage(jwt, req);
     if (shouldRedirect) {
       return shouldRedirect;
+    }
+  }
+
+  if (
+    patterns.mandatoryQuestionsJourney.test({ pathname: req.nextUrl.pathname })
+  ) {
+    //hasInternalApplication check that the advert has the "apply" url set to a internal application
+    const { hasInternalApplication, hasPublishedInternalApplication } =
+      await getMandatoryQuestionApplicationInfos(req, jwt);
+
+    if (hasInternalApplication && !hasPublishedInternalApplication) {
+      return NextResponse.redirect(process.env.HOST + GRANT_CLOSED_REDIRECT);
     }
   }
 
@@ -185,7 +248,7 @@ const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
       req,
       `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}${
         req.nextUrl.pathname
-      }?${req.nextUrl.searchParams.toString()}`
+      }?${encodeURIComponent(req.nextUrl.searchParams.toString())}`
     );
   }
   return res;
@@ -232,7 +295,7 @@ const authenticatedPaths = [
   '/sign-in-details',
   '/api/redirect-from-find',
   '/mandatory-questions/:path*',
-].map((path) => new URLPattern({ pathname: path }));
+].map((pathname) => new URLPattern({ pathname }));
 
 const isAuthenticatedPath = (pathname: string) =>
   authenticatedPaths.some((authenticatedPath) =>
@@ -247,10 +310,10 @@ export const middleware = async (req: NextRequest) => {
 
   if (isAuthenticatedPath(req.nextUrl.pathname)) {
     try {
-      await csrfMiddleware(req, res);
       res = await authenticateRequest(req, res);
+      await csrfMiddleware(req, res);
     } catch (err) {
-      console.error(err);
+      logger.error(logger.utils.addErrorInfo(err, req));
       // redirect to homepage on any middleware error
       res = buildMiddlewareResponse(req, HOST);
     }

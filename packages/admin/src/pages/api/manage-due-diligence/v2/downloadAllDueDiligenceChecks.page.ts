@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { downloadMandatoryQuestionsDueDiligenceData } from '../../../../services/MandatoryQuestionsService';
 import { getSessionIdFromCookies } from '../../../../utils/session';
+import { logger } from '../../../../utils/logger';
 
 const downloadAllDueDiligenceChecks = async (
   req: NextApiRequest,
@@ -33,7 +34,7 @@ const downloadAllDueDiligenceChecks = async (
       internal
     );
   } catch (error) {
-    console.log('error', error);
+    logger.error('error', error);
     errorRedirect();
     return;
   }

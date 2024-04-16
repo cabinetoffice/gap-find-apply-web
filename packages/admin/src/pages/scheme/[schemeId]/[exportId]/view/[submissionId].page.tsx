@@ -8,6 +8,7 @@ import Meta from '../../../../../components/layout/Meta';
 import { QuestionRow } from './QuestionRow.component';
 import { SectionData } from '../../../../../types/SubmissionSummary';
 import { getFailedExportDetails } from '../../../../../services/ExportService';
+import { logger } from '../../../../../utils/logger';
 
 export const getServerSideProps = async ({
   req,
@@ -33,7 +34,7 @@ export const getServerSideProps = async ({
     );
     organisationName = submission.legalName;
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     return errorPageRedirect;
   }
 

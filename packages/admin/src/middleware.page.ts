@@ -1,71 +1,183 @@
 // eslint-disable-next-line  @next/next/no-server-import-in-page
 import { NextRequest, NextResponse, URLPattern } from 'next/server';
+import { v4 } from 'uuid';
+import { getLoginUrl, parseJwt } from './utils/general';
 import { isAdminSessionValid } from './services/UserService';
 import { csrfMiddleware } from './utils/csrfMiddleware';
-import { getLoginUrl } from './utils/general';
+import { logger } from './utils/logger';
+import { HEADERS } from './utils/constants';
 
-// It will apply the middleware to all those paths
-// (if new folders at page root are created, they need to be included here)
-export const config = {
-  matcher: [
-    '/build-application/:path*',
-    '/dashboard/:path*',
-    '/new-scheme/:path*',
-    '/scheme/:path*',
-    '/scheme-list/:path*',
-    '/super-admin-dashboard/:path*',
-  ],
+const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
+  const authCookie = req.cookies.get('session_id');
+  const userJwtCookie = req.cookies.get(process.env.JWT_COOKIE_NAME);
+
+  const isLoggedIn = !!userJwtCookie;
+  const isLoggedInAsAdmin = !!authCookie;
+  // means that the user is logged in but not as an admin/superAdmin (otherwise they would have had the session_id cookie set)
+  if (isLoggedIn && !isLoggedInAsAdmin) {
+    const url = getLoginUrl({ redirectTo404: true });
+    logger.info(
+      `User is not an admin - redirecting it to appropriate app 404 page`
+    );
+    return NextResponse.redirect(url, { status: 302 });
+  } else if (!isLoggedIn || !isLoggedInAsAdmin) {
+    let url = getLoginUrl();
+    if (isSubmissionExportLink(req)) {
+      url += `?${generateRedirectUrl(req)}`;
+    }
+    logger.info(`Not authorised - logging in via: ${url}`);
+    return NextResponse.redirect(url, { status: 302 });
+  }
+
+  const isValidSession = await isValidAdminSession(authCookie);
+  //user has the session_id cookie set but not valid
+  if (!isValidSession) {
+    const url = getLoginUrl({ redirectToApplicant: true });
+    logger.info(`Admin session invalid - logging in via applicant app: ${url}`);
+    return NextResponse.redirect(url, { status: 302 });
+  }
+
+  if (hasJwtExpired(userJwtCookie)) {
+    const url = `${getLoginUrl()}?${generateRedirectUrl(req)}`;
+    logger.info(`Jwt expired - logging in via: ${url}`);
+    return NextResponse.redirect(url, { status: 302 });
+  }
+
+  if (isJwtExpiringSoon(userJwtCookie)) {
+    const url = `${process.env.REFRESH_URL}?${generateRedirectUrl(req)}`;
+    logger.info(`Refreshing JWT - redircting to: ${url}`);
+    return NextResponse.redirect(url, { status: 307 });
+  }
+
+  if (isAdBuilderRedirectAndDisabled(req)) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/404';
+    logger.info(`Ad builder disabled - redirecting to 404: ${url.toString()}`);
+    return NextResponse.redirect(url, { status: 302 });
+  }
+
+  logger.info('User is authorised');
+  addAdminSessionCookie(res, authCookie);
+  res.headers.set('Cache-Control', 'no-store');
+  return res;
 };
 
-export async function middleware(req: NextRequest) {
-  const rewriteUrl = req.url;
-  const res = NextResponse.rewrite(rewriteUrl);
-  await csrfMiddleware(req, res);
-
-  const auth_cookie = req.cookies.get('session_id');
-  //Feature flag redirects
-  const advertBuilderPath = /\/scheme\/\d*\/advert/;
-
-  if (process.env.FEATURE_ADVERT_BUILDER === 'disabled') {
-    if (advertBuilderPath.test(req.nextUrl.pathname)) {
-      const url = req.nextUrl.clone();
-      url.pathname = `/404`;
-      return NextResponse.redirect(url);
-    }
-  }
-
-  if (auth_cookie !== undefined) {
-    if (process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE === 'true') {
-      const isValidAdminSession = await isAdminSessionValid(auth_cookie.value);
-      if (!isValidAdminSession) {
-        return NextResponse.redirect(
-          getLoginUrl({ redirectToApplicant: true }),
-          { status: 302 }
-        );
-      }
-    }
-
-    res.cookies.set('session_id', auth_cookie.value, {
-      path: '/',
-      secure: true,
-      httpOnly: true,
-      sameSite: 'lax',
-      maxAge: parseInt(process.env.MAX_COOKIE_AGE!),
+const httpLoggers = {
+  req: (req: NextRequest) => {
+    const correlationId = v4();
+    req.headers.set(HEADERS.CORRELATION_ID, correlationId);
+    logger.http('Incoming request', {
+      ...logger.utils.formatRequest(req),
+      correlationId,
     });
+  },
+  res: (req: NextRequest, res: NextResponse) =>
+    logger.http(
+      'Outgoing response - PLEASE NOTE: this represents a snapshot of the response as it exits the middleware, changes made by other server code (eg getServerSideProps) will not be shown',
+      {
+        ...logger.utils.formatResponse(res),
+        correlationId: req.headers.get(HEADERS.CORRELATION_ID),
+      }
+    ),
+};
 
-    res.headers.set('Cache-Control', 'no-store');
-    return res;
+type LoggerType = keyof typeof httpLoggers;
+
+const urlsToSkip = ['/_next/', '/assets/', '/javascript/'];
+
+const getConditionalLogger = (req: NextRequest, type: LoggerType) => {
+  const userAgentHeader = req.headers.get('user-agent') || '';
+  const shouldSkipLogging =
+    userAgentHeader.startsWith('ELB-HealthChecker') ||
+    urlsToSkip.some((url) => req.nextUrl.pathname.startsWith(url));
+  return shouldSkipLogging ? () => undefined : httpLoggers[type];
+};
+
+const authenticatedPaths = [
+  '/build-application/:path*',
+  '/dashboard/:path*',
+  '/new-scheme/:path*',
+  '/scheme/:path*',
+  '/scheme-list/:path*',
+  '/super-admin-dashboard/:path*',
+].map((pathname) => new URLPattern({ pathname }));
+
+const isAuthenticatedPath = (pathname: string) =>
+  authenticatedPaths.some((authenticatedPath) =>
+    authenticatedPath.test({ pathname })
+  );
+
+export async function middleware(req: NextRequest) {
+  const logRequest = getConditionalLogger(req, 'req');
+  const logResponse = getConditionalLogger(req, 'res');
+  let res = NextResponse.next();
+  logRequest(req, res);
+
+  if (isAuthenticatedPath(req.nextUrl.pathname)) {
+    res = await authenticateRequest(req, res);
+    await csrfMiddleware(req, res);
   }
-  let url = getLoginUrl();
-  console.log('Middleware redirect URL: ' + url);
-  if (submissionDownloadPattern.test({ pathname: req.nextUrl.pathname })) {
-    url = `${url}?redirectUrl=${process.env.HOST}${req.nextUrl.pathname}`;
-    console.log('Getting submission export download redirect URL: ' + url);
-  }
-  console.log('Final redirect URL from admin middleware: ' + url);
-  return NextResponse.redirect(url);
+  logResponse(req, res);
+  return res;
 }
 
-const submissionDownloadPattern = new URLPattern({
-  pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
-});
+function generateRedirectUrl(req: NextRequest) {
+  const redirectUrl = process.env.HOST + req.nextUrl.pathname;
+  const redirectUrlSearchParams = encodeURIComponent(
+    req.nextUrl.searchParams.toString()
+  );
+  return `redirectUrl=${redirectUrl}${
+    redirectUrlSearchParams ? '?' + redirectUrlSearchParams : ''
+  }`;
+}
+
+function addAdminSessionCookie(res: NextResponse, authCookie: RequestCookie) {
+  res.cookies.set('session_id', authCookie.value, {
+    path: '/',
+    secure: true,
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: parseInt(process.env.MAX_COOKIE_AGE!),
+  });
+}
+
+function isAdBuilderRedirectAndDisabled(req: NextRequest) {
+  const advertBuilderPath = /\/scheme\/\d*\/advert/;
+  return (
+    process.env.FEATURE_ADVERT_BUILDER === 'disabled' &&
+    advertBuilderPath.test(req.nextUrl.pathname)
+  );
+}
+
+function isSubmissionExportLink(req: NextRequest) {
+  const submissionDownloadPattern = new URLPattern({
+    pathname: '/scheme/:schemeId([0-9]+)/:exportBatchUuid([0-9a-f-]+)',
+  });
+  return submissionDownloadPattern.test({ pathname: req.nextUrl.pathname });
+}
+
+async function isValidAdminSession(authCookie: RequestCookie) {
+  if (process.env.VALIDATE_USER_ROLES_IN_MIDDLEWARE !== 'true') return true;
+  return await isAdminSessionValid(authCookie.value);
+}
+
+function hasJwtExpired(jwtCookie: RequestCookie) {
+  const jwt = parseJwt(jwtCookie.value);
+  const expiresAt = new Date(jwt.exp * 1000);
+  const now = new Date();
+  return expiresAt <= now;
+}
+
+function isJwtExpiringSoon(jwtCookie: RequestCookie) {
+  const jwt = parseJwt(jwtCookie.value);
+  const expiresAt = new Date(jwt.exp * 1000);
+  const now = new Date();
+  const nowPlusMins = new Date();
+  nowPlusMins.setMinutes(now.getMinutes() + 30);
+  return expiresAt >= now && expiresAt <= nowPlusMins;
+}
+
+type RequestCookie = Exclude<
+  ReturnType<NextRequest['cookies']['get']>,
+  undefined
+>;

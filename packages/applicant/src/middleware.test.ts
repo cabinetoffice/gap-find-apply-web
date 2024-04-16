@@ -92,7 +92,7 @@ describe('Middleware', () => {
 
     expect(res.status).toBe(307);
     expect(res.headers.get('Location')).toBe(
-      `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}/applications?scheme=1`
+      `${process.env.REFRESH_URL}?redirectUrl=${process.env.HOST}/applications?scheme%3D1`
     );
   });
 
@@ -200,17 +200,22 @@ describe('Middleware', () => {
 
   it('redirect to grant-is-closed if it gets a removed response from the API for mandatory questions and submission is not submitted', async () => {
     const req = getMockRequest(
-      'https://some.website.com/mandatory-questions/000/some-url'
+      'https://some.website.com/mandatory-questions/04c3777a-fc71-4fbf-b312-526f16a290e4/some-url'
     );
 
     req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
     const mapUrlToResponse = {
-      'undefined/grant-mandatory-questions/000/application/status': 'REMOVED',
-      'undefined/submissions/000/isSubmitted': 'false',
+      'undefined/grant-mandatory-questions/04c3777a-fc71-4fbf-b312-526f16a290e4':
+        { schemedId: 3 },
+      'undefined/grant-schemes/undefined/hasInternalApplication': {
+        hasInternalApplication: true,
+        hasPublishedInternalApplication: false,
+      },
     };
     jest.spyOn(global, 'fetch').mockImplementation((url) => {
       return {
-        text: jest.fn().mockResolvedValue(mapUrlToResponse[url as string]),
+        ok: true,
+        json: jest.fn().mockResolvedValue(mapUrlToResponse[url as string]),
       } as unknown as Promise<Response>;
     });
     const res = await middleware(req);
@@ -227,12 +232,17 @@ describe('Middleware', () => {
 
     req.cookies.set(process.env.USER_TOKEN_NAME, 'valid');
     const mapUrlToResponse = {
-      'undefined/grant-mandatory-questions/000/application/status': 'REMOVED',
-      'undefined/submissions/000/isSubmitted': 'true',
+      'undefined/grant-mandatory-questions/04c3777a-fc71-4fbf-b312-526f16a290e4':
+        { schemedId: 3 },
+      'undefined/grant-schemes/undefined/hasInternalApplication': {
+        hasInternalApplication: true,
+        hasPublishedInternalApplication: true,
+      },
     };
     jest.spyOn(global, 'fetch').mockImplementation((url) => {
       return {
-        text: jest.fn().mockResolvedValue(mapUrlToResponse[url as string]),
+        ok: true,
+        json: jest.fn().mockResolvedValue(mapUrlToResponse[url as string]),
       } as unknown as Promise<Response>;
     });
     const res = await middleware(req);
