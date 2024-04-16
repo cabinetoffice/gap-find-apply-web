@@ -125,7 +125,6 @@ const getServerSideProps = async ({
           };
 
         case 'save-and-continue' in body:
-          
           questionSummary = ((await getSummaryFromSession(
             'updatedQuestion',
             sessionId
@@ -143,7 +142,7 @@ const getServerSideProps = async ({
             options: options,
             version: body.version,
             validation: {
-              mandatory: questionData.validation.mandatory,
+              mandatory: questionData.validation.mandatory === 'true',
             },
           });
 
