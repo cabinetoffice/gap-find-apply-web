@@ -13,15 +13,15 @@ const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
 
   await csrfMiddleware(req, res);
   //means that the user is logged in but not as an admin/superAdmin(otherwise they would have had the session_id cookie set)
-  if (!authCookie && userJwtCookie) {
+  const isLoggedIn = !!userJwtCookie;
+  const isLoggedInAsAdmin = !!authCookie
+  if (isLoggedIn && !isLoggedInAsAdmin) {
     const url = getLoginUrl({ redirectTo404: true });
     logger.info(
       `User is not an admin - redirecting it to appropriate app 404 page`
     );
-    return NextResponse.redirect(url);
-  }
-  //means user is not logged in
-  if (!authCookie || !userJwtCookie) {
+    return NextResponse.redirect(url, { status: 302 });
+  } else if (!isLoggedIn || !isLoggedInAsAdmin) {
     let url = getLoginUrl();
     if (isSubmissionExportLink(req)) {
       url += `?${generateRedirectUrl(req)}`;
