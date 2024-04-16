@@ -6,6 +6,7 @@ import { createSubmission } from '../../../services/SubmissionService';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { GrantApplication } from '../../../types/models/GrantApplication';
+import { logger } from '../../../utils/logger';
 
 //TODO: we could make this an API endpoint since it doesn't actually render anything
 export const getServerSideProps: GetServerSideProps = async ({
@@ -86,7 +87,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       },
     };
   } catch (error) {
-    console.error(error);
+    logger.error(logger.utils.addErrorInfo(error, req));
     if (error?.response?.data?.code === 'GRANT_NOT_PUBLISHED') {
       return {
         redirect: {

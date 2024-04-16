@@ -130,7 +130,7 @@ describe('middleware', () => {
 
     const res = await middleware(req);
 
-    expect(res.status).toBe(307);
+    expect(res.status).toBe(302);
     expect(res.headers.get('Location')).toBe(
       `${loginUrl}?redirectUrl=http://localhost:3000/dashboard`
     );
@@ -195,7 +195,6 @@ describe('middleware', () => {
   });
 
   it('responds 200 when we are authorised', async () => {
-    console.log(req);
     const result = await middleware(req);
 
     expect(result.status).toBe(200);

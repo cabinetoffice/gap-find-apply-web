@@ -12,6 +12,7 @@ import {
 import { MAX_FILE_UPLOAD_SIZE_BYTES } from '../../../../../../../../../utils/constants';
 import { getJwtFromCookies } from '../../../../../../../../../utils/jwt';
 import { routes } from '../../../../../../../../../utils/routes';
+import { logger } from '../../../../../../../../../utils/logger';
 
 export const config = {
   api: {
@@ -204,7 +205,7 @@ const handler = async (req, res) => {
       }
 
       // if something isn't a validation failure it's probably worth logging
-      console.error(err);
+      logger.error(logger.utils.addErrorInfo(err, req));
     }
   } else {
     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });

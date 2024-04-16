@@ -145,6 +145,7 @@ async function schemeHasInternalApplicationForm(jwt: string, schemeId: string) {
     const json = await response.json();
     return json;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error fetching schemeHasInternalApplicationForm:', error);
   }
 }
@@ -164,6 +165,7 @@ async function getMandatoryQuestion(mandatoryQuestionId: string, jwt: string) {
     const json = await response.json();
     return json;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error fetching mandatory question:', error);
   }
 }
@@ -311,7 +313,7 @@ export const middleware = async (req: NextRequest) => {
       res = await authenticateRequest(req, res);
       await csrfMiddleware(req, res);
     } catch (err) {
-      console.error(err);
+      logger.error(logger.utils.addErrorInfo(err, req));
       // redirect to homepage on any middleware error
       res = buildMiddlewareResponse(req, HOST);
     }

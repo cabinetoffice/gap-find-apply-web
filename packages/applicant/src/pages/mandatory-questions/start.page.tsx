@@ -7,6 +7,7 @@ import InferProps from '../../types/InferProps';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import { GrantSchemeService } from '../../services/GrantSchemeService';
+import { logger } from '../../utils/logger';
 
 export async function getServerSideProps({
   req,
@@ -39,7 +40,7 @@ export async function getServerSideProps({
       }
     }
   } catch (error) {
-    console.error(error);
+    logger.error(logger.utils.addErrorInfo(error, req));
     return {
       redirect: {
         destination: `/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to retrieve your mandatory questions","linkAttributes":{"href":"/mandatory-questions/start?schemeId=${schemeId}","linkText":"Please return","linkInformation":" and try again."}}`,

@@ -17,35 +17,33 @@ const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
       url += `?${generateRedirectUrl(req)}`;
     }
     logger.info(`Not authorised - logging in via: ${url}`);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   const isValidSession = await isValidAdminSession(authCookie);
   if (!isValidSession) {
     const url = getLoginUrl({ redirectToApplicant: true });
     logger.info(`Admin session invalid - logging in via applicant app: ${url}`);
-    return NextResponse.redirect(url, {
-      status: 302,
-    });
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   if (hasJwtExpired(userJwtCookie)) {
     const url = `${getLoginUrl()}?${generateRedirectUrl(req)}`;
     logger.info(`Jwt expired - logging in via: ${url}`);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   if (isJwtExpiringSoon(userJwtCookie)) {
     const url = `${process.env.REFRESH_URL}?${generateRedirectUrl(req)}`;
     logger.info(`Refreshing JWT - redircting to: ${url}`);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, { status: 307 });
   }
 
   if (isAdBuilderRedirectAndDisabled(req)) {
     const url = req.nextUrl.clone();
     url.pathname = '/404';
     logger.info(`Ad builder disabled - redirecting to 404: ${url.toString()}`);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   logger.info('User is authorised');

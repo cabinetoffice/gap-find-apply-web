@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { logger } from './logger';
 
 export async function APIGlobalHandler(
   req: NextApiRequest,
@@ -8,7 +9,7 @@ export async function APIGlobalHandler(
   try {
     await handler(req, res);
   } catch (error) {
-    console.error(error);
+    logger.error(logger.utils.addErrorInfo(error, req));
     res.redirect(
       `${process.env.SUB_PATH}/service-error?serviceErrorProps=${JSON.stringify(
         {

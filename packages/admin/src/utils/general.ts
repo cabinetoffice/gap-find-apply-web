@@ -1,3 +1,5 @@
+import { logger } from './logger';
+
 const isJSEnabled = () => {
   return typeof window !== 'undefined';
 };
@@ -49,7 +51,7 @@ const validateRedirectUrl = (redirectUrl: string) => {
   const isValid = redirectUrlHost.startsWith(process.env.FIND_A_GRANT_URL);
 
   if (!isValid) {
-    console.error('admin redirect was invalid: ', { redirectUrl });
+    logger.error('admin redirect was invalid', { redirectUrl });
     throw new Error('Invalid redirect URL');
   }
 };
