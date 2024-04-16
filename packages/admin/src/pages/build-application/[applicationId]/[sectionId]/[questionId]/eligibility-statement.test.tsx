@@ -1,16 +1,16 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import axios from 'axios';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext } from 'next';
 import { getGrantScheme } from '../../../../../services/SchemeService';
+import { axios } from '../../../../../utils/axios';
 import { updateSectionStatus } from '../../../../../services/SectionService';
 import { parseBody } from '../../../../../utils/parseBody';
 import EligibilityStatement, {
   getServerSideProps,
 } from './eligibility-statement.page';
 
-jest.mock('axios');
+jest.mock('../../../../../utils/axios');
 jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/SectionService');
 jest.mock('../../../../../services/SchemeService');

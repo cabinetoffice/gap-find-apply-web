@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import getConfig from 'next/config';
 import ApplicationQueryObject from '../types/ApplicationQueryObject';
 import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsResponse';
@@ -15,6 +15,7 @@ import {
   updateApplicationFormStatus,
 } from './ApplicationService';
 import { decrypt } from '../utils/encryption';
+import { axios } from '../utils/axios';
 
 jest.mock('next/config', () => () => {
   return {
@@ -27,7 +28,7 @@ jest.mock('next/config', () => () => {
     },
   };
 });
-jest.mock('axios');
+jest.mock('../utils/axios');
 
 jest.mock('../utils/encryption', () => ({
   decrypt: jest.fn(),

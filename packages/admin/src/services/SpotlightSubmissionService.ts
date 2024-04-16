@@ -1,5 +1,5 @@
-import axios from 'axios';
 import getConfig from 'next/config';
+import { axios } from '../utils/axios';
 import { axiosSessionConfig } from '../utils/session';
 
 const { serverRuntimeConfig } = getConfig();

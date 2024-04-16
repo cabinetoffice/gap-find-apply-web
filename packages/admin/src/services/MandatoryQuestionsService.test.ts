@@ -1,10 +1,10 @@
-import axios from 'axios';
 import {
   downloadMandatoryQuestionsDueDiligenceData,
   hasCompletedMandatoryQuestions,
 } from './MandatoryQuestionsService';
+import { axios } from '../utils/axios';
 
-jest.mock('axios');
+jest.mock('../utils/axios');
 
 describe('MandatoryQuestionsService', () => {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
