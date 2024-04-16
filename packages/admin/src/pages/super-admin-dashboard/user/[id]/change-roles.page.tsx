@@ -39,13 +39,19 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   ];
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
+    const superAdminOnly =
+      body.newUserRoles.includes(ROLE_IDS.SUPER_ADMIN) &&
+      !body.newUserRoles.includes(ROLE_IDS.ADMIN);
+
     let departmentPageUrl = `/super-admin-dashboard/user/${userId}/change-department`;
+
     const oldUserRoles = (await getUserById(userId, jwt)).roles.map((role) =>
       String(role.id)
     );
+
     const newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
-    //case where admin checkbox is disabled (role isn't auto selected)
-    isOwner ? newUserRoles.push(ROLE_IDS.ADMIN) : null;
+    //case where user is a Super Admin OR admin checkbox is disabled (role isn't auto selected)
+    superAdminOnly || isOwner ? newUserRoles.push(ROLE_IDS.ADMIN) : null;
 
     const userDepartment = (await getUserById(userId, jwt)).department;
 
