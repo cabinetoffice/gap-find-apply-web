@@ -95,9 +95,6 @@ export const getServerSideProps = async ({
 };
 
 const isOpeningDateIsInFuture = (openingDate: Date): boolean => {
-  console.log(openingDate);
-  console.log(moment(openingDate));
-
   return moment(openingDate).isAfter(moment());
 };
 
