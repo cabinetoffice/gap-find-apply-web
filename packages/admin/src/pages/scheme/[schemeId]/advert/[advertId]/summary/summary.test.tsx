@@ -1,27 +1,28 @@
 import '@testing-library/jest-dom';
-import { merge, cloneDeep } from 'lodash';
 import { render, screen } from '@testing-library/react';
-import * as sessionUtils from '../../../../../../utils/session';
+import { cloneDeep, merge } from 'lodash';
+import { Redirect } from 'next';
 import * as AdvertPageService from '../../../../../../services/AdvertPageService';
 import * as serviceErrorHelpers from '../../../../../../utils/serviceErrorHelpers';
+import * as sessionUtils from '../../../../../../utils/session';
 import AdvertSummaryPage, { getServerSideProps } from './summary';
-import { Redirect } from 'next';
 
+import React from 'react';
+import AdvertStatusEnum from '../../../../../../enums/AdvertStatus';
 import {
-  sessionCookie,
-  summaryPageResponse,
+  expectObjectEquals,
+  getPageProps,
+  toHaveBeenCalledWith,
+} from '../../../../../../testUtils/unitTestHelpers';
+import InferProps from '../../../../../../types/InferProps';
+import { parseBody } from '../../../../../../utils/parseBody';
+import {
   advertName,
   axiosError,
   dummyDraftGrantAdvertDataWithAdvert,
+  sessionCookie,
+  summaryPageResponse,
 } from './summary.testdata';
-import {
-  toHaveBeenCalledWith,
-  expectObjectEquals,
-  getPageProps,
-} from '../../../../../../testUtils/unitTestHelpers';
-import { parseBody } from '../../../../../../utils/parseBody';
-import InferProps from '../../../../../../types/InferProps';
-import AdvertStatusEnum from '../../../../../../enums/AdvertStatus';
 
 jest.mock('../../../../../../utils/session');
 jest.mock('../../../../../../services/AdvertPageService');
@@ -189,6 +190,20 @@ describe('getServerSideProps', () => {
         ['10', '12', (new Date().getFullYear() + 1).toString(), '18', '00'];
       mockAdvertPageService.getSummaryPageContent.mockResolvedValue(
         summaryPageResponseFuture
+      );
+      summaryPageResponseFuture.openingDate = new Date(
+        new Date().getFullYear() + 1,
+        11,
+        5,
+        10,
+        0
+      );
+      summaryPageResponseFuture.closingDate = new Date(
+        new Date().getFullYear() + 1,
+        12,
+        10,
+        18,
+        0
       );
 
       const context = getContext({ req: { method: 'POST' } });

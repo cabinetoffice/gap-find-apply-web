@@ -6,6 +6,7 @@ import {
 import { GrantApplicantOrganisationProfileService } from '../../services/GrantApplicantOrganisationProfileService';
 import { routes } from '../../utils/routes';
 import handler from './create-mandatory-question.page';
+import { HEADERS } from '../../utils/constants';
 
 jest.mock('../../services/GrantMandatoryQuestionService');
 jest.mock('../../services/GrantApplicantOrganisationProfileService');
@@ -20,6 +21,7 @@ const req = (overrides: any = {}) =>
     query: {
       schemeId: 'schemeId',
     },
+    headers: { [HEADERS.CORRELATION_ID]: 'test-id' },
     overrides,
   });
 

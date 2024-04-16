@@ -6,6 +6,7 @@ import { render, screen } from '@testing-library/react';
 import ApplicationPreview, { getServerSideProps } from './preview.page';
 import InferProps from '../../../types/InferProps';
 import { ApplicationFormQuestion } from '../../../types/ApplicationForm';
+import { HEADERS } from '../../../utils/constants';
 
 jest.mock('../../../utils/session');
 jest.mock('../../../services/ApplicationService');
@@ -62,6 +63,7 @@ describe('getServerSideProps', () => {
     params: {
       applicationId: 'mockApplicationId',
     },
+    req: { headers: { [HEADERS.CORRELATION_ID]: 'test-id' } },
   } as unknown as GetServerSidePropsContext;
 
   const axiosError = { response: { data: { code: 500 } } } as AxiosError;

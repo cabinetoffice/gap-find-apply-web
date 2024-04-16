@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 import { downloadSpotlightSubmissionsDueDiligenceData } from '../../../../../services/SpotlightSubmissionService';
+import { logger } from '../../../../../utils/logger';
 
 const downloadSpotlightChecks = async (
   req: NextApiRequest,
@@ -33,9 +34,9 @@ const downloadSpotlightChecks = async (
       onlyValidationErrors
     );
   } catch (error) {
-    console.error(
-      'Error downloading due diligence data from spotlight: ',
-      error
+    logger.error(
+      'Error downloading due diligence data from spotlight',
+      logger.utils.addErrorInfo(error, req)
     );
     errorRedirect();
     return;

@@ -1,70 +1,123 @@
 // eslint-disable-next-line  @next/next/no-server-import-in-page
-import { type NextRequest, NextResponse, URLPattern } from 'next/server';
+import { NextRequest, NextResponse, URLPattern } from 'next/server';
+import { v4 } from 'uuid';
+import { getLoginUrl, parseJwt } from './utils/general';
 import { isAdminSessionValid } from './services/UserService';
 import { csrfMiddleware } from './utils/csrfMiddleware';
-import { getLoginUrl, parseJwt } from './utils/general';
+import { logger } from './utils/logger';
+import { HEADERS } from './utils/constants';
 
-// It will apply the middleware to all those paths
-// (if new folders at page root are created, they need to be included here)
-export const config = {
-  matcher: [
-    '/build-application/:path*',
-    '/dashboard/:path*',
-    '/new-scheme/:path*',
-    '/scheme/:path*',
-    '/scheme-list/:path*',
-    '/super-admin-dashboard/:path*',
-  ],
-};
-
-export async function middleware(req: NextRequest) {
-  const rewriteUrl = req.url;
-  const res = NextResponse.rewrite(rewriteUrl);
+const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
   const authCookie = req.cookies.get('session_id');
   const userJwtCookie = req.cookies.get(process.env.JWT_COOKIE_NAME);
 
-  await csrfMiddleware(req, res);
-
-  if (!authCookie || !userJwtCookie) {
+  const isLoggedIn = !!userJwtCookie;
+  const isLoggedInAsAdmin = !!authCookie;
+  // means that the user is logged in but not as an admin/superAdmin (otherwise they would have had the session_id cookie set)
+  if (isLoggedIn && !isLoggedInAsAdmin) {
+    const url = getLoginUrl({ redirectTo404: true });
+    logger.info(
+      `User is not an admin - redirecting it to appropriate app 404 page`
+    );
+    return NextResponse.redirect(url, { status: 302 });
+  } else if (!isLoggedIn || !isLoggedInAsAdmin) {
     let url = getLoginUrl();
     if (isSubmissionExportLink(req)) {
       url += `?${generateRedirectUrl(req)}`;
     }
-    console.log(`Not authorised - logging in via: ${url}`);
-    return NextResponse.redirect(url);
+    logger.info(`Not authorised - logging in via: ${url}`);
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   const isValidSession = await isValidAdminSession(authCookie);
+  //user has the session_id cookie set but not valid
   if (!isValidSession) {
     const url = getLoginUrl({ redirectToApplicant: true });
-    console.log(`Admin session invalid - logging in via applicant app: ${url}`);
-    return NextResponse.redirect(url, {
-      status: 302,
-    });
+    logger.info(`Admin session invalid - logging in via applicant app: ${url}`);
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   if (hasJwtExpired(userJwtCookie)) {
     const url = `${getLoginUrl()}?${generateRedirectUrl(req)}`;
-    console.log(`Jwt expired - logging in via: ${url}`);
-    return NextResponse.redirect(url);
+    logger.info(`Jwt expired - logging in via: ${url}`);
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   if (isJwtExpiringSoon(userJwtCookie)) {
     const url = `${process.env.REFRESH_URL}?${generateRedirectUrl(req)}`;
-    console.log(`Refreshing JWT - redircting to: ${url}`);
-    return NextResponse.redirect(url);
+    logger.info(`Refreshing JWT - redircting to: ${url}`);
+    return NextResponse.redirect(url, { status: 307 });
   }
 
   if (isAdBuilderRedirectAndDisabled(req)) {
     const url = req.nextUrl.clone();
     url.pathname = '/404';
-    console.log(`Ad builder disabled - redirecting to 404: ${url.toString()}`);
-    return NextResponse.redirect(url);
+    logger.info(`Ad builder disabled - redirecting to 404: ${url.toString()}`);
+    return NextResponse.redirect(url, { status: 302 });
   }
 
-  console.log('User is authorised');
+  logger.info('User is authorised');
   addAdminSessionCookie(res, authCookie);
   res.headers.set('Cache-Control', 'no-store');
+  return res;
+};
+
+const httpLoggers = {
+  req: (req: NextRequest) => {
+    const correlationId = v4();
+    req.headers.set(HEADERS.CORRELATION_ID, correlationId);
+    logger.http('Incoming request', {
+      ...logger.utils.formatRequest(req),
+      correlationId,
+    });
+  },
+  res: (req: NextRequest, res: NextResponse) =>
+    logger.http(
+      'Outgoing response - PLEASE NOTE: this represents a snapshot of the response as it exits the middleware, changes made by other server code (eg getServerSideProps) will not be shown',
+      {
+        ...logger.utils.formatResponse(res),
+        correlationId: req.headers.get(HEADERS.CORRELATION_ID),
+      }
+    ),
+};
+
+type LoggerType = keyof typeof httpLoggers;
+
+const urlsToSkip = ['/_next/', '/assets/', '/javascript/'];
+
+const getConditionalLogger = (req: NextRequest, type: LoggerType) => {
+  const userAgentHeader = req.headers.get('user-agent') || '';
+  const shouldSkipLogging =
+    userAgentHeader.startsWith('ELB-HealthChecker') ||
+    urlsToSkip.some((url) => req.nextUrl.pathname.startsWith(url));
+  return shouldSkipLogging ? () => undefined : httpLoggers[type];
+};
+
+const authenticatedPaths = [
+  '/build-application/:path*',
+  '/dashboard/:path*',
+  '/new-scheme/:path*',
+  '/scheme/:path*',
+  '/scheme-list/:path*',
+  '/super-admin-dashboard/:path*',
+].map((pathname) => new URLPattern({ pathname }));
+
+const isAuthenticatedPath = (pathname: string) =>
+  authenticatedPaths.some((authenticatedPath) =>
+    authenticatedPath.test({ pathname })
+  );
+
+export async function middleware(req: NextRequest) {
+  const logRequest = getConditionalLogger(req, 'req');
+  const logResponse = getConditionalLogger(req, 'res');
+  let res = NextResponse.next();
+  logRequest(req, res);
+
+  if (isAuthenticatedPath(req.nextUrl.pathname)) {
+    res = await authenticateRequest(req, res);
+    await csrfMiddleware(req, res);
+  }
+  logResponse(req, res);
   return res;
 }
 
@@ -73,7 +126,9 @@ function generateRedirectUrl(req: NextRequest) {
   const redirectUrlSearchParams = encodeURIComponent(
     req.nextUrl.searchParams.toString()
   );
-  return `redirectUrl=${redirectUrl}?${redirectUrlSearchParams}`;
+  return `redirectUrl=${redirectUrl}${
+    redirectUrlSearchParams ? '?' + redirectUrlSearchParams : ''
+  }`;
 }
 
 function addAdminSessionCookie(res: NextResponse, authCookie: RequestCookie) {
