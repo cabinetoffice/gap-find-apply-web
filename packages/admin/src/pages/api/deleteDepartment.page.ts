@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getUserTokenFromCookies } from '../../utils/session';
 import { deleteDepartmentInformation } from '../../services/SuperAdminService';
+import { logger } from '../../utils/logger';
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,7 +13,7 @@ export default async function handler(
   try {
     await deleteDepartmentInformation(departmentId, jwt);
   } catch (error) {
-    console.error(error);
+    logger.error(logger.utils.addErrorInfo(error, req));
 
     if ((error as any)?.response?.status === 500) {
       res.redirect(

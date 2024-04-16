@@ -9,6 +9,7 @@ import {
   ApplicationFormQuestion,
   ApplicationFormSection,
 } from '../../../types/ApplicationForm';
+import { HEADERS } from '../../../utils/constants';
 
 jest.mock('../../../services/ApplicationService');
 jest.mock('../../../utils/session');
@@ -26,7 +27,7 @@ jest.mock('next/config', () => () => ({
 
 describe('getServerSideProps', () => {
   const context = {
-    req: {},
+    req: { headers: { [HEADERS.CORRELATION_ID]: 'test-id' } },
     params: {
       applicationId: 'mockApplicationId',
     },

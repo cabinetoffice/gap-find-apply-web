@@ -15,6 +15,7 @@ import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { getServerSideProps } from './index.page';
 import { GrantApplication } from '../../../types/models/GrantApplication';
+import { HEADERS } from '../../../utils/constants';
 
 jest.mock('../../../utils/parseBody');
 jest.mock('../../../services/SubmissionService');
@@ -31,7 +32,10 @@ const context = {
   params: {
     applicationId: '1',
   },
-  req: { csrfToken: () => 'testCSRFToken' },
+  req: {
+    csrfToken: () => 'testCSRFToken',
+    headers: { [HEADERS.CORRELATION_ID]: 'test-id' },
+  },
   res: {},
 } as unknown as GetServerSidePropsContext;
 

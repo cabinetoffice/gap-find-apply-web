@@ -1,7 +1,8 @@
+import { render } from '@testing-library/react';
 import { merge } from 'lodash';
 import { GetServerSidePropsContext } from 'next';
-import { render } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
+import React from 'react';
 import { createMockRouter } from './createMockRouter';
 
 /**
@@ -114,11 +115,11 @@ type Optional<T> = {
 };
 
 export {
-  getPageProps,
-  getContext,
-  mockServiceMethod,
-  toHaveBeenCalledWith,
-  renderWithRouter,
   expectObjectEquals,
+  getContext,
+  getPageProps,
+  mockServiceMethod,
+  renderWithRouter,
+  toHaveBeenCalledWith,
 };
 export type { InferServiceMethodResponse, Optional };

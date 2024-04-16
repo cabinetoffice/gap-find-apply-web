@@ -4,6 +4,7 @@ import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import { GrantApplicantOrganisationProfileService } from '../../services/GrantApplicantOrganisationProfileService';
 import { APIGlobalHandler } from '../../utils/apiErrorHandler';
+import { logger } from '../../utils/logger';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const grantMandatoryQuestionService =
@@ -37,12 +38,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       );
     }
   } catch (e) {
-    return handleError(e, res);
+    return handleError(e, req, res);
   }
 }
 
-function handleError(e: any, res: NextApiResponse) {
-  console.error('error: ', e);
+function handleError(e, req: NextApiRequest, res: NextApiResponse) {
+  logger.error(logger.utils.addErrorInfo(e, req));
   const serviceErrorProps = {
     errorInformation: 'There was an error in the service',
     linkAttributes: {
@@ -54,5 +55,7 @@ function handleError(e: any, res: NextApiResponse) {
   return res.redirect(routes.serviceError(serviceErrorProps));
 }
 
-export default (req: NextApiRequest, res: NextApiResponse) =>
+const apiHandler = (req: NextApiRequest, res: NextApiResponse) =>
   APIGlobalHandler(req, res, handler);
+
+export default apiHandler;

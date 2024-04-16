@@ -7,9 +7,7 @@ import { csrfMiddleware } from './utils/csrfMiddleware';
 import { logger } from './utils/logger';
 import { HEADERS } from './utils/constants';
 
-const authenticateRequest = async (req: NextRequest) => {
-  const rewriteUrl = req.url;
-  const res = NextResponse.rewrite(rewriteUrl);
+const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
   const authCookie = req.cookies.get('session_id');
   const userJwtCookie = req.cookies.get(process.env.JWT_COOKIE_NAME);
 
@@ -29,7 +27,7 @@ const authenticateRequest = async (req: NextRequest) => {
       url += `?${generateRedirectUrl(req)}`;
     }
     logger.info(`Not authorised - logging in via: ${url}`);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   const isValidSession = await isValidAdminSession(authCookie);
@@ -37,28 +35,26 @@ const authenticateRequest = async (req: NextRequest) => {
   if (!isValidSession) {
     const url = getLoginUrl({ redirectToApplicant: true });
     logger.info(`Admin session invalid - logging in via applicant app: ${url}`);
-    return NextResponse.redirect(url, {
-      status: 302,
-    });
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   if (hasJwtExpired(userJwtCookie)) {
     const url = `${getLoginUrl()}?${generateRedirectUrl(req)}`;
     logger.info(`Jwt expired - logging in via: ${url}`);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   if (isJwtExpiringSoon(userJwtCookie)) {
     const url = `${process.env.REFRESH_URL}?${generateRedirectUrl(req)}`;
     logger.info(`Refreshing JWT - redircting to: ${url}`);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, { status: 307 });
   }
 
   if (isAdBuilderRedirectAndDisabled(req)) {
     const url = req.nextUrl.clone();
     url.pathname = '/404';
     logger.info(`Ad builder disabled - redirecting to 404: ${url.toString()}`);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   logger.info('User is authorised');
@@ -115,13 +111,12 @@ const isAuthenticatedPath = (pathname: string) =>
 export async function middleware(req: NextRequest) {
   const logRequest = getConditionalLogger(req, 'req');
   const logResponse = getConditionalLogger(req, 'res');
-  const rewriteUrl = req.url;
-  let res = NextResponse.rewrite(rewriteUrl);
+  let res = NextResponse.next();
   logRequest(req, res);
 
   if (isAuthenticatedPath(req.nextUrl.pathname)) {
+    res = await authenticateRequest(req, res);
     await csrfMiddleware(req, res);
-    res = await authenticateRequest(req);
   }
   logResponse(req, res);
   return res;
