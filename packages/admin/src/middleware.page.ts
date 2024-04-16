@@ -11,10 +11,9 @@ const authenticateRequest = async (req: NextRequest, res: NextResponse) => {
   const authCookie = req.cookies.get('session_id');
   const userJwtCookie = req.cookies.get(process.env.JWT_COOKIE_NAME);
 
-  await csrfMiddleware(req, res);
-  //means that the user is logged in but not as an admin/superAdmin(otherwise they would have had the session_id cookie set)
   const isLoggedIn = !!userJwtCookie;
-  const isLoggedInAsAdmin = !!authCookie
+  const isLoggedInAsAdmin = !!authCookie;
+  // means that the user is logged in but not as an admin/superAdmin (otherwise they would have had the session_id cookie set)
   if (isLoggedIn && !isLoggedInAsAdmin) {
     const url = getLoginUrl({ redirectTo404: true });
     logger.info(
