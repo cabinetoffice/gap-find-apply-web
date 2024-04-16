@@ -2,7 +2,10 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import getConfig from 'next/config';
 import { GrantScheme } from '../types/models/GrantScheme';
-import { GrantSchemeService } from './GrantSchemeService';
+import {
+  GrantSchemeService,
+  MandatoryQuestionApplicationsInfosDto,
+} from './GrantSchemeService';
 
 jest.mock('next/config', () => () => {
   return {
@@ -20,12 +23,16 @@ const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
 
 describe('Grant scheme service', () => {
+  const env = process.env;
+  beforeEach(() => {
+    process.env = { ...env };
+  });
   const spy = jest.spyOn(axios, 'get');
   const mock = new MockAdapter(axios);
   const subject = GrantSchemeService.getInstance();
 
   afterEach(() => {
-    mock.restore();
+    jest.clearAllMocks();
   });
 
   test('Get grant scheme by scheme id', async () => {
@@ -46,6 +53,29 @@ describe('Grant scheme service', () => {
 
     const result = await subject.getGrantSchemeById(SCHEME_ID, 'testJwt');
     expect(result).toEqual(MOCK_GRANT_SCHEME);
+    expect(spy).toBeCalledTimes(1);
+    expect(spy).toBeCalledWith(expectedUrl, {
+      headers: {
+        Authorization: `Bearer testJwt`,
+        Accept: 'application/json',
+      },
+    });
+  });
+  test('Has internal application', async () => {
+    const SCHEME_ID = '1';
+    const MOCK_RESPONSE: MandatoryQuestionApplicationsInfosDto = {
+      hasInternalApplication: true,
+      hasPublishedInternalApplication: true,
+    };
+    const expectedUrl = `${BACKEND_HOST}/grant-schemes/${SCHEME_ID}/hasInternalApplication`;
+    mock.onGet(expectedUrl).reply(200, MOCK_RESPONSE);
+
+    const result = await subject.hasSchemeInternalApplication(
+      SCHEME_ID,
+      'testJwt'
+    );
+
+    expect(result).toEqual(MOCK_RESPONSE);
     expect(spy).toBeCalledTimes(1);
     expect(spy).toBeCalledWith(expectedUrl, {
       headers: {

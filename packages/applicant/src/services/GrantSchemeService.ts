@@ -35,4 +35,20 @@ export class GrantSchemeService {
     );
     return data;
   }
+
+  public async hasSchemeInternalApplication(
+    grantSchemeId: string,
+    jwt: string
+  ): Promise<MandatoryQuestionApplicationsInfosDto> {
+    const { data } = await axios.get(
+      `${this.BACKEND_HOST}/grant-schemes/${grantSchemeId}/hasInternalApplication`,
+      axiosConfig(jwt)
+    );
+    return data;
+  }
+}
+
+export interface MandatoryQuestionApplicationsInfosDto {
+  hasInternalApplication: boolean;
+  hasPublishedInternalApplication: boolean;
 }
