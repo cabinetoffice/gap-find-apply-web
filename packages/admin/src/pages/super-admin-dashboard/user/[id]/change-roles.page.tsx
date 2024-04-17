@@ -63,10 +63,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     // However, as per https://stackoverflow.com/questions/4727974/how-to-post-submit-an-input-checkbox-that-is-disabled
     // and according to the W3 spec http://www.w3.org/TR/html401/interact/forms.html#h-17.13.2, a disabled checkbox
     // does not post its value when the form submits - "Controls that are disabled cannot be successful."
-    // Therefore, we must check for previous admin role & ownership ,and append the Admin role id if needed.
+    // Therefore, we must check for previous admin role & ownership, and append the Admin role id if needed.
     // The same logic is performed for deciding whether to disable the checkbox.
     // The alternative solution for posting the value is to add a hidden input with the admin value and post that,
-    // but this is cleaner since we're pushing the admin role already for Super Admin promotion.
+    // but the below is cleaner since we're pushing the admin role already for Super Admin promotion.
     const isOwnerAndAdmin = isOwner && hasAdminRoleId(oldUserRoles);
     if (isSuperAdminOnly || isOwnerAndAdmin) newUserRoles.push(ROLE_IDS.ADMIN);
     // remove duplicates
