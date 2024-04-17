@@ -38,9 +38,10 @@ const fetchSecret = async () => {
     const client = await getClient();
     const response = await client.send(getSecretCommand);
     return atou(JSON.parse(response.SecretString).csrfSecret);
+  } catch (e) {
     // the sdk throws a string, not an error...
-  } catch (message) {
-    throw new Error(message);
+    if (typeof e === 'string') throw new Error(e);
+    throw e;
   }
 };
 
