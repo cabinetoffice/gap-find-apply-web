@@ -4,6 +4,7 @@ import {
   SecretsManagerClientConfig,
 } from '@aws-sdk/client-secrets-manager';
 import { atou } from './utils';
+import { logger } from '../logger';
 
 const isProd = process.env.NODE_ENV === 'production';
 const HOST = process.env.HOST;
@@ -35,6 +36,7 @@ const fetchSecret = async () => {
     SecretId: CSRF_SECRET_ARN,
   });
   try {
+    logger.info('Fetching CSRF secret');
     const client = await getClient();
     const response = await client.send(getSecretCommand);
     return atou(JSON.parse(response.SecretString).csrfSecret);
