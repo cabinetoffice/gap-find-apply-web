@@ -49,7 +49,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       await grantSchemeService.hasSchemeInternalApplication(schemeId, jwt);
     if (hasAdvertPublished && !hasInternalApplication) {
       logger.info(
-        'The grant advert, has the apply to url pointing to an external url. Redirecting to external application.'
+        'The grant advert has the apply to url pointing to an external url. Redirecting to external application.'
       );
       await grantMandatoryQuestionService.updateMandatoryQuestion(
         jwt,
