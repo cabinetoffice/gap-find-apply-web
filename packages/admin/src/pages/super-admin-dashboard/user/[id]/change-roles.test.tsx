@@ -30,7 +30,7 @@ const defaultRoles = {
 };
 
 // Allows you to disable certain roles from being returned by passing e.g. getMockRoles({admin: false});
-const getMockRoles = (roles: { [key: string]: boolean }) => {
+const getMockRoles = (roles: Partial<typeof defaultRoles> = {}) => {
   const rolesToRender = {
     ...defaultRoles,
     ...roles,
