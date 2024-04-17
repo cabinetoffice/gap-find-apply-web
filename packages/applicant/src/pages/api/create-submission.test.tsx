@@ -119,7 +119,7 @@ describe('API Handler Tests', () => {
   };
 
   const createSubmissionResponse: CreateSubmissionResponse = {
-    submissionCreated: 'submissionCreated',
+    submissionCreated: true,
     submissionId: 'submissionId',
   };
 
@@ -148,6 +148,10 @@ describe('API Handler Tests', () => {
       getGrantSchemeById: jest.fn().mockResolvedValue({
         grantAdverts: [getAdvertBySchemeIdResponse],
         grantApplication: { id: null },
+      }),
+      hasSchemeInternalApplication: jest.fn().mockResolvedValue({
+        hasAdvertPublished: true,
+        hasInternalApplication: false,
       }),
     });
 
@@ -181,6 +185,10 @@ describe('API Handler Tests', () => {
       getGrantSchemeById: jest.fn().mockResolvedValue({
         grantAdverts: [getAdvertBySchemeIdResponse],
         grantApplication: getGrantApplicationResponse,
+      }),
+      hasSchemeInternalApplication: jest.fn().mockResolvedValue({
+        hasAdvertPublished: true,
+        hasInternalApplication: true,
       }),
     });
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
