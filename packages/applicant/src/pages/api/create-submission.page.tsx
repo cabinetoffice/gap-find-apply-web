@@ -45,12 +45,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       jwt
     );
 
-    if (
-      !grantApplication.id ||
-      grantApplication.applicationStatus !== 'PUBLISHED'
-    ) {
+    const { hasInternalApplication, hasAdvertPublished } =
+      await grantSchemeService.hasSchemeInternalApplication(schemeId, jwt);
+    if (hasAdvertPublished && !hasInternalApplication) {
       logger.info(
-        'Grant application does not exist or is not published. Redirecting to external application.'
+        'The grant advert has the apply to url pointing to an external url. Redirecting to external application.'
       );
       await grantMandatoryQuestionService.updateMandatoryQuestion(
         jwt,
@@ -66,6 +65,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         )}?url=${grantAdverts[0].externalSubmissionUrl}`
       );
     }
+
     logger.info('Grant has an internal application. Creating submission');
 
     const { submissionId } = await createSubmission(grantApplication.id, jwt);

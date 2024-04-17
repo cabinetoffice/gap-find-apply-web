@@ -49,8 +49,19 @@ export async function getServerSideProps({
     };
   }
   //hasInternalApplication check that the advert has the "apply" url set to a internal application
-  const { hasInternalApplication, hasPublishedInternalApplication } =
-    await schemeService.hasSchemeInternalApplication(schemeId, jwt);
+  const {
+    hasInternalApplication,
+    hasPublishedInternalApplication,
+    hasAdvertPublished,
+  } = await schemeService.hasSchemeInternalApplication(schemeId, jwt);
+  if (!hasAdvertPublished && !hasPublishedInternalApplication) {
+    return {
+      redirect: {
+        destination: '/404',
+        permanent: false,
+      },
+    };
+  }
 
   if (hasInternalApplication && !hasPublishedInternalApplication) {
     return {
