@@ -129,10 +129,21 @@ const getServerSideProps = async ({
             'updatedQuestion',
             sessionId
           )) || {}) as unknown as QuestionWithOptionsSummary;
+
+          questionData = await getQuestion(
+            sessionId,
+            applicationId,
+            sectionId,
+            questionId
+          );
+
           await patchQuestion(sessionId, applicationId, sectionId, questionId, {
             ...questionSummary,
             options: options,
             version: body.version,
+            validation: {
+              mandatory: questionData.validation.mandatory === 'true',
+            },
           });
 
           return {
