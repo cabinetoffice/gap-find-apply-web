@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { axiosSessionConfig } from '../utils/session';
+import { axios } from '../utils/axios';
 import Pagination from '../types/Pagination';
 
 const BASE_SUBMISSIONS_URL = process.env.BACKEND_HOST + '/grant-export';

@@ -1,13 +1,13 @@
-import axios from 'axios';
+import getConfig from 'next/config';
+import { axios } from '../utils/axios';
 import {
   addFieldsToSession,
   addToSession,
   getSummaryFromSession,
   getValueFromSession,
 } from './SessionService';
-import getConfig from 'next/config';
 
-jest.mock('axios');
+jest.mock('../utils/axios');
 
 describe('SessionService', () => {
   const mockedAxios = axios as jest.Mocked<typeof axios>;

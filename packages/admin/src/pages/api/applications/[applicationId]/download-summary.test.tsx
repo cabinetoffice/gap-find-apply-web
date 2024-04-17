@@ -8,7 +8,7 @@ import {
 import { ApplicationFormSummary } from '../../../../types/ApplicationForm';
 import { getSessionIdFromCookies } from '../../../../utils/session';
 
-jest.mock('axios');
+jest.mock('../../../../utils/axios');
 jest.mock('../../../../utils/session');
 const mockGetSessionIdFromCookies = jest.mocked(getSessionIdFromCookies);
 jest.mock('next/config', () => () => ({

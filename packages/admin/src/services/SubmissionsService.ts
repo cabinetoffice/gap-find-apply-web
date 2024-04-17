@@ -1,5 +1,5 @@
-import axios from 'axios';
 import ExportStatusEnum from '../enums/ExportStatus';
+import { axios } from '../utils/axios';
 import { axiosSessionConfig } from '../utils/session';
 
 const BASE_SUBMISSIONS_URL = process.env.BACKEND_HOST + '/submissions';

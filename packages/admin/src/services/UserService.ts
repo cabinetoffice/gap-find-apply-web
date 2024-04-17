@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { axios } from '../utils/axios';
 import { axiosUserServiceConfig, axiosSessionConfig } from '../utils/session';
 import UserDetails from '../types/UserDetails';
 

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { axios } from '../utils/axios';
 import { axiosSessionConfig } from '../utils/session';
 
 const BASE_MANDATORY_QUESTIONS_URL =
