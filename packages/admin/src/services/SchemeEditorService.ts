@@ -1,7 +1,6 @@
-import axios from 'axios';
 import getConfig from 'next/config';
 import { axiosSessionConfig, getFullConfig } from '../utils/session';
-
+import { axios } from '../utils/axios';
 import { decrypt } from '../utils/encryption';
 import EditableSchemes from '../types/EditableSchemes';
 import Scheme from '../types/Scheme';

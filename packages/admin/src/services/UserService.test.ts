@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { axios } from '../utils/axios';
 import UserDetails from '../types/UserDetails';
 import {
   checkNewAdminEmailIsValid,
@@ -7,7 +7,8 @@ import {
 
 const BASE_USERS_URL = process.env.BACKEND_HOST + '/users';
 
-jest.mock('axios');
+jest.mock('../utils/axios');
+
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockedUserDetails: UserDetails = {

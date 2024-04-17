@@ -1,8 +1,8 @@
-import axios from 'axios';
 import getConfig from 'next/config';
 import ApplicationQueryObject from '../types/ApplicationQueryObject';
 import Pagination from '../types/Pagination';
 import Scheme from '../types/Scheme';
+import { axios } from '../utils/axios';
 import { axiosSessionConfig } from '../utils/session';
 import { findMatchingApplicationForms } from './ApplicationService';
 import { decryptLastUpdatedBy } from './SchemeEditorService';

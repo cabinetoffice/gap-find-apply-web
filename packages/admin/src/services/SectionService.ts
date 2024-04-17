@@ -1,6 +1,6 @@
-import axios from 'axios';
-import { ApplicationFormStatus } from '../types/ApplicationForm';
 import getConfig from 'next/config';
+import { ApplicationFormStatus } from '../types/ApplicationForm';
+import { axios } from '../utils/axios';
 import { AxiosConfig, axiosSessionConfig } from '../utils/session';
 import { UpdateSectionTitleProps } from '../types/Section';
 

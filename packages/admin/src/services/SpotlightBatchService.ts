@@ -1,6 +1,6 @@
-import axios from 'axios';
 import getConfig from 'next/config';
 import { SpotlightError } from '../types/SpotlightError';
+import { axios } from '../utils/axios';
 import { axiosSessionConfig } from '../utils/session';
 
 const { serverRuntimeConfig } = getConfig();

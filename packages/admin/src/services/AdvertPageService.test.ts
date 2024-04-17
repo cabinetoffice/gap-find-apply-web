@@ -1,5 +1,3 @@
-import { LastUpdatedBy } from './../pages/scheme/components/BuildAdvertContentHelper';
-import axios from 'axios';
 import getConfig from 'next/config';
 import AdvertStatusEnum from '../enums/AdvertStatus';
 import { InferServiceMethodResponse } from '../testUtils/unitTestHelpers';
@@ -18,8 +16,9 @@ import {
 } from './AdvertPageService';
 import { PatchAdvertSectionPageResponseBody } from './AdvertPageService.d';
 import { decrypt } from '../utils/encryption';
+import { axios } from '../utils/axios';
 
-jest.mock('axios');
+jest.mock('../utils/axios');
 
 jest.mock('../utils/encryption');
 

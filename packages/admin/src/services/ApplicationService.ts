@@ -1,4 +1,3 @@
-import axios from 'axios';
 import getConfig from 'next/config';
 import {
   ApplicationFormSection,
@@ -9,6 +8,7 @@ import FindApplicationFormStatsResponse from '../types/FindApplicationFormStatsR
 import { decrypt } from '../utils/encryption';
 import { axiosSessionConfig } from '../utils/session';
 import { mapSingleSection } from '../utils/applicationSummaryHelper';
+import { axios } from '../utils/axios';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { axios } from '../utils/axios';
 import ExportStatusEnum from '../enums/ExportStatus';
 import {
   getApplicationExportStatus,
@@ -7,7 +7,7 @@ import {
   getCompletedSubmissionExportList,
 } from './SubmissionsService';
 
-jest.mock('axios');
+jest.mock('../utils/axios');
 
 describe('SubmissionsService', () => {
   const mockedAxios = axios as jest.Mocked<typeof axios>;

@@ -49,7 +49,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
     let departmentPageUrl = `/super-admin-dashboard/user/${userId}/change-department`;
-
     const oldUserRoles = (await getUserById(userId, jwt)).roles.map((role) =>
       String(role.id)
     );

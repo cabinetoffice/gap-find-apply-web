@@ -26,7 +26,7 @@ const Custom404 = () => {
             </p>
             <p className="govuk-body">
               To return to the dashboard, please visit the{' '}
-              <Link href="/" className="govuk-link">
+              <Link href="/dashboard" className="govuk-link">
                 dashboard
               </Link>{' '}
               page.

@@ -6266,7 +6266,7 @@ __metadata:
     "@types/cookie": ^0.5.1
     "@types/cookie-parser": ^1.4.3
     "@types/number-to-words": ^1.2.1
-    axios: ^0.27.2
+    axios: 1.6.8
     body-parser: 1.20.2
     contentful-typescript-codegen: ^3.2.3
     cookie-parser: ^1.4.6
@@ -6854,6 +6854,17 @@ __metadata:
   peerDependencies:
     axios: ">= 0.17.0"
   checksum: adcd838c8b21f1ed67950c18b68dcf7c7c9bcddc75418720b5a407fd8448a3aa97b736307c631c27c2971368ac56716a310ea6cfc056517c1f1b0f8825427e58
+  languageName: node
+  linkType: hard
+
+"axios@npm:1.6.8":
+  version: 1.6.8
+  resolution: "axios@npm:1.6.8"
+  dependencies:
+    follow-redirects: ^1.15.6
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: bf007fa4b207d102459300698620b3b0873503c6d47bf5a8f6e43c0c64c90035a4f698b55027ca1958f61ab43723df2781c38a99711848d232cad7accbcdfcdd
   languageName: node
   linkType: hard
 
@@ -10252,6 +10263,16 @@ __metadata:
     debug:
       optional: true
   checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.15.6":
+  version: 1.15.6
+  resolution: "follow-redirects@npm:1.15.6"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: a62c378dfc8c00f60b9c80cab158ba54e99ba0239a5dd7c81245e5a5b39d10f0c35e249c3379eae719ff0285fff88c365dd446fab19dee771f1d76252df1bbf5
   languageName: node
   linkType: hard
 
@@ -15795,7 +15816,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxy-from-env@npm:^1.0.0":
+"proxy-from-env@npm:^1.0.0, proxy-from-env@npm:^1.1.0":
   version: 1.1.0
   resolution: "proxy-from-env@npm:1.1.0"
   checksum: ed7fcc2ba0a33404958e34d95d18638249a68c430e30fcb6c478497d72739ba64ce9810a24f53a7d921d0c065e5b78e3822759800698167256b04659366ca4d4
