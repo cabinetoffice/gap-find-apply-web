@@ -41,7 +41,7 @@ const fetchSecret = async () => {
     const response = await client.send(getSecretCommand);
     return atou(JSON.parse(response.SecretString).csrfSecret);
   } catch (e) {
-    // the sdk throws a string, not an error...
+    // the aws sdk throws a string, not an error...
     if (typeof e === 'string') throw new Error(e);
     throw e;
   }
