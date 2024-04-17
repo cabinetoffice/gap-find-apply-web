@@ -47,16 +47,19 @@ const fetchSecret = async () => {
   }
 };
 
-export const csrfSecret = {
-  _lastFetch: Date.now(),
-  // 10 mins
-  _ttl: 600 * 1000,
-  _value: '',
+class CsrfSecret {
+  private _lastFetch: number;
+  // 1 hour
+  private _ttl: number = 3600 * 1000;
+  private _value: Uint8Array;
+
   async get() {
     if (!this._value || Date.now() - this._lastFetch >= this._ttl) {
       this._value = await fetchSecret();
       this._lastFetch = Date.now();
     }
     return this._value;
-  },
-};
+  }
+}
+
+export const csrfSecret = new CsrfSecret();
