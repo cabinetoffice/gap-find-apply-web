@@ -35,8 +35,12 @@ const ADMIN_ROLES_IDS = [
   ROLE_IDS.TECH_SUPPORT,
 ];
 
-function hasAdminRole(roles: string[]) {
-  return roles.some((role) => ADMIN_ROLES_IDS.includes(role));
+function hasAdminRoleId(roleIds: string[]) {
+  return roleIds.some((roleId) => ADMIN_ROLES_IDS.includes(roleId));
+}
+
+function hasAdminRole(roles: Role[]) {
+  return roles.some(({ id }) => ADMIN_ROLES_IDS.includes(String(id)));
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -51,17 +55,26 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     );
 
     let newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
-    const superAdminOnly =
+    // If we're promoting a user to Super Admin, we must add the Admin role as well
+    const isSuperAdminOnly =
       newUserRoles.includes(ROLE_IDS.SUPER_ADMIN) &&
       !newUserRoles.includes(ROLE_IDS.ADMIN);
-    // case where user is a Super Admin OR admin checkbox is disabled (role isn't auto selected)
-    superAdminOnly ? newUserRoles.push(ROLE_IDS.ADMIN) : null;
+    // We disable the Admin checkbox when the user is an Admin that owns a grant, so that an Owner can't be demoted.
+    // However, as per https://stackoverflow.com/questions/4727974/how-to-post-submit-an-input-checkbox-that-is-disabled
+    // and according to the W3 spec http://www.w3.org/TR/html401/interact/forms.html#h-17.13.2, a disabled checkbox
+    // does not post its value when the form submits - "Controls that are disabled cannot be successful."
+    // Therefore, we must check for previous admin role & ownership ,and append the Admin role id if needed.
+    // The same logic is performed for deciding whether to disable the checkbox.
+    // The alternative solution for posting the value is to add a hidden input with the admin value and post that,
+    // but this is cleaner since we're pushing the admin role already for Super Admin promotion.
+    const isOwnerAndAdmin = isOwner && hasAdminRoleId(oldUserRoles);
+    if (isSuperAdminOnly || isOwnerAndAdmin) newUserRoles.push(ROLE_IDS.ADMIN);
     // remove duplicates
-    newUserRoles = [...new Set(newUserRoles)];
+    newUserRoles = [...new Set(newUserRoles)].sort();
 
     const userDepartment = (await getUserById(userId, jwt)).department;
 
-    if (hasAdminRole(newUserRoles) && !hasAdminRole(oldUserRoles)) {
+    if (hasAdminRoleId(newUserRoles) && !hasAdminRoleId(oldUserRoles)) {
       departmentPageUrl += `?newRoles=${newUserRoles}`;
       return { userDepartment, newUserRoles, userId, departmentPageUrl };
     }
@@ -90,7 +103,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     departmentPageUrl,
   }: Awaited<ReturnType<typeof handleRequest>>) {
     const userHasDepartment = userDepartment !== null;
-    const userBecomingApplicant = !hasAdminRole(newUserRoles);
+    const userBecomingApplicant = !hasAdminRoleId(newUserRoles);
 
     return userHasDepartment || userBecomingApplicant
       ? `/super-admin-dashboard/user/${userId}`
@@ -161,7 +174,7 @@ function renderConditionalCheckboxes(
   user: User
 ) {
   const adminCheckboxes = roles.filter(({ name }) => name === 'ADMIN');
-  const isAdmin = hasAdminRole(roles.map(({ id }) => id));
+  const isAdmin = hasAdminRole(user.roles);
   if (isOwner && isAdmin) {
     return (
       <>
