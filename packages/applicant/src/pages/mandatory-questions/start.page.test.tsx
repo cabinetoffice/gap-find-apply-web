@@ -17,7 +17,6 @@ import MandatoryQuestionsBeforeYouStart, {
   getServerSideProps,
 } from './start.page';
 import { GrantSchemeService } from '../../services/GrantSchemeService';
-import { has } from 'cypress/types/lodash';
 
 jest.mock('../../utils/parseBody');
 jest.mock('../../utils/jwt');
