@@ -21,37 +21,43 @@ type PageBodyResponse = {
   newUserRoles: string | string[];
 };
 
+const ROLE_IDS = {
+  FIND: '1',
+  APPLICANT: '2',
+  ADMIN: '3',
+  SUPER_ADMIN: '4',
+  TECH_SUPPORT: '5',
+};
+const APPLICANT_ROLES_IDS = [ROLE_IDS.FIND, ROLE_IDS.APPLICANT];
+const ADMIN_ROLES_IDS = [
+  ROLE_IDS.ADMIN,
+  ROLE_IDS.SUPER_ADMIN,
+  ROLE_IDS.TECH_SUPPORT,
+];
+
+function hasAdminRole(roles: string[]) {
+  return roles.some((role) => ADMIN_ROLES_IDS.includes(role));
+}
+
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const userId = context.params?.id as string;
   const isOwner = (context.query?.isOwner === 'true') as boolean;
-  const ROLE_IDS = {
-    FIND: '1',
-    APPLICANT: '2',
-    ADMIN: '3',
-    SUPER_ADMIN: '4',
-    TECH_SUPPORT: '5',
-  };
-  const APPLICANT_ROLES_IDS = [ROLE_IDS.FIND, ROLE_IDS.APPLICANT];
-  const ADMIN_ROLES_IDS = [
-    ROLE_IDS.ADMIN,
-    ROLE_IDS.SUPER_ADMIN,
-    ROLE_IDS.TECH_SUPPORT,
-  ];
 
   async function handleRequest(body: PageBodyResponse, jwt: string) {
-    const superAdminOnly =
-      body.newUserRoles.includes(ROLE_IDS.SUPER_ADMIN) &&
-      !body.newUserRoles.includes(ROLE_IDS.ADMIN);
-
     let departmentPageUrl = `/super-admin-dashboard/user/${userId}/change-department`;
 
     const oldUserRoles = (await getUserById(userId, jwt)).roles.map((role) =>
       String(role.id)
     );
 
-    const newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
-    //case where user is a Super Admin OR admin checkbox is disabled (role isn't auto selected)
-    superAdminOnly || isOwner ? newUserRoles.push(ROLE_IDS.ADMIN) : null;
+    let newUserRoles = APPLICANT_ROLES_IDS.concat(body.newUserRoles || []);
+    const superAdminOnly =
+      newUserRoles.includes(ROLE_IDS.SUPER_ADMIN) &&
+      !newUserRoles.includes(ROLE_IDS.ADMIN);
+    // case where user is a Super Admin OR admin checkbox is disabled (role isn't auto selected)
+    superAdminOnly ? newUserRoles.push(ROLE_IDS.ADMIN) : null;
+    // remove duplicates
+    newUserRoles = [...new Set(newUserRoles)];
 
     const userDepartment = (await getUserById(userId, jwt)).department;
 
@@ -89,10 +95,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     return userHasDepartment || userBecomingApplicant
       ? `/super-admin-dashboard/user/${userId}`
       : departmentPageUrl;
-  }
-
-  function hasAdminRole(roles: string[]) {
-    return roles.some((role) => ADMIN_ROLES_IDS.includes(role));
   }
 
   return QuestionPageGetServerSideProps<
@@ -159,7 +161,8 @@ function renderConditionalCheckboxes(
   user: User
 ) {
   const adminCheckboxes = roles.filter(({ name }) => name === 'ADMIN');
-  if (isOwner) {
+  const isAdmin = hasAdminRole(roles.map(({ id }) => id));
+  if (isOwner && isAdmin) {
     return (
       <>
         <div>
