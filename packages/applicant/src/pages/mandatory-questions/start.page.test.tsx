@@ -17,6 +17,7 @@ import MandatoryQuestionsBeforeYouStart, {
   getServerSideProps,
 } from './start.page';
 import { GrantSchemeService } from '../../services/GrantSchemeService';
+import { has } from 'cypress/types/lodash';
 
 jest.mock('../../utils/parseBody');
 jest.mock('../../utils/jwt');
@@ -38,6 +39,7 @@ const spiedHasSchemeInternalApplication = jest.spyOn(
 const publishedInternalApplicationResponse = {
   hasInternalApplication: true,
   hasPublishedInternalApplication: true,
+  hasAdvertPublished: true,
 };
 
 const getDefaultContext = (): Optional<GetServerSidePropsContext> => ({
@@ -67,7 +69,7 @@ const mandatoryQuestionData: GrantMandatoryQuestionDto = {
 
 describe('Mandatory Questions Start', () => {
   describe('getServerSideProps', () => {
-    it('should return the scheme Id query param when mandatory Question does not exist', async () => {
+    it('should return the scheme Id query param when mandatory Question does not exist and advert is published and has internal published application', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       const existBySchemeIdAndApplicantId =
         spiedExistBySchemeIdAndApplicantId.mockResolvedValue(false);
@@ -92,7 +94,7 @@ describe('Mandatory Questions Start', () => {
       expect(hasSchemeInternalApplication).toHaveBeenCalledWith('1', 'testJwt');
     });
 
-    it('should return the scheme Id query param when mandatory Question does exist but not been completed', async () => {
+    it('should return the scheme Id query param when mandatory Question does exist but not been completed and advert is published and has internal published application', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       const existBySchemeIdAndApplicantId =
         spiedExistBySchemeIdAndApplicantId.mockResolvedValue(true);
@@ -156,7 +158,7 @@ describe('Mandatory Questions Start', () => {
       );
     });
 
-    it('should redirect if there is an error', async () => {
+    it('should redirect if there is an error retrieving MQ', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       spiedExistBySchemeIdAndApplicantId.mockRejectedValue(new Error());
 
@@ -170,7 +172,7 @@ describe('Mandatory Questions Start', () => {
       });
     });
 
-    it('should redirect if the application form status is REMOVED', async () => {
+    it('should redirect to grant is closed page if mq dont exist and  advert is published and has internal application in a NOT published status', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       spiedExistBySchemeIdAndApplicantId.mockResolvedValue(false);
       const hasSchemeInternalApplication =
@@ -184,6 +186,28 @@ describe('Mandatory Questions Start', () => {
       expect(response).toEqual({
         redirect: {
           destination: `/grant-is-closed`,
+          permanent: false,
+        },
+      });
+      expect(hasSchemeInternalApplication).toHaveBeenCalled();
+      expect(hasSchemeInternalApplication).toHaveBeenCalledWith('1', 'testJwt');
+    });
+
+    it('should redirect to 404 page if mq dont exist and advert is unpublished/not existent and has internal application in a NOT published status', async () => {
+      (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+      spiedExistBySchemeIdAndApplicantId.mockResolvedValue(false);
+      const hasSchemeInternalApplication =
+        spiedHasSchemeInternalApplication.mockResolvedValue({
+          ...publishedInternalApplicationResponse,
+          hasPublishedInternalApplication: false,
+          hasAdvertPublished: false,
+        });
+
+      const response = await getServerSideProps(getContext(getDefaultContext));
+
+      expect(response).toEqual({
+        redirect: {
+          destination: `/404`,
           permanent: false,
         },
       });

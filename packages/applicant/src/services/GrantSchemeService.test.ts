@@ -66,6 +66,7 @@ describe('Grant scheme service', () => {
     const MOCK_RESPONSE: MandatoryQuestionApplicationsInfosDto = {
       hasInternalApplication: true,
       hasPublishedInternalApplication: true,
+      hasAdvertPublished: true,
     };
     const expectedUrl = `${BACKEND_HOST}/grant-schemes/${SCHEME_ID}/hasInternalApplication`;
     mock.onGet(expectedUrl).reply(200, MOCK_RESPONSE);

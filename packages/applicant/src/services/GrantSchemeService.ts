@@ -51,4 +51,5 @@ export class GrantSchemeService {
 export interface MandatoryQuestionApplicationsInfosDto {
   hasInternalApplication: boolean;
   hasPublishedInternalApplication: boolean;
+  hasAdvertPublished: boolean;
 }
