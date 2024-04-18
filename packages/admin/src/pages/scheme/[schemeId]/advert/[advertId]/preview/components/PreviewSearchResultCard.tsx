@@ -1,8 +1,6 @@
-import 'moment-timezone';
-import Link from 'next/link';
-import Moment from 'react-moment';
 import React from 'react';
-import moment from 'moment';
+import Link from 'next/link';
+import moment from 'moment-timezone';
 
 const PreviewSearchResultCard = ({ grant }: PreviewSearchResultCardProps) => {
   const { adjustedOpenDate, adjustedCloseDate } = adjustDate(
@@ -113,13 +111,7 @@ const PreviewSearchResultCard = ({ grant }: PreviewSearchResultCardProps) => {
               data-testid="ApplicationOpenDateValue"
             >
               {grant.grantApplicationOpenDate.length ? (
-                <Moment
-                  format="D MMMM YYYY, h:mma"
-                  tz="GMT"
-                  data-testid="openDate"
-                >
-                  {adjustedOpenDate}
-                </Moment>
+                <time data-testid="openDate">{adjustedOpenDate}</time>
               ) : (
                 ''
               )}
@@ -137,13 +129,7 @@ const PreviewSearchResultCard = ({ grant }: PreviewSearchResultCardProps) => {
               data-testid="ApplicationCloseDateValue"
             >
               {grant.grantApplicationCloseDate.length ? (
-                <Moment
-                  format="D MMMM YYYY, h:mma"
-                  tz="GMT"
-                  data-testid="closeDate"
-                >
-                  {adjustedCloseDate}
-                </Moment>
+                <time data-testid="closeDate">{adjustedCloseDate}</time>
               ) : (
                 ''
               )}
@@ -171,19 +157,34 @@ const parseDate = (date: string[]) => {
 };
 
 function adjustDate(openDate: string[], closeDate: string[]) {
-  const openDateFormatted = moment(parseDate(openDate));
-  const closeDateFormatted = moment(parseDate(closeDate));
+  const openDateMoment = moment(parseDate(openDate));
+  const closeDateMoment = moment(parseDate(closeDate));
 
-  const adjustedOpenDate = moment.utc(openDateFormatted).startOf('day');
-  const adjustedCloseDate = moment.utc(closeDateFormatted).startOf('day');
+  const openDateMidnight = moment.utc(openDateMoment).startOf('day');
+  const closeDateMidnight = moment.utc(closeDateMoment).startOf('day');
+
+  const adjustForMidnightAndFormat = (
+    date: moment.Moment,
+    midnight: moment.Moment,
+    isOpeningDate: boolean
+  ) => {
+    const newDate = midnight.isSame(moment.utc(date))
+      ? midnight.add(isOpeningDate ? 1 : -1, 'minute')
+      : moment.utc(date);
+    return newDate.tz('GMT').format('D MMMM YYYY, h:mma');
+  };
 
   return {
-    adjustedOpenDate: adjustedOpenDate.isSame(moment.utc(openDateFormatted))
-      ? adjustedOpenDate.add(1, 'minute')
-      : moment.utc(openDateFormatted),
-    adjustedCloseDate: adjustedCloseDate.isSame(moment.utc(closeDateFormatted))
-      ? adjustedCloseDate.subtract(1, 'minute')
-      : moment.utc(closeDateFormatted),
+    adjustedOpenDate: adjustForMidnightAndFormat(
+      openDateMoment,
+      openDateMidnight,
+      true
+    ),
+    adjustedCloseDate: adjustForMidnightAndFormat(
+      closeDateMoment,
+      closeDateMidnight,
+      false
+    ),
   };
 }
 
