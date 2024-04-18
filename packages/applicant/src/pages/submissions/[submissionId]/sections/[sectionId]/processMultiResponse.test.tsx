@@ -40,6 +40,14 @@ const componentWithDateArray = (
     questionType={'Date'}
   />
 );
+const componentWithInvalidDateArray = (
+  <ProcessMultiResponse
+    data={['', '', '']}
+    id={''}
+    cyTag={''}
+    questionType={'Date'}
+  />
+);
 describe('should return the correct data for the multiResponse', () => {
   it('should return a hyphen if there is no multiResponse', () => {
     render(componentEmptyData);
@@ -70,5 +78,10 @@ describe('should return the correct data for the multiResponse', () => {
   it('should return an en-UK formatted date string if responseType is Date', () => {
     render(componentWithDateArray);
     expect(screen.getByText('1 October 2015')).toBeDefined();
+  });
+
+  it('should return - if responseType is Date but date is invalid', () => {
+    render(componentWithInvalidDateArray);
+    expect(screen.getByText('-')).toBeDefined();
   });
 });
