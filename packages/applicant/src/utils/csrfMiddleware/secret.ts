@@ -5,8 +5,8 @@ import {
 } from '@aws-sdk/client-secrets-manager';
 import { atou } from './utils';
 import { logger } from '../logger';
+import { IS_PRODUCTION } from '../constants';
 
-const isProd = process.env.NODE_ENV === 'production';
 const HOST = process.env.HOST;
 const CSRF_SECRET_ARN = process.env.CSRF_SECRET_ARN;
 const AWS_REGION = process.env.AWS_REGION;
@@ -22,7 +22,7 @@ let _client: SecretsManagerClient;
 const getClient = async () => {
   if (!_client) {
     const clientConfig: SecretsManagerClientConfig = {};
-    if (!isProd) {
+    if (!IS_PRODUCTION) {
       clientConfig.credentials = await fetchCredentials();
       clientConfig.region = AWS_REGION;
     }
