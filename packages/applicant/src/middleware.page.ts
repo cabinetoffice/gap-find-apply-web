@@ -313,7 +313,7 @@ export const middleware = async (req: NextRequest) => {
       res = await authenticateRequest(req, res);
       await csrfMiddleware(req, res);
     } catch (err) {
-      logger.error(logger.utils.addErrorInfo(err, req));
+      logger.error('Middleware failure', logger.utils.addErrorInfo(err, req));
       // redirect to homepage on any middleware error
       res = buildMiddlewareResponse(req, HOST);
     }

@@ -18,6 +18,10 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Running in Production Mode
+
+To get a CSRF token the app requires AWS credentials - the `IS_PRODUCTION` flag in `constants.ts` determines whether an endpoint that allows the middleware to fetch credentials from the filesystem is enabled. To run the app in production mode locally you'll need to edit the value of this flag to `false` to allow the app to fetch credentials from the local filesystem. 
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
