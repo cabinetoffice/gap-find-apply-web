@@ -72,8 +72,6 @@ export function buildMiddlewareResponse(req: NextRequest, redirectUri: string) {
       maxAge: 900,
     });
   }
-  const logResponse = getConditionalLogger(req, 'res');
-  logResponse(req, res);
   return res;
 }
 
