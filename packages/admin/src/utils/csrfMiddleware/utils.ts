@@ -16,11 +16,11 @@ export function utoa(input: Uint8Array): string {
   for (let i = 0; i < input.byteLength; i++) {
     output += String.fromCharCode(input[i]);
   }
-  return Buffer.from(output, 'binary').toString('base64');
+  return btoa(output);
 }
 
 export function atou(input: string): Uint8Array {
-  input = Buffer.from(input, 'base64').toString();
+  input = atob(input);
   const output = new Uint8Array(input.length);
   for (let i = 0; i < input.length; i++) output[i] = input.charCodeAt(i);
   return output;
