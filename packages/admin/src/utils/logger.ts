@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GetServerSidePropsContext, NextApiRequest } from 'next';
 import pino from 'pino';
-import { HEADERS } from './constants';
+import { HEADERS, IS_PRODUCTION } from './constants';
 
 const log = pino({
   browser: {
@@ -19,8 +19,6 @@ const log = pino({
     },
   },
 });
-
-const isProd = process.env.NODE_ENV === 'production';
 
 const CONSOLE_COLOURS = {
   BLACK: '\x1b[30m',
@@ -67,7 +65,7 @@ const getLoggerWithLevel =
   (level: LogLevel) => (logMessage: string, info?: object | Error) => {
     const date = new Date();
     const time = formatTime(date);
-    if (!isProd) {
+    if (!IS_PRODUCTION) {
       console.log(
         `[${time}] ` +
           withLogColour(`${level.toUpperCase()}: ${logMessage}`, level)

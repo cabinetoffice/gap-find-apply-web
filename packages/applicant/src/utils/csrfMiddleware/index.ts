@@ -1,12 +1,12 @@
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  createSecret,
   getTokenFromRequest,
   createToken,
   verifyToken,
   utoa,
   atou,
+  createSecret,
 } from './utils';
 
 const METHODS_TO_IGNORE = ['GET', 'HEAD', 'OPTIONS'];
