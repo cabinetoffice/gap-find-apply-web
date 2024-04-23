@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-// eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
 import { GetServerSidePropsContext, NextApiRequest } from 'next';
 import pino from 'pino';

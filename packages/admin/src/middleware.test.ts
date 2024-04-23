@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
-// eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
 import { NextURL } from 'next/dist/server/web/next-url';
 import { middleware } from './middleware.page';
