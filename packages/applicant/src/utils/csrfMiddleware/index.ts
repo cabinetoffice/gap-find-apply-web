@@ -6,14 +6,12 @@ import {
   verifyToken,
   utoa,
   atou,
-  createSecret,
 } from './utils';
+import { csrfSecret } from './secret';
 
 const METHODS_TO_IGNORE = ['GET', 'HEAD', 'OPTIONS'];
 const PATHS_TO_EXCLUDE = ['/_next/'];
 const SALT_BYTE_LENGTH = 8;
-const SECRET_BYTE_LENGTH = 18;
-const secret = createSecret(SECRET_BYTE_LENGTH);
 const CSRF_HEADER_NAME = 'x-csrf-token';
 
 export const csrfMiddleware = async (
@@ -23,6 +21,8 @@ export const csrfMiddleware = async (
   for (const path of PATHS_TO_EXCLUDE) {
     if (request.nextUrl.pathname.startsWith(path)) return null;
   }
+
+  const secret = await csrfSecret.get();
 
   // verify on POST (or PUT, PATCH etc)
   if (!METHODS_TO_IGNORE.includes(request.method)) {
