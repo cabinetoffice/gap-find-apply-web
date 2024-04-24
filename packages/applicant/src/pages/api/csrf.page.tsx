@@ -9,7 +9,6 @@ import { logger } from '../../utils/logger';
 
 const CSRF_SECRET_ARN = process.env.CSRF_SECRET_ARN;
 const hostDomain = 'localhost:3000';
-
 const client = new SecretsManagerClient();
 
 const fetchSecret = async () => {
