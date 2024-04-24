@@ -3,6 +3,9 @@ import { logger } from '../logger';
 import { IS_PRODUCTION } from '../constants';
 
 const HOST = process.env.HOST;
+// We hit localhost in prod so that we can get the csrf secret from our own server
+// without having to go via the public internet - the /api/csrf endpoint will respond
+// with a 404 to any request that doesn't come from our own server
 const hostDomain = IS_PRODUCTION
   ? 'http://localhost:3000/apply/applicant'
   : HOST;
@@ -10,8 +13,9 @@ const hostDomain = IS_PRODUCTION
 const fetchSecret = async () => {
   try {
     logger.info('Fetching CSRF secret');
-    const response = await fetch(`${hostDomain}/api/csrf`);
-    logger.http('response', response);
+    const response = await fetch(`${hostDomain}/api/csrf`, {
+      headers: { 'x-forwarded-for': '::1' },
+    });
     const data = await response.json();
     return atou(data.secret);
   } catch (e) {
