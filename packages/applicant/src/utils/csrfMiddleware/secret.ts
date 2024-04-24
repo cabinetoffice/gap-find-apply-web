@@ -4,7 +4,7 @@ import { IS_PRODUCTION } from '../constants';
 
 const HOST = process.env.HOST;
 const hostDomain = IS_PRODUCTION
-  ? 'https://localhost:3000/apply/applicant'
+  ? 'http://localhost:3000/apply/applicant'
   : HOST;
 
 const fetchSecret = async () => {
