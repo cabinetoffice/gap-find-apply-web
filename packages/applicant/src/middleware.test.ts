@@ -1,5 +1,4 @@
 import { middleware, buildMiddlewareResponse } from './middleware.page';
-// eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest } from 'next/server';
 import { verifyToken } from './services/JwtService';
 import { NextURL } from 'next/dist/server/web/next-url';

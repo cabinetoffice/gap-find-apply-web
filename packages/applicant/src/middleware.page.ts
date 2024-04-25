@@ -1,6 +1,5 @@
 import cookieParser from 'cookie-parser';
 import { v4 } from 'uuid';
-// eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse, URLPattern } from 'next/server';
 import { verifyToken } from './services/JwtService';
 import { csrfMiddleware } from './utils/csrfMiddleware';

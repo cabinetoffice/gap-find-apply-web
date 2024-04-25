@@ -23,6 +23,7 @@ module.exports = {
       ],
       rules: {
         '@typescript-eslint/no-non-null-assertion': 'off',
+        '@next/next/no-server-import-in-page': 'off',
       },
     },
   ],
