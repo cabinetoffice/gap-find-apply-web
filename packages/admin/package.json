@@ -7,7 +7,7 @@
     "predev": "yarn workspace gap-web-ui build",
     "build": "next build",
     "format": "prettier --write .",
-    "start": "NODE_OPTIONS='-r next-logger' next start",
+    "start": "NODE_OPTIONS='-r next-logger/presets/next-only' next start",
     "lint": "next lint",
     "integration": "yarn cypress run",
     "integration:gui": "yarn run cypress open",
