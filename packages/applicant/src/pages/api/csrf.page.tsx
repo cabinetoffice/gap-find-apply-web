@@ -9,7 +9,6 @@ import { logger } from '../../utils/logger';
 
 const CSRF_SECRET_ARN = process.env.CSRF_SECRET_ARN;
 const hostDomain = 'localhost:3000';
-
 const client = new SecretsManagerClient();
 
 const fetchSecret = async () => {
@@ -28,8 +27,17 @@ const fetchSecret = async () => {
 };
 
 const isLocalCall = (req: NextApiRequest) => {
-  if (IS_PRODUCTION) return req.headers.host === hostDomain;
-  else return true;
+  if (IS_PRODUCTION) {
+    const hostIsLocal = req.headers.host === hostDomain;
+    // any request from the internet must come through a load balancer which will
+    // add its own IP to this header - therefore the rightmost value of the header
+    // (the load balancer itself) will always be from a trusted source, and we can
+    // guarantee that we'll only get the value we're checking here with requests
+    // made locally from our own application
+    const forwardedForIsLocal = req.headers['x-forwarded-for'] === '::1';
+    return hostIsLocal && forwardedForIsLocal;
+    // if we're not in production, then we must be running locally
+  } else return true;
 };
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
