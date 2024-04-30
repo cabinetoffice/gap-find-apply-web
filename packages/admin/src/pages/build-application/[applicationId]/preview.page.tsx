@@ -109,7 +109,7 @@ export default function ApplicationPreview({
                 key={index}
                 {...section}
                 currentIndex={index}
-                questionId={section.questions.find(() => true)?.questionId}
+                questionId={section.questions[0]?.questionId}
                 applicationId={applicationId}
                 v2Scheme={v2Scheme}
               />
