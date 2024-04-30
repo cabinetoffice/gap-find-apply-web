@@ -13,15 +13,6 @@ import { ImportantBanner } from 'gap-web-ui';
 import { mapV2Sections } from '../../../utils/applicationSummaryHelper';
 import { logger } from '../../../utils/logger';
 
-type SectionInformationProps = {
-  sectionId: string;
-  sectionTitle: string;
-  applicationId: string;
-  questionId: string;
-  currentIndex: number;
-  v2Scheme: boolean;
-};
-
 export const getServerSideProps = async ({
   req,
   params,
@@ -39,7 +30,7 @@ export const getServerSideProps = async ({
       getSessionIdFromCookies(req)
     );
 
-    let v2SchemeMappedSections;
+    let v2SchemeMappedSections: ReturnType<typeof mapV2Sections>;
 
     if (version !== '1') {
       v2SchemeMappedSections = mapV2Sections(sections);
@@ -68,49 +59,6 @@ export const getServerSideProps = async ({
     );
   }
 };
-
-const getPreviewSectionUrl = (
-  applicationId: string,
-  sectionId: string,
-  questionId: string,
-  v2Scheme: boolean
-) =>
-  `/build-application/${applicationId}/${sectionId}/${questionId}/unpublished-preview${
-    v2Scheme ? '?v2=true' : ''
-  }`;
-
-const SectionInformation = ({
-  sectionId,
-  sectionTitle,
-  applicationId,
-  questionId,
-  currentIndex,
-  v2Scheme,
-}: SectionInformationProps) => (
-  <div
-    data-testid="section-information"
-    className="govuk-summary-list__row"
-    key={currentIndex}
-  >
-    <dt className="govuk-summary-list__key">
-      <CustomLink
-        dataTestId="section-link"
-        href={getPreviewSectionUrl(
-          applicationId,
-          sectionId,
-          questionId,
-          v2Scheme
-        )}
-        customStyle="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-      >
-        {sectionTitle}
-      </CustomLink>
-    </dt>
-    <dt className="govuk-!-text-align-right">
-      <strong className={`govuk-tag govuk-tag--grey`}>Not Started</strong>
-    </dt>
-  </div>
-);
 
 export default function ApplicationPreview({
   sections,
@@ -161,7 +109,7 @@ export default function ApplicationPreview({
                 key={index}
                 {...section}
                 currentIndex={index}
-                questionId={section.questions![0].questionId}
+                questionId={section.questions.find(() => true)?.questionId}
                 applicationId={applicationId}
                 v2Scheme={v2Scheme}
               />
@@ -193,3 +141,61 @@ export default function ApplicationPreview({
     </>
   );
 }
+
+type SectionInformationProps = {
+  sectionId: string;
+  sectionTitle: string;
+  applicationId: string;
+  questionId?: string;
+  currentIndex: number;
+  v2Scheme: boolean;
+};
+
+const getPreviewSectionUrl = (
+  applicationId: string,
+  sectionId: string,
+  questionId: string,
+  v2Scheme: boolean
+) =>
+  `/build-application/${applicationId}/${sectionId}/${questionId}/unpublished-preview${
+    v2Scheme ? '?v2=true' : ''
+  }`;
+
+const SectionInformation = ({
+  sectionId,
+  sectionTitle,
+  applicationId,
+  questionId,
+  currentIndex,
+  v2Scheme,
+}: SectionInformationProps) => (
+  <div
+    data-testid="section-information"
+    className="govuk-summary-list__row"
+    key={currentIndex}
+  >
+    <dt className="govuk-summary-list__key">
+      {questionId ? (
+        <CustomLink
+          dataTestId="section-link"
+          href={getPreviewSectionUrl(
+            applicationId,
+            sectionId,
+            questionId,
+            v2Scheme
+          )}
+          customStyle="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
+        >
+          {sectionTitle}
+        </CustomLink>
+      ) : (
+        <span className="govuk-body govuk-!-font-weight-regular">
+          {sectionTitle}
+        </span>
+      )}
+    </dt>
+    <dt className="govuk-!-text-align-right">
+      <strong className={`govuk-tag govuk-tag--grey`}>Not Started</strong>
+    </dt>
+  </div>
+);
