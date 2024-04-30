@@ -134,7 +134,9 @@ const getServerSideProps = async ({
             ...questionSummary,
             options: options,
             version: body.version,
-            validation: questionSummary.validation,
+            validation: {
+              mandatory: questionSummary.validation.mandatory,
+            },
           });
 
           return {
