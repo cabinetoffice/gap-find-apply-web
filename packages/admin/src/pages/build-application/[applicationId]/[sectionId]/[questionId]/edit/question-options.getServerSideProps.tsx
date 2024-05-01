@@ -90,7 +90,7 @@ const getServerSideProps = async ({
       hintText: questionData.hintText,
       optional: (!questionData.validation.mandatory).toString(),
       responseType: questionData.responseType,
-    };
+    } as QuestionWithOptionsSummary;
   } catch (err) {
     return questionErrorPageRedirect(applicationId);
   }
