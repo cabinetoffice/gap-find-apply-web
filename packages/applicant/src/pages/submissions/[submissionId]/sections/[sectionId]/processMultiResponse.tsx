@@ -21,7 +21,8 @@ export const ProcessMultiResponse: FC<ProcessMultiResponseProps> = ({
   const isDate = questionType === 'Date';
   const formatDate = (date: string[] | string) => {
     if (Array.isArray(date) && date.some(Boolean)) {
-      return new Date(`${date[1]}-${date[0]}-${date[2]}`).toLocaleDateString(
+      // Must use slashes or Safari will render `Invalid date`
+      return new Date(`${date[1]}/${date[0]}/${date[2]}`).toLocaleDateString(
         'en-UK',
         {
           day: 'numeric',

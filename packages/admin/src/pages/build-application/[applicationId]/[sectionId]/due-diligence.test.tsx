@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import axios from 'axios';
+import { axios } from '../../../../utils/axios';
 import DueDiligence, { getServerSideProps } from './due-diligence.page';
 import { merge } from 'lodash';
 import NextGetServerSidePropsResponse from '../../../../types/NextGetServerSidePropsResponse';
@@ -28,7 +28,7 @@ jest.mock('next/config', () => () => {
     },
   };
 });
-jest.mock('axios');
+jest.mock('../../../../utils/axios');
 jest.mock('../../../../utils/parseBody');
 jest.mock('../../../../services/SectionService');
 

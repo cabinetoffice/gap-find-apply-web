@@ -23,11 +23,14 @@ module.exports = {
       ],
       rules: {
         '@typescript-eslint/no-non-null-assertion': 'off',
+        '@next/next/no-server-import-in-page': 'off',
       },
     },
   ],
   plugins: ['eslint-plugin-prettier'],
   rules: {
+    // import the logger util and use this instead - console won't correctly format logs for cloudwatch
+    'no-console': 'error',
     'no-shadow-restricted-names': 'off',
     'no-prototype-builtins': 'off',
     'prettier/prettier': 'error',

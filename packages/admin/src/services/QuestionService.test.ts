@@ -1,4 +1,5 @@
-import axios from 'axios';
+import getConfig from 'next/config';
+import { axios } from '../utils/axios';
 import ResponseTypeEnum from '../enums/ResponseType';
 import {
   deleteQuestion,
@@ -6,7 +7,6 @@ import {
   patchQuestion,
   postQuestion,
 } from './QuestionService';
-import getConfig from 'next/config';
 
 jest.mock('next/config', () => () => {
   return {
@@ -20,7 +20,8 @@ jest.mock('next/config', () => () => {
   };
 });
 
-jest.mock('axios');
+jest.mock('../utils/axios');
+
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const { serverRuntimeConfig } = getConfig();

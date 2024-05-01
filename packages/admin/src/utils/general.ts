@@ -1,3 +1,5 @@
+import { logger } from './logger';
+
 const isJSEnabled = () => {
   return typeof window !== 'undefined';
 };
@@ -26,12 +28,16 @@ const getObjEntriesByKeySubstr = (substr: string, obj: object) => {
 
 type GetLoginUrlOptions = {
   redirectToApplicant?: boolean;
+  redirectTo404?: boolean;
 };
 
 const getLoginUrl = (options?: GetLoginUrlOptions) => {
   const oneLoginEnabled = process.env.ONE_LOGIN_ENABLED === 'true';
   if (options?.redirectToApplicant && oneLoginEnabled) {
-    return `${process.env.USER_SERVICE_URL}/v2/login?redirectUrl=${process.env.APPLICANT_DOMAIN}/dashboard`;
+    return `${process.env.V2_LOGIN_URL}?redirectUrl=${process.env.APPLICANT_DOMAIN}/dashboard`;
+  }
+  if (options?.redirectTo404 && oneLoginEnabled) {
+    return `${process.env.V2_LOGIN_URL}?redirectUrl=/404`;
   }
   return oneLoginEnabled
     ? (process.env.V2_LOGIN_URL as string)
@@ -49,7 +55,7 @@ const validateRedirectUrl = (redirectUrl: string) => {
   const isValid = redirectUrlHost.startsWith(process.env.FIND_A_GRANT_URL);
 
   if (!isValid) {
-    console.error('admin redirect was invalid: ', { redirectUrl });
+    logger.error('admin redirect was invalid', { redirectUrl });
     throw new Error('Invalid redirect URL');
   }
 };
@@ -65,7 +71,11 @@ const buildQueryStringWithoutUndefinedValues = (obj: { [x: string]: any }) => {
     : '';
 };
 
+const parseJwt = (token: string) =>
+  JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
 export {
+  parseJwt,
   validateRedirectUrl,
   isJSEnabled,
   downloadFile,

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import getConfig from 'next/config';
 import { GetSectionOverviewPageContentResponse } from '../types/GetSectionOverviewPageContentResponse';
 import { GrantAdvertSummaryPageResponse } from '../types/GetSummaryPageContentResponse';
@@ -11,6 +10,7 @@ import {
   PreviewPageContent,
 } from './AdvertPageService.d';
 import { decrypt } from '../utils/encryption';
+import { axios } from '../utils/axios';
 
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
@@ -162,7 +162,7 @@ const getAdvertStatusBySchemeId = async (
   return { status: res.status, data: res.data };
 };
 
-const getAdvertPreviewPageContent = async (
+const getAdvertDetailsPreviewContent = async (
   sessionId: string,
   grantAdvertId: string
 ): Promise<PreviewPageContent> => {
@@ -188,5 +188,5 @@ export {
   getAdvertStatusBySchemeId,
   scheduleAdvert,
   getGrantAdvertPublishInformationBySchemeId,
-  getAdvertPreviewPageContent,
+  getAdvertDetailsPreviewContent,
 };

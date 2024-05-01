@@ -1,11 +1,9 @@
-import { LastUpdatedBy } from './../pages/scheme/components/BuildAdvertContentHelper';
-import axios from 'axios';
 import getConfig from 'next/config';
 import AdvertStatusEnum from '../enums/AdvertStatus';
 import { InferServiceMethodResponse } from '../testUtils/unitTestHelpers';
 import {
   createNewAdvert,
-  getAdvertPreviewPageContent,
+  getAdvertDetailsPreviewContent,
   getAdvertSectionPageContent,
   getAdvertStatusBySchemeId,
   getSectionOverviewPageContent,
@@ -18,8 +16,9 @@ import {
 } from './AdvertPageService';
 import { PatchAdvertSectionPageResponseBody } from './AdvertPageService.d';
 import { decrypt } from '../utils/encryption';
+import { axios } from '../utils/axios';
 
-jest.mock('axios');
+jest.mock('../utils/axios');
 
 jest.mock('../utils/encryption');
 
@@ -353,7 +352,10 @@ describe('AdvertPageService', () => {
           },
         },
       });
-      const response = await getAdvertPreviewPageContent(sessionId, advertId);
+      const response = await getAdvertDetailsPreviewContent(
+        sessionId,
+        advertId
+      );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
         getAdvertPreviewPageContentUrl,

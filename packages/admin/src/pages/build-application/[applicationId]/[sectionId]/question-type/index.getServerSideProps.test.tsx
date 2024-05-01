@@ -4,19 +4,19 @@ import { GetServerSidePropsContext } from 'next';
 import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
 import { getServerSideProps } from './index.getServerSideProps';
 import NextGetServerSidePropsResponse from '../../../../../types/NextGetServerSidePropsResponse';
-import axios from 'axios';
 import {
   addFieldsToSession,
   getSummaryFromSession,
   getValueFromSession,
 } from '../../../../../services/SessionService';
+import { axios } from '../../../../../utils/axios';
 import { parseBody } from '../../../../../utils/parseBody';
 import { ValidationError } from 'gap-web-ui';
 import { getQuestion } from '../../../../../services/QuestionService';
 import ResponseTypeEnum from '../../../../../enums/ResponseType';
 import * as QuestionService from '../../../../../services/QuestionService';
 
-jest.mock('axios');
+jest.mock('../../../../../utils/axios');
 jest.mock('../../../../../utils/parseBody');
 jest.mock('../../../../../services/SessionService');
 jest.mock('../../../../../services/ApplicationService');

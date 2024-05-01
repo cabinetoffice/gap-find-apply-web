@@ -1,4 +1,3 @@
-// eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest, NextResponse } from 'next/server';
 import {
   createSecret,
@@ -29,7 +28,7 @@ export const csrfMiddleware = async (
     const token = await getTokenFromRequest(request, CSRF_HEADER_NAME);
     const tokenVerified = await verifyToken(atou(token), secret);
     if (!tokenVerified) {
-      throw new Error('CSRF token validation failed');
+      throw new Error(`CSRF token validation failed for token ${token}`);
     }
   }
 

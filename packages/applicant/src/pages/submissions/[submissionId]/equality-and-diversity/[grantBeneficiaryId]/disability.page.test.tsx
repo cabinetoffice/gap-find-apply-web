@@ -90,6 +90,7 @@ describe('Disability page', () => {
           } as Record<string, string>,
           req: {
             method: 'GET',
+            headers: {},
           },
           res: {
             getHeader: () => 'testCSRFToken',
@@ -227,7 +228,7 @@ describe('Disability page', () => {
       });
 
       const getPostContext = (overrides: any = {}) =>
-        getContext(merge({ req: { method: 'POST' } }, overrides));
+        getContext(merge({ req: { method: 'POST', headers: {} } }, overrides));
 
       it('Should call postGrantBeneficiaryResponse when the response contains "disability", CASE: No', async () => {
         mockParseBody.mockResolvedValue({

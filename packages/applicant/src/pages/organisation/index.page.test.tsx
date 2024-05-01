@@ -211,25 +211,25 @@ describe('Manage organisation page should render properly', () => {
   it('should render the option to change the details', () => {
     expect(
       screen.getByRole('link', {
-        name: 'Change /organisation/name',
+        name: 'Change organisation name',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.name);
 
     expect(
       screen.getByRole('link', {
-        name: 'Change /organisation/address',
+        name: 'Change organisation address',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.address);
 
     expect(
       screen.getByRole('link', {
-        name: 'Change /organisation/type',
+        name: 'Change organisation type',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.type);
 
     expect(
       screen.getByRole('link', {
-        name: 'Change /organisation/charity-commission-number',
+        name: 'Change organisation charity-commission-number',
       })
     ).toHaveProperty(
       'href',
@@ -238,7 +238,7 @@ describe('Manage organisation page should render properly', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'Change /organisation/companies-house-number',
+        name: 'Change organisation companies-house-number',
       })
     ).toHaveProperty(
       'href',
@@ -312,25 +312,25 @@ describe('Manage page should render without an address', () => {
   it('should render the number option to add details', () => {
     expect(
       screen.getByRole('link', {
-        name: 'Add /organisation/name',
+        name: 'Add organisation name',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.name);
 
     expect(
       screen.getByRole('link', {
-        name: 'Add /organisation/address',
+        name: 'Add organisation address',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.address);
 
     expect(
       screen.getByRole('link', {
-        name: 'Add /organisation/type',
+        name: 'Add organisation type',
       })
     ).toHaveProperty('href', 'http://localhost' + routes.organisation.type);
 
     expect(
       screen.getByRole('link', {
-        name: 'Add /organisation/charity-commission-number',
+        name: 'Add organisation charity-commission-number',
       })
     ).toHaveProperty(
       'href',
@@ -339,7 +339,7 @@ describe('Manage page should render without an address', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'Add /organisation/companies-house-number',
+        name: 'Add organisation companies-house-number',
       })
     ).toHaveProperty(
       'href',

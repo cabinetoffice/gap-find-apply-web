@@ -12,6 +12,7 @@ import {
 } from '../../../../../../utils/serviceErrorHelpers';
 import CustomError from '../../../../../../types/CustomError';
 import { AxiosError } from 'axios';
+import { logger } from '../../../../../../utils/logger';
 
 export { getServerSideProps };
 
@@ -113,7 +114,10 @@ const getServerSideProps = async ({
       },
     };
   } catch (err: unknown) {
-    console.error('Error rendering question preview -> ', err);
+    logger.error(
+      'Error rendering question preview',
+      logger.utils.addErrorInfo(err, req)
+    );
     const error = err as AxiosError;
     const errorMessageObject = error.response?.data as CustomError;
     return generateErrorPageRedirectV2(errorMessageObject.code, backHref);

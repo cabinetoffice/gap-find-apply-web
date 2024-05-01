@@ -108,3 +108,9 @@ export const ELASTIC_GRANT_PAGE_FIELDS = [
   'fields.label',
   'fields.grantApplicantType',
 ];
+
+export const HEADERS = {
+  CORRELATION_ID: 'x-correlation-id',
+} as const;
+
+export const IS_PRODUCTION = process.env.NODE_ENV === 'production';

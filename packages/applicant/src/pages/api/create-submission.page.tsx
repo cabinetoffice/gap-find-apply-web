@@ -11,6 +11,7 @@ import { GrantApplicantOrganisationProfile } from '../../types/models/GrantAppli
 import { APIGlobalHandler } from '../../utils/apiErrorHandler';
 import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
+import { logger } from '../../utils/logger';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const grantMandatoryQuestionService =
@@ -44,12 +45,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       jwt
     );
 
-    if (
-      !grantApplication.id ||
-      grantApplication.applicationStatus !== 'PUBLISHED'
-    ) {
-      console.log(
-        'Grant application does not exist or is not published. Redirecting to external application.'
+    const { hasInternalApplication, hasAdvertPublished } =
+      await grantSchemeService.hasSchemeInternalApplication(schemeId, jwt);
+    if (hasAdvertPublished && !hasInternalApplication) {
+      logger.info(
+        'The grant advert has the apply to url pointing to an external url. Redirecting to external application.'
       );
       await grantMandatoryQuestionService.updateMandatoryQuestion(
         jwt,
@@ -65,7 +65,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         )}?url=${grantAdverts[0].externalSubmissionUrl}`
       );
     }
-    console.log('Grant has an internal application. Creating submission');
+
+    logger.info('Grant has an internal application. Creating submission');
 
     const { submissionId } = await createSubmission(grantApplication.id, jwt);
 
@@ -79,9 +80,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
     );
 
-    console.info(
-      'Submission has been added to mandatory question: ',
-      mandatoryQuestionId
+    logger.info(
+      `Submission has been added to mandatory question: ${mandatoryQuestionId}`
     );
 
     return res.redirect(
@@ -115,7 +115,7 @@ function handleError(
   mandatoryQuestionId: string,
   res: NextApiResponse
 ) {
-  console.error('error: ', e);
+  logger.error('error: ', e);
   const serviceErrorProps = {
     errorInformation: 'There was an error in the service',
     linkAttributes: {
@@ -127,5 +127,7 @@ function handleError(
   return res.redirect(routes.serviceError(serviceErrorProps));
 }
 
-export default (req: NextApiRequest, res: NextApiResponse) =>
+const apiHandler = (req: NextApiRequest, res: NextApiResponse) =>
   APIGlobalHandler(req, res, handler);
+
+export default apiHandler;

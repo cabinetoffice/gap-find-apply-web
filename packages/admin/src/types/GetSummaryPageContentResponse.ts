@@ -26,6 +26,8 @@ export interface GrantAdvertSummaryPageResponse {
   advertName: string;
   sections: GrantAdvertSummaryPageSection[];
   status: grantAdvertStatus;
+  openingDate: Date;
+  closingDate: Date;
 }
 
 export enum GrantAdvertQuestionResponseType {

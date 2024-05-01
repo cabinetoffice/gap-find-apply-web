@@ -1,10 +1,24 @@
 import { parseBody } from './parseBody';
 import { ServiceError } from '../pages/service-error/index.page';
 import callServiceMethod from './callServiceMethod';
+import { GetServerSidePropsContext } from 'next';
 
 jest.mock('./parseBody');
 
 const mockParseBody = jest.mocked(parseBody);
+
+const getMockContext = (overrides: Partial<GetServerSidePropsContext> = {}) =>
+  ({
+    req: {
+      method: 'POST',
+      headers: {},
+      ...overrides.req,
+    },
+    res: {
+      ...overrides.res,
+    },
+    ...overrides,
+  } as GetServerSidePropsContext);
 
 describe('callServiceMethod', () => {
   beforeEach(() => {
@@ -15,8 +29,7 @@ describe('callServiceMethod', () => {
     mockParseBody.mockResolvedValue({ testBody: true });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
     const redirectTo = 'testDestination';
-    const req = { testReq: true, method: 'POST' } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     const result = await callServiceMethod(
       req,
@@ -38,8 +51,7 @@ describe('callServiceMethod', () => {
     mockParseBody.mockResolvedValue({ testBody: true });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = { testReq: true, method: 'POST' } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     const result = await callServiceMethod(
       req,
@@ -61,8 +73,7 @@ describe('callServiceMethod', () => {
     mockParseBody.mockResolvedValue({ testBody: true });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = { testReq: true, method: 'POST' } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     await callServiceMethod(
       req,
@@ -80,8 +91,7 @@ describe('callServiceMethod', () => {
     mockParseBody.mockResolvedValue({ testBody: true });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = { testReq: true, method: 'POST' } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     await callServiceMethod(
       req,
@@ -96,15 +106,10 @@ describe('callServiceMethod', () => {
   });
 
   it('handles the special case for mandatoryQuestion funding location__stringToArray', async () => {
-    mockParseBody.mockResolvedValue({ fundingLocation: 'text' });
+    mockParseBody.mockResolvedValue({ fundingLocation: ['text'] });
     const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = {
-      fundingLocation: 'text',
-      method: 'POST',
-      url: '/mandatory-questions/organisation-funding-location',
-    } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     await callServiceMethod(
       req,
@@ -124,12 +129,7 @@ describe('callServiceMethod', () => {
     });
     const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = {
-      fundingLocation: 'text',
-      method: 'POST',
-      url: '/mandatory-questions/organisation-funding-location',
-    } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     await callServiceMethod(
       req,
@@ -151,12 +151,7 @@ describe('callServiceMethod', () => {
     });
     const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = {
-      fundingLocation: 'text',
-      method: 'POST',
-      url: '/mandatory-question/organisation-funding-locatio',
-    } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     await callServiceMethod(
       req,
@@ -173,14 +168,10 @@ describe('callServiceMethod', () => {
   });
 
   it('handles the special case for mandatoryQuestion orgType__addEmptyString', async () => {
-    mockParseBody.mockResolvedValue({});
+    mockParseBody.mockResolvedValue({ orgType: '' });
     const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = {
-      method: 'POST',
-      url: '/mandatory-questions/organisation-type',
-    } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     await callServiceMethod(
       req,
@@ -202,11 +193,7 @@ describe('callServiceMethod', () => {
     });
     const serviceFunc = jest.fn(() => Promise.resolve({ whatever: true }));
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = {
-      method: 'POST',
-      url: '/mandatory-questions/organisation-type',
-    } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     await callServiceMethod(
       req,
@@ -226,8 +213,7 @@ describe('callServiceMethod', () => {
     mockParseBody.mockResolvedValue({ testBody: true });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = { testReq: true, method: 'POST' } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     await callServiceMethod(
       req,
@@ -238,10 +224,7 @@ describe('callServiceMethod', () => {
     );
 
     expect(parseBody).toHaveBeenCalledTimes(1);
-    expect(parseBody).toHaveBeenCalledWith(
-      { testReq: true, method: 'POST' },
-      {}
-    );
+    expect(parseBody).toHaveBeenCalledWith(req, {});
   });
 
   it('removes carriage returns from strings in body', async () => {
@@ -250,8 +233,7 @@ describe('callServiceMethod', () => {
     });
     const serviceFunc = jest.fn(() => Promise.resolve({ testResponse: true }));
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = { testReq: true, method: 'POST' } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     await callServiceMethod(
       req,
@@ -275,8 +257,7 @@ describe('callServiceMethod', () => {
       throw new Error('test error');
     });
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = { testReq: true, method: 'POST' } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     const result = await callServiceMethod(req, res, serviceFunc, redirectTo, {
       errorInformation: 'something happened',
@@ -305,8 +286,7 @@ describe('callServiceMethod', () => {
       throw err;
     });
     const redirectTo = jest.fn(() => 'testDestination');
-    const req = { testReq: true, method: 'POST' } as any;
-    const res = {} as any;
+    const { req, res } = getMockContext();
 
     const result = await callServiceMethod(
       req,

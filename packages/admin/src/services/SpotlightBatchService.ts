@@ -1,6 +1,6 @@
-import axios from 'axios';
 import getConfig from 'next/config';
 import { SpotlightError } from '../types/SpotlightError';
+import { axios } from '../utils/axios';
 import { axiosSessionConfig } from '../utils/session';
 
 const { serverRuntimeConfig } = getConfig();
@@ -11,10 +11,6 @@ export const getSpotlightErrors = async (
   schemeId: string,
   sessionId: string
 ) => {
-  console.info(
-    `Making request for url: ${BASE_SPOTLIGHT_BATCH_URL}/scheme/${schemeId}/spotlight/get-errors`
-  );
-
   const response = await axios.get(
     `${BASE_SPOTLIGHT_BATCH_URL}/scheme/${schemeId}/spotlight-errors`,
     axiosSessionConfig(sessionId)

@@ -105,6 +105,7 @@ describe('Sexual orientation page', () => {
           } as Record<string, string>,
           req: {
             method: 'GET',
+            headers: {},
           },
           res: {
             getHeader: () => 'testCSRFToken',
@@ -273,7 +274,7 @@ describe('Sexual orientation page', () => {
       });
 
       const getPostContext = (overrides: any = {}) =>
-        getContext(merge({ req: { method: 'POST' } }, overrides));
+        getContext(merge({ req: { method: 'POST' }, headers: {} }, overrides));
 
       it('Should call postGrantBeneficiaryResponse when the response contains "supportedSexualOrientation", CASE: SOME', async () => {
         await getServerSideProps(getPostContext());

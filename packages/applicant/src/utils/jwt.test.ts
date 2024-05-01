@@ -1,7 +1,6 @@
 import { IncomingMessage } from 'http';
 import { NextApiRequest } from 'next';
 import { axiosConfig, getJwtFromCookies } from './jwt';
-// eslint-disable-next-line @next/next/no-server-import-in-page
 import cookieParser from 'cookie-parser';
 import { NextApiRequestCookies } from 'next/dist/server/api-utils';
 

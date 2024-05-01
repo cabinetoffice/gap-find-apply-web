@@ -1,8 +1,8 @@
 import AdvertStatusEnum from '../../../../../../enums/AdvertStatus';
 import { getAdvertStatusBySchemeIdResponse } from '../../../../../../services/AdvertPageService.d';
 import {
-  GrantAdvertSummaryPageResponse,
   GrantAdvertQuestionResponseType,
+  GrantAdvertSummaryPageResponse,
 } from '../../../../../../types/GetSummaryPageContentResponse';
 
 export const sessionCookie = 'MTJlZDE5YjktNTAwZS00MWE2LTlmNjMtMTk0MjY1ODJlZmIw';
@@ -11,6 +11,8 @@ export const summaryPageResponse: GrantAdvertSummaryPageResponse = {
   id: '467500a8-2d65-492d-a5bd-d1e3acaa04d0',
   advertName: advertName,
   status: AdvertStatusEnum.DRAFT,
+  openingDate: new Date('2022-11-05T10:00:00+00:00'),
+  closingDate: new Date('2022-12-10T18:00:00+00:00'),
   sections: [
     {
       id: 'grantDetails',

@@ -1,12 +1,13 @@
-import axios from 'axios';
 import getConfig from 'next/config';
 import {
   GetSpotlightSubmissionDataBySchemeIdDto,
   downloadSpotlightSubmissionsDueDiligenceData,
   getSpotlightSubmissionSentData,
 } from './SpotlightSubmissionService';
+import { axios } from '../utils/axios';
 
-jest.mock('axios');
+jest.mock('../utils/axios');
+
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const { serverRuntimeConfig } = getConfig();
 const BACKEND_HOST = serverRuntimeConfig.backendHost;
