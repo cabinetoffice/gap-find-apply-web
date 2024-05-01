@@ -12,16 +12,18 @@ import { parseBody } from '../../../../../../utils/parseBody';
 import { Optional, ValidationError, getContext } from 'gap-web-ui';
 import ResponseTypeEnum from '../../../../../../enums/ResponseType';
 import InferGetServerSideProps from '../../../../../../types/InferGetServerSideProps';
+import { getSummaryFromSession } from '../../../../../../services/SessionService';
 
 jest.mock('../../../../../../services/ApplicationService');
 jest.mock('../../../../../../services/QuestionService');
-jest.mock('../../../../../../services/SessionService');
 jest.mock('../../../../../../utils/parseBody');
+jest.mock('../../../../../../services/SessionService');
 
 const mockParseBody = jest.mocked(parseBody);
 const mockGetApplicationFormSummary = jest.mocked(getApplicationFormSummary);
 const mockGetQuestion = jest.mocked(getQuestion);
 const mockPatchQuestion = jest.mocked(patchQuestion);
+const mockGetSummaryFromSession = jest.mocked(getSummaryFromSession);
 
 type GetServerSideProps = InferGetServerSideProps<typeof getServerSideProps>;
 
@@ -57,7 +59,7 @@ describe('Question Options', () => {
     const mockQuestionSummary: QuestionWithOptionsSummary = {
       fieldTitle: 'Test Section Field Title',
       hintText: 'Test hint text',
-      optional: 'false',
+      validation: { mandatory: true },
       responseType: ResponseTypeEnum.Dropdown,
     };
 
@@ -293,6 +295,9 @@ describe('Question Options', () => {
 
       describe('Save Question', () => {
         it('Should redirect to dashboard after successfully saving the options', async () => {
+          mockGetSummaryFromSession.mockResolvedValue({
+            validation: { mandatory: true },
+          });
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',
@@ -324,6 +329,9 @@ describe('Question Options', () => {
         });
 
         it('Should redirect to edit question page after successfully saving the options', async () => {
+          mockGetSummaryFromSession.mockResolvedValue({
+            validation: { mandatory: true },
+          });
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',
@@ -356,6 +364,9 @@ describe('Question Options', () => {
         });
 
         it('Should redirect to edit question page with dashboard param after successfully saving the options', async () => {
+          mockGetSummaryFromSession.mockResolvedValue({
+            validation: { mandatory: true },
+          });
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',
@@ -388,6 +399,9 @@ describe('Question Options', () => {
         });
 
         it('Should redirect to service error page if saving the options throws an error', async () => {
+          mockGetSummaryFromSession.mockResolvedValue({
+            validation: { mandatory: true },
+          });
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',
@@ -403,6 +417,9 @@ describe('Question Options', () => {
         });
 
         it('Should return field errors if they are returned from the backend.', async () => {
+          mockGetSummaryFromSession.mockResolvedValue({
+            validation: { mandatory: true },
+          });
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',
@@ -422,6 +439,9 @@ describe('Question Options', () => {
         });
 
         it('Should parse class level errors into field level errors', async () => {
+          mockGetSummaryFromSession.mockResolvedValue({
+            validation: { mandatory: true },
+          });
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',
