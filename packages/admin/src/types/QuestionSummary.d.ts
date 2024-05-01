@@ -10,7 +10,7 @@ type QuestionWithOptionsSummary = {
   fieldTitle: string;
   hintText: string;
   validation: { mandatory: boolean };
-  optional?: boolean;
+  optional?: string;
   responseType: ResponseTypeEnum;
   options?: string[];
 };
