@@ -294,10 +294,12 @@ describe('Question Options', () => {
       });
 
       describe('Save Question', () => {
-        it('Should redirect to dashboard after successfully saving the options', async () => {
+        beforeEach(() =>
           mockGetSummaryFromSession.mockResolvedValue({
             validation: { mandatory: true },
-          });
+          })
+        );
+        it('Should redirect to dashboard after successfully saving the options', async () => {
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',
@@ -332,9 +334,6 @@ describe('Question Options', () => {
         });
 
         it('Should redirect to edit question page after successfully saving the options', async () => {
-          mockGetSummaryFromSession.mockResolvedValue({
-            validation: { mandatory: true },
-          });
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',
@@ -367,9 +366,6 @@ describe('Question Options', () => {
         });
 
         it('Should redirect to edit question page with dashboard param after successfully saving the options', async () => {
-          mockGetSummaryFromSession.mockResolvedValue({
-            validation: { mandatory: true },
-          });
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',
@@ -402,9 +398,6 @@ describe('Question Options', () => {
         });
 
         it('Should redirect to service error page if saving the options throws an error', async () => {
-          mockGetSummaryFromSession.mockResolvedValue({
-            validation: { mandatory: true },
-          });
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',
@@ -420,9 +413,6 @@ describe('Question Options', () => {
         });
 
         it('Should return field errors if they are returned from the backend.', async () => {
-          mockGetSummaryFromSession.mockResolvedValue({
-            validation: { mandatory: true },
-          });
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',
@@ -442,9 +432,6 @@ describe('Question Options', () => {
         });
 
         it('Should parse class level errors into field level errors', async () => {
-          mockGetSummaryFromSession.mockResolvedValue({
-            validation: { mandatory: true },
-          });
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
             'save-and-continue': '',

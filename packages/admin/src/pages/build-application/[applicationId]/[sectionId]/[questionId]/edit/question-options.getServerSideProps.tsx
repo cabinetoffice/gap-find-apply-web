@@ -89,7 +89,7 @@ const getServerSideProps = async ({
     questionSummary = {
       fieldTitle: questionData.fieldTitle,
       hintText: questionData.hintText,
-      optional: (!questionData.validation.mandatory).toString(),
+      validation: { mandatory: questionData.validation.mandatory === 'true' },
       responseType: questionData.responseType,
     };
   } catch (err) {
