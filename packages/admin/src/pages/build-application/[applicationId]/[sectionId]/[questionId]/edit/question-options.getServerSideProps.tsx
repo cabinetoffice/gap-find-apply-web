@@ -18,7 +18,6 @@ import {
 } from './editQuestionServiceError';
 import callServiceMethod from '../../../../../../utils/callServiceMethod';
 import getConfig from 'next/config';
-import { getSummaryFromSession } from '../../../../../../services/SessionService';
 import { buildQueryStringWithoutUndefinedValues } from '../../../../../../utils/general';
 
 const getServerSideProps = async ({
@@ -89,7 +88,7 @@ const getServerSideProps = async ({
     questionSummary = {
       fieldTitle: questionData.fieldTitle,
       hintText: questionData.hintText,
-      validation: { mandatory: questionData.validation.mandatory === 'true' },
+      optional: (!questionData.validation.mandatory).toString(),
       responseType: questionData.responseType,
     };
   } catch (err) {
@@ -137,7 +136,7 @@ const getServerSideProps = async ({
             options: options,
             version: body.version,
             validation: {
-              mandatory: questionData.validation.mandatory,
+              mandatory: Boolean(questionData.validation.mandatory),
             },
           });
 

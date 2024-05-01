@@ -294,11 +294,6 @@ describe('Question Options', () => {
       });
 
       describe('Save Question', () => {
-        beforeEach(() =>
-          mockGetSummaryFromSession.mockResolvedValue({
-            validation: { mandatory: true },
-          })
-        );
         it('Should redirect to dashboard after successfully saving the options', async () => {
           mockParseBody.mockResolvedValue({
             options: ['option one', 'option two'],
