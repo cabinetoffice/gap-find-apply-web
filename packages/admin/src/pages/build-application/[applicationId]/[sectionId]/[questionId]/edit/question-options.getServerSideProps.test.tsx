@@ -59,7 +59,7 @@ describe('Question Options', () => {
     const mockQuestionSummary: QuestionWithOptionsSummary = {
       fieldTitle: 'Test Section Field Title',
       hintText: 'Test hint text',
-      validation: { mandatory: true },
+      optional: 'false',
       responseType: ResponseTypeEnum.Dropdown,
     };
 
@@ -317,7 +317,10 @@ describe('Question Options', () => {
             'testApplicationId',
             'testSectionId',
             'testQuestionId',
-            expect.objectContaining({ options: ['option one', 'option two'] })
+            expect.objectContaining({
+              options: ['option one', 'option two'],
+              validation: { mandatory: true },
+            })
           );
 
           expect(result).toStrictEqual({
