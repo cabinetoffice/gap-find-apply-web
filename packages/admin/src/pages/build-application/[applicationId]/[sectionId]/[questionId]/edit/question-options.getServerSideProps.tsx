@@ -125,17 +125,19 @@ const getServerSideProps = async ({
           };
 
         case 'save-and-continue' in body:
-          questionSummary = ((await getSummaryFromSession(
-            'updatedQuestion',
-            sessionId
-          )) || {}) as unknown as QuestionWithOptionsSummary;
+          questionData = await getQuestion(
+            sessionId,
+            applicationId,
+            sectionId,
+            questionId
+          );
 
           await patchQuestion(sessionId, applicationId, sectionId, questionId, {
             ...questionSummary,
             options: options,
             version: body.version,
             validation: {
-              mandatory: questionSummary.validation.mandatory,
+              mandatory: questionData.validation.mandatory,
             },
           });
 
