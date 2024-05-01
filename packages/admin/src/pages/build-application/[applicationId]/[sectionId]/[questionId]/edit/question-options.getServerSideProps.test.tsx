@@ -12,16 +12,18 @@ import { parseBody } from '../../../../../../utils/parseBody';
 import { Optional, ValidationError, getContext } from 'gap-web-ui';
 import ResponseTypeEnum from '../../../../../../enums/ResponseType';
 import InferGetServerSideProps from '../../../../../../types/InferGetServerSideProps';
+import { getSummaryFromSession } from '../../../../../../services/SessionService';
 
 jest.mock('../../../../../../services/ApplicationService');
 jest.mock('../../../../../../services/QuestionService');
-jest.mock('../../../../../../services/SessionService');
 jest.mock('../../../../../../utils/parseBody');
+jest.mock('../../../../../../services/SessionService');
 
 const mockParseBody = jest.mocked(parseBody);
 const mockGetApplicationFormSummary = jest.mocked(getApplicationFormSummary);
 const mockGetQuestion = jest.mocked(getQuestion);
 const mockPatchQuestion = jest.mocked(patchQuestion);
+const mockGetSummaryFromSession = jest.mocked(getSummaryFromSession);
 
 type GetServerSideProps = InferGetServerSideProps<typeof getServerSideProps>;
 
@@ -312,7 +314,10 @@ describe('Question Options', () => {
             'testApplicationId',
             'testSectionId',
             'testQuestionId',
-            expect.objectContaining({ options: ['option one', 'option two'] })
+            expect.objectContaining({
+              options: ['option one', 'option two'],
+              validation: { mandatory: true },
+            })
           );
 
           expect(result).toStrictEqual({

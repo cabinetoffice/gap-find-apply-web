@@ -18,7 +18,6 @@ import {
 } from './editQuestionServiceError';
 import callServiceMethod from '../../../../../../utils/callServiceMethod';
 import getConfig from 'next/config';
-import { getSummaryFromSession } from '../../../../../../services/SessionService';
 import { buildQueryStringWithoutUndefinedValues } from '../../../../../../utils/general';
 
 const getServerSideProps = async ({
@@ -91,7 +90,7 @@ const getServerSideProps = async ({
       hintText: questionData.hintText,
       optional: (!questionData.validation.mandatory).toString(),
       responseType: questionData.responseType,
-    };
+    } as QuestionWithOptionsSummary;
   } catch (err) {
     return questionErrorPageRedirect(applicationId);
   }
@@ -125,11 +124,6 @@ const getServerSideProps = async ({
           };
 
         case 'save-and-continue' in body:
-          questionSummary = ((await getSummaryFromSession(
-            'updatedQuestion',
-            sessionId
-          )) || {}) as unknown as QuestionWithOptionsSummary;
-
           questionData = await getQuestion(
             sessionId,
             applicationId,
@@ -142,7 +136,7 @@ const getServerSideProps = async ({
             options: options,
             version: body.version,
             validation: {
-              mandatory: questionData.validation.mandatory === 'true',
+              mandatory: Boolean(questionData.validation.mandatory),
             },
           });
 
