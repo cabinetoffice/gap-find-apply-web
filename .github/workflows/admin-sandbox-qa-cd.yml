@@ -154,7 +154,7 @@ jobs:
         run: docker save --output ${{ steps.docker-image-name.outputs.name }}.tar $ECR_REGISTRY/gap-apply-admin-web:${{ env.BUILD_VERSION }}
 
       - name: Upload Docker image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.docker-image-name.outputs.name }}
           path: ${{ steps.docker-image-name.outputs.name }}.tar
