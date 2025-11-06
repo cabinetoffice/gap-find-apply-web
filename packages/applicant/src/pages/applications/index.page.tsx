@@ -17,6 +17,23 @@ export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
 }) => {
   const jwt = getJwtFromCookies(req);
   let applicationData = await getApplicationsListById(jwt);
+
+  // Transform backend response to match frontend interface
+  // Backend returns: grantSchemeId (Integer), grantApplicationId (Integer),
+  // grantSubmissionId (UUID), submissionStatus (enum), submittedDate (ZonedDateTime)
+  applicationData = applicationData.map((application: any) => {
+    return {
+      grantSchemeId: String(application.grantSchemeId ?? ''),
+      grantApplicationId: String(application.grantApplicationId ?? ''),
+      grantSubmissionId: String(application.grantSubmissionId ?? ''),
+      applicationName: application.applicationName ?? '',
+      submissionName: application.submissionName ?? null,
+      submissionStatus: String(application.submissionStatus ?? 'IN_PROGRESS'),
+      submittedDate: application.submittedDate ?? '',
+      sections: application.sections ?? [],
+    };
+  });
+
   applicationData = await Promise.all(
     applicationData.map(async (application) => {
       return {
@@ -38,6 +55,18 @@ export const getServerSideProps: GetServerSideProps<ApplicationsPage> = async ({
 const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
   const { publicRuntimeConfig } = getConfig();
   const hasApplicationData = applicationData.length > 0;
+
+  // Group submissions by grant name (applicationName)
+  const groupedByGrant = applicationData.reduce((acc, application) => {
+    const applicationName = application.applicationName || 'Untitled Grant';
+    if (!acc[applicationName]) {
+      acc[applicationName] = [];
+    }
+    acc[applicationName].push(application);
+    return acc;
+  }, {} as Record<string, typeof applicationData>);
+
+  const grantGroups = Object.entries(groupedByGrant);
 
   return (
     <>
@@ -61,43 +90,53 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
             </p>
 
             {hasApplicationData ? (
-              <table className="govuk-table">
-                <thead className="govuk-table__head">
-                  <tr className="govuk-table__row">
-                    <th
-                      scope="col"
-                      className="govuk-table__header govuk-!-width-one-quarter"
-                      data-cy="cy-grant-table-header-name"
-                    >
-                      Grant
-                    </th>
-                    <th
-                      scope="col"
-                      className="govuk-table__header govuk-!-width-one-quarter"
-                      data-cy="cy-grant-table-header-status"
-                    >
-                      Status
-                    </th>
-                    <th
-                      scope="col"
-                      className="govuk-table__header govuk-!-width-one-quarter"
-                      data-cy="cy-grant-table-header-submitted-date"
-                    >
-                      Submitted
-                    </th>
-                    <th
-                      scope="col"
-                      className="govuk-table__header govuk-!-width-one-quarter"
-                      data-cy="cy-grant-table-header-actions"
-                    >
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="govuk-table__body">
-                  {applicationData.map(ApplicationRow)}
-                </tbody>
-              </table>
+              grantGroups.map(([applicationName, submissions]) => (
+                <div key={applicationName} className="govuk-!-margin-bottom-6">
+                  <h2 className="govuk-heading-m">{applicationName}</h2>
+                  <table className="govuk-table">
+                    <thead className="govuk-table__head">
+                      <tr className="govuk-table__row">
+                        <th
+                          scope="col"
+                          className="govuk-table__header govuk-!-width-one-quarter"
+                          data-cy="cy-grant-table-header-submitted-for"
+                        >
+                          Submitted for
+                        </th>
+                        <th
+                          scope="col"
+                          className="govuk-table__header govuk-!-width-one-quarter"
+                          data-cy="cy-grant-table-header-status"
+                        >
+                          Status
+                        </th>
+                        <th
+                          scope="col"
+                          className="govuk-table__header govuk-!-width-one-quarter"
+                          data-cy="cy-grant-table-header-submitted-date"
+                        >
+                          Submitted
+                        </th>
+                        <th
+                          scope="col"
+                          className="govuk-table__header govuk-!-width-one-quarter"
+                          data-cy="cy-grant-table-header-actions"
+                        >
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="govuk-table__body">
+                      {submissions.map((application) => (
+                        <ApplicationRow
+                          key={application.grantSubmissionId}
+                          application={application}
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))
             ) : (
               <>
                 <hr
@@ -127,16 +166,22 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
   );
 };
 
-const ApplicationRow = (application) => {
-  const applicationName = application.applicationName;
+const ApplicationRow = (applicationProps: ApplicationRowProps) => {
+  const application = applicationProps.application;
+  const displayName =
+    application.submissionName ||
+    application.applicationName ||
+    'Untitled Application';
   const submissionId = application.grantSubmissionId;
   const isRemovedAndNotSubmitted =
     application.grantApplicationStatus === 'REMOVED' &&
     application.submissionStatus !== 'SUBMITTED';
   const submissionStatus = isRemovedAndNotSubmitted
     ? 'GRANT_CLOSED'
-    : application.submissionStatus;
-  const applicationStatusTag = APPLICATION_STATUS_TAGS[submissionStatus];
+    : application.submissionStatus || 'IN_PROGRESS';
+  const applicationStatusTag =
+    APPLICATION_STATUS_TAGS[submissionStatus] ||
+    APPLICATION_STATUS_TAGS.IN_PROGRESS;
   const isInProgress = submissionStatus === 'IN_PROGRESS';
   const applicationLinkText = isInProgress ? 'Edit' : 'View';
   const applicationLink = isInProgress
@@ -147,9 +192,9 @@ const ApplicationRow = (application) => {
       <th scope="row" className="govuk-table__cell">
         <p
           className="govuk-!-margin-0 govuk-!-font-weight-bold"
-          data-cy={`cy-application-link-${applicationName}`}
+          data-cy={`cy-application-link-${displayName}`}
         >
-          {applicationName}
+          {displayName}
         </p>
       </th>
       <td
@@ -159,7 +204,7 @@ const ApplicationRow = (application) => {
       >
         <strong
           className={`govuk-tag ${applicationStatusTag.colourClass}`}
-          data-cy={`cy-status-tag-${applicationName}-${applicationStatusTag.displayName}`}
+          data-cy={`cy-status-tag-${displayName}-${applicationStatusTag.displayName}`}
           id={`status-tag-${submissionId}`}
         >
           {applicationStatusTag.displayName}
@@ -172,7 +217,7 @@ const ApplicationRow = (application) => {
       >
         <p
           className="govuk-!-margin-0 govuk-!-font-weight-normal"
-          data-cy={`cy-application-submitted-date-${applicationName}`}
+          data-cy={`cy-application-submitted-date-${displayName}`}
           id={`submitted-date-${submissionId}`}
         >
           {application.submittedDate
@@ -188,7 +233,7 @@ const ApplicationRow = (application) => {
         <a
           href={applicationLink}
           className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
-          data-cy={`cy-application-link-${applicationName}`}
+          data-cy={`cy-application-link-${displayName}`}
           id={`application-link-${submissionId}`}
         >
           {applicationLinkText}
@@ -209,10 +254,17 @@ export interface ApplicationsList {
   grantSubmissionId: string;
   grantSchemeId: string;
   applicationName: string;
+  submissionName?: string | null;
   grantApplicationId: string;
   submissionStatus: string;
   submittedDate: string;
   sections: ApplicationSections[];
 }
+
+type ApplicationRowProps = {
+  application: ApplicationsList & {
+    grantApplicationStatus?: string;
+  };
+};
 
 export default ExistingApplications;

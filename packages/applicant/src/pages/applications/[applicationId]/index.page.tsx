@@ -2,7 +2,6 @@ import { GetServerSideProps } from 'next';
 import { getApplicationById } from '../../../services/ApplicationService';
 import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
 import { GrantSchemeService } from '../../../services/GrantSchemeService';
-import { createSubmission } from '../../../services/SubmissionService';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { GrantApplication } from '../../../types/models/GrantApplication';
@@ -30,24 +29,10 @@ export const getServerSideProps: GetServerSideProps = async ({
       jwt
     );
     if (scheme.version === 1) {
-      const { submissionCreated, submissionId } = await createSubmission(
-        applicationId,
-        jwt
-      );
-
-      //submission already exists so redirect to list of applications
-      if (!submissionCreated) {
-        return {
-          redirect: {
-            destination: routes.applications,
-            permanent: false,
-          },
-        };
-      }
-
+      // Redirect to name submission page instead of auto-creating
       return {
         redirect: {
-          destination: routes.submissions.sections(submissionId),
+          destination: routes.nameSubmission(applicationId),
           permanent: false,
         },
       };

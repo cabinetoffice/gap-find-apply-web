@@ -8,7 +8,7 @@ import getServerSideProps from './getServerSideProps';
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationCharityCommissionNumberPage({
   csrfToken,
-  fieldErrors,
+  fieldErrors = [],
   formAction,
   defaultFields,
   backButtonUrl,
@@ -17,7 +17,7 @@ export default function MandatoryQuestionOrganisationCharityCommissionNumberPage
     <>
       <Meta
         title={`${
-          fieldErrors.length > 0 ? 'Error: ' : ''
+          (fieldErrors || []).length > 0 ? 'Error: ' : ''
         }Charity Commission number - Apply for a grant`}
       />
 

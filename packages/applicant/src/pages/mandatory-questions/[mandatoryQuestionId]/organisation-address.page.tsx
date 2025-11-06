@@ -10,7 +10,7 @@ export { getServerSideProps };
 
 export default function MandatoryQuestionOrganisationAddressPage({
   csrfToken,
-  fieldErrors,
+  fieldErrors = [],
   formAction,
   defaultFields,
   backButtonUrl,
@@ -39,7 +39,7 @@ export default function MandatoryQuestionOrganisationAddressPage({
     <>
       <Meta
         title={`${
-          fieldErrors.length > 0 ? 'Error: ' : ''
+          (fieldErrors || []).length > 0 ? 'Error: ' : ''
         }Organisation address - Apply for a grant`}
       />
 

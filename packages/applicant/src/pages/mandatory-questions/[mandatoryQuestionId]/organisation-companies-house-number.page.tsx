@@ -8,7 +8,7 @@ import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationCompaniesHouseNumberPage({
   csrfToken,
-  fieldErrors,
+  fieldErrors = [],
   formAction,
   defaultFields,
   backButtonUrl,
@@ -17,7 +17,7 @@ export default function MandatoryQuestionOrganisationCompaniesHouseNumberPage({
     <>
       <Meta
         title={`${
-          fieldErrors.length > 0 ? 'Error: ' : ''
+          (fieldErrors || []).length > 0 ? 'Error: ' : ''
         }Companies House number - Apply for a grant`}
       />
 
