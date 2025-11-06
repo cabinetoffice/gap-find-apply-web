@@ -99,10 +99,14 @@ export async function postDocumentResponse(
   return response.data;
 }
 
-export async function createSubmission(applicationId: string, jwt: string) {
+export async function createSubmission(
+  applicationId: string,
+  jwt: string,
+  submissionName?: string
+) {
   const { data } = await axios.post<CreateSubmissionResponse>(
     `${BACKEND_HOST}/submissions/createSubmission/${applicationId}`,
-    null,
+    submissionName ? { submissionName } : null,
     axiosConfig(jwt)
   );
 

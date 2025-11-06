@@ -12,7 +12,7 @@ import getServerSideProps from './getServerSideProps';
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationFundingLocationPage({
   csrfToken,
-  fieldErrors,
+  fieldErrors = [],
   formAction,
   defaultFields,
   backButtonUrl,
@@ -22,7 +22,7 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
       <>
         <Meta
           title={`${
-            fieldErrors.length > 0 ? 'Error: ' : ''
+            (fieldErrors || []).length > 0 ? 'Error: ' : ''
           }Funding amount - Apply for a grant`}
         />
 

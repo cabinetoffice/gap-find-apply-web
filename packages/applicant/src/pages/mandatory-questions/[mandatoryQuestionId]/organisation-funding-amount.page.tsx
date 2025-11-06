@@ -14,7 +14,7 @@ export { getServerSideProps };
 
 export default function MandatoryQuestionOrganisationFundingAmountPage({
   csrfToken,
-  fieldErrors,
+  fieldErrors = [],
   formAction,
   defaultFields,
   backButtonUrl,
@@ -23,7 +23,7 @@ export default function MandatoryQuestionOrganisationFundingAmountPage({
     <>
       <Meta
         title={`${
-          fieldErrors.length > 0 ? 'Error: ' : ''
+          (fieldErrors || []).length > 0 ? 'Error: ' : ''
         }Funding amount - Apply for a grant`}
       />
 
