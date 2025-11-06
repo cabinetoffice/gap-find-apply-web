@@ -235,6 +235,7 @@ export interface ApplicationDetailsInterface {
   grantSubmissionId: string;
   submissionStatus: string;
   applicationName: string;
+  submissionName?: string;
   sections: SectionData[];
 }
 
