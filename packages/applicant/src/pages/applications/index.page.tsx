@@ -130,7 +130,7 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                       {submissions.map((application) => (
                         <ApplicationRow
                           key={application.grantSubmissionId}
-                          applicationRow={application}
+                          application={application}
                         />
                       ))}
                     </tbody>
@@ -166,10 +166,8 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
   );
 };
 
-const ApplicationRow = (
-  applicationRow: ApplicationRow & { grantApplicationStatus?: string }
-) => {
-  const application = applicationRow.application;
+const ApplicationRow = (applicationProps: ApplicationRowProps) => {
+  const application = applicationProps.application;
   const displayName =
     application.submissionName ||
     application.applicationName ||
@@ -263,8 +261,10 @@ export interface ApplicationsList {
   sections: ApplicationSections[];
 }
 
-export interface ApplicationRow {
-  application: ApplicationsList;
-}
+type ApplicationRowProps = {
+  application: ApplicationsList & {
+    grantApplicationStatus?: string;
+  };
+};
 
 export default ExistingApplications;
