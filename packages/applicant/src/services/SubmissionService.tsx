@@ -106,7 +106,7 @@ export async function createSubmission(
 ) {
   const { data } = await axios.post<CreateSubmissionResponse>(
     `${BACKEND_HOST}/submissions/createSubmission/${applicationId}`,
-    submissionName ? { submissionName } : null,
+    submissionName ? { submissionName } : {},
     axiosConfig(jwt)
   );
 
