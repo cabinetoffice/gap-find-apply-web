@@ -41,7 +41,7 @@ const context = {
 
 const props = {
   redirect: {
-    destination: routes.submissions.sections('1'),
+    destination: routes.nameSubmission('1'),
     permanent: false,
   },
 };
@@ -61,13 +61,13 @@ const propsUnknownError = {
 
 const propsSubmissionDoesNotExistsRedirect = {
   redirect: {
-    destination: routes.submissions.sections('1'),
+    destination: routes.nameSubmission('1'),
     permanent: false,
   },
 };
 const propsSubmissionExistsRedirect = {
   redirect: {
-    destination: routes.applications,
+    destination: routes.nameSubmission('1'),
     permanent: false,
   },
 };
@@ -150,12 +150,11 @@ describe('getServerSideProps', () => {
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
         grantScheme: scheme,
       });
-      (createSubmission as jest.Mock).mockReturnValue(mockData);
       const response = await getServerSideProps(context);
 
       expect(response).toEqual(props);
-      expect(createSubmission).toHaveBeenCalled();
-      expect(createSubmission).toHaveBeenCalledWith('1', 'testJwt');
+      // Version 1 redirects to name-submission page without calling createSubmission
+      expect(createSubmission).not.toHaveBeenCalled();
       expect(getGrantScheme).toHaveBeenCalled();
       expect(getGrantScheme).toHaveBeenCalledWith('1', 'testJwt');
     });
@@ -166,13 +165,12 @@ describe('getServerSideProps', () => {
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
         grantScheme: scheme,
       });
-      (createSubmission as jest.Mock).mockReturnValue(submissionDoesNotExists);
 
       const response = await getServerSideProps(context);
 
       expect(response).toEqual(propsSubmissionDoesNotExistsRedirect);
-      expect(createSubmission).toHaveBeenCalled();
-      expect(createSubmission).toHaveBeenCalledWith('1', 'testJwt');
+      // Version 1 redirects to name-submission page without calling createSubmission
+      expect(createSubmission).not.toHaveBeenCalled();
       expect(getGrantScheme).toHaveBeenCalled();
       expect(getGrantScheme).toHaveBeenCalledWith('1', 'testJwt');
     });
@@ -183,32 +181,30 @@ describe('getServerSideProps', () => {
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
         grantScheme: scheme,
       });
-      (createSubmission as jest.Mock).mockReturnValue(submissionExists);
 
       const response = await getServerSideProps(context);
 
       expect(response).toEqual(propsSubmissionExistsRedirect);
-      expect(createSubmission).toHaveBeenCalled();
-      expect(createSubmission).toHaveBeenCalledWith('1', 'testJwt');
+      // Version 1 redirects to name-submission page without calling createSubmission
+      expect(createSubmission).not.toHaveBeenCalled();
       expect(getGrantScheme).toHaveBeenCalled();
       expect(getGrantScheme).toHaveBeenCalledWith('1', 'testJwt');
     });
 
     it('should redirect to grant is closed page if grant is closed', async () => {
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
-        grantScheme: scheme,
-      });
-      (createSubmission as jest.Mock).mockImplementation(() => {
-        throw grantClosed;
-      });
+      // getGrantSchemeById throws grantClosed error before version check
+      const getGrantScheme =
+        spiedGetGrantSchemeById.mockRejectedValue(grantClosed);
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
 
       const response = await getServerSideProps(context);
 
+      // Error happens before version check, so it goes to catch block
+      // and redirects to grant-is-closed page
       expect(response).toEqual(propsGrantClosedError);
-      expect(createSubmission).toHaveBeenCalled();
-      expect(createSubmission).toHaveBeenCalledWith('1', 'testJwt');
+      // createSubmission is never called because error happens before version check
+      expect(createSubmission).not.toHaveBeenCalled();
       expect(getGrantScheme).toHaveBeenCalled();
       expect(getGrantScheme).toHaveBeenCalledWith('1', 'testJwt');
     });
@@ -326,17 +322,19 @@ describe('getServerSideProps', () => {
   describe('common scenarios', () => {
     it('should redirect if there is an error', async () => {
       (getApplicationById as jest.Mock).mockReturnValue(application);
-      const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
-        grantScheme: scheme,
-      });
-      (createSubmission as jest.Mock).mockReturnValue(null);
+      // For version 1, getGrantSchemeById throws an error
+      const getGrantScheme = spiedGetGrantSchemeById.mockRejectedValue(
+        new Error('Test error')
+      );
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
 
       const response = await getServerSideProps(context);
 
+      // For version 1, even with errors, it redirects to name-submission
+      // (the error happens after version check, so it goes to catch block)
       expect(response).toEqual(propsUnknownError);
-      expect(createSubmission).toHaveBeenCalled();
-      expect(createSubmission).toHaveBeenCalledWith('1', 'testJwt');
+      // Version 1 redirects to name-submission page without calling createSubmission
+      expect(createSubmission).not.toHaveBeenCalled();
       expect(getGrantScheme).toHaveBeenCalled();
       expect(getGrantScheme).toHaveBeenCalledWith('1', 'testJwt');
     });

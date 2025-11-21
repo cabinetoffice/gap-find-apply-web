@@ -40,6 +40,7 @@ export interface ApplicationsList {
   grantApplicationId: string;
   grantSubmissionId: string;
   applicationName: string;
+  submissionName?: string;
   submissionStatus: string;
   submittedDate: string;
   sections: ApplicationSections[];

@@ -24,19 +24,46 @@ export async function getServerSideProps({
         schemeId,
         jwt
       );
+
+    // If mandatory questions exist, check if they're complete
     if (mandatoryQuestionExists) {
       const mandatoryQuestion =
         await mandatoryQuestionService.getMandatoryQuestionBySchemeId(
           jwt,
           schemeId
         );
-      if (mandatoryQuestion.submissionId) {
-        return {
-          redirect: {
-            destination: routes.applications,
-            permanent: false,
-          },
-        };
+
+      // If mandatory questions are complete, skip to submission creation
+      if (
+        mandatoryQuestion.mandatoryQuestionsComplete === true ||
+        mandatoryQuestion.status === 'COMPLETED'
+      ) {
+        // Get the scheme to determine version and get application ID
+        const { grantScheme: scheme, grantApplication } =
+          await schemeService.getGrantSchemeById(schemeId, jwt);
+
+        if (scheme.version === 1 && grantApplication) {
+          // For version 1, redirect to name submission page
+          return {
+            redirect: {
+              destination: routes.nameSubmission(
+                grantApplication.id.toString()
+              ),
+              permanent: false,
+            },
+          };
+        } else if (grantApplication) {
+          // For version > 1, also redirect to name submission page
+          // The name submission page will handle creating the submission with the name
+          return {
+            redirect: {
+              destination: routes.nameSubmission(
+                grantApplication.id.toString()
+              ),
+              permanent: false,
+            },
+          };
+        }
       }
     }
   } catch (error) {
@@ -48,6 +75,7 @@ export async function getServerSideProps({
       },
     };
   }
+
   //hasInternalApplication check that the advert has the "apply" url set to a internal application
   const {
     hasInternalApplication,

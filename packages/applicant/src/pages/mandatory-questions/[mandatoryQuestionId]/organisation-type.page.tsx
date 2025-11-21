@@ -9,7 +9,7 @@ import { MQ_ORG_TYPES } from '../../../utils/constants';
 export { getServerSideProps };
 export default function MandatoryQuestionOrganisationTypePage({
   csrfToken,
-  fieldErrors,
+  fieldErrors = [],
   formAction,
   defaultFields,
   backButtonUrl,
@@ -18,7 +18,7 @@ export default function MandatoryQuestionOrganisationTypePage({
     <>
       <Meta
         title={`${
-          fieldErrors.length > 0 ? 'Error: ' : ''
+          (fieldErrors || []).length > 0 ? 'Error: ' : ''
         }Organisation type - Apply for a grant`}
       />
 

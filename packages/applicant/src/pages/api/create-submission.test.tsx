@@ -158,6 +158,7 @@ describe('API Handler Tests', () => {
     await handler(req(), res());
 
     expect(mockedRedirect).toHaveBeenCalledWith(
+      303,
       `http://localhost${routes.mandatoryQuestions.externalApplicationPage(
         'mandatoryQuestionId'
       )}?url=externalSubmissionUrl`
@@ -213,6 +214,7 @@ describe('API Handler Tests', () => {
     await handler(req(), res());
 
     expect(mockedRedirect).toHaveBeenCalledWith(
+      303,
       `http://localhost${routes.submissions.sections('submissionId')}`
     );
   });
