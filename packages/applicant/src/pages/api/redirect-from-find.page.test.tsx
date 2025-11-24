@@ -207,7 +207,7 @@ describe('API Handler Tests', () => {
     );
   });
 
-  it('should redirect to the submission page when advert is version 2 and mandatoryQuestionsDto has COMPLETED status, and advert is internal', async () => {
+  it('should redirect to the application page when advert is version 2 and mandatoryQuestionsDto has COMPLETED status, and advert is internal', async () => {
     const mandatoryQuestionsDto: GrantMandatoryQuestionDto = {
       submissionId: '125',
       status: 'COMPLETED',
@@ -217,7 +217,7 @@ describe('API Handler Tests', () => {
       id: '123',
       version: 2,
       grantApplicationId: 123,
-      isInternal: false,
+      isInternal: true,
       grantSchemeId: 456,
       externalSubmissionUrl: 'http://example.com',
       isAdvertInDatabase: true,
@@ -233,7 +233,7 @@ describe('API Handler Tests', () => {
     await handler(req(), res());
 
     expect(mockedRedirect).toHaveBeenCalledWith(
-      'http://localhost/applications'
+      'http://localhost/applications/123'
     );
   });
 

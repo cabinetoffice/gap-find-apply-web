@@ -279,7 +279,7 @@ describe('getServerSideProps', () => {
       );
     });
 
-    it('should return the the submission page page when application has scheme 2 version and mandatory question exist and it is completed', async () => {
+    it('should redirect to name-submission page when application has scheme 2 version and mandatory question exist and it is completed', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       (getApplicationById as jest.Mock).mockReturnValue({
         ...application,
@@ -295,13 +295,14 @@ describe('getServerSideProps', () => {
         spiedGetMandatoryQuestionBySchemeId.mockResolvedValue({
           ...mandatoryQuestionData,
           submissionId: '1',
+          status: 'COMPLETED',
         });
 
       const response = await getServerSideProps(context);
 
       expect(response).toEqual({
         redirect: {
-          destination: routes.submissions.sections('1'),
+          destination: routes.nameSubmission('1'),
           permanent: false,
         },
       });

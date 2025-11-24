@@ -60,8 +60,14 @@ export const getServerSideProps: GetServerSideProps = async ({
       );
 
     if (mandatoryQuestionCompleteRedirect) {
-      //if it is completed, redirect to submission page
-      return mandatoryQuestionCompleteRedirect;
+      // For version > 1, redirect to name-submission page to allow creating multiple submissions
+      // This allows users to create new submissions even if they have completed mandatory questions
+      return {
+        redirect: {
+          destination: routes.nameSubmission(applicationId),
+          permanent: false,
+        },
+      };
     }
 
     //if it exists and not completed, redirect to start page
@@ -123,19 +129,18 @@ const checkIfMandatoryQuestionIsCompleted = async (
       scheme.id.toString()
     );
 
-  if (
-    mandatoryQuestions.submissionId !== null &&
-    mandatoryQuestions.submissionId !== undefined
-  ) {
-    return {
-      redirect: {
-        destination: routes.submissions.sections(
-          mandatoryQuestions.submissionId
-        ),
-        permanent: false,
-      },
-    };
+  // Return true if mandatory questions are completed
+  // This allows users to create multiple submissions for the same grant
+  if (!mandatoryQuestions) {
+    return false;
   }
+
+  return (
+    mandatoryQuestions.status === 'COMPLETED' ||
+    mandatoryQuestions.mandatoryQuestionsComplete === true ||
+    (mandatoryQuestions.submissionId !== null &&
+      mandatoryQuestions.submissionId !== undefined)
+  );
 };
 
 const ApplicationCreate = () => {
