@@ -15,9 +15,9 @@ import { logger } from '../../utils/logger';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   // This endpoint should handle POST requests from forms
-  // if (req.method !== 'POST') {
-  //   return res.status(405).json({ message: 'Method not allowed' });
-  // }
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
 
   const grantMandatoryQuestionService =
     GrantMandatoryQuestionService.getInstance();
@@ -44,6 +44,22 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         mandatoryQuestionId,
         jwt
       );
+
+    // Check if mandatory question already has a submission
+    // This prevents duplicate submissions when the first submission is being created
+    // (e.g., from double-clicks or browser retries)
+    if (mandatoryQuestionData.submissionId) {
+      logger.info(
+        `Mandatory question ${mandatoryQuestionId} already has submission ${mandatoryQuestionData.submissionId}. Redirecting to existing submission.`
+      );
+      return res.redirect(
+        303,
+        `${process.env.HOST}${routes.submissions.sections(
+          mandatoryQuestionData.submissionId
+        )}`
+      );
+    }
+
     const { grantApplication, grantAdverts } =
       await grantSchemeService.getGrantSchemeById(schemeId.toString(), jwt);
 
