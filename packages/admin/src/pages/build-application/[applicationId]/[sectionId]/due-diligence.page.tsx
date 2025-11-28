@@ -158,10 +158,7 @@ const DueDiligence = ({
         }Due-diligence checks - Manage a grant`}
       />
 
-      {/* TODO Causing an error - <a> cannot appear as a descendant of <a> */}
-      <CustomLink href={backButtonHref}>
-        <a className="govuk-back-link">Back</a>
-      </CustomLink>
+      <CustomLink href={backButtonHref} isBackButton />
 
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout
