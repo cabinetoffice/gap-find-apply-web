@@ -15,9 +15,9 @@ import { logger } from '../../utils/logger';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   // This endpoint should handle POST requests from forms
-  // if (req.method !== 'POST') {
-  //   return res.status(405).json({ message: 'Method not allowed' });
-  // }
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
 
   const grantMandatoryQuestionService =
     GrantMandatoryQuestionService.getInstance();

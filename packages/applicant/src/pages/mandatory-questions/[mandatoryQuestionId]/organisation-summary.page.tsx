@@ -5,6 +5,8 @@ import InferProps from '../../../types/InferProps';
 import { routes } from '../../../utils/routes';
 import getServerSideProps from './getServerSideProps';
 import { MQ_ORG_TYPES } from '../../../utils/constants';
+import { Button, FlexibleQuestionPageLayout } from 'gap-web-ui';
+import { ButtonTypePropertyEnum } from '../../../components/button/Button';
 
 export { getServerSideProps };
 
@@ -90,6 +92,7 @@ export const generateMandatoryQuestionDetails = (
 export default function MandatoryQuestionOrganisationSummaryPage({
   mandatoryQuestion,
   mandatoryQuestionId,
+  subPath,
 }: InferProps<typeof getServerSideProps>) {
   const mandatoryQuestionDetails = generateMandatoryQuestionDetails(
     mandatoryQuestion,
@@ -168,20 +171,17 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                 ))}
             </dl>
 
-            <Link
-              href={{
-                pathname: `/api/create-submission`,
-                query: {
-                  schemeId: mandatoryQuestion.schemeId.toString(),
-                  mandatoryQuestionId,
-                },
-              }}
-              className="govuk-button"
-              data-module="govuk-button"
-              aria-disabled="false"
+            <FlexibleQuestionPageLayout
+              formAction={`${subPath}/api/create-submission?schemeId=${mandatoryQuestion.schemeId.toString()}&mandatoryQuestionId=${mandatoryQuestionId}`}
+              fieldErrors={[]}
+              csrfToken=""
             >
-              Confirm and submit
-            </Link>
+              <Button
+                text="Confirm and submit"
+                type={ButtonTypePropertyEnum.Submit}
+                data-module="govuk-button"
+              />
+            </FlexibleQuestionPageLayout>
           </div>
         </div>
       </Layout>
