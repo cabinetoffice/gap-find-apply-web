@@ -108,6 +108,20 @@ const updateApplicationFormStatus = async (
   );
 };
 
+const updateApplicationMultipleSubmissions = async (
+  applicationId: string,
+  allowsMultipleSubmissions: boolean,
+  sessionId: string
+) => {
+  await axios.patch(
+    `${BASE_APPLICATION_URL}/${applicationId}`,
+    {
+      allowsMultipleSubmissions: allowsMultipleSubmissions,
+    },
+    axiosSessionConfig(sessionId)
+  );
+};
+
 const handleSectionOrdering = async (
   increment: number,
   sectionId: string,
@@ -200,4 +214,5 @@ export {
   handleQuestionOrdering,
   handleSectionOrdering,
   updateApplicationFormStatus,
+  updateApplicationMultipleSubmissions,
 };

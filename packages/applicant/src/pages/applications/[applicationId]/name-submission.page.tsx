@@ -111,8 +111,8 @@ export default function NameSubmissionPage({
           csrfToken=""
         >
           <TextInput
-            questionTitle="What would you like to name this application?"
-            questionHintText={`This will help you identify this application if you create multiple applications for "${applicationName}". You can use any name you like.`}
+            questionTitle="Name this application"
+            questionHintText={`You have more than one application for this scheme. You can give this one a name to help you tell them apart. For example, 'Project Mr Smith'`}
             fieldName="submissionName"
             defaultValue=""
             fieldErrors={[]}

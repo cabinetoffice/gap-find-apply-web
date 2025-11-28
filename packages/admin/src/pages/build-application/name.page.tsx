@@ -60,7 +60,8 @@ export const getServerSideProps: GetServerSideProps = async ({
         body.applicationName,
         getSessionIdFromCookies(req)
       ),
-    (applicationId) => `/build-application/${applicationId}/dashboard`,
+    (applicationId) =>
+      `/build-application/${applicationId}/multiple-submissions`,
     errorPageParams
   );
 
