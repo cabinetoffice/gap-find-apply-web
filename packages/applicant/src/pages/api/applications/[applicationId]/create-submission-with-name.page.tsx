@@ -17,6 +17,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json({ message: 'Application ID is required' });
   }
 
+  // Validate submission name - only alphanumeric characters and spaces allowed
+  if (submissionName && !/^[a-zA-Z0-9\s]+$/.test(submissionName)) {
+    return res.redirect(
+      302,
+      `${process.env.HOST || ''}${routes.nameSubmission(
+        applicationId
+      )}?error=invalidCharacters`
+    );
+  }
+
   try {
     const jwt = getJwtFromCookies(req);
     const { submissionId } = await createSubmission(

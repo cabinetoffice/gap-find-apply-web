@@ -82,6 +82,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     logger.info('Grant has an internal application. Creating submission');
 
     const submissionName = req.body?.submissionName;
+
+    // Validate submission name - only alphanumeric characters and spaces allowed
+    if (submissionName && !/^[a-zA-Z0-9\s]+$/.test(submissionName)) {
+      // Redirect back to the summary page (for version > 1) or name submission page
+      const redirectUrl = routes.nameSubmission(grantApplication.id.toString());
+      return res.redirect(
+        302,
+        `${process.env.HOST}${redirectUrl}?error=invalidCharacters`
+      );
+    }
+
     const { submissionId } = await createSubmission(
       grantApplication.id,
       jwt,

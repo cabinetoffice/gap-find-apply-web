@@ -117,6 +117,7 @@ export default function NameSubmissionPage({
             defaultValue=""
             fieldErrors={[]}
             width="30"
+            limit={255}
           />
 
           <Button text="Continue" type={ButtonTypePropertyEnum.Submit} />
