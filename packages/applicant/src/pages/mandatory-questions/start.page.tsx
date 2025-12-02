@@ -42,8 +42,9 @@ export async function getServerSideProps({
         const { grantScheme: scheme, grantApplication } =
           await schemeService.getGrantSchemeById(schemeId, jwt);
 
-        if (scheme.version === 1 && grantApplication) {
-          // For version 1, redirect to name submission page
+        // Check if application allows multiple submissions
+        if (grantApplication?.allowsMultipleSubmissions) {
+          // Allow multiple submissions, redirect to name submission page
           return {
             redirect: {
               destination: routes.nameSubmission(
@@ -52,14 +53,11 @@ export async function getServerSideProps({
               permanent: false,
             },
           };
-        } else if (grantApplication) {
-          // For version > 1, also redirect to name submission page
-          // The name submission page will handle creating the submission with the name
+        } else {
+          // Don't allow multiple submissions, redirect to the application page
           return {
             redirect: {
-              destination: routes.nameSubmission(
-                grantApplication.id.toString()
-              ),
+              destination: routes.applications,
               permanent: false,
             },
           };

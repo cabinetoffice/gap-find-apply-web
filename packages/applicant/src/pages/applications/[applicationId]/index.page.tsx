@@ -29,13 +29,23 @@ export const getServerSideProps: GetServerSideProps = async ({
       jwt
     );
     if (scheme.version === 1) {
-      // Redirect to name submission page instead of auto-creating
-      return {
-        redirect: {
-          destination: routes.nameSubmission(applicationId),
-          permanent: false,
-        },
-      };
+      if (application.allowsMultipleSubmissions) {
+        // Redirect to name submission page instead of auto-creating
+        return {
+          redirect: {
+            destination: routes.nameSubmission(applicationId),
+            permanent: false,
+          },
+        };
+      } else {
+        // Don't allow multiple submissions, redirect to the applications page
+        return {
+          redirect: {
+            destination: routes.applications,
+            permanent: false,
+          },
+        };
+      }
     }
 
     const mandatoryQuestionService =
@@ -62,12 +72,25 @@ export const getServerSideProps: GetServerSideProps = async ({
     if (mandatoryQuestionCompleteRedirect) {
       // For version > 1, redirect to name-submission page to allow creating multiple submissions
       // This allows users to create new submissions even if they have completed mandatory questions
-      return {
-        redirect: {
-          destination: routes.nameSubmission(applicationId),
-          permanent: false,
-        },
-      };
+
+      // If this application allows multiple submissions, redirect to name-submission page
+      // to allow creating multiple submissions
+      if (application.allowsMultipleSubmissions) {
+        return {
+          redirect: {
+            destination: routes.nameSubmission(applicationId),
+            permanent: false,
+          },
+        };
+      } else {
+        // Don't allow multiple submissions, redirect to the applications page
+        return {
+          redirect: {
+            destination: routes.applications,
+            permanent: false,
+          },
+        };
+      }
     }
 
     //if it exists and not completed, redirect to start page
