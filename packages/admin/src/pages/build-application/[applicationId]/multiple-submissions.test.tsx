@@ -70,28 +70,30 @@ describe('Multiple submissions page', () => {
   });
 
   describe('getServerSideProps', () => {
-    const mockValidContext = {
-      params: {
-        applicationId: 'test-application-id',
-      } as Record<string, string>,
-      req: {
-        method: 'GET',
-        cookies: { 'gap-test': 'testSessionId' },
-      },
-      res: { getHeader: jest.fn(() => 'testCsrfToken') },
-      resolvedUrl:
-        '/build-application/test-application-id/multiple-submissions',
-    } as unknown as GetServerSidePropsContext;
-
     const mockedCallServiceMethod = callServiceMethod as jest.MockedFn<
       typeof callServiceMethod
     >;
+
+    const getMockContext = () =>
+      ({
+        params: {
+          applicationId: 'test-application-id',
+        } as Record<string, string>,
+        req: {
+          method: 'GET',
+          cookies: { 'gap-test': 'testSessionId' },
+        },
+        res: { getHeader: jest.fn(() => 'testCsrfToken') },
+        resolvedUrl:
+          '/build-application/test-application-id/multiple-submissions',
+      } as unknown as GetServerSidePropsContext);
 
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
     it('Returns correct props on successful load', async () => {
+      const mockValidContext = getMockContext();
       mockedCallServiceMethod.mockResolvedValue({ nonPost: true });
 
       const value = (await getServerSideProps(
@@ -106,6 +108,7 @@ describe('Multiple submissions page', () => {
     });
 
     it('Should redirect to dashboard after successful submission', async () => {
+      const mockValidContext = getMockContext();
       mockedCallServiceMethod.mockResolvedValue({
         redirect: {
           destination: '/build-application/test-application-id/dashboard',
@@ -122,6 +125,7 @@ describe('Multiple submissions page', () => {
     });
 
     it('Should return field errors when validation fails', async () => {
+      const mockValidContext = getMockContext();
       const fieldErrors = [
         {
           fieldName: 'allowsMultipleSubmissions',
