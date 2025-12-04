@@ -234,7 +234,6 @@ export default async function getServerSideProps({
       mandatoryQuestion,
       mandatoryQuestionId,
       backButtonUrl,
-      subPath: publicRuntimeConfig.subPath,
     },
   };
 }
