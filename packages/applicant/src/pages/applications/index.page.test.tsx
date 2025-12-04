@@ -122,7 +122,7 @@ const assertHasAllHeaders = (expectedGrantCount = 3) => {
   // With multiple tables (one per grant), we have multiple headers
   // Check that all headers exist (one header per grant)
   expect(
-    screen.getAllByRole('columnheader', { name: 'Submitted for' })
+    screen.getAllByRole('columnheader', { name: 'Application Name' })
   ).toHaveLength(expectedGrantCount);
   expect(screen.getAllByRole('columnheader', { name: 'Status' })).toHaveLength(
     expectedGrantCount

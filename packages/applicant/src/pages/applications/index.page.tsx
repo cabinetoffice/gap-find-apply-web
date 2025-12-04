@@ -101,7 +101,7 @@ const ExistingApplications = ({ applicationData }: ApplicationsPage) => {
                           className="govuk-table__header govuk-!-width-one-quarter"
                           data-cy="cy-grant-table-header-submitted-for"
                         >
-                          Submitted for
+                          Application Name
                         </th>
                         <th
                           scope="col"
