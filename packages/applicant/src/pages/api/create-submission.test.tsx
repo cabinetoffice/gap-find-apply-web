@@ -63,14 +63,19 @@ const MOCK_ORGANISATION_DATA: UpdateOrganisationDetailsDto = {
 const mockedRedirect = jest.fn();
 const mockedSetHeader = jest.fn();
 const mockedSend = jest.fn();
+const mockedStatus = jest.fn().mockReturnValue({
+  json: jest.fn(),
+});
 
 const req = (overrides?: Overrides<jest.Mock>) =>
   merge(
     {
+      method: 'POST',
       query: {
         schemeId: 'schemeId',
         mandatoryQuestionId: 'mandatoryQuestionId',
       },
+      headers: {},
     },
     overrides || {}
   ) as unknown as NextApiRequest;
@@ -81,20 +86,24 @@ const res = (overrides?: Overrides<jest.Mock>) =>
       redirect: mockedRedirect,
       setHeader: mockedSetHeader,
       send: mockedSend,
+      status: mockedStatus,
     },
     overrides || {}
   ) as unknown as NextApiResponse;
 
 const backup_host = process.env.HOST;
+const backup_sub_path = process.env.SUB_PATH;
 
 describe('API Handler Tests', () => {
   beforeEach(() => {
     process.env.HOST = 'http://localhost';
+    process.env.SUB_PATH = '';
     jest.resetAllMocks();
   });
 
   afterEach(() => {
     process.env.HOST = backup_host;
+    process.env.SUB_PATH = backup_sub_path;
   });
 
   const grantMandatoryQuestion: GrantMandatoryQuestionDto = {

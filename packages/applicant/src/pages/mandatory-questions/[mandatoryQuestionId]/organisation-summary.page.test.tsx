@@ -122,12 +122,15 @@ describe('Organisation summary page', () => {
       />
     );
 
-    const button = screen.getByRole('link', {
+    const button = screen.getByRole('button', {
       name: 'Confirm and submit',
     });
     expect(button).toBeInTheDocument();
-    expect(button).toHaveAttribute(
-      'href',
+
+    const form = button.closest('form');
+    expect(form).toBeInTheDocument();
+    expect(form).toHaveAttribute(
+      'action',
       `/api/create-submission?schemeId=1&mandatoryQuestionId=mandatoryQuestionId`
     );
   });
