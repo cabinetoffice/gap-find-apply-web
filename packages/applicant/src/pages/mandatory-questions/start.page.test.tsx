@@ -143,7 +143,7 @@ describe('Mandatory Questions Start', () => {
         });
       const getGrantSchemeById = spiedGetGrantSchemeById.mockResolvedValue({
         grantScheme: { id: 1, version: 1 },
-        grantApplication: { id: '1' },
+        grantApplication: { id: '1', allowsMultipleSubmissions: true },
       });
 
       const response = await getServerSideProps(getContext(getDefaultContext));

@@ -146,7 +146,10 @@ describe('getServerSideProps', () => {
   describe('V1 scenarios', () => {
     it('should return the correct props when application has scheme 1 version', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
-      (getApplicationById as jest.Mock).mockReturnValue(application);
+      (getApplicationById as jest.Mock).mockReturnValue({
+        ...application,
+        allowsMultipleSubmissions: true,
+      });
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
         grantScheme: scheme,
       });
@@ -161,7 +164,10 @@ describe('getServerSideProps', () => {
 
     it('should redirect to submission page if submission does not  exists when application has scheme 1 version and ', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
-      (getApplicationById as jest.Mock).mockReturnValue(application);
+      (getApplicationById as jest.Mock).mockReturnValue({
+        ...application,
+        allowsMultipleSubmissions: true,
+      });
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
         grantScheme: scheme,
       });
@@ -177,7 +183,10 @@ describe('getServerSideProps', () => {
 
     it('should redirect to applications dashboard if submission already exists when application has scheme 1 version', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
-      (getApplicationById as jest.Mock).mockReturnValue(application);
+      (getApplicationById as jest.Mock).mockReturnValue({
+        ...application,
+        allowsMultipleSubmissions: true,
+      });
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
         grantScheme: scheme,
       });
@@ -284,6 +293,7 @@ describe('getServerSideProps', () => {
       (getApplicationById as jest.Mock).mockReturnValue({
         ...application,
         grantScheme: { ...scheme, version: 2 },
+        allowsMultipleSubmissions: true,
       });
 
       const getGrantScheme = spiedGetGrantSchemeById.mockResolvedValue({
