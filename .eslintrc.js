@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['next/core-web-vitals', 'next', 'prettier', 'eslint:recommended'],
+  extends: ['next/core-web-vitals', 'next', 'eslint:recommended'],
   env: {
     jest: true,
     amd: true,
@@ -18,7 +18,6 @@ module.exports = {
       extends: [
         'next/core-web-vitals',
         'next',
-        'prettier',
         'plugin:@typescript-eslint/recommended',
       ],
       rules: {
@@ -27,13 +26,11 @@ module.exports = {
       },
     },
   ],
-  plugins: ['eslint-plugin-prettier'],
   rules: {
     // import the logger util and use this instead - console won't correctly format logs for cloudwatch
     'no-console': 'error',
     'no-shadow-restricted-names': 'off',
     'no-prototype-builtins': 'off',
-    'prettier/prettier': 'error',
     // Following ruleset allows us to use underscore as a marker for unused variables without tripping ESLint warnings
     'no-unused-vars': 'off', // must disable the base rule as it can report incorrect errors
     '@typescript-eslint/no-unused-vars': [
