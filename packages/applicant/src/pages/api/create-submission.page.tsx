@@ -52,7 +52,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // This prevents duplicate submissions when the first submission is being created
     // (e.g., from double-clicks or browser retries)
     // However, if the application allows multiple submissions, we should allow creating new ones
-    if (mandatoryQuestionData.submissionId && !grantApplication?.allowsMultipleSubmissions) {
+    if (
+      mandatoryQuestionData.submissionId &&
+      !grantApplication?.allowsMultipleSubmissions
+    ) {
       logger.info(
         `Mandatory question ${mandatoryQuestionId} already has submission ${mandatoryQuestionData.submissionId}. Redirecting to existing submission.`
       );
