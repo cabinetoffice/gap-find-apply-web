@@ -131,7 +131,7 @@ describe('Organisation summary page', () => {
     expect(form).toBeInTheDocument();
     expect(form).toHaveAttribute(
       'action',
-      `/api/create-submission?schemeId=1&mandatoryQuestionId=mandatoryQuestionId`
+      `/apply/applicant/api/create-submission?schemeId=1&mandatoryQuestionId=mandatoryQuestionId`
     );
   });
 });
