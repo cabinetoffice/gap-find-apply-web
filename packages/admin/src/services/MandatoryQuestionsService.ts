@@ -36,6 +36,5 @@ const hasCompletedMandatoryQuestions = async (
 
 export {
   downloadMandatoryQuestionsDueDiligenceData,
-  // eslint-disable-next-line prettier/prettier
   hasCompletedMandatoryQuestions
 };
