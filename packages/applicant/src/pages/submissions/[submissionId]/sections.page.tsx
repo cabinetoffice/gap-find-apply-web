@@ -51,12 +51,12 @@ export const getServerSideProps: GetServerSideProps<
     getJwtFromCookies(req)
   );
   const grantSchemeService = GrantSchemeService.getInstance();
-  const { grantScheme } = await grantSchemeService.getGrantSchemeById(
+  const { grantScheme, grantApplication } = await grantSchemeService.getGrantSchemeById(
     grantSchemeId,
     getJwtFromCookies(req)
   );
 
-  if (hasBeenSubmitted) {
+  if (hasBeenSubmitted && !grantApplication?.allowsMultipleSubmissions) {
     return {
       redirect: {
         destination: `/applications`,

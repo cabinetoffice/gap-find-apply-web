@@ -45,10 +45,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         jwt
       );
 
+    const { grantApplication, grantAdverts } =
+      await grantSchemeService.getGrantSchemeById(schemeId.toString(), jwt);
+
     // Check if mandatory question already has a submission
     // This prevents duplicate submissions when the first submission is being created
     // (e.g., from double-clicks or browser retries)
-    if (mandatoryQuestionData.submissionId) {
+    // However, if the application allows multiple submissions, we should allow creating new ones
+    if (mandatoryQuestionData.submissionId && !grantApplication?.allowsMultipleSubmissions) {
       logger.info(
         `Mandatory question ${mandatoryQuestionId} already has submission ${mandatoryQuestionData.submissionId}. Redirecting to existing submission.`
       );
@@ -59,9 +63,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         )}`
       );
     }
-
-    const { grantApplication, grantAdverts } =
-      await grantSchemeService.getGrantSchemeById(schemeId.toString(), jwt);
 
     const updateOrganisationDetailsDto = mapUpdateOrganisationDetailsDto(
       grantApplicant.organisation,
