@@ -169,7 +169,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
             </dl>
 
             <form
-              action={`/api/create-submission?schemeId=${mandatoryQuestion.schemeId.toString()}&mandatoryQuestionId=${mandatoryQuestionId}`}
+              action={`/apply/applicant/api/create-submission?schemeId=${mandatoryQuestion.schemeId.toString()}&mandatoryQuestionId=${mandatoryQuestionId}`}
               method="POST"
             >
               <button
