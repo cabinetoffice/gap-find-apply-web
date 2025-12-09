@@ -10,6 +10,7 @@ export type ExportDetails = {
   submissionId: string;
   status: string;
   submittedDate: string;
+  submissionName?: string;
 };
 
 const getExportDetails = async (

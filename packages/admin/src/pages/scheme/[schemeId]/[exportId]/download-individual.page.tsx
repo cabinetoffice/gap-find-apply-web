@@ -75,7 +75,15 @@ export const DownloadIndividualSubmissions = ({
   const tableHeadColumns = [
     {
       name: <>{true && 'Name'}</>,
-      width: 'three-quarters',
+      width: 'one-quarter',
+    },
+    {
+      name: 'Application Name',
+      width: 'one-quarter',
+    },
+    {
+      name: 'Submission Date',
+      width: 'one-quarter',
     },
     {
       name: 'Action',
@@ -83,11 +91,31 @@ export const DownloadIndividualSubmissions = ({
     },
   ] as TheadColumn[];
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
   const tableRows = exportedSubmissions.map((submission) => {
     return {
       cells: [
         {
           content: <>{true && submission.name}</>,
+        },
+        {
+          content: <>{submission.submissionName || '-'}</>,
+        },
+        {
+          content: <>{formatDate(submission.submittedDate)}</>,
         },
         {
           content: (
