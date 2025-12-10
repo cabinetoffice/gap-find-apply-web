@@ -106,10 +106,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Validate submission name - only alphanumeric characters and spaces allowed
     if (submissionName && !/^[a-zA-Z0-9\s]+$/.test(submissionName)) {
       // Redirect back to the summary page (for version > 1) or name submission page
-      const redirectUrl = routes.nameSubmission(grantApplication.id.toString());
+      const redirectUrl = `${routes.nameSubmission(grantApplication.id.toString())}?error=invalidCharacters${submissionName ? `&submissionName=${encodeURIComponent(submissionName)}` : ''}`;
       return res.redirect(
         302,
-        `${process.env.HOST}${redirectUrl}?error=invalidCharacters`
+        `${process.env.HOST}${redirectUrl}`
       );
     }
 

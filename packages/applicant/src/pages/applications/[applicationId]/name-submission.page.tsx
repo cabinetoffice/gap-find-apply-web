@@ -5,6 +5,7 @@ import {
   ButtonTypePropertyEnum,
   FlexibleQuestionPageLayout,
   TextInput,
+  ValidationError,
 } from 'gap-web-ui';
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
@@ -19,6 +20,7 @@ import { logger } from '../../../utils/logger';
 export const getServerSideProps: GetServerSideProps = async ({
   req,
   params,
+  query,
 }) => {
   const applicationId = params.applicationId.toString();
   const { publicRuntimeConfig } = getConfig();
@@ -56,6 +58,23 @@ export const getServerSideProps: GetServerSideProps = async ({
       }
     }
 
+    // Handle validation errors from query parameters
+    let fieldErrors: ValidationError[] = [];
+    let defaultValue = '';
+    
+    if (query.error === 'invalidCharacters') {
+      fieldErrors = [
+        {
+          fieldName: 'submissionName',
+          errorMessage: 'Application name must only include letters, numbers and spaces',
+        },
+      ];
+      // Preserve the submitted value if it was provided
+      if (query.submissionName && typeof query.submissionName === 'string') {
+        defaultValue = query.submissionName;
+      }
+    }
+
     return {
       props: {
         applicationId,
@@ -64,6 +83,8 @@ export const getServerSideProps: GetServerSideProps = async ({
         mandatoryQuestionId,
         schemeId: scheme.id.toString(),
         subPath: publicRuntimeConfig.subPath,
+        fieldErrors,
+        defaultValue,
       },
     };
   } catch (error) {
@@ -84,6 +105,8 @@ interface NameSubmissionPageProps {
   mandatoryQuestionId?: string;
   schemeId: string;
   subPath: string;
+  fieldErrors: ValidationError[];
+  defaultValue: string;
 }
 
 export default function NameSubmissionPage({
@@ -93,6 +116,8 @@ export default function NameSubmissionPage({
   mandatoryQuestionId,
   schemeId,
   subPath,
+  fieldErrors,
+  defaultValue,
 }: NameSubmissionPageProps) {
   // For version > 1, use the create-submission API that links to mandatory questions
   // For version 1, use the simple create-submission-with-name API
@@ -103,19 +128,23 @@ export default function NameSubmissionPage({
 
   return (
     <>
-      <Meta title="Name this application - Apply for a grant" />
+      <Meta
+        title={`${
+          fieldErrors.length > 0 ? 'Error: ' : ''
+        }Name this application - Apply for a grant`}
+      />
       <Layout backBtnUrl={routes.applications}>
         <FlexibleQuestionPageLayout
           formAction={formAction}
-          fieldErrors={[]}
+          fieldErrors={fieldErrors}
           csrfToken=""
         >
           <TextInput
             questionTitle="Name this application"
             questionHintText={`You have more than one application for this scheme. You can give this one a name to help you tell them apart. For example, 'Project Mr Smith'`}
             fieldName="submissionName"
-            defaultValue=""
-            fieldErrors={[]}
+            defaultValue={defaultValue}
+            fieldErrors={fieldErrors}
             width="30"
             limit={255}
           />
