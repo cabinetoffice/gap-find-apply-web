@@ -66,7 +66,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       fieldErrors = [
         {
           fieldName: 'submissionName',
-          errorMessage: 'Application name must only include letters, numbers and spaces',
+          errorMessage: 'Application name must only include letters and numbers',
         },
       ];
       // Preserve the submitted value if it was provided
@@ -141,7 +141,14 @@ export default function NameSubmissionPage({
         >
           <TextInput
             questionTitle="Name this application"
-            questionHintText={`You have more than one application for this scheme. You can give this one a name to help you tell them apart. For example, 'Project Mr Smith'`}
+            questionHintText={
+              <>
+                You have already applied for this grant. Give this application a different name so you can tell it apart from your other applications.
+                <br />
+                <br />
+                Your application name must only use letters and numbers. For example, 'Application 2' or 'Smith Family'.
+              </>
+            }
             fieldName="submissionName"
             defaultValue={defaultValue}
             fieldErrors={fieldErrors}
