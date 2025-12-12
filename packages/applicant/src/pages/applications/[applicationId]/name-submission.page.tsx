@@ -111,7 +111,7 @@ interface NameSubmissionPageProps {
 
 export default function NameSubmissionPage({
   applicationId,
-  applicationName,
+  applicationName: _applicationName,
   schemeVersion,
   mandatoryQuestionId,
   schemeId,
@@ -146,7 +146,7 @@ export default function NameSubmissionPage({
                 You have already applied for this grant. Give this application a different name so you can tell it apart from your other applications.
                 <br />
                 <br />
-                Your application name must only use letters and numbers. For example, 'Application 2' or 'Smith Family'.
+                Your application name must only use letters and numbers. For example, &apos;Application 2&apos; or &apos;Smith Family&apos;.
               </>
             }
             fieldName="submissionName"
