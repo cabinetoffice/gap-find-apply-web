@@ -97,18 +97,16 @@ const MultipleSubmissionsPage = ({
           csrfToken={csrfToken}
         >
           <Radio
-            questionTitle="Does this application allow multiple submissions?"
+            questionTitle="Can applicants make more than one application?"
             questionHintText={
               <p className="govuk-body">
-                If yes, applicants will be able to submit multiple applications
-                for this grant scheme. If no, they will only be able to submit
-                one application.
+                This lets the same person apply for this grant more than once.
               </p>
             }
             fieldName="allowsMultipleSubmissions"
             radioOptions={[
-              { label: 'Yes', value: 'true' },
-              { label: 'No', value: 'false' },
+              { label: 'Yes, allow multiple applications', value: 'true' },
+              { label: 'No, allow only one application', value: 'false' },
             ]}
             fieldErrors={fieldErrors}
             defaultChecked={defaultValue}
