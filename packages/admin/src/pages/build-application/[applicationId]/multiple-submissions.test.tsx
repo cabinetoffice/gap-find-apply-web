@@ -48,20 +48,20 @@ describe('Multiple submissions page', () => {
 
   it('Should render the question title', () => {
     render(component);
-    screen.getByText('Does this application allow multiple submissions?');
+    screen.getByText('Can applicants make more than one application?');
   });
 
   it('Should render the question hint text', () => {
     render(component);
     screen.getByText(
-      'If yes, applicants will be able to submit multiple applications for this grant scheme. If no, they will only be able to submit one application.'
+      'This lets the same person apply for this grant more than once.'
     );
   });
 
   it('Should render Yes and No radio options', () => {
     render(component);
-    screen.getByRole('radio', { name: 'Yes' });
-    screen.getByRole('radio', { name: 'No' });
+    screen.getByRole('radio', { name: 'Yes, allow multiple applications' });
+    screen.getByRole('radio', { name: 'No, allow only one application' });
   });
 
   it('Should render the continue button', () => {
