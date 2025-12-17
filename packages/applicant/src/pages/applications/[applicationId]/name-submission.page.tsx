@@ -153,7 +153,7 @@ export default function NameSubmissionPage({
             questionTitle="Name this application"
             questionHintText={
               <>
-                You have already applied for this grant. Give this application a different name so you can tell it apart from your other applications.
+                This grant allows multiple applications. Give this application a name so you can tell it apart from other applications.
                 <br />
                 <br />
                 Your application name must only use letters and numbers. For example, &apos;Application 2&apos; or &apos;Smith Family&apos;.
