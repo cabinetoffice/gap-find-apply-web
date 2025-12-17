@@ -38,14 +38,35 @@ export const getServerSideProps = async ({
     req,
     res,
     async (body: RequestBody) => {
-      const allowsMultipleSubmissions =
-        body.allowsMultipleSubmissions === 'true';
-      await updateApplicationMultipleSubmissions(
-        applicationId,
-        allowsMultipleSubmissions,
-        sessionId
-      );
-      return allowsMultipleSubmissions;
+      if (body.allowsMultipleSubmissions === 'true') {
+        await updateApplicationMultipleSubmissions(
+          applicationId,
+          true,
+          sessionId
+        );
+        return true;
+      } else if (body.allowsMultipleSubmissions === 'false') {
+        await updateApplicationMultipleSubmissions(
+          applicationId,
+          false,
+          sessionId
+        );
+        return false;
+      } else {
+        // Validation error if the user hasn't selected an option
+        return Promise.reject({
+          response: {
+            data: {
+              fieldErrors: [
+                {
+                  fieldName: 'allowsMultipleSubmissions',
+                  errorMessage: 'Please select an option',
+                },
+              ],
+            },
+          },
+        });
+      }
     },
     () => `/build-application/${applicationId}/dashboard`,
     errorPageParams
