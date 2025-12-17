@@ -73,6 +73,13 @@ export const getServerSideProps: GetServerSideProps = async ({
       if (query.submissionName && typeof query.submissionName === 'string') {
         defaultValue = query.submissionName;
       }
+    } else if (query.error === 'required') {
+      fieldErrors = [
+        {
+          fieldName: 'submissionName',
+          errorMessage: 'Enter an application name',
+        },
+      ];
     }
 
     return {
@@ -85,6 +92,7 @@ export const getServerSideProps: GetServerSideProps = async ({
         subPath: publicRuntimeConfig.subPath,
         fieldErrors,
         defaultValue,
+        allowsMultipleSubmissions: application.allowsMultipleSubmissions,
       },
     };
   } catch (error) {
@@ -107,6 +115,7 @@ interface NameSubmissionPageProps {
   subPath: string;
   fieldErrors: ValidationError[];
   defaultValue: string;
+  allowsMultipleSubmissions: boolean;
 }
 
 export default function NameSubmissionPage({
@@ -118,6 +127,7 @@ export default function NameSubmissionPage({
   subPath,
   fieldErrors,
   defaultValue,
+  allowsMultipleSubmissions: _allowsMultipleSubmissions,
 }: NameSubmissionPageProps) {
   // For version > 1, use the create-submission API that links to mandatory questions
   // For version 1, use the simple create-submission-with-name API

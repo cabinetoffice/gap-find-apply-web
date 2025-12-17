@@ -103,6 +103,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const submissionName = req.body?.submissionName;
 
+    // Validate submission name is required when multiple submissions are enabled
+    if (grantApplication?.allowsMultipleSubmissions) {
+      if (!submissionName || submissionName.trim() === '') {
+        const redirectUrl = `${routes.nameSubmission(grantApplication.id.toString())}?error=required`;
+        return res.redirect(
+          302,
+          `${process.env.HOST}${redirectUrl}`
+        );
+      }
+    }
+
     // Validate submission name - only alphanumeric characters and spaces allowed
     if (submissionName && !/^[a-zA-Z0-9\s]+$/.test(submissionName)) {
       // Redirect back to the summary page (for version > 1) or name submission page

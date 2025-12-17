@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createSubmission } from '../../../../services/SubmissionService';
+import { getApplicationById } from '../../../../services/ApplicationService';
 import { getJwtFromCookies } from '../../../../utils/jwt';
 import { routes } from '../../../../utils/routes';
 import { APIGlobalHandler } from '../../../../utils/apiErrorHandler';
@@ -17,17 +18,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json({ message: 'Application ID is required' });
   }
 
-  // Validate submission name - only alphanumeric characters and spaces allowed
-  if (submissionName && !/^[a-zA-Z0-9\s]+$/.test(submissionName)) {
-    const redirectUrl = `${routes.nameSubmission(applicationId)}?error=invalidCharacters${submissionName ? `&submissionName=${encodeURIComponent(submissionName)}` : ''}`;
-    return res.redirect(
-      302,
-      `${process.env.HOST || ''}${redirectUrl}`
-    );
-  }
-
   try {
     const jwt = getJwtFromCookies(req);
+    
+    // Fetch application to check if multiple submissions are enabled
+    const application = await getApplicationById(applicationId, jwt);
+    
+    // Validate submission name is required when multiple submissions are enabled
+    if (application?.allowsMultipleSubmissions) {
+      if (!submissionName || submissionName.trim() === '') {
+        const redirectUrl = `${routes.nameSubmission(applicationId)}?error=required`;
+        return res.redirect(
+          302,
+          `${process.env.HOST || ''}${redirectUrl}`
+        );
+      }
+    }
+
+    // Validate submission name - only alphanumeric characters and spaces allowed
+    if (submissionName && !/^[a-zA-Z0-9\s]+$/.test(submissionName)) {
+      const redirectUrl = `${routes.nameSubmission(applicationId)}?error=invalidCharacters${submissionName ? `&submissionName=${encodeURIComponent(submissionName)}` : ''}`;
+      return res.redirect(
+        302,
+        `${process.env.HOST || ''}${redirectUrl}`
+      );
+    }
+
     const { submissionId } = await createSubmission(
       applicationId,
       jwt,
