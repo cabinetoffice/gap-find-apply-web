@@ -11,6 +11,8 @@ import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes, serviceErrorPropType } from '../../../utils/routes';
 import { MQ_ORG_TYPES } from '../../../utils/constants';
 import { GrantApplicantOrganisationProfileService } from '../../../services/GrantApplicantOrganisationProfileService';
+import { GrantSchemeService } from '../../../services/GrantSchemeService';
+import { logger } from '../../../utils/logger';
 
 const isIndividualOrNonLimitedCompanyOrLocalAuthority = (orgType: string) =>
   [
@@ -225,6 +227,28 @@ export default async function getServerSideProps({
     isOrgProfileComplete
   );
 
+  // For summary page, check if application allows multiple submissions
+  let applicationId: string | null = null;
+  let allowsMultipleSubmissions = false;
+  
+  if (resolvedUrl.includes('organisation-summary')) {
+    try {
+      const schemeService = GrantSchemeService.getInstance();
+      const { grantApplication } = await schemeService.getGrantSchemeById(
+        mandatoryQuestion.schemeId.toString(),
+        jwt
+      );
+      
+      if (grantApplication) {
+        allowsMultipleSubmissions = grantApplication.allowsMultipleSubmissions || false;
+        applicationId = grantApplication.id?.toString() || null;
+      }
+    } catch (e) {
+      // If we can't get the application, log error but continue with default behavior
+      logger.error('Error fetching application for summary page:', e);
+    }
+  }
+
   return {
     props: {
       csrfToken: res.getHeader('x-csrf-token') as string,
@@ -234,6 +258,8 @@ export default async function getServerSideProps({
       mandatoryQuestion,
       mandatoryQuestionId,
       backButtonUrl,
+      applicationId,
+      allowsMultipleSubmissions,
     },
   };
 }
