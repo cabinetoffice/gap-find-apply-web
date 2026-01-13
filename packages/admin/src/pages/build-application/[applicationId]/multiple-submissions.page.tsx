@@ -29,6 +29,17 @@ export const getServerSideProps = async ({
   resolvedUrl,
 }: GetServerSidePropsContext) => {
   const { applicationId } = params as Record<string, string>;
+  
+  // Check if feature toggle is enabled
+  if (process.env.ENABLE_FEATURE_MULTIPLE_SUBMISSIONS !== 'true') {
+    return {
+      redirect: {
+        destination: `/build-application/${applicationId}/dashboard`,
+        permanent: false,
+      },
+    };
+  }
+
   const sessionId = getSessionIdFromCookies(req);
 
   let fieldErrors = [] as ValidationError[];
