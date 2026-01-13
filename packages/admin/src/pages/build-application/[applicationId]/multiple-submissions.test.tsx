@@ -74,6 +74,8 @@ describe('Multiple submissions page', () => {
       typeof callServiceMethod
     >;
 
+    const originalEnv = process.env.ENABLE_FEATURE_MULTIPLE_SUBMISSIONS;
+
     const getMockContext = () =>
       ({
         params: {
@@ -90,6 +92,17 @@ describe('Multiple submissions page', () => {
 
     beforeEach(() => {
       jest.clearAllMocks();
+      // Enable feature toggle by default for tests that expect props
+      process.env.ENABLE_FEATURE_MULTIPLE_SUBMISSIONS = 'true';
+    });
+
+    afterEach(() => {
+      // Restore original environment variable
+      if (originalEnv === undefined) {
+        delete process.env.ENABLE_FEATURE_MULTIPLE_SUBMISSIONS;
+      } else {
+        process.env.ENABLE_FEATURE_MULTIPLE_SUBMISSIONS = originalEnv;
+      }
     });
 
     it('Returns correct props on successful load', async () => {
@@ -142,6 +155,32 @@ describe('Multiple submissions page', () => {
       )) as NextGetServerSidePropsResponse;
 
       expect(value.props.fieldErrors).toStrictEqual(fieldErrors);
+    });
+
+    it('Should redirect to dashboard when feature toggle is disabled', async () => {
+      process.env.ENABLE_FEATURE_MULTIPLE_SUBMISSIONS = 'false';
+      const mockValidContext = getMockContext();
+
+      const value = await getServerSideProps(mockValidContext);
+
+      expect(value).toHaveProperty('redirect');
+      expect((value as any).redirect.destination).toStrictEqual(
+        '/build-application/test-application-id/dashboard'
+      );
+      expect((value as any).redirect.permanent).toStrictEqual(false);
+    });
+
+    it('Should redirect to dashboard when feature toggle is not set', async () => {
+      delete process.env.ENABLE_FEATURE_MULTIPLE_SUBMISSIONS;
+      const mockValidContext = getMockContext();
+
+      const value = await getServerSideProps(mockValidContext);
+
+      expect(value).toHaveProperty('redirect');
+      expect((value as any).redirect.destination).toStrictEqual(
+        '/build-application/test-application-id/dashboard'
+      );
+      expect((value as any).redirect.permanent).toStrictEqual(false);
     });
   });
 });
