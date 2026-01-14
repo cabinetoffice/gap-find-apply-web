@@ -18,7 +18,6 @@ import {
 } from './editQuestionServiceError';
 import callServiceMethod from '../../../../../../utils/callServiceMethod';
 import getConfig from 'next/config';
-import { getSummaryFromSession } from '../../../../../../services/SessionService';
 import { buildQueryStringWithoutUndefinedValues } from '../../../../../../utils/general';
 
 const getServerSideProps = async ({
@@ -125,11 +124,6 @@ const getServerSideProps = async ({
           };
 
         case 'save-and-continue' in body:
-          questionSummary = ((await getSummaryFromSession(
-            'updatedQuestion',
-            sessionId
-          )) || {}) as unknown as QuestionWithOptionsSummary;
-
           questionData = await getQuestion(
             sessionId,
             applicationId,
