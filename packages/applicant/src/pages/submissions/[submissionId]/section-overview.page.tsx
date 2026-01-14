@@ -36,7 +36,8 @@ export const getServerSideProps: GetServerSideProps = async ({
       },
     };
   }
-  const { sections, grantSubmissionId, applicationName } = submission;
+  const { sections, grantSubmissionId, applicationName, submissionName } =
+    submission;
 
   const hydratedSections = await Promise.all(
     sections.map(async (section) => {
@@ -61,6 +62,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     props: {
       sections: hydratedSections,
       applicationName,
+      submissionName,
       grantSubmissionId,
     },
   };
@@ -69,8 +71,10 @@ export const getServerSideProps: GetServerSideProps = async ({
 export default function SectionOverview({
   sections,
   applicationName,
+  submissionName,
   grantSubmissionId,
 }) {
+  const displayName = submissionName || applicationName;
   return (
     <>
       <Meta title="My application - Question overview" />
@@ -78,7 +82,7 @@ export default function SectionOverview({
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <span className="govuk-caption-l" data-cy="cy-application-name">
-              {applicationName}
+              {displayName}
             </span>
             <h1 className="govuk-heading-l" data-cy="cy-overview-heading">
               Overview of application questions

@@ -25,6 +25,7 @@ export interface SubmissionSummaryPage {
   grantSubmissionId: string;
   mandatoryQuestionId: string;
   applicationName: string;
+  submissionName?: string;
   hasSubmissionBeenSubmitted: boolean;
   csrfToken: string;
 }
@@ -35,8 +36,13 @@ export const getServerSideProps: GetServerSideProps<
   const jwt = getJwtFromCookies(req);
   const submissionId = params.submissionId.toString();
 
-  const { sections, grantSubmissionId, applicationName, grantSchemeId } =
-    await getSubmissionById(submissionId, getJwtFromCookies(req));
+  const {
+    sections,
+    grantSubmissionId,
+    applicationName,
+    submissionName,
+    grantSchemeId,
+  } = await getSubmissionById(submissionId, getJwtFromCookies(req));
 
   const grantApplicationStatus = await getApplicationStatusBySchemeId(
     grantSchemeId,
@@ -83,6 +89,7 @@ export const getServerSideProps: GetServerSideProps<
       grantSubmissionId,
       mandatoryQuestionId,
       applicationName,
+      submissionName,
       hasSubmissionBeenSubmitted: hasBeenSubmitted,
       csrfToken: res.getHeader('x-csrf-token') as string,
       closedAndInProgress:
@@ -96,10 +103,12 @@ export default function SubmissionSummary({
   grantSubmissionId,
   mandatoryQuestionId,
   applicationName,
+  submissionName,
   hasSubmissionBeenSubmitted,
   csrfToken,
   closedAndInProgress,
 }) {
+  const displayName = submissionName || applicationName;
   return (
     <>
       <Meta title="My application - Apply for a grant" />
@@ -127,9 +136,9 @@ export default function SubmissionSummary({
               )}
               <span
                 className="govuk-caption-l"
-                data-cy={`cy-application-name-${applicationName}`}
+                data-cy={`cy-application-name-${displayName}`}
               >
-                {applicationName}
+                {displayName}
               </span>
               <h1 className="govuk-heading-l" data-cy="cy-page-header">
                 {hasSubmissionBeenSubmitted || closedAndInProgress

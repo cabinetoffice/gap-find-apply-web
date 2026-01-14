@@ -90,11 +90,17 @@ export const generateMandatoryQuestionDetails = (
 export default function MandatoryQuestionOrganisationSummaryPage({
   mandatoryQuestion,
   mandatoryQuestionId,
+  applicationId,
+  allowsMultipleSubmissions,
 }: InferProps<typeof getServerSideProps>) {
   const mandatoryQuestionDetails = generateMandatoryQuestionDetails(
     mandatoryQuestion,
     mandatoryQuestionId
   );
+
+  // Only redirect to name-submission if multiple submissions are enabled
+  const shouldRedirectToNameSubmission = 
+    allowsMultipleSubmissions && applicationId;
 
   return (
     <>
@@ -168,20 +174,33 @@ export default function MandatoryQuestionOrganisationSummaryPage({
                 ))}
             </dl>
 
-            <Link
-              href={{
-                pathname: `/api/create-submission`,
-                query: {
-                  schemeId: mandatoryQuestion.schemeId.toString(),
-                  mandatoryQuestionId,
-                },
-              }}
-              className="govuk-button"
-              data-module="govuk-button"
-              aria-disabled="false"
-            >
-              Confirm and submit
-            </Link>
+            {shouldRedirectToNameSubmission ? (
+              // Redirect to name-submission page for multiple submission applications
+              <Link
+                href={routes.nameSubmission(applicationId)}
+                className="govuk-button"
+                data-module="govuk-button"
+                aria-disabled="false"
+                role="button"
+              >
+                Confirm and submit
+              </Link>
+            ) : (
+              // Use form POST for single submission applications (existing behavior)
+              <form
+                action={`/apply/applicant/api/create-submission?schemeId=${mandatoryQuestion.schemeId.toString()}&mandatoryQuestionId=${mandatoryQuestionId}`}
+                method="POST"
+              >
+                <button
+                  type="submit"
+                  className="govuk-button"
+                  data-module="govuk-button"
+                  aria-disabled="false"
+                >
+                  Confirm and submit
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </Layout>

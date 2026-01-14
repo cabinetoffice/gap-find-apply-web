@@ -44,6 +44,8 @@ export const routes = {
       `/mandatory-questions/${mandatoryQuestionId}/external-applications`,
   },
   applications: '/applications',
+  nameSubmission: (applicationId: string) =>
+    `/applications/${applicationId}/name-submission`,
   submissions: {
     index: '/submissions',
     sections: (grantSubmissionId: string) =>

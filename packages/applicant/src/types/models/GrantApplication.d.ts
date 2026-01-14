@@ -10,4 +10,5 @@ export type GrantApplication = {
   applicationName: string;
   applicationStatus: string;
   definition: string;
+  allowsMultipleSubmissions: boolean;
 };

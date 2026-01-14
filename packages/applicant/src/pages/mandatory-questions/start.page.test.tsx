@@ -34,6 +34,10 @@ const spiedHasSchemeInternalApplication = jest.spyOn(
   GrantSchemeService.prototype,
   'hasSchemeInternalApplication'
 );
+const spiedGetGrantSchemeById = jest.spyOn(
+  GrantSchemeService.prototype,
+  'getGrantSchemeById'
+);
 
 const publishedInternalApplicationResponse = {
   hasInternalApplication: true,
@@ -135,13 +139,18 @@ describe('Mandatory Questions Start', () => {
         spiedGetMandatoryQuestionBySchemeId.mockResolvedValue({
           ...mandatoryQuestionData,
           submissionId: '1',
+          mandatoryQuestionsComplete: true,
         });
+      const getGrantSchemeById = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: { id: 1, version: 1 },
+        grantApplication: { id: '1', allowsMultipleSubmissions: true },
+      });
 
       const response = await getServerSideProps(getContext(getDefaultContext));
 
       expect(response).toEqual({
         redirect: {
-          destination: '/applications',
+          destination: '/applications/1/name-submission',
           permanent: false,
         },
       });

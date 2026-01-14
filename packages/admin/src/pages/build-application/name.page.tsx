@@ -60,7 +60,13 @@ export const getServerSideProps: GetServerSideProps = async ({
         body.applicationName,
         getSessionIdFromCookies(req)
       ),
-    (applicationId) => `/build-application/${applicationId}/dashboard`,
+    (applicationId) => {
+      // Check if feature toggle is enabled before redirecting to multiple-submissions page
+      if (process.env.ENABLE_FEATURE_MULTIPLE_SUBMISSIONS === 'true') {
+        return `/build-application/${applicationId}/multiple-submissions`;
+      }
+      return `/build-application/${applicationId}/dashboard`;
+    },
     errorPageParams
   );
 

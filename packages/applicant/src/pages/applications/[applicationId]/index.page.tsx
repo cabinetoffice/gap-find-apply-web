@@ -2,7 +2,6 @@ import { GetServerSideProps } from 'next';
 import { getApplicationById } from '../../../services/ApplicationService';
 import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
 import { GrantSchemeService } from '../../../services/GrantSchemeService';
-import { createSubmission } from '../../../services/SubmissionService';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import { routes } from '../../../utils/routes';
 import { GrantApplication } from '../../../types/models/GrantApplication';
@@ -30,13 +29,16 @@ export const getServerSideProps: GetServerSideProps = async ({
       jwt
     );
     if (scheme.version === 1) {
-      const { submissionCreated, submissionId } = await createSubmission(
-        applicationId,
-        jwt
-      );
-
-      //submission already exists so redirect to list of applications
-      if (!submissionCreated) {
+      if (application.allowsMultipleSubmissions) {
+        // Redirect to name submission page instead of auto-creating
+        return {
+          redirect: {
+            destination: routes.nameSubmission(applicationId),
+            permanent: false,
+          },
+        };
+      } else {
+        // Don't allow multiple submissions, redirect to the applications page
         return {
           redirect: {
             destination: routes.applications,
@@ -44,13 +46,6 @@ export const getServerSideProps: GetServerSideProps = async ({
           },
         };
       }
-
-      return {
-        redirect: {
-          destination: routes.submissions.sections(submissionId),
-          permanent: false,
-        },
-      };
     }
 
     const mandatoryQuestionService =
@@ -75,8 +70,27 @@ export const getServerSideProps: GetServerSideProps = async ({
       );
 
     if (mandatoryQuestionCompleteRedirect) {
-      //if it is completed, redirect to submission page
-      return mandatoryQuestionCompleteRedirect;
+      // For version > 1, redirect to name-submission page to allow creating multiple submissions
+      // This allows users to create new submissions even if they have completed mandatory questions
+
+      // If this application allows multiple submissions, redirect to name-submission page
+      // to allow creating multiple submissions
+      if (application.allowsMultipleSubmissions) {
+        return {
+          redirect: {
+            destination: routes.nameSubmission(applicationId),
+            permanent: false,
+          },
+        };
+      } else {
+        // Don't allow multiple submissions, redirect to the applications page
+        return {
+          redirect: {
+            destination: routes.applications,
+            permanent: false,
+          },
+        };
+      }
     }
 
     //if it exists and not completed, redirect to start page
@@ -138,19 +152,18 @@ const checkIfMandatoryQuestionIsCompleted = async (
       scheme.id.toString()
     );
 
-  if (
-    mandatoryQuestions.submissionId !== null &&
-    mandatoryQuestions.submissionId !== undefined
-  ) {
-    return {
-      redirect: {
-        destination: routes.submissions.sections(
-          mandatoryQuestions.submissionId
-        ),
-        permanent: false,
-      },
-    };
+  // Return true if mandatory questions are completed
+  // This allows users to create multiple submissions for the same grant
+  if (!mandatoryQuestions) {
+    return false;
   }
+
+  return (
+    mandatoryQuestions.status === 'COMPLETED' ||
+    mandatoryQuestions.mandatoryQuestionsComplete === true ||
+    (mandatoryQuestions.submissionId !== null &&
+      mandatoryQuestions.submissionId !== undefined)
+  );
 };
 
 const ApplicationCreate = () => {

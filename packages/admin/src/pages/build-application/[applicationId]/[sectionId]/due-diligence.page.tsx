@@ -158,9 +158,7 @@ const DueDiligence = ({
         }Due-diligence checks - Manage a grant`}
       />
 
-      <CustomLink href={backButtonHref}>
-        <a className="govuk-back-link">Back</a>
-      </CustomLink>
+      <CustomLink href={backButtonHref} isBackButton />
 
       <div className="govuk-!-padding-top-7">
         <FlexibleQuestionPageLayout

@@ -5,6 +5,7 @@ import {
   GrantMandatoryQuestionService,
 } from '../../../services/GrantMandatoryQuestionService';
 import { GrantApplicantOrganisationProfileService } from '../../../services/GrantApplicantOrganisationProfileService';
+import { GrantSchemeService } from '../../../services/GrantSchemeService';
 import {
   Optional,
   expectObjectEquals,
@@ -32,6 +33,10 @@ const _spiedGrantApplicantOrganisationProfileService = jest.spyOn(
   GrantApplicantOrganisationProfileService.prototype,
   'isOrgProfileComplete'
 );
+const spiedGrantSchemeServiceGetGrantSchemeById = jest.spyOn(
+  GrantSchemeService.prototype,
+  'getGrantSchemeById'
+);
 const userTokenNameBackup = process.env.USER_TOKEN_NAME;
 describe('getServerSideProps', () => {
   const getDefaultGrantMandatoryQuestion = (): GrantMandatoryQuestionDto => ({
@@ -53,6 +58,11 @@ describe('getServerSideProps', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     process.env.USER_TOKEN_NAME = 'gap-test';
+    // Mock GrantSchemeService.getGrantSchemeById to return default values
+    spiedGrantSchemeServiceGetGrantSchemeById.mockResolvedValue({
+      grantScheme: { id: 1, version: 1 },
+      grantApplication: { id: '1', allowsMultipleSubmissions: false },
+    });
   });
   afterEach(() => {
     process.env.USER_TOKEN_NAME = userTokenNameBackup;
@@ -83,6 +93,8 @@ describe('getServerSideProps', () => {
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestionId: 'mandatoryQuestionId',
           backButtonUrl: undefined,
+          applicationId: null,
+          allowsMultipleSubmissions: false,
         },
       });
     });
@@ -273,6 +285,8 @@ describe('getServerSideProps', () => {
           defaultFields: { name: 'test name' },
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestionId: 'mandatoryQuestionId',
+          applicationId: null,
+          allowsMultipleSubmissions: false,
           backButtonUrl: undefined,
         },
       });
@@ -378,6 +392,8 @@ describe('getServerSideProps', () => {
             mandatoryQuestion: getGrantMandatoryQuestion(),
             mandatoryQuestionId: 'mandatoryQuestionId',
             backButtonUrl: expected,
+            applicationId: null,
+            allowsMultipleSubmissions: false,
           },
         });
       }
@@ -406,6 +422,8 @@ describe('getServerSideProps', () => {
           mandatoryQuestionId: 'mandatoryQuestionId',
           backButtonUrl:
             '/mandatory-questions/mandatoryQuestionId/organisation-summary',
+          applicationId: null,
+          allowsMultipleSubmissions: false,
         },
       });
     });
@@ -436,6 +454,8 @@ describe('getServerSideProps', () => {
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestionId: 'mandatoryQuestionId',
           backButtonUrl: '/submissions/submissionId/sections/sectionId',
+          applicationId: null,
+          allowsMultipleSubmissions: false,
         },
       });
     });
@@ -466,6 +486,8 @@ describe('getServerSideProps', () => {
           mandatoryQuestion: getDefaultGrantMandatoryQuestion(),
           mandatoryQuestionId: 'mandatoryQuestionId',
           backButtonUrl: '/submissions/submissionId/summary',
+          applicationId: null,
+          allowsMultipleSubmissions: false,
         },
       });
     });

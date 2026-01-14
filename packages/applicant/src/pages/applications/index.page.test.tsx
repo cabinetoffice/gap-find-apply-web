@@ -16,8 +16,10 @@ const MockApplicationData = [
     grantApplicationId: 'string',
     grantSubmissionId: 'subId1',
     applicationName: 'Application 1',
+    submissionName: null,
     submissionStatus: 'IN_PROGRESS',
-    submittedDate: null,
+    submittedDate: '',
+    grantApplicationStatus: undefined,
     sections: [
       {
         sectionId: 'string',
@@ -31,8 +33,10 @@ const MockApplicationData = [
     grantApplicationId: 'string',
     grantSubmissionId: 'subId2',
     applicationName: 'Application 2',
+    submissionName: null,
     submissionStatus: 'IN_PROGRESS',
-    submittedDate: null,
+    submittedDate: '',
+    grantApplicationStatus: undefined,
     sections: [
       {
         sectionId: 'string',
@@ -46,8 +50,10 @@ const MockApplicationData = [
     grantApplicationId: 'string',
     grantSubmissionId: 'subId3',
     applicationName: 'Application 3',
+    submissionName: null,
     submissionStatus: 'IN_PROGRESS',
-    submittedDate: null,
+    submittedDate: '',
+    grantApplicationStatus: undefined,
     sections: [
       {
         sectionId: 'string',
@@ -64,8 +70,10 @@ const MockApplicationDataSubmitted = [
     grantApplicationId: 'string',
     grantSubmissionId: 'subId1',
     applicationName: 'Application 1',
+    submissionName: null,
     submissionStatus: 'SUBMITTED',
     submittedDate: '2024-01-15T13:36:06.861109Z',
+    grantApplicationStatus: undefined,
     sections: [
       {
         sectionId: 'string',
@@ -82,8 +90,10 @@ const MockApplicationDataGrantClosed = [
     grantApplicationId: 'string',
     grantSubmissionId: 'subId1',
     applicationName: 'Application 1',
+    submissionName: null,
     submissionStatus: 'GRANT_CLOSED',
-    submittedDate: null,
+    submittedDate: '',
+    grantApplicationStatus: undefined,
     sections: [
       {
         sectionId: 'string',
@@ -108,11 +118,21 @@ const getActionForRow = (row: HTMLElement, name: string) =>
 const getTextForRow = (row: HTMLElement, text: string) =>
   getQueriesForElement(row).getByText(text);
 
-const assertHasAllHeaders = () => {
-  expect(screen.getByRole('columnheader', { name: 'Grant' })).toBeDefined();
-  expect(screen.getByRole('columnheader', { name: 'Status' })).toBeDefined();
-  expect(screen.getByRole('columnheader', { name: 'Submitted' })).toBeDefined();
-  expect(screen.getByRole('columnheader', { name: 'Actions' })).toBeDefined();
+const assertHasAllHeaders = (expectedGrantCount = 3) => {
+  // With multiple tables (one per grant), we have multiple headers
+  // Check that all headers exist (one header per grant)
+  expect(
+    screen.getAllByRole('columnheader', { name: 'Application Name' })
+  ).toHaveLength(expectedGrantCount);
+  expect(screen.getAllByRole('columnheader', { name: 'Status' })).toHaveLength(
+    expectedGrantCount
+  );
+  expect(
+    screen.getAllByRole('columnheader', { name: 'Submitted' })
+  ).toHaveLength(expectedGrantCount);
+  expect(screen.getAllByRole('columnheader', { name: 'Actions' })).toHaveLength(
+    expectedGrantCount
+  );
 };
 
 describe('getServerSideProps', () => {
@@ -162,9 +182,9 @@ describe('View existing applications', () => {
   });
 
   it('should render in progress applications correctly', () => {
-    // 1 header + 3 rows
-    expect(screen.getAllByRole('row')).toHaveLength(4);
-    // 3 rows * 4 columns
+    // 3 grants = 3 tables, each with 1 header row + 1 data row = 6 rows total
+    expect(screen.getAllByRole('row')).toHaveLength(6);
+    // 3 data rows * 4 columns = 12 cells (headers are columnheaders, not cells)
     expect(screen.getAllByRole('cell')).toHaveLength(12);
 
     assertHasAllHeaders();
@@ -195,7 +215,8 @@ describe('Submitted applications', () => {
     // 1 row * 4 columns
     expect(screen.getAllByRole('cell')).toHaveLength(4);
 
-    assertHasAllHeaders();
+    // 1 grant = 1 table with 1 header
+    assertHasAllHeaders(1);
 
     const row = getRow('Application 1');
     expect(getActionForRow(row, 'View')).toHaveProperty(
@@ -225,7 +246,8 @@ describe('Closed applications', () => {
     // 1 row * 4 columns
     expect(screen.getAllByRole('cell')).toHaveLength(4);
 
-    assertHasAllHeaders();
+    // 1 grant = 1 table with 1 header
+    assertHasAllHeaders(1);
 
     const row = getRow('Application 1');
     expect(getTextForRow(row, 'Grant Closed')).toBeInTheDocument();

@@ -326,12 +326,16 @@ describe('Submission service ', () => {
       const result = await createSubmission(applicationId, 'testJwt');
       expect(result).toEqual(MockCreateSubmissionData);
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(createSubmissionURL, null, {
-        headers: {
-          Authorization: `Bearer testJwt`,
-          Accept: 'application/json',
-        },
-      });
+      expect(spy).toBeCalledWith(
+        createSubmissionURL,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer testJwt`,
+            Accept: 'application/json',
+          },
+        }
+      );
     });
   });
 

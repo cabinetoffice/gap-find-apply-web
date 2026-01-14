@@ -22,6 +22,7 @@ export interface SubmissionSectionPage {
   sections: SectionData[];
   grantSubmissionId: string;
   applicationName: string;
+  submissionName?: string;
   isSubmissionReady: boolean;
   hasSubmissionBeenSubmitted: boolean;
   supportEmail: string;
@@ -33,8 +34,13 @@ export const getServerSideProps: GetServerSideProps<
 > = async ({ req, res, params }) => {
   const submissionId = params.submissionId.toString();
 
-  const { sections, grantSubmissionId, applicationName, grantSchemeId } =
-    await getSubmissionById(submissionId, getJwtFromCookies(req));
+  const {
+    sections,
+    grantSubmissionId,
+    applicationName,
+    submissionName,
+    grantSchemeId,
+  } = await getSubmissionById(submissionId, getJwtFromCookies(req));
 
   const submissionReady = await isSubmissionReady(
     submissionId,
@@ -45,12 +51,13 @@ export const getServerSideProps: GetServerSideProps<
     getJwtFromCookies(req)
   );
   const grantSchemeService = GrantSchemeService.getInstance();
-  const { grantScheme } = await grantSchemeService.getGrantSchemeById(
-    grantSchemeId,
-    getJwtFromCookies(req)
-  );
+  const { grantScheme, grantApplication } =
+    await grantSchemeService.getGrantSchemeById(
+      grantSchemeId,
+      getJwtFromCookies(req)
+    );
 
-  if (hasBeenSubmitted) {
+  if (hasBeenSubmitted && !grantApplication?.allowsMultipleSubmissions) {
     return {
       redirect: {
         destination: `/applications`,
@@ -71,6 +78,7 @@ export const getServerSideProps: GetServerSideProps<
       sections,
       grantSubmissionId,
       applicationName,
+      submissionName,
       isSubmissionReady: submissionReady,
       hasSubmissionBeenSubmitted: hasBeenSubmitted,
       supportEmail: grantScheme.email || '',
@@ -84,12 +92,14 @@ export default function SubmissionSections({
   sections,
   grantSubmissionId,
   applicationName,
+  submissionName,
   isSubmissionReady,
   hasSubmissionBeenSubmitted,
   csrfToken,
   supportEmail,
   eligibilityCheckPassed,
 }) {
+  const displayName = submissionName || applicationName;
   const getSectionUrl = (sectionId: string) => {
     switch (sectionId) {
       case 'ORGANISATION_DETAILS':
@@ -117,9 +127,9 @@ export default function SubmissionSections({
             >
               <span
                 className="govuk-caption-l"
-                data-cy={`cy-application-name-${applicationName}`}
+                data-cy={`cy-application-name-${displayName}`}
               >
-                {applicationName}
+                {displayName}
               </span>
               <h1 className="govuk-heading-l" data-cy="cy-application-header">
                 Your Application

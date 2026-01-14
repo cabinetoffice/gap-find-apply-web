@@ -14,6 +14,11 @@ import { routes } from '../../utils/routes';
 import { logger } from '../../utils/logger';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // This endpoint should handle POST requests from forms
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
   const grantMandatoryQuestionService =
     GrantMandatoryQuestionService.getInstance();
   const grantApplicantService = GrantApplicantService.getInstance();
@@ -21,8 +26,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     GrantApplicantOrganisationProfileService.getInstance();
   const grantSchemeService = GrantSchemeService.getInstance();
 
-  const mandatoryQuestionId = req.query.mandatoryQuestionId.toString();
-  const schemeId = req.query.schemeId.toString();
+  const mandatoryQuestionId = req.query.mandatoryQuestionId?.toString();
+  const schemeId = req.query.schemeId?.toString();
+
+  if (!mandatoryQuestionId || !schemeId) {
+    return res.status(400).json({
+      message: 'mandatoryQuestionId and schemeId are required',
+    });
+  }
+
   const jwt = getJwtFromCookies(req);
 
   try {
@@ -32,8 +44,28 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         mandatoryQuestionId,
         jwt
       );
+
     const { grantApplication, grantAdverts } =
       await grantSchemeService.getGrantSchemeById(schemeId.toString(), jwt);
+
+    // Check if mandatory question already has a submission
+    // This prevents duplicate submissions when the first submission is being created
+    // (e.g., from double-clicks or browser retries)
+    // However, if the application allows multiple submissions, we should allow creating new ones
+    if (
+      mandatoryQuestionData.submissionId &&
+      !grantApplication?.allowsMultipleSubmissions
+    ) {
+      logger.info(
+        `Mandatory question ${mandatoryQuestionId} already has submission ${mandatoryQuestionData.submissionId}. Redirecting to existing submission.`
+      );
+      return res.redirect(
+        303,
+        `${process.env.HOST}${routes.submissions.sections(
+          mandatoryQuestionData.submissionId
+        )}`
+      );
+    }
 
     const updateOrganisationDetailsDto = mapUpdateOrganisationDetailsDto(
       grantApplicant.organisation,
@@ -60,6 +92,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         }
       );
       return res.redirect(
+        303,
         `${process.env.HOST}${routes.mandatoryQuestions.externalApplicationPage(
           mandatoryQuestionId
         )}?url=${grantAdverts[0].externalSubmissionUrl}`
@@ -68,7 +101,34 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     logger.info('Grant has an internal application. Creating submission');
 
-    const { submissionId } = await createSubmission(grantApplication.id, jwt);
+    const submissionName = req.body?.submissionName;
+
+    // Validate submission name is required when multiple submissions are enabled
+    if (grantApplication?.allowsMultipleSubmissions) {
+      if (!submissionName || submissionName.trim() === '') {
+        const redirectUrl = `${routes.nameSubmission(grantApplication.id.toString())}?error=required`;
+        return res.redirect(
+          302,
+          `${process.env.HOST}${redirectUrl}`
+        );
+      }
+    }
+
+    // Validate submission name - only alphanumeric characters and spaces allowed
+    if (submissionName && !/^[a-zA-Z0-9\s]+$/.test(submissionName)) {
+      // Redirect back to the summary page (for version > 1) or name submission page
+      const redirectUrl = `${routes.nameSubmission(grantApplication.id.toString())}?error=invalidCharacters${submissionName ? `&submissionName=${encodeURIComponent(submissionName)}` : ''}`;
+      return res.redirect(
+        302,
+        `${process.env.HOST}${redirectUrl}`
+      );
+    }
+
+    const { submissionId } = await createSubmission(
+      grantApplication.id,
+      jwt,
+      submissionName || undefined
+    );
 
     await grantMandatoryQuestionService.updateMandatoryQuestion(
       jwt,
@@ -84,11 +144,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       `Submission has been added to mandatory question: ${mandatoryQuestionId}`
     );
 
+    // Use 303 See Other to force GET redirect after POST
     return res.redirect(
+      303,
       `${process.env.HOST}${routes.submissions.sections(submissionId)}`
     );
   } catch (e) {
-    return handleError(e, mandatoryQuestionId, res);
+    return handleError(e, mandatoryQuestionId || '', res);
   }
 }
 
@@ -117,10 +179,15 @@ function handleError(
 ) {
   logger.error('error: ', e);
   const serviceErrorProps = {
-    errorInformation: 'There was an error in the service',
+    errorInformation:
+      e?.response?.data?.message || 'There was an error in the service',
     linkAttributes: {
-      href: routes.mandatoryQuestions.summaryPage(mandatoryQuestionId),
-      linkText: 'Go back to the summary page and try again',
+      href: mandatoryQuestionId
+        ? routes.mandatoryQuestions.summaryPage(mandatoryQuestionId)
+        : routes.applications,
+      linkText: mandatoryQuestionId
+        ? 'Go back to the summary page and try again'
+        : 'Go back to your applications and try again',
       linkInformation: '',
     },
   };

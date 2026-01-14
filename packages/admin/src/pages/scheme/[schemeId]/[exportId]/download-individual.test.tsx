@@ -56,9 +56,10 @@ const backBtnUrl = `/scheme/${SCHEME_ID}/${EXPORT_ID}`;
 const sampleSubmission = {
   name: 'Test Submission',
   status: 'COMPLETE',
-  submittedDate: '20/10/24',
+  submittedDate: '2024-10-20T12:00:00Z',
   zipFileLocation: '4321/location.zip',
   submissionId: '3a6cfe2d-bf58-440d-9e07-3579c7dcf207',
+  submissionName: 'My Application Name',
 } as ExportDetails;
 
 const submissionList = Array(10).fill(sampleSubmission);
@@ -101,7 +102,30 @@ describe('Download individual submissions page', () => {
 
       it('Should render the downloadable submissions', () => {
         expect(screen.getAllByText('Test Submission')).toHaveLength(10);
+        expect(screen.getAllByText('My Application Name')).toHaveLength(10);
+        expect(screen.getAllByText('20/10/2024')).toHaveLength(10);
         expect(screen.getAllByText('Download')).toHaveLength(10);
+      });
+
+      it('Should render table headers correctly', () => {
+        screen.getByText('Name');
+        screen.getByText('Application Name');
+        screen.getByText('Submission Date');
+      });
+
+      it('Should display dash when submission name is missing', () => {
+        const submissionWithoutName = {
+          ...sampleSubmission,
+          submissionName: undefined,
+        };
+        const propsWithoutName = {
+          ...customProps,
+          exportedSubmissions: [submissionWithoutName],
+        };
+        const { container } = render(
+          <DownloadIndividualSubmissions {...propsWithoutName} />
+        );
+        expect(container.textContent).toContain('-');
       });
 
       it('Should render total applications', () => {

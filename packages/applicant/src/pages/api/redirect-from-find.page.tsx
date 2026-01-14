@@ -65,7 +65,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       if (mqAreCompleted) {
         const redirectUrl = advertIsInternal
-          ? `${process.env.HOST}${routes.applications}`
+          ? `${process.env.HOST}${routes.applications}/${grantApplicationId}`
           : externalSubmissionUrl;
 
         return res.redirect(redirectUrl);
