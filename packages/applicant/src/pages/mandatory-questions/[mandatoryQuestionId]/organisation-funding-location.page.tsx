@@ -56,7 +56,6 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
                 'Scotland',
                 'Wales',
                 'Northern Ireland',
-                'Outside of the UK',
                 'International',
               ]}
               defaultCheckboxes={defaultFields.fundingLocation}
