@@ -246,6 +246,17 @@ export default function SectionRecap({
                   }: QuestionType,
                   index: number
                 ) => {
+                  const fundingLocationLabelMap: Record<string, string> = {
+                    'Outside of the UK': 'International',
+                  };
+                  const mappedMultiResponse =
+                    questionId === 'BENEFITIARY_LOCATION' && multiResponse
+                      ? (Array.isArray(multiResponse)
+                          ? multiResponse
+                          : multiResponse.split(',')
+                        ).map((v) => fundingLocationLabelMap[v] ?? v)
+                      : multiResponse;
+
                   return (
                     <div className="govuk-summary-list__row" key={index}>
                       <dt
@@ -254,9 +265,9 @@ export default function SectionRecap({
                       >
                         {fieldTitle}
                       </dt>
-                      {multiResponse ? (
+                      {mappedMultiResponse ? (
                         <ProcessMultiResponse
-                          data={multiResponse}
+                          data={mappedMultiResponse}
                           id={questionId}
                           cyTag={questionId}
                           questionType={responseType}
