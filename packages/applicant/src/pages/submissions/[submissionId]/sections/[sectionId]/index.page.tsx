@@ -251,10 +251,7 @@ export default function SectionRecap({
                   };
                   const mappedMultiResponse =
                     questionId === 'BENEFITIARY_LOCATION' && multiResponse
-                      ? (Array.isArray(multiResponse)
-                          ? multiResponse
-                          : multiResponse.split(',')
-                        ).map((v) => fundingLocationLabelMap[v] ?? v)
+                      ? multiResponse.map((v) => fundingLocationLabelMap[v] ?? v)
                       : multiResponse;
 
                   return (
