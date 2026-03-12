@@ -44,24 +44,24 @@ export default function MandatoryQuestionOrganisationFundingLocationPage({
               }
               fieldName="fundingLocation"
               options={[
-                'North East (England)',
-                'North West (England)',
-                'Yorkshire and the Humber',
-                'East Midlands (England)',
-                'West Midlands (England)',
-                'East (England)',
-                'London',
-                'South East (England)',
-                'South West (England)',
-                'Scotland',
-                'Wales',
-                'Northern Ireland',
-                'Outside of the UK',
-                'International',
+                { label: 'North East (England)', value: 'North East (England)' },
+                { label: 'North West (England)', value: 'North West (England)' },
+                { label: 'Yorkshire and the Humber', value: 'Yorkshire and the Humber' },
+                { label: 'East Midlands (England)', value: 'East Midlands (England)' },
+                { label: 'West Midlands (England)', value: 'West Midlands (England)' },
+                { label: 'East (England)', value: 'East (England)' },
+                { label: 'London', value: 'London' },
+                { label: 'South East (England)', value: 'South East (England)' },
+                { label: 'South West (England)', value: 'South West (England)' },
+                { label: 'Scotland', value: 'Scotland' },
+                { label: 'Wales', value: 'Wales' },
+                { label: 'Northern Ireland', value: 'Northern Ireland' },
+                { label: 'International', value: 'Outside of the UK' },
               ]}
               defaultCheckboxes={defaultFields.fundingLocation}
               fieldErrors={fieldErrors}
               newLineAccepted={true}
+              useOptionValueAsInputValue={true}
             />
 
             <Button
