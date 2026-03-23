@@ -80,7 +80,9 @@ export const generateMandatoryQuestionDetails = (
     {
       id: 'fundingLocation',
       label: 'Where will this funding be spent?',
-      value: mandatoryQuestion?.fundingLocation,
+      value: (mandatoryQuestion?.fundingLocation ?? []).map(
+        (v) => (v === 'Outside of the UK' ? 'International' : v)
+      ),
       url: routes.mandatoryQuestions.fundingLocationPage(mandatoryQuestionId),
       status: 'Change',
     },
