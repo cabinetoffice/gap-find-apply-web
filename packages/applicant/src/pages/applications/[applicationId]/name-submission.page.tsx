@@ -153,10 +153,10 @@ export default function NameSubmissionPage({
             questionTitle="Name this application"
             questionHintText={
               <>
-                This grant allows multiple applications. Give this application a name so you can tell them apart.
+                Give this application a name. This helps you identify it if you need to submit more than one.
                 <br />
                 <br />
-                Your application name must only use letters and numbers. For example, &apos;Application 2&apos; or &apos;Smith Family&apos;.
+                Your application name must only use letters and numbers. For example, &apos;Community Hall Roof&apos; or &apos;Smith Family&apos;.
               </>
             }
             fieldName="submissionName"
