@@ -209,7 +209,9 @@ export default function QuestionPage({
   const rawQuestionTitle = question?.questionSuffix ? question.questionSuffix : displayTitle;
   const questionTitle =
     isIndividual && questionId === 'ELIGIBILITY'
-      ? rawQuestionTitle.replace(/your organisation/gi, 'you')
+      ? rawQuestionTitle
+          .replace(/Does your organisation/gi, 'Do you')
+          .replace(/your organisation/gi, 'you')
       : rawQuestionTitle;
 
   const commonProps = {
@@ -460,7 +462,7 @@ export default function QuestionPage({
                     data-cy="cy-eligibility-question-paragraph-3"
                   >
                     {isIndividual
-                      ? 'It also means time and money are not spent processing applications from people who are not eligible.'
+                      ? 'It also means time and money are not spent processing applications that are not eligible.'
                       : 'It also means time and money are not spent processing applications from organisations that are not eligible.'}
                   </p>
                   <h2
