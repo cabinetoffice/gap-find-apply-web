@@ -95,6 +95,7 @@ export default function MandatoryQuestionOrganisationSummaryPage({
   applicationId,
   allowsMultipleSubmissions,
 }: InferProps<typeof getServerSideProps>) {
+  const isIndividual = mandatoryQuestion.orgType === MQ_ORG_TYPES.INDIVIDUAL;
   const mandatoryQuestionDetails = generateMandatoryQuestionDetails(
     mandatoryQuestion,
     mandatoryQuestionId
@@ -121,9 +122,9 @@ export default function MandatoryQuestionOrganisationSummaryPage({
             </h1>
 
             <p className="govuk-body">
-              Ensure the following details about your organisation are correct
-              and up to date. Funding organisations will use this information to
-              run checks that prevent fraud.
+              {isIndividual
+                ? 'Ensure the following details are correct and up to date. Funding organisations will use this information to run checks that prevent fraud.'
+                : 'Ensure the following details about your organisation are correct and up to date. Funding organisations will use this information to run checks that prevent fraud.'}
             </p>
 
             <dl className="govuk-summary-list">
