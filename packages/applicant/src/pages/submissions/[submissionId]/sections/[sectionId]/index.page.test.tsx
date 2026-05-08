@@ -179,6 +179,7 @@ describe('getServerSideProps', () => {
         csrfToken: 'testCSRFToken',
         mandatoryQuestionId: null,
         backButtonUrl: '/submissions/12345678/sections',
+        isIndividual: false,
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -208,6 +209,7 @@ describe('getServerSideProps', () => {
         csrfToken: '',
         mandatoryQuestionId: null,
         backButtonUrl: '/submissions/12345678/sections',
+        isIndividual: false,
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -259,6 +261,7 @@ describe('getServerSideProps', () => {
         csrfToken: '',
         mandatoryQuestionId: '87654321',
         backButtonUrl: '/submissions/12345678/sections',
+        isIndividual: false,
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -310,6 +313,7 @@ describe('getServerSideProps', () => {
         csrfToken: '',
         mandatoryQuestionId: '87654321',
         backButtonUrl: '/submissions/12345678/sections',
+        isIndividual: false,
       },
     });
     expect(getSectionById).toHaveBeenCalled();
@@ -404,6 +408,7 @@ describe('getServerSideProps', () => {
         csrfToken: 'testCSRFToken',
         fieldErrors: validationErrors,
         backButtonUrl: '/submissions/12345678/sections',
+        isIndividual: false,
       },
     };
     (getSectionById as jest.Mock).mockReturnValue(SECTION_MOCK);
