@@ -27,6 +27,7 @@ export interface SectionRecapPage {
   csrfToken: string;
   fieldErrors: ValidationError[];
   backButtonUrl: string;
+  isIndividual: boolean;
 }
 
 export const getQuestionUrl = (
@@ -118,6 +119,7 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
   const isOrganisationDetailsOrFunding =
     sectionId === 'ORGANISATION_DETAILS' || sectionId === 'FUNDING_DETAILS';
   let mandatoryQuestionId = null;
+  let isIndividual = false;
   if (isOrganisationDetailsOrFunding) {
     const mandatoryQuestionService =
       GrantMandatoryQuestionService.getInstance();
@@ -127,6 +129,7 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
         jwt
       );
     mandatoryQuestionId = mandatoryQuestionDto.id;
+    isIndividual = mandatoryQuestionDto.orgType === 'I am applying as an individual';
   }
 
   const section = await getSectionById(submissionId, sectionId, jwt);
@@ -167,6 +170,7 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
       csrfToken: res.getHeader('x-csrf-token') as string,
       fieldErrors,
       backButtonUrl,
+      isIndividual,
     },
   };
 };
@@ -178,6 +182,7 @@ export default function SectionRecap({
   csrfToken,
   fieldErrors,
   backButtonUrl,
+  isIndividual,
 }: SectionRecapPage) {
   const { sectionTitle, questions, sectionId } = section;
 
@@ -240,12 +245,16 @@ export default function SectionRecap({
                   {
                     responseType,
                     questionId,
-                    fieldTitle,
+                    fieldTitle: rawFieldTitle,
                     multiResponse,
                     response,
                   }: QuestionType,
                   index: number
                 ) => {
+                  const fieldTitle =
+                    isIndividual && questionId === 'APPLICANT_AMOUNT'
+                      ? 'How much do you require as a grant?'
+                      : rawFieldTitle;
                   const fundingLocationLabelMap: Record<string, string> = {
                     'Outside of the UK': 'International',
                   };

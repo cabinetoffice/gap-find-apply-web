@@ -23,6 +23,7 @@ import {
   QuestionData,
   QuestionPostBody,
 } from '../../../../../../../services/SubmissionService';
+import { GrantMandatoryQuestionService } from '../../../../../../../services/GrantMandatoryQuestionService';
 import { getJwtFromCookies } from '../../../../../../../utils/jwt';
 import postQuestion from '../../../../../../../utils/postQuestion';
 import { routes } from '../../../../../../../utils/routes';
@@ -36,6 +37,7 @@ interface QuestionPageProps {
   csrfToken: string;
   isRefererCheckYourAnswerScreen: boolean;
   queryParams: string;
+  isIndividual: boolean;
 }
 
 export const getValidationErrorsFromQuery = (
@@ -89,6 +91,20 @@ export const getServerSideProps: GetServerSideProps<
     getJwtFromCookies(req)
   );
 
+  let isIndividual = false;
+  if (questionId === 'ELIGIBILITY') {
+    try {
+      const mandatoryQuestionService = GrantMandatoryQuestionService.getInstance();
+      const mandatoryQuestion = await mandatoryQuestionService.getMandatoryQuestionBySubmissionId(
+        submissionId,
+        getJwtFromCookies(req)
+      );
+      isIndividual = mandatoryQuestion?.orgType === 'I am applying as an individual';
+    } catch {
+      // if mandatory question can't be fetched, default to non-individual wording
+    }
+  }
+
   let fieldErrors: ValidationError[] = [];
   let temporaryErrorInputValue: string[] = [];
 
@@ -133,6 +149,7 @@ export const getServerSideProps: GetServerSideProps<
         csrfToken: res.getHeader('x-csrf-token') as string,
         isRefererCheckYourAnswerScreen,
         queryParams: encode(query),
+        isIndividual,
       },
     };
   }
@@ -143,6 +160,7 @@ export const getServerSideProps: GetServerSideProps<
       csrfToken: res.getHeader('x-csrf-token') as string,
       isRefererCheckYourAnswerScreen,
       queryParams: encode(query),
+      isIndividual,
     },
   };
 };
@@ -152,6 +170,7 @@ export default function QuestionPage({
   csrfToken,
   isRefererCheckYourAnswerScreen,
   queryParams = null,
+  isIndividual = false,
 }: QuestionPageProps) {
   const {
     question,
@@ -187,10 +206,16 @@ export default function QuestionPage({
       : ''
   }`;
 
+  const rawQuestionTitle = question?.questionSuffix ? question.questionSuffix : displayTitle;
+  const questionTitle =
+    isIndividual && questionId === 'ELIGIBILITY'
+      ? rawQuestionTitle
+          .replace(/Does your organisation/gi, 'Do you')
+          .replace(/your organisation/gi, 'you')
+      : rawQuestionTitle;
+
   const commonProps = {
-    questionTitle: question?.questionSuffix
-      ? question.questionSuffix
-      : displayTitle,
+    questionTitle,
     questionHintText: question.hintText?.replaceAll('\\n', '\n'),
     fieldName: question.questionId,
     fieldErrors: error || [],
@@ -420,22 +445,25 @@ export default function QuestionPage({
                     className="govuk-body"
                     data-cy="cy-eligibility-question-paragraph-1"
                   >
-                    The criteria below tells you if your organisation is
-                    eligible to apply.
+                    {isIndividual
+                      ? 'The criteria below tells you if you are eligible to apply.'
+                      : 'The criteria below tells you if your organisation is eligible to apply.'}
                   </p>
                   <p
                     className="govuk-body"
                     data-cy="cy-eligibility-question-paragraph-2"
                   >
-                    Making sure your organisation is eligible before you apply
-                    saves you time.
+                    {isIndividual
+                      ? 'Making sure you are eligible before you apply saves you time.'
+                      : 'Making sure your organisation is eligible before you apply saves you time.'}
                   </p>
                   <p
                     className="govuk-body"
                     data-cy="cy-eligibility-question-paragraph-3"
                   >
-                    It also means time and money are not spent processing
-                    applications from organisations that are not eligible.
+                    {isIndividual
+                      ? 'It also means time and money are not spent processing applications that are not eligible.'
+                      : 'It also means time and money are not spent processing applications from organisations that are not eligible.'}
                   </p>
                   <h2
                     className="govuk-heading-s"

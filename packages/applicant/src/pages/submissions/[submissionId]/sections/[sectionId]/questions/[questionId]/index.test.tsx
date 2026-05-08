@@ -221,6 +221,7 @@ describe('getServerSideProps', () => {
           grantName: grantName,
           isRefererCheckYourAnswerScreen: false,
           queryParams: '',
+          isIndividual: false,
         },
       });
       expect(getQuestionById).toHaveBeenCalled();
@@ -284,6 +285,7 @@ describe('getServerSideProps', () => {
           isRefererCheckYourAnswerScreen: false,
           queryParams:
             'errors%5B%5D=%7B%22fieldName%22%3A%22questionId%22%2C%20%22errorMessage%22%3A%22error%22%7D',
+          isIndividual: false,
         },
       });
       expect(getQuestionById).toHaveBeenCalled();
@@ -370,6 +372,7 @@ describe('getServerSideProps', () => {
           grantName,
           isRefererCheckYourAnswerScreen: false,
           queryParams: '',
+          isIndividual: false,
         },
       });
       expect(getQuestionById).toHaveBeenCalled();
