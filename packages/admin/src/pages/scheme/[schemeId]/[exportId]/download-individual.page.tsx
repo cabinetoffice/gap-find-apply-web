@@ -74,6 +74,10 @@ export const DownloadIndividualSubmissions = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const tableHeadColumns = [
     {
+      name: 'GAP ID',
+      width: 'one-quarter',
+    },
+    {
       name: <>{true && 'Name'}</>,
       width: 'one-quarter',
     },
@@ -108,6 +112,9 @@ export const DownloadIndividualSubmissions = ({
   const tableRows = exportedSubmissions.map((submission) => {
     return {
       cells: [
+        {
+          content: <>{submission.gapId || '-'}</>,
+        },
         {
           content: <>{true && submission.name}</>,
         },

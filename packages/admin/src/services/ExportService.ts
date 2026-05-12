@@ -5,6 +5,7 @@ import Pagination from '../types/Pagination';
 const BASE_SUBMISSIONS_URL = process.env.BACKEND_HOST + '/grant-export';
 
 export type ExportDetails = {
+  gapId?: string;
   name: string;
   zipFileLocation: string;
   submissionId: string;
