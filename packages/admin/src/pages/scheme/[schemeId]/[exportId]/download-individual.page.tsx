@@ -74,6 +74,10 @@ export const DownloadIndividualSubmissions = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const tableHeadColumns = [
     {
+      name: 'GAP ID',
+      width: 'one-half',
+    },
+    {
       name: <>{true && 'Name'}</>,
       width: 'one-quarter',
     },
@@ -109,6 +113,9 @@ export const DownloadIndividualSubmissions = ({
     return {
       cells: [
         {
+          content: <>{submission.gapId || '-'}</>,
+        },
+        {
           content: <>{true && submission.name}</>,
         },
         {
@@ -141,7 +148,7 @@ export const DownloadIndividualSubmissions = ({
       <Meta title={`Download applications - Manage a grant`} />
       <CustomLink href={backBtnUrl} isBackButton />
 
-      <div className="govuk-!-width-two-thirds govuk-!-padding-top-7">
+      <div className="govuk-!-padding-top-7">
         <span className="govuk-caption-l" data-cy="cyApplicationTitle">
           {schemeName}
         </span>
