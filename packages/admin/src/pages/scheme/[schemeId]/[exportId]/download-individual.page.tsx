@@ -12,6 +12,9 @@ import {
   getExportDetails,
 } from '../../../../services/ExportService';
 
+const ALLOWED_SORT_FIELDS = ['gapId', 'submittedDate'] as const;
+type SortField = (typeof ALLOWED_SORT_FIELDS)[number];
+
 export const getServerSideProps = async ({
   req,
   query,
@@ -26,6 +29,11 @@ export const getServerSideProps = async ({
     size: Number(query.limit ?? 10),
   };
 
+  const sortField = ALLOWED_SORT_FIELDS.includes(query.sortField as SortField)
+    ? (query.sortField as SortField)
+    : 'submittedDate';
+  const sortDir = query.sortDir === 'desc' ? 'desc' : 'asc';
+
   let grantScheme;
   let availableSubmissionsTotalCount = 0;
   let submissionList;
@@ -38,7 +46,9 @@ export const getServerSideProps = async ({
       exportId,
       false,
       pagination,
-      sessionCookie
+      sessionCookie,
+      sortField,
+      sortDir
     );
 
     availableSubmissionsTotalCount = submissionList.successCount;
@@ -62,6 +72,8 @@ export const getServerSideProps = async ({
       availableSubmissionsTotalCount,
       exportedSubmissions,
       backBtnUrl: `/scheme/${schemeId}/${exportId}`,
+      sortField,
+      sortDir,
     },
   };
 };
@@ -71,10 +83,28 @@ export const DownloadIndividualSubmissions = ({
   availableSubmissionsTotalCount,
   exportedSubmissions,
   backBtnUrl,
+  sortField,
+  sortDir,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const buildSortHref = (field: string) => {
+    const nextDir = sortField === field && sortDir === 'asc' ? 'desc' : 'asc';
+    return `?sortField=${field}&sortDir=${nextDir}`;
+  };
+
+  const SortHeader = ({ field, label }: { field: string; label: string }) => {
+    const isActive = sortField === field;
+    const ariaSort = isActive ? (sortDir === 'asc' ? 'ascending' : 'descending') : undefined;
+    return (
+      <a href={buildSortHref(field)} aria-sort={ariaSort} className="govuk-link govuk-link--no-visited-state">
+        {label}
+        {isActive && <span aria-hidden="true">{sortDir === 'asc' ? ' ↑' : ' ↓'}</span>}
+      </a>
+    );
+  };
+
   const tableHeadColumns = [
     {
-      name: 'GAP ID',
+      name: <SortHeader field="gapId" label="GAP ID" />,
       width: 'one-half',
     },
     {
@@ -86,7 +116,7 @@ export const DownloadIndividualSubmissions = ({
       width: 'one-quarter',
     },
     {
-      name: 'Submission Date',
+      name: <SortHeader field="submittedDate" label="Submission Date" />,
       width: 'one-quarter',
     },
     {
@@ -166,7 +196,7 @@ export const DownloadIndividualSubmissions = ({
           />
 
           <Pagination
-            additionalQueryData={{}}
+            additionalQueryData={{ sortField, sortDir }}
             itemsPerPage={10}
             totalItems={availableSubmissionsTotalCount}
             itemType="applications"
