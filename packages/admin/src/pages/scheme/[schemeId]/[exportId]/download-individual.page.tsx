@@ -1,7 +1,6 @@
 import { Table } from 'gap-web-ui';
 import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/router';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';
 import { getGrantScheme } from '../../../../services/SchemeService';
@@ -115,21 +114,21 @@ export const DownloadIndividualSubmissions = ({
     );
   };
 
-  const SortHeader = ({ field, label }: { field: string; label: string }) => {
-    const isActive = sortField === field;
-    const ariaSort = isActive ? (sortDir === 'asc' ? 'ascending' : 'descending') : undefined;
-    return (
-      <a href={buildSortHref(field)} aria-sort={ariaSort} className="govuk-link govuk-link--no-visited-state">
-        {label}
-        <SortIcon field={field} />
-      </a>
-    );
-  };
+  const SortHeader = ({ field, label }: { field: string; label: string }) => (
+    <a href={buildSortHref(field)} className="govuk-link govuk-link--no-visited-state" style={{ display: 'inline-flex' }}>
+      {label}
+      <SortIcon field={field} />
+    </a>
+  );
+
+  const ariaSort = (field: string) =>
+    sortField === field ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none';
 
   const tableHeadColumns = [
     {
       name: <SortHeader field="gapId" label="GAP ID" />,
       width: 'one-half',
+      theadColumnAttributes: { 'aria-sort': ariaSort('gapId') },
     },
     {
       name: <>{true && 'Name'}</>,
@@ -142,6 +141,7 @@ export const DownloadIndividualSubmissions = ({
     {
       name: <SortHeader field="submittedDate" label="Submission Date" />,
       width: 'one-quarter',
+      theadColumnAttributes: { 'aria-sort': ariaSort('submittedDate') },
     },
     {
       name: 'Action',
