@@ -1,6 +1,7 @@
 import { Table } from 'gap-web-ui';
 import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import { useRouter } from 'next/router';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';
 import { getGrantScheme } from '../../../../services/SchemeService';
@@ -86,9 +87,14 @@ export const DownloadIndividualSubmissions = ({
   sortField,
   sortDir,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const buildSortHref = (field: string) => {
+  const router = useRouter();
+
+  const handleSortClick = (field: string) => {
     const nextDir = sortField === field && sortDir === 'asc' ? 'desc' : 'asc';
-    return `?sortField=${field}&sortDir=${nextDir}`;
+    router.replace({
+      pathname: router.pathname,
+      query: { ...router.query, sortField: field, sortDir: nextDir },
+    });
   };
 
   const SortIcon = ({ field }: { field: string }) => {
@@ -115,7 +121,12 @@ export const DownloadIndividualSubmissions = ({
   };
 
   const SortHeader = ({ field, label }: { field: string; label: string }) => (
-    <a href={buildSortHref(field)} className="govuk-link govuk-link--no-visited-state" style={{ display: 'inline-flex' }}>
+    <a
+      href="#"
+      onClick={(e) => { e.preventDefault(); handleSortClick(field); }}
+      className="govuk-link govuk-link--no-visited-state"
+      style={{ display: 'inline-flex' }}
+    >
       {label}
       <SortIcon field={field} />
     </a>
