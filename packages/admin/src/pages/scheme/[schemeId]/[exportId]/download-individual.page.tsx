@@ -1,6 +1,7 @@
 import { Table } from 'gap-web-ui';
 import { TheadColumn } from 'gap-web-ui/dist/cjs/components/table/Table';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import { useRouter } from 'next/router';
 import CustomLink from '../../../../components/custom-link/CustomLink';
 import Meta from '../../../../components/layout/Meta';
 import { getGrantScheme } from '../../../../services/SchemeService';
@@ -11,6 +12,9 @@ import {
   ExportDetails,
   getExportDetails,
 } from '../../../../services/ExportService';
+
+const ALLOWED_SORT_FIELDS = ['gapId', 'submittedDate'] as const;
+type SortField = (typeof ALLOWED_SORT_FIELDS)[number];
 
 export const getServerSideProps = async ({
   req,
@@ -26,6 +30,11 @@ export const getServerSideProps = async ({
     size: Number(query.limit ?? 10),
   };
 
+  const sortField = ALLOWED_SORT_FIELDS.includes(query.sortField as SortField)
+    ? (query.sortField as SortField)
+    : 'submittedDate';
+  const sortDir = query.sortDir === 'desc' ? 'desc' : 'asc';
+
   let grantScheme;
   let availableSubmissionsTotalCount = 0;
   let submissionList;
@@ -38,7 +47,9 @@ export const getServerSideProps = async ({
       exportId,
       false,
       pagination,
-      sessionCookie
+      sessionCookie,
+      sortField,
+      sortDir
     );
 
     availableSubmissionsTotalCount = submissionList.successCount;
@@ -62,6 +73,8 @@ export const getServerSideProps = async ({
       availableSubmissionsTotalCount,
       exportedSubmissions,
       backBtnUrl: `/scheme/${schemeId}/${exportId}`,
+      sortField,
+      sortDir,
     },
   };
 };
@@ -71,11 +84,62 @@ export const DownloadIndividualSubmissions = ({
   availableSubmissionsTotalCount,
   exportedSubmissions,
   backBtnUrl,
+  sortField,
+  sortDir,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const router = useRouter();
+
+  const handleSortClick = (field: string) => {
+    const nextDir = sortField === field && sortDir === 'asc' ? 'desc' : 'asc';
+    router.replace({
+      pathname: router.pathname,
+      query: { ...router.query, sortField: field, sortDir: nextDir },
+    });
+  };
+
+  const SortIcon = ({ field }: { field: string }) => {
+    if (sortField === field && sortDir === 'asc') {
+      return (
+        <svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.5625 15.5L11 6.63125L15.4375 15.5H6.5625Z" fill="currentColor" />
+        </svg>
+      );
+    }
+    if (sortField === field && sortDir === 'desc') {
+      return (
+        <svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15.4375 7L11 15.8687L6.5625 7L15.4375 7Z" fill="currentColor" />
+        </svg>
+      );
+    }
+    return (
+      <svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor" />
+        <path d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor" />
+      </svg>
+    );
+  };
+
+  const SortHeader = ({ field, label }: { field: string; label: string }) => (
+    <a
+      href="#"
+      onClick={(e) => { e.preventDefault(); handleSortClick(field); }}
+      className="govuk-link govuk-link--no-visited-state"
+      style={{ display: 'inline-flex' }}
+    >
+      {label}
+      <SortIcon field={field} />
+    </a>
+  );
+
+  const ariaSort = (field: string) =>
+    sortField === field ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none';
+
   const tableHeadColumns = [
     {
-      name: 'GAP ID',
+      name: <SortHeader field="gapId" label="GAP ID" />,
       width: 'one-half',
+      theadColumnAttributes: { 'aria-sort': ariaSort('gapId') },
     },
     {
       name: <>{true && 'Name'}</>,
@@ -86,8 +150,9 @@ export const DownloadIndividualSubmissions = ({
       width: 'one-quarter',
     },
     {
-      name: 'Submission Date',
+      name: <SortHeader field="submittedDate" label="Submission Date" />,
       width: 'one-quarter',
+      theadColumnAttributes: { 'aria-sort': ariaSort('submittedDate') },
     },
     {
       name: 'Action',
@@ -166,7 +231,7 @@ export const DownloadIndividualSubmissions = ({
           />
 
           <Pagination
-            additionalQueryData={{}}
+            additionalQueryData={{ sortField, sortDir }}
             itemsPerPage={10}
             totalItems={availableSubmissionsTotalCount}
             itemType="applications"
