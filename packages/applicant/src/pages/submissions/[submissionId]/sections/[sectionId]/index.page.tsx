@@ -123,10 +123,12 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
   if (isOrganisationDetailsOrFunding) {
     const mandatoryQuestionService =
       GrantMandatoryQuestionService.getInstance();
+    // Editing organisation/funding details: make sure this submission owns its mandatory question
+    // before building the "Change" links, so edits land on this submission rather than a shared sibling.
     const mandatoryQuestionDto =
-      await mandatoryQuestionService.getMandatoryQuestionBySubmissionId(
-        submissionId,
-        jwt
+      await mandatoryQuestionService.ensureMandatoryQuestionForSubmission(
+        jwt,
+        submissionId
       );
     mandatoryQuestionId = mandatoryQuestionDto.id;
     isIndividual = mandatoryQuestionDto.orgType === 'I am applying as an individual';

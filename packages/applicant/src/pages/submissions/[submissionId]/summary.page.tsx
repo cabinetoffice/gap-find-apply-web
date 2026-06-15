@@ -69,15 +69,22 @@ export const getServerSideProps: GetServerSideProps<
     })
   );
 
+  const isEditable = !hasBeenSubmitted && grantApplicationStatus !== 'REMOVED';
   let mandatoryQuestionId = null;
   try {
     const mandatoryQuestionService =
       GrantMandatoryQuestionService.getInstance();
-    const mandatoryQuestionDto =
-      await mandatoryQuestionService.getMandatoryQuestionBySubmissionId(
-        submissionId,
-        jwt
-      );
+    // For an editable (draft) submission, make sure it owns its mandatory question so the summary
+    // "Change" links edit this submission rather than a shared sibling. Read-only views stay pure reads.
+    const mandatoryQuestionDto = isEditable
+      ? await mandatoryQuestionService.ensureMandatoryQuestionForSubmission(
+          jwt,
+          submissionId
+        )
+      : await mandatoryQuestionService.getMandatoryQuestionBySubmissionId(
+          submissionId,
+          jwt
+        );
     mandatoryQuestionId = mandatoryQuestionDto?.id || null;
   } catch (e) {
     // do nothing

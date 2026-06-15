@@ -202,6 +202,39 @@ describe('create mandatoryQuestion', () => {
   });
 });
 
+describe('ensureMandatoryQuestionForSubmission', () => {
+  const spy = jest.spyOn(axios, 'post');
+
+  const SUBMISSION_ID = 'sub-123';
+  it('should send a request to ensure the per-submission mandatory question', async () => {
+    const MockMandatoryQuestionData: GrantMandatoryQuestionDto = {
+      id: 'mq-123',
+      submissionId: SUBMISSION_ID,
+    };
+    const { serverRuntimeConfig } = getConfig();
+    const BACKEND_HOST = serverRuntimeConfig.backendHost;
+    const expectedUrl = `${BACKEND_HOST}/grant-mandatory-questions/ensure-mandatory-question/${SUBMISSION_ID}`;
+    mock.onPost(expectedUrl).reply(200, MockMandatoryQuestionData);
+
+    const result = await subject.ensureMandatoryQuestionForSubmission(
+      'testJwt',
+      SUBMISSION_ID
+    );
+
+    expect(result).toEqual(MockMandatoryQuestionData);
+    expect(spy).toHaveBeenCalledWith(
+      expectedUrl,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer testJwt`,
+          Accept: 'application/json',
+        },
+      }
+    );
+  });
+});
+
 describe('Axios call to existBySchemeIdAndApplicantId', () => {
   const spy = jest.spyOn(axios, 'get');
 

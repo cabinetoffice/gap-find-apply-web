@@ -61,6 +61,11 @@ const spiedGetMandatoryQuestionBySubmissionId = jest.spyOn(
   'getMandatoryQuestionBySubmissionId'
 );
 
+const spiedEnsureMandatoryQuestionForSubmission = jest.spyOn(
+  GrantMandatoryQuestionService.prototype,
+  'ensureMandatoryQuestionForSubmission'
+);
+
 const context = {
   params: {
     submissionId: '12345678',
@@ -188,6 +193,11 @@ mockServiceMethod(
   mockMandatoryQuestionDto
 );
 
+mockServiceMethod(
+  spiedEnsureMandatoryQuestionForSubmission,
+  mockMandatoryQuestionDto
+);
+
 (getQuestionById as jest.Mock).mockImplementation(
   async (_submissionId, _sectionId, questionId, _jwt) => {
     return {
@@ -226,6 +236,12 @@ describe('getServerSideProps', () => {
       context.params.submissionId,
       'testJwt'
     );
+    // Draft submission: ensure it owns its mandatory question (so "Change" edits this submission)
+    expect(spiedEnsureMandatoryQuestionForSubmission).toHaveBeenCalledWith(
+      'testJwt',
+      '12345678'
+    );
+    expect(spiedGetMandatoryQuestionBySubmissionId).not.toHaveBeenCalled();
   });
 
   it('should return correct object from server side props with no token', async () => {
@@ -274,6 +290,12 @@ describe('getServerSideProps', () => {
       context.params.submissionId,
       'testJwt'
     );
+    // Submitted submission is read-only: do not create/mutate the mandatory question
+    expect(spiedGetMandatoryQuestionBySubmissionId).toHaveBeenCalledWith(
+      '12345678',
+      'testJwt'
+    );
+    expect(spiedEnsureMandatoryQuestionForSubmission).not.toHaveBeenCalled();
   });
 });
 
