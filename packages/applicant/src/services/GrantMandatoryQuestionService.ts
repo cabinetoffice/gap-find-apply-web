@@ -83,6 +83,19 @@ export class GrantMandatoryQuestionService {
     return data;
   }
 
+  public async createMandatoryQuestionForNewSubmission(
+    jwt: string,
+    submissionId: string
+  ): Promise<GrantMandatoryQuestionDto> {
+    const { data } = await axios.post<GrantMandatoryQuestionDto>(
+      `${this.BACKEND_HOST}/grant-mandatory-questions/new-submission/${submissionId}`,
+      {},
+      axiosConfig(jwt)
+    );
+
+    return data;
+  }
+
   public async existBySchemeIdAndApplicantId(schemeId: string, jwt: string) {
     const { data } = await axios.get<boolean>(
       `${this.BACKEND_HOST}/grant-mandatory-questions/scheme/${schemeId}/exists`,

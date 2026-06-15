@@ -228,6 +228,75 @@ describe('API Handler Tests', () => {
     );
   });
 
+  it('should create a fresh mandatory question for a subsequent multi-application submission', async () => {
+    const getAdvertBySchemeIdResponse = {
+      ...advertDTO,
+      isInternal: true,
+      grantApplicationId: 'grantApplicationId',
+    };
+
+    const getGrantApplicationResponse: GrantApplication = {
+      id: '1',
+      version: 2,
+      created: '',
+      lastUpdated: '',
+      lastUpdatedBy: 1,
+      applicationName: 'application name',
+      applicationStatus: 'PUBLISHED',
+      definition: null,
+      allowsMultipleSubmissions: true,
+    } as unknown as GrantApplication;
+
+    GrantSchemeService.getInstance.mockReturnValue({
+      getGrantSchemeById: jest.fn().mockResolvedValue({
+        grantAdverts: [getAdvertBySchemeIdResponse],
+        grantApplication: getGrantApplicationResponse,
+      }),
+      hasSchemeInternalApplication: jest.fn().mockResolvedValue({
+        hasAdvertPublished: true,
+        hasInternalApplication: true,
+      }),
+    });
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (createSubmission as jest.Mock).mockResolvedValue(createSubmissionResponse);
+
+    GrantApplicantService.getInstance.mockReturnValue({
+      getGrantApplicant: jest.fn().mockResolvedValue(MOCK_GRANT_APPLICANT),
+    });
+
+    const mockUpdateMandatoryQuestion = jest.fn();
+    const mockCreateMandatoryQuestionForNewSubmission = jest
+      .fn()
+      .mockResolvedValue({ ...grantMandatoryQuestion });
+    GrantMandatoryQuestionService.getInstance.mockReturnValue({
+      getMandatoryQuestionById: jest.fn().mockResolvedValue({
+        ...grantMandatoryQuestion,
+        submissionId: 'previousSubmissionId',
+      }),
+      updateMandatoryQuestion: mockUpdateMandatoryQuestion,
+      createMandatoryQuestionForNewSubmission:
+        mockCreateMandatoryQuestionForNewSubmission,
+    });
+    GrantApplicantOrganisationProfileService.getInstance.mockReturnValue({
+      updateOrganisation: jest.fn().mockResolvedValue(MOCK_ORGANISATION_DATA),
+    });
+
+    await handler(
+      req({ body: { submissionName: 'My second application' } }),
+      res()
+    );
+
+    expect(mockCreateMandatoryQuestionForNewSubmission).toHaveBeenCalledWith(
+      'testJwt',
+      'submissionId'
+    );
+    expect(mockUpdateMandatoryQuestion).not.toHaveBeenCalled();
+    expect(mockedRedirect).toHaveBeenCalledWith(
+      303,
+      `http://localhost${routes.submissions.sections('submissionId')}`
+    );
+  });
+
   it('should redirect to error page when there is an error in the backend', async () => {
     await handler(req(), res());
 
