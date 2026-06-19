@@ -235,6 +235,105 @@ describe('ensureMandatoryQuestionForSubmission', () => {
   });
 });
 
+describe('resolveMandatoryQuestionForSubmission', () => {
+  const postSpy = jest.spyOn(axios, 'post');
+  const getSpy = jest.spyOn(axios, 'get');
+
+  const SUBMISSION_ID = 'sub-123';
+  const { serverRuntimeConfig } = getConfig();
+  const BACKEND_HOST = serverRuntimeConfig.backendHost;
+  const ensureUrl = `${BACKEND_HOST}/grant-mandatory-questions/ensure-mandatory-question/${SUBMISSION_ID}`;
+  const readUrl = `${BACKEND_HOST}/grant-mandatory-questions/get-by-submission/${SUBMISSION_ID}`;
+
+  beforeEach(() => {
+    postSpy.mockClear();
+    getSpy.mockClear();
+  });
+
+  it('heals (POST ensure) for an editable submission', async () => {
+    const dto: GrantMandatoryQuestionDto = { id: 'mq-1' };
+    mock.onPost(ensureUrl).reply(200, dto);
+
+    const result = await subject.resolveMandatoryQuestionForSubmission(
+      'testJwt',
+      SUBMISSION_ID,
+      { hasBeenSubmitted: false }
+    );
+
+    expect(result).toEqual(dto);
+    expect(postSpy).toHaveBeenCalledWith(ensureUrl, {}, expect.anything());
+    expect(getSpy).not.toHaveBeenCalled();
+  });
+
+  it('reads (GET) when the submission has been submitted', async () => {
+    const dto: GrantMandatoryQuestionDto = { id: 'mq-2' };
+    mock.onGet(readUrl).reply(200, dto);
+
+    const result = await subject.resolveMandatoryQuestionForSubmission(
+      'testJwt',
+      SUBMISSION_ID,
+      { hasBeenSubmitted: true }
+    );
+
+    expect(result).toEqual(dto);
+    expect(getSpy).toHaveBeenCalledWith(readUrl, expect.anything());
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+
+  it('reads (GET) when the grant application has been REMOVED', async () => {
+    const dto: GrantMandatoryQuestionDto = { id: 'mq-3' };
+    mock.onGet(readUrl).reply(200, dto);
+
+    const result = await subject.resolveMandatoryQuestionForSubmission(
+      'testJwt',
+      SUBMISSION_ID,
+      { hasBeenSubmitted: false, grantApplicationStatus: 'REMOVED' }
+    );
+
+    expect(result).toEqual(dto);
+    expect(getSpy).toHaveBeenCalledWith(readUrl, expect.anything());
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+
+  it('heals for an editable organisation/funding section', async () => {
+    const dto: GrantMandatoryQuestionDto = { id: 'mq-4' };
+    mock.onPost(ensureUrl).reply(200, dto);
+
+    const result = await subject.resolveMandatoryQuestionForSubmission(
+      'testJwt',
+      SUBMISSION_ID,
+      { sectionId: 'FUNDING_DETAILS' }
+    );
+
+    expect(result).toEqual(dto);
+    expect(postSpy).toHaveBeenCalledWith(ensureUrl, {}, expect.anything());
+  });
+
+  it('returns null without any call for a non mandatory-question section', async () => {
+    const result = await subject.resolveMandatoryQuestionForSubmission(
+      'testJwt',
+      SUBMISSION_ID,
+      { sectionId: 'ELIGIBILITY' }
+    );
+
+    expect(result).toBeNull();
+    expect(postSpy).not.toHaveBeenCalled();
+    expect(getSpy).not.toHaveBeenCalled();
+  });
+
+  it('returns null when the backend call fails', async () => {
+    mock.onPost(ensureUrl).reply(500);
+
+    const result = await subject.resolveMandatoryQuestionForSubmission(
+      'testJwt',
+      SUBMISSION_ID,
+      { hasBeenSubmitted: false }
+    );
+
+    expect(result).toBeNull();
+  });
+});
+
 describe('Axios call to existBySchemeIdAndApplicantId', () => {
   const spy = jest.spyOn(axios, 'get');
 

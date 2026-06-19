@@ -132,9 +132,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (mandatoryQuestionData.submissionId) {
       // This mandatory question is already linked to an earlier submission (a multi-application
-      // "apply again"). Create a fresh per-submission mandatory question so each submission keeps
-      // its own funding details, rather than re-pointing and overwriting the shared record.
-      await grantMandatoryQuestionService.createMandatoryQuestionForNewSubmission(
+      // "apply again"). Ensure this new submission owns its own mandatory question so each submission
+      // keeps its own funding details, rather than re-pointing and overwriting the shared record.
+      await grantMandatoryQuestionService.ensureMandatoryQuestionForSubmission(
         jwt,
         submissionId
       );

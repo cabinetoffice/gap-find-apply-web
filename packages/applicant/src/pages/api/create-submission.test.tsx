@@ -265,7 +265,7 @@ describe('API Handler Tests', () => {
     });
 
     const mockUpdateMandatoryQuestion = jest.fn();
-    const mockCreateMandatoryQuestionForNewSubmission = jest
+    const mockEnsureMandatoryQuestionForSubmission = jest
       .fn()
       .mockResolvedValue({ ...grantMandatoryQuestion });
     GrantMandatoryQuestionService.getInstance.mockReturnValue({
@@ -274,8 +274,8 @@ describe('API Handler Tests', () => {
         submissionId: 'previousSubmissionId',
       }),
       updateMandatoryQuestion: mockUpdateMandatoryQuestion,
-      createMandatoryQuestionForNewSubmission:
-        mockCreateMandatoryQuestionForNewSubmission,
+      ensureMandatoryQuestionForSubmission:
+        mockEnsureMandatoryQuestionForSubmission,
     });
     GrantApplicantOrganisationProfileService.getInstance.mockReturnValue({
       updateOrganisation: jest.fn().mockResolvedValue(MOCK_ORGANISATION_DATA),
@@ -286,7 +286,7 @@ describe('API Handler Tests', () => {
       res()
     );
 
-    expect(mockCreateMandatoryQuestionForNewSubmission).toHaveBeenCalledWith(
+    expect(mockEnsureMandatoryQuestionForSubmission).toHaveBeenCalledWith(
       'testJwt',
       'submissionId'
     );

@@ -116,23 +116,17 @@ export const getServerSideProps: GetServerSideProps<SectionRecapPage> = async ({
     }
   }
 
-  const isOrganisationDetailsOrFunding =
-    sectionId === 'ORGANISATION_DETAILS' || sectionId === 'FUNDING_DETAILS';
-  let mandatoryQuestionId = null;
-  let isIndividual = false;
-  if (isOrganisationDetailsOrFunding) {
-    const mandatoryQuestionService =
-      GrantMandatoryQuestionService.getInstance();
-    // Editing organisation/funding details: make sure this submission owns its mandatory question
-    // before building the "Change" links, so edits land on this submission rather than a shared sibling.
-    const mandatoryQuestionDto =
-      await mandatoryQuestionService.ensureMandatoryQuestionForSubmission(
-        jwt,
-        submissionId
-      );
-    mandatoryQuestionId = mandatoryQuestionDto.id;
-    isIndividual = mandatoryQuestionDto.orgType === 'I am applying as an individual';
-  }
+  // The helper heals + returns this submission's mandatory question for the organisation/funding sections,
+  // and returns null for any other section, so the "Change" links are only built where one applies.
+  const mandatoryQuestionDto =
+    await GrantMandatoryQuestionService.getInstance().resolveMandatoryQuestionForSubmission(
+      jwt,
+      submissionId,
+      { sectionId }
+    );
+  const mandatoryQuestionId = mandatoryQuestionDto?.id ?? null;
+  const isIndividual =
+    mandatoryQuestionDto?.orgType === 'I am applying as an individual';
 
   const section = await getSectionById(submissionId, sectionId, jwt);
 
