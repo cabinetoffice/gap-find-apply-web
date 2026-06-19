@@ -74,7 +74,7 @@ describe('Axios call to get mandatory question data by submission id', () => {
   const spy = jest.spyOn(axios, 'get');
 
   it('should get mandatoryQuestion data by submission id', async () => {
-    const SUBMISSION_ID = '1';
+    const SUBMISSION_ID = '3a6cfe2d-bf58-440d-9e07-3579c7dcf206';
     const MockMandatoryQuestionData: GrantMandatoryQuestionDto = {
       schemeId: 1,
       submissionId: null,
@@ -205,7 +205,7 @@ describe('create mandatoryQuestion', () => {
 describe('ensureMandatoryQuestionForSubmission', () => {
   const spy = jest.spyOn(axios, 'post');
 
-  const SUBMISSION_ID = 'sub-123';
+  const SUBMISSION_ID = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
   it('should send a request to ensure the per-submission mandatory question', async () => {
     const MockMandatoryQuestionData: GrantMandatoryQuestionDto = {
       id: 'mq-123',
@@ -233,13 +233,22 @@ describe('ensureMandatoryQuestionForSubmission', () => {
       }
     );
   });
+
+  it('rejects a submissionId that is not a valid UUID without making a request', async () => {
+    spy.mockClear();
+
+    await expect(
+      subject.ensureMandatoryQuestionForSubmission('testJwt', '../evil-host')
+    ).rejects.toThrow('Invalid submissionId format');
+    expect(spy).not.toHaveBeenCalled();
+  });
 });
 
 describe('resolveMandatoryQuestionForSubmission', () => {
   const postSpy = jest.spyOn(axios, 'post');
   const getSpy = jest.spyOn(axios, 'get');
 
-  const SUBMISSION_ID = 'sub-123';
+  const SUBMISSION_ID = '3a6cfe2d-bf58-440d-9e07-3579c7dcf209';
   const { serverRuntimeConfig } = getConfig();
   const BACKEND_HOST = serverRuntimeConfig.backendHost;
   const ensureUrl = `${BACKEND_HOST}/grant-mandatory-questions/ensure-mandatory-question/${SUBMISSION_ID}`;
@@ -331,6 +340,18 @@ describe('resolveMandatoryQuestionForSubmission', () => {
     );
 
     expect(result).toBeNull();
+  });
+
+  it('returns null (no request) when the submissionId is not a valid UUID', async () => {
+    const result = await subject.resolveMandatoryQuestionForSubmission(
+      'testJwt',
+      '../evil-host',
+      { hasBeenSubmitted: false }
+    );
+
+    expect(result).toBeNull();
+    expect(postSpy).not.toHaveBeenCalled();
+    expect(getSpy).not.toHaveBeenCalled();
   });
 });
 

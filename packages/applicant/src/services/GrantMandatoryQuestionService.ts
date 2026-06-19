@@ -20,6 +20,16 @@ export class GrantMandatoryQuestionService {
     return GrantMandatoryQuestionService.instance;
   }
 
+  private validateSubmissionId(submissionId: string): string {
+    const trimmedSubmissionId = submissionId?.trim();
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!trimmedSubmissionId || !uuidRegex.test(trimmedSubmissionId)) {
+      throw new Error('Invalid submissionId format');
+    }
+    return trimmedSubmissionId;
+  }
+
   public async getMandatoryQuestionById(
     mandatoryQuestionId: string,
     jwt: string
@@ -35,8 +45,11 @@ export class GrantMandatoryQuestionService {
     submissionId: string,
     jwt: string
   ): Promise<GrantMandatoryQuestionDto> {
+    const safeSubmissionId = encodeURIComponent(
+      this.validateSubmissionId(submissionId)
+    );
     const { data } = await axios.get<GrantMandatoryQuestionDto>(
-      `${this.BACKEND_HOST}/grant-mandatory-questions/get-by-submission/${submissionId}`,
+      `${this.BACKEND_HOST}/grant-mandatory-questions/get-by-submission/${safeSubmissionId}`,
       axiosConfig(jwt)
     );
     return data;
@@ -87,8 +100,11 @@ export class GrantMandatoryQuestionService {
     jwt: string,
     submissionId: string
   ): Promise<GrantMandatoryQuestionDto> {
+    const safeSubmissionId = encodeURIComponent(
+      this.validateSubmissionId(submissionId)
+    );
     const { data } = await axios.post<GrantMandatoryQuestionDto>(
-      `${this.BACKEND_HOST}/grant-mandatory-questions/ensure-mandatory-question/${submissionId}`,
+      `${this.BACKEND_HOST}/grant-mandatory-questions/ensure-mandatory-question/${safeSubmissionId}`,
       {},
       axiosConfig(jwt)
     );
