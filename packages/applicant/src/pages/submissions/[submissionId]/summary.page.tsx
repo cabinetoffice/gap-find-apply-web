@@ -69,19 +69,15 @@ export const getServerSideProps: GetServerSideProps<
     })
   );
 
-  let mandatoryQuestionId = null;
-  try {
-    const mandatoryQuestionService =
-      GrantMandatoryQuestionService.getInstance();
-    const mandatoryQuestionDto =
-      await mandatoryQuestionService.getMandatoryQuestionBySubmissionId(
-        submissionId,
-        jwt
-      );
-    mandatoryQuestionId = mandatoryQuestionDto?.id || null;
-  } catch (e) {
-    // do nothing
-  }
+  // The helper owns the heal-vs-read policy: an editable (draft) summary heals so the "Change" links edit
+  // this submission rather than a shared sibling, while a submitted/removed one stays a plain read.
+  const mandatoryQuestionDto =
+    await GrantMandatoryQuestionService.getInstance().resolveMandatoryQuestionForSubmission(
+      jwt,
+      submissionId,
+      { hasBeenSubmitted, grantApplicationStatus }
+    );
+  const mandatoryQuestionId = mandatoryQuestionDto?.id ?? null;
 
   return {
     props: {

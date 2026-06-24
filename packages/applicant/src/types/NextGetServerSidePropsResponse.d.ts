@@ -1,3 +1,4 @@
+// Next.js types
 type NextGetServerSidePropsResponse = {
   props: { [key: string]: any };
 };
