@@ -129,9 +129,9 @@ const pageProps: SectionRecapPage = {
   backButtonUrl: '/submissions/12345678/sections',
 };
 
-const spiedGetMandatoryQuestionBySubmissionId = jest.spyOn(
+const spiedEnsureMandatoryQuestionForSubmission = jest.spyOn(
   GrantMandatoryQuestionService.prototype,
-  'getMandatoryQuestionBySubmissionId'
+  'ensureMandatoryQuestionForSubmission'
 );
 
 const mockMandatoryQuestionDto = (): GrantMandatoryQuestionDto => ({
@@ -165,7 +165,7 @@ describe('getServerSideProps', () => {
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
-      spiedGetMandatoryQuestionBySubmissionId,
+      spiedEnsureMandatoryQuestionForSubmission,
       mockMandatoryQuestionDto
     );
 
@@ -195,7 +195,7 @@ describe('getServerSideProps', () => {
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
-      spiedGetMandatoryQuestionBySubmissionId,
+      spiedEnsureMandatoryQuestionForSubmission,
       mockMandatoryQuestionDto
     );
 
@@ -247,7 +247,7 @@ describe('getServerSideProps', () => {
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
-      spiedGetMandatoryQuestionBySubmissionId,
+      spiedEnsureMandatoryQuestionForSubmission,
       mockMandatoryQuestionDto
     );
 
@@ -299,7 +299,7 @@ describe('getServerSideProps', () => {
     (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
     (isApplicantEligible as jest.Mock).mockReturnValue(true);
     mockServiceMethod(
-      spiedGetMandatoryQuestionBySubmissionId,
+      spiedEnsureMandatoryQuestionForSubmission,
       mockMandatoryQuestionDto
     );
 

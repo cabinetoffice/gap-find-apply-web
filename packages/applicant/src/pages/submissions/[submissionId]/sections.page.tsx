@@ -3,6 +3,7 @@ import getConfig from 'next/config';
 import Link from 'next/link';
 import Layout from '../../../components/partials/Layout';
 import Meta from '../../../components/partials/Meta';
+import { GrantMandatoryQuestionService } from '../../../services/GrantMandatoryQuestionService';
 import { GrantSchemeService } from '../../../services/GrantSchemeService';
 import {
   getQuestionById,
@@ -33,6 +34,20 @@ export const getServerSideProps: GetServerSideProps<
   SubmissionSectionPage
 > = async ({ req, res, params }) => {
   const submissionId = params.submissionId.toString();
+  const jwt = getJwtFromCookies(req);
+
+  const hasBeenSubmitted = await hasSubmissionBeenSubmitted(submissionId, jwt);
+
+  // When an applicant opens an in-progress application, make sure it owns its own mandatory-questions record.
+  // If it was relying on a sibling submission's record, this creates its own, blanks the funding amount/location
+  // and reopens the funding section, forcing the funding details to be re-entered for THIS submission. Done before
+  // the reads below so the section statuses and submit-readiness reflect the healed state on this first load. The
+  // helper owns the heal-vs-read-vs-nothing policy; the result is unused here (the heal is a side-effect).
+  await GrantMandatoryQuestionService.getInstance().resolveMandatoryQuestionForSubmission(
+    jwt,
+    submissionId,
+    { hasBeenSubmitted }
+  );
 
   const {
     sections,
@@ -40,22 +55,12 @@ export const getServerSideProps: GetServerSideProps<
     applicationName,
     submissionName,
     grantSchemeId,
-  } = await getSubmissionById(submissionId, getJwtFromCookies(req));
+  } = await getSubmissionById(submissionId, jwt);
 
-  const submissionReady = await isSubmissionReady(
-    submissionId,
-    getJwtFromCookies(req)
-  );
-  const hasBeenSubmitted = await hasSubmissionBeenSubmitted(
-    submissionId,
-    getJwtFromCookies(req)
-  );
+  const submissionReady = await isSubmissionReady(submissionId, jwt);
   const grantSchemeService = GrantSchemeService.getInstance();
   const { grantScheme, grantApplication } =
-    await grantSchemeService.getGrantSchemeById(
-      grantSchemeId,
-      getJwtFromCookies(req)
-    );
+    await grantSchemeService.getGrantSchemeById(grantSchemeId, jwt);
 
   if (hasBeenSubmitted && !grantApplication?.allowsMultipleSubmissions) {
     return {
@@ -70,7 +75,7 @@ export const getServerSideProps: GetServerSideProps<
     submissionId,
     'ELIGIBILITY',
     'ELIGIBILITY',
-    getJwtFromCookies(req)
+    jwt
   );
 
   return {

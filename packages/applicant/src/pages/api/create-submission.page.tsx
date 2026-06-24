@@ -130,19 +130,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       submissionName || undefined
     );
 
-    await grantMandatoryQuestionService.updateMandatoryQuestion(
-      jwt,
-      mandatoryQuestionId,
-      'creatingSubmissionFromMandatoryQuestion',
-      {
-        submissionId,
-        mandatoryQuestionsComplete: true,
-      }
-    );
-
-    logger.info(
-      `Submission has been added to mandatory question: ${mandatoryQuestionId}`
-    );
+    if (mandatoryQuestionData.submissionId) {
+      // This mandatory question is already linked to an earlier submission (a multi-application
+      // "apply again"). Ensure this new submission owns its own mandatory question so each submission
+      // keeps its own funding details, rather than re-pointing and overwriting the shared record.
+      await grantMandatoryQuestionService.ensureMandatoryQuestionForSubmission(
+        jwt,
+        submissionId
+      );
+      logger.info(
+        `Created a new mandatory question for submission ${submissionId} (multiple submissions).`
+      );
+    } else {
+      // First submission for this mandatory question: link it as normal.
+      await grantMandatoryQuestionService.updateMandatoryQuestion(
+        jwt,
+        mandatoryQuestionId,
+        'creatingSubmissionFromMandatoryQuestion',
+        {
+          submissionId,
+          mandatoryQuestionsComplete: true,
+        }
+      );
+      logger.info(
+        `Submission has been added to mandatory question: ${mandatoryQuestionId}`
+      );
+    }
 
     // Use 303 See Other to force GET redirect after POST
     return res.redirect(

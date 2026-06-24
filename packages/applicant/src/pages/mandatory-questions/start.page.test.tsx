@@ -166,6 +166,38 @@ describe('Mandatory Questions Start', () => {
       );
     });
 
+    it('should redirect to name submission when the resolved mandatory question is not completed but already belongs to a submission', async () => {
+      (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+      const existBySchemeIdAndApplicantId =
+        spiedExistBySchemeIdAndApplicantId.mockResolvedValue(true);
+      const getMandatoryQuestionBySchemeId =
+        spiedGetMandatoryQuestionBySchemeId.mockResolvedValue({
+          ...mandatoryQuestionData,
+          submissionId: '1',
+          status: 'IN_PROGRESS',
+          mandatoryQuestionsComplete: false,
+        });
+      const getGrantSchemeById = spiedGetGrantSchemeById.mockResolvedValue({
+        grantScheme: { id: 1, version: 2 },
+        grantApplication: { id: '1', allowsMultipleSubmissions: true },
+      });
+
+      const response = await getServerSideProps(getContext(getDefaultContext));
+
+      expect(response).toEqual({
+        redirect: {
+          destination: '/applications/1/name-submission',
+          permanent: false,
+        },
+      });
+      expect(existBySchemeIdAndApplicantId).toHaveBeenCalledWith('1', 'testJwt');
+      expect(getMandatoryQuestionBySchemeId).toHaveBeenCalledWith(
+        'testJwt',
+        '1'
+      );
+      expect(getGrantSchemeById).toHaveBeenCalledWith('1', 'testJwt');
+    });
+
     it('should redirect if there is an error retrieving MQ', async () => {
       (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
       spiedExistBySchemeIdAndApplicantId.mockRejectedValue(new Error());

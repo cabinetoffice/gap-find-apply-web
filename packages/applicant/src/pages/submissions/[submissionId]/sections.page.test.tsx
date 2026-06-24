@@ -15,6 +15,10 @@ import { createMockRouter } from '../../../testUtils/createMockRouter';
 import { getJwtFromCookies } from '../../../utils/jwt';
 import SubmissionSections, { getServerSideProps } from './sections.page';
 import { getApplicationStatusBySchemeId } from '../../../services/ApplicationService';
+import {
+  GrantMandatoryQuestionDto,
+  GrantMandatoryQuestionService,
+} from '../../../services/GrantMandatoryQuestionService';
 
 jest.mock('../../../services/SubmissionService');
 jest.mock('../../../utils/constants');
@@ -23,6 +27,11 @@ jest.mock('../../../utils/jwt');
 jest.mock('../../../services/ApplicationService', () => ({
   getApplicationStatusBySchemeId: jest.fn(),
 }));
+
+const spiedResolveMandatoryQuestionForSubmission = jest.spyOn(
+  GrantMandatoryQuestionService.prototype,
+  'resolveMandatoryQuestionForSubmission'
+);
 
 const context = {
   params: {
@@ -248,6 +257,51 @@ const questionDataStandardEligibilityResponseNull = {
 };
 
 describe('getServerSideProps', () => {
+  beforeEach(() => {
+    spiedResolveMandatoryQuestionForSubmission.mockReset();
+    spiedResolveMandatoryQuestionForSubmission.mockResolvedValue(
+      null as unknown as GrantMandatoryQuestionDto
+    );
+  });
+
+  it('resolves the mandatory question with the editable context when opening a draft', async () => {
+    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(false);
+    (isSubmissionReady as jest.Mock).mockReturnValue(true);
+    jest
+      .spyOn(GrantSchemeService.prototype, 'getGrantSchemeById')
+      .mockResolvedValue({ grantScheme: MOCK_GRANT_SCHEME });
+    (getQuestionById as jest.Mock).mockReturnValue(
+      questionDataStandardEligibilityResponseYes
+    );
+
+    await getServerSideProps(context);
+
+    expect(spiedResolveMandatoryQuestionForSubmission).toHaveBeenCalledWith(
+      'testJwt',
+      context.params.submissionId,
+      { hasBeenSubmitted: false }
+    );
+  });
+
+  it('passes the submitted context so the helper reads rather than heals', async () => {
+    (getSubmissionById as jest.Mock).mockReturnValue(propsWithAllValues);
+    (getJwtFromCookies as jest.Mock).mockReturnValue('testJwt');
+    (hasSubmissionBeenSubmitted as jest.Mock).mockReturnValue(true);
+    jest
+      .spyOn(GrantSchemeService.prototype, 'getGrantSchemeById')
+      .mockResolvedValue({ grantScheme: MOCK_GRANT_SCHEME });
+
+    await getServerSideProps(context);
+
+    expect(spiedResolveMandatoryQuestionForSubmission).toHaveBeenCalledWith(
+      'testJwt',
+      context.params.submissionId,
+      { hasBeenSubmitted: true }
+    );
+  });
+
   it('should return sections, submissionId, applicationName', async () => {
     (getApplicationStatusBySchemeId as jest.Mock).mockResolvedValue(
       'PUBLISHED'

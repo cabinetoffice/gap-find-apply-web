@@ -33,10 +33,15 @@ export async function getServerSideProps({
           schemeId
         );
 
-      // If mandatory questions are complete, skip to submission creation
+      // Skip the journey when the applicant has already established their organisation details for this scheme:
+      // either a mandatory question reached COMPLETED, or the resolved record already belongs to a submission. The
+      // backend resolves the most relevant record (completed, else submission-linked, else most recent), so this no
+      // longer depends on the status of the newest in-progress draft, which previously forced the full journey.
       if (
         mandatoryQuestion.mandatoryQuestionsComplete === true ||
-        mandatoryQuestion.status === 'COMPLETED'
+        mandatoryQuestion.status === 'COMPLETED' ||
+        (mandatoryQuestion.submissionId !== null &&
+          mandatoryQuestion.submissionId !== undefined)
       ) {
         // Get the scheme to determine version and get application ID
         const { grantScheme: scheme, grantApplication } =
