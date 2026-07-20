@@ -112,6 +112,102 @@ const makeToolbarKeyboardAccessible = (
   }
 };
 
+// The block-format ("Paragraph"/"Heading n") control is a TinyMCE bespoke
+// select whose generated ARIA fails several WCAG checks (DAC_Custom_Select_01):
+// the button's accessible name does not match its visible label; the popup nests
+// a role="listbox" around a role="menu"; that menu has no accessible name; and
+// each option carries an aria-selected attribute that is invalid on
+// role="menuitemcheckbox". TinyMCE re-applies this markup (on NodeChange, and
+// afresh every time the menu opens), so the corrections are re-asserted via
+// MutationObservers rather than set once.
+const makeCustomSelectAccessible = (
+  editor: ToolbarEditor,
+  fieldName: string
+) => {
+  const container = editor.getContainer();
+  const header = container?.querySelector<HTMLElement>('.tox-editor-header');
+  if (!container || !header) return;
+
+  const observers: MutationObserver[] = [];
+
+  // Give the button an accessible name that contains its visible label and
+  // describes its purpose, e.g. "Styling: Paragraph" (2.5.3 Label in Name,
+  // 2.4.6 Headings and Labels). TinyMCE resets this on selection changes and
+  // can replace the button node entirely, so re-query the button live on every
+  // change and observe the (stable) header rather than holding a reference.
+  const applyAccessibleName = () => {
+    const button = header.querySelector<HTMLElement>('.tox-tbtn--bespoke');
+    const label = button
+      ?.querySelector<HTMLElement>('.tox-tbtn__select-label')
+      ?.textContent?.trim();
+    if (!button || !label) return;
+    const name = `Styling: ${label}`;
+    if (button.getAttribute('aria-label') !== name) {
+      button.setAttribute('aria-label', name);
+    }
+    if (button.getAttribute('title') !== name) {
+      button.setAttribute('title', name);
+    }
+  };
+  applyAccessibleName();
+  const nameObserver = new MutationObserver(applyAccessibleName);
+  nameObserver.observe(header, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ['aria-label', 'title'],
+  });
+  observers.push(nameObserver);
+
+  // Correct the popup menu markup while this editor's select is open (1.3.1
+  // Info and Relationships, 4.1.2 Name, Role, Value).
+  const menuId = `${fieldName}-stylings-menu`;
+  const fixStylingsMenu = () => {
+    const expanded = header.querySelector<HTMLElement>(
+      '.tox-tbtn--bespoke[aria-expanded="true"]'
+    );
+    if (!expanded) return;
+
+    const menu = document.querySelector<HTMLElement>(
+      '.tox-tinymce-aux [role="menu"]'
+    );
+    if (!menu) return;
+
+    // One clear role: drop the redundant listbox wrapping the menu.
+    menu.closest<HTMLElement>('[role="listbox"]')?.removeAttribute('role');
+
+    // Give the menu an id and an accessible name, and reference it from the
+    // button so aria-controls points at the surviving role="menu".
+    if (menu.id !== menuId) menu.id = menuId;
+    if (menu.getAttribute('aria-label') !== 'Stylings') {
+      menu.setAttribute('aria-label', 'Stylings');
+    }
+    if (expanded.getAttribute('aria-controls') !== menuId) {
+      expanded.setAttribute('aria-controls', menuId);
+    }
+
+    // aria-selected is not allowed on role="menuitemcheckbox"; aria-checked
+    // already conveys the current selection.
+    menu
+      .querySelectorAll<HTMLElement>('[role="menuitemcheckbox"][aria-selected]')
+      .forEach((item) => item.removeAttribute('aria-selected'));
+  };
+
+  const menuObserver = new MutationObserver(fixStylingsMenu);
+  menuObserver.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['aria-expanded', 'aria-selected'],
+  });
+  observers.push(menuObserver);
+
+  editor.on('remove', () =>
+    observers.forEach((observer) => observer.disconnect())
+  );
+};
+
 const RichText = ({
   questionTitle,
   titleSize = 'l',
@@ -203,9 +299,10 @@ const RichText = ({
         disabled={disabled}
         value={value}
         onEditorChange={setValue}
-        onInit={(_evt, editor) =>
-          makeToolbarKeyboardAccessible(editor, accessibleName)
-        }
+        onInit={(_evt, editor) => {
+          makeToolbarKeyboardAccessible(editor, accessibleName);
+          makeCustomSelectAccessible(editor, fieldName);
+        }}
         initialValue={defaultValue}
         id={fieldName}
       />
