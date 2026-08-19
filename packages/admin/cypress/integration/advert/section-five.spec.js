@@ -9,7 +9,7 @@ import {
   checkFirstAccessToThePage,
   checkLengthOfErrorsInErrorBanner,
   checkPageStatus,
-  checkRichTextToolbarAccessibility,
+  checkRichTextAccessibility,
   clickSaveAndContinue,
   clickSaveAndExit,
   enterInPageAddValueAndPressBackAndReEnterAndCheckTinyMceIsEmpty,
@@ -143,8 +143,8 @@ describe('Section 5. Further information - Advert builder', () => {
       PAGE_1_QUESTION_INDEX
     );
 
-    //cy.log('page 1 check the rich text toolbar accessibility fixes are applied');
-    checkRichTextToolbarAccessibility();
+    //cy.log('page 1 check the rich text accessibility fixes are applied');
+    checkRichTextAccessibility(PAGE_1_FIELD_NAME);
 
     //cy.log('page 1 click save and continue');
     clickSaveAndContinue();
