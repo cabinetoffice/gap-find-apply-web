@@ -113,6 +113,24 @@ const checkRichTextAccessibility = (fieldName) => {
 
   cy.get(`#${fieldName}-label`).should('be.visible').and('not.be.empty');
   cy.get(`#${fieldName}-hint`).should('exist');
+
+  checkLinkDialogAccessibility();
+};
+
+// Opening the dialog is the only way to check TinyMCE's real mark-up rather
+// than the fixture the unit tests assert against. Closing it with its own
+// Close button doubles as a check that the button still works once its
+// tabindex has been removed (DAC_Not_Keyboard_Navigable_01).
+const checkLinkDialogAccessibility = () => {
+  cy.get('.tox-tbtn[aria-label="Insert/edit link"]').click();
+
+  cy.get('.tox-dialog').should('be.visible');
+  cy.get('.tox-dialog__header button')
+    .should('have.attr', 'aria-label', 'Close')
+    .and('not.have.attr', 'tabindex');
+
+  cy.get('.tox-dialog__header button').click();
+  cy.get('.tox-dialog').should('not.exist');
 };
 
 const checkFirstAccessToThePage = (

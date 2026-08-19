@@ -285,6 +285,23 @@ const makeCustomSelectAccessible = (
     );
   });
 
+// Alloy, TinyMCE's UI framework, gives every control it builds tabindex="-1"
+// and then simulates Tab within the dialog itself, so the link dialog's Close
+// button is absent from the page's own tab order (DAC_Not_Keyboard_Navigable_01,
+// 2.1.1 Keyboard). Removing the attribute restores it, since a <button> is
+// focusable in its own right. Only buttons alloy has marked as tab stops are
+// touched: it marks custom widgets too, and those are not focusable without the
+// tabindex. A dialog is built afresh each time it opens, so this runs per open.
+const makeDialogsKeyboardAccessible = (editor: RichTextEditor) => {
+  editor.on('OpenWindow', () => {
+    document
+      .querySelectorAll<HTMLElement>(
+        '.tox-dialog button[data-alloy-tabstop="true"][tabindex="-1"]'
+      )
+      .forEach((button) => button.removeAttribute('tabindex'));
+  });
+};
+
 const applyRichTextAccessibilityFixes = (
   editor: RichTextEditor,
   options: RichTextAccessibilityOptions
@@ -293,6 +310,7 @@ const applyRichTextAccessibilityFixes = (
   makeEditableRegionAccessible(editor, options);
   makeToolbarKeyboardAccessible(editor);
   makeCustomSelectAccessible(editor, options.fieldName);
+  makeDialogsKeyboardAccessible(editor);
 };
 
 export default applyRichTextAccessibilityFixes;

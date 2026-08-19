@@ -96,6 +96,52 @@ const createEditor = (container: HTMLElement) => {
   };
 };
 
+// Mirrors the link dialog. Alloy marks its own tab stops with
+// data-alloy-tabstop and gives everything it builds tabindex="-1"; the search
+// button stands in for a widget that is only focusable because of that.
+const openLinkDialog = () => {
+  document.body.insertAdjacentHTML(
+    'beforeend',
+    `
+    <div class="tox tox-silver-sink tox-tinymce-aux">
+      <div class="tox-dialog" role="dialog">
+        <div class="tox-dialog__header">
+          <div class="tox-dialog__title">Insert/Edit Link</div>
+          <button
+            type="button"
+            class="tox-button tox-button--icon tox-button--naked"
+            aria-label="Close"
+            title="Close"
+            data-alloy-tabstop="true"
+            tabindex="-1"
+          ></button>
+        </div>
+        <div class="tox-dialog__body">
+          <input class="tox-textfield" data-alloy-tabstop="true" tabindex="-1" />
+          <div
+            class="tox-browse-url"
+            role="button"
+            data-alloy-tabstop="true"
+            tabindex="-1"
+          ></div>
+        </div>
+        <div class="tox-dialog__footer">
+          <button type="button" data-alloy-tabstop="true" tabindex="-1">
+            Cancel
+          </button>
+          <button type="button" data-alloy-tabstop="true" tabindex="-1">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  `
+  );
+};
+
+const getDialogCloseButton = () =>
+  document.querySelector<HTMLElement>('.tox-dialog__header button');
+
 const getButtons = () =>
   Array.from(document.querySelectorAll<HTMLElement>('.tox-tbtn'));
 
@@ -293,6 +339,56 @@ describe('Rich text accessibility fixes', () => {
       applyFixes();
 
       expect(getEditableRegion()).not.toHaveAttribute('aria-invalid');
+    });
+  });
+
+  describe('Dialogs (DAC_Not_Keyboard_Navigable_01)', () => {
+    it('Puts the dialog close button back in the tab order', () => {
+      const editor = applyFixes();
+
+      openLinkDialog();
+      editor.emit('OpenWindow');
+
+      expect(getDialogCloseButton()).not.toHaveAttribute('tabindex');
+    });
+
+    it('Puts the remaining dialog buttons back in the tab order', () => {
+      const editor = applyFixes();
+
+      openLinkDialog();
+      editor.emit('OpenWindow');
+
+      const footerButtons = Array.from(
+        document.querySelectorAll('.tox-dialog__footer button')
+      );
+      footerButtons.forEach((button) =>
+        expect(button).not.toHaveAttribute('tabindex')
+      );
+    });
+
+    it('Leaves widgets that are only focusable via tabindex alone', () => {
+      const editor = applyFixes();
+
+      openLinkDialog();
+      editor.emit('OpenWindow');
+
+      expect(document.querySelector('.tox-browse-url')).toHaveAttribute(
+        'tabindex',
+        '-1'
+      );
+    });
+
+    it('Corrects every dialog, since TinyMCE rebuilds them on each open', () => {
+      const editor = applyFixes();
+
+      openLinkDialog();
+      editor.emit('OpenWindow');
+      document.querySelector('.tox-silver-sink')!.remove();
+
+      openLinkDialog();
+      editor.emit('OpenWindow');
+
+      expect(getDialogCloseButton()).not.toHaveAttribute('tabindex');
     });
   });
 
