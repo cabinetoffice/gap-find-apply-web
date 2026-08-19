@@ -129,6 +129,10 @@ const checkLinkDialogAccessibility = () => {
     .should('have.attr', 'aria-label', 'Close')
     .and('not.have.attr', 'tabindex');
 
+  cy.get('.tox-dialog__title')
+    .should('have.attr', 'role', 'heading')
+    .and('have.attr', 'aria-level', '2');
+
   // Only the URL field's own mark-up is asserted here. Whether its suggestion
   // popup is reshaped into a listbox of options (DAC_Custom_Combobox_01)
   // depends on suggestions being offered, so that is covered by the unit tests

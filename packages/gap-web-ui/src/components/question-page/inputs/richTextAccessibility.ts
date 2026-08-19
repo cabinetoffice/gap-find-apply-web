@@ -307,6 +307,25 @@ const makeDialogsKeyboardAccessible = (editor: RichTextEditor) => {
   });
 };
 
+// TinyMCE renders a dialog's title as a plain div, so there is no heading to
+// reach with a screen reader's heading shortcut and nothing to mark where the
+// dialog's content begins (DAC_Visual_Headings_01, 1.3.1 Info and
+// Relationships). The div already supplies the dialog's accessible name; this
+// adds the level two heading DAC asked for on top of it. An untitled dialog
+// renders the same div empty and hidden, and is skipped so that no empty
+// heading is exposed.
+const makeDialogTitlesHeadings = (editor: RichTextEditor) => {
+  editor.on('OpenWindow', () => {
+    document
+      .querySelectorAll<HTMLElement>('.tox-dialog__title')
+      .forEach((title) => {
+        if (!title.textContent?.trim()) return;
+        title.setAttribute('role', 'heading');
+        title.setAttribute('aria-level', '2');
+      });
+  });
+};
+
 // The link dialog's URL field is a combobox, but TinyMCE fills its popup with a
 // menu: a role="menu" nested inside the role="listbox" popup, holding the
 // suggestions as role="menuitem". Two conflicting roles means the suggestions
@@ -404,6 +423,7 @@ const applyRichTextAccessibilityFixes = (
   makeToolbarKeyboardAccessible(editor);
   makeCustomSelectAccessible(editor, options.fieldName);
   makeDialogsKeyboardAccessible(editor);
+  makeDialogTitlesHeadings(editor);
   makeUrlComboboxAccessible(editor, options.fieldName);
 };
 
