@@ -80,6 +80,26 @@ const enterInPageAddValueAndPressBackAndReEnterAndCheckTinyMceIsEmpty = (
   clickBackButton();
 };
 
+// The rich text toolbar mark-up is corrected at runtime to clear the failures
+// raised in the DAC audit (DAC_Inaccessible_Content_01, DAC_Custom_Select_01).
+// Unit tests cover that against a fixture, so these assertions exist to catch a
+// TinyMCE upgrade rendering something the fixture no longer represents.
+const checkRichTextToolbarAccessibility = () => {
+  cy.get('.tox-tinymce').should('not.have.attr', 'role', 'application');
+
+  cy.get('.tox-editor-header [role="toolbar"]').should(
+    'have.attr',
+    'aria-label',
+    'Formatting'
+  );
+
+  cy.get('.tox-tbtn[tabindex="0"]').should('have.length', 1);
+
+  cy.get('.tox-tbtn').each(($button) => {
+    expect($button.prop('tagName')).to.eq('BUTTON');
+  });
+};
+
 const checkFirstAccessToThePage = (
   pageTitle,
   sectionName,
@@ -189,6 +209,7 @@ const checkContentOfTinyMce = (textToCompareTo) => {
 
 export {
   checkFirstAccessToThePage,
+  checkRichTextToolbarAccessibility,
   getErrorRelatedToTinyMce,
   getErrorRelatedToRadio,
   clickSaveAndContinue,
