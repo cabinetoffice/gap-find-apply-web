@@ -80,11 +80,12 @@ const enterInPageAddValueAndPressBackAndReEnterAndCheckTinyMceIsEmpty = (
   clickBackButton();
 };
 
-// The rich text toolbar mark-up is corrected at runtime to clear the failures
-// raised in the DAC audit (DAC_Inaccessible_Content_01, DAC_Custom_Select_01).
-// Unit tests cover that against a fixture, so these assertions exist to catch a
-// TinyMCE upgrade rendering something the fixture no longer represents.
-const checkRichTextToolbarAccessibility = () => {
+// The rich text mark-up is corrected at runtime to clear the failures raised in
+// the DAC audit (DAC_Inaccessible_Content_01, DAC_Custom_Select_01,
+// DAC_Custom_Text_Area_01). Unit tests cover that against a fixture, so these
+// assertions exist to catch a TinyMCE upgrade rendering something the fixture
+// no longer represents.
+const checkRichTextAccessibility = (fieldName) => {
   cy.get('.tox-tinymce').should('not.have.attr', 'role', 'application');
 
   cy.get('.tox-editor-header [role="toolbar"]').should(
@@ -98,6 +99,20 @@ const checkRichTextToolbarAccessibility = () => {
   cy.get('.tox-tbtn').each(($button) => {
     expect($button.prop('tagName')).to.eq('BUTTON');
   });
+
+  // Inline mode: the editing area is an element in the page, not an iframe.
+  cy.get('.gap-rich-text iframe').should('not.exist');
+
+  cy.get(`#${fieldName}`)
+    .should('have.class', 'mce-content-body')
+    .and('have.attr', 'contenteditable', 'true')
+    .and('have.attr', 'role', 'textbox')
+    .and('have.attr', 'aria-multiline', 'true')
+    .and('have.attr', 'aria-labelledby', `${fieldName}-label`)
+    .and('have.attr', 'aria-describedby', `${fieldName}-hint`);
+
+  cy.get(`#${fieldName}-label`).should('be.visible').and('not.be.empty');
+  cy.get(`#${fieldName}-hint`).should('exist');
 };
 
 const checkFirstAccessToThePage = (
@@ -209,7 +224,7 @@ const checkContentOfTinyMce = (textToCompareTo) => {
 
 export {
   checkFirstAccessToThePage,
-  checkRichTextToolbarAccessibility,
+  checkRichTextAccessibility,
   getErrorRelatedToTinyMce,
   getErrorRelatedToRadio,
   clickSaveAndContinue,

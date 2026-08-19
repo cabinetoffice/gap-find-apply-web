@@ -9,11 +9,18 @@ DAC audit. The corrections are applied to the rendered DOM at runtime in
 [richTextAccessibility.ts](src/components/question-page/inputs/richTextAccessibility.ts),
 because TinyMCE offers no configuration for any of it.
 
-One of those corrections removes `role="application"` from TinyMCE's outer wrapper.
-That role forced NVDA into focus mode across the whole editor, which is why the
-toolbar controls were invisible to browse mode and to the elements list. Removing it
-is what the audit asked for, but it also changes which keys NVDA passes through to the
-page, and no automated tool can check that. Hence this manual pass.
+Two of those corrections change how a screen reader sees the editor, in ways no
+automated tool can check:
+
+- `role="application"` is removed from TinyMCE's outer wrapper. That role forced NVDA
+  into focus mode across the whole editor, which is why the toolbar controls were
+  invisible to browse mode and to the elements list. Removing it is what the audit
+  asked for, but it also changes which keys NVDA passes through to the page.
+- TinyMCE runs in inline mode, so the editing area is an element in the page carrying
+  `role="textbox"` rather than a `contenteditable` body inside an iframe. That is what
+  makes it announce as a text box with the question title as its name.
+
+Hence this manual pass.
 
 Run it whenever `richTextAccessibility.ts` changes, when TinyMCE is upgraded, and
 before signing off any related accessibility ticket.
@@ -82,11 +89,18 @@ from the speech viewer rather than paraphrasing.
    and returns focus to the button, whose name updates to match, for example "Styling:
    Heading 2". `Escape` closes the menu without applying anything.
 
-7. **The editing area still works.** `Tab` into the editing area. NVDA announces it as
-   editable and enters focus mode by itself. Typing produces text, and the formatting
-   applied at check 6 is announced when the caret moves over it.
+7. **The editing area announces as a text box.** `Tab` into the editing area. NVDA
+   announces the question title, that it is a multi-line edit field, and the hint text
+   below the title, then enters focus mode by itself. It must not announce "Rich Text
+   Area. Press ALT-0 for help", which was the iframe wording DAC reported. Typing
+   produces text, and the formatting applied at check 6 is announced when the caret
+   moves over it.
 
-8. **Arrow keys in focus mode.** With focus on a toolbar button, press `NVDA+Space` to
+8. **The error is announced with the field.** Save the page with the editor empty so the
+   validation error appears, then `Tab` into the editing area. NVDA announces the error
+   message after the question title and reports the field as invalid.
+
+9. **Arrow keys in focus mode.** With focus on a toolbar button, press `NVDA+Space` to
    enter focus mode, then `Left` and `Right`. Focus moves between the toolbar buttons.
 
 ### Expected result for arrow keys in browse mode
@@ -113,6 +127,15 @@ Add to the ticket:
   script applies unchanged. Run at least checks 1, 4 and 6.
 - **VoiceOver** has no equivalent mode split, so `VO` plus the arrow keys always reach
   the controls. It is not affected by this change and does not need a pass.
+
+### Voice dictation
+
+DAC also reported that dictation software could not enter text into the editor. Inline
+mode improves that, because the editing area is now an element in the page rather than a
+document inside an iframe, but Dragon's support for `contenteditable` remains partial:
+dictating text works, selection and correction commands may not. The only way to resolve
+it outright is a native `<textarea>`, which would mean giving up the formatting controls.
+Treat it as a residual risk to agree with DAC rather than as a check that passes.
 
 ### If a check fails
 
