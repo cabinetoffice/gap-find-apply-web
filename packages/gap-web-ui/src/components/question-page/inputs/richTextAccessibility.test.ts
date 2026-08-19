@@ -446,6 +446,40 @@ describe('Rich text accessibility fixes', () => {
     });
   });
 
+  describe('Dialog title (DAC_Visual_Headings_01)', () => {
+    it('Marks the title as a level two heading', () => {
+      const editor = applyFixes();
+
+      openLinkDialog();
+      editor.emit('OpenWindow');
+
+      expect(document.querySelector('.tox-dialog__title')).toHaveAttribute(
+        'role',
+        'heading'
+      );
+      expect(document.querySelector('.tox-dialog__title')).toHaveAttribute(
+        'aria-level',
+        '2'
+      );
+    });
+
+    it('Leaves an untitled dialog without an empty heading', () => {
+      const editor = applyFixes();
+
+      document.body.insertAdjacentHTML(
+        'beforeend',
+        `<div class="tox-dialog" role="dialog">
+          <div class="tox-dialog__title" style="display: none"></div>
+        </div>`
+      );
+      editor.emit('OpenWindow');
+
+      expect(document.querySelector('.tox-dialog__title')).not.toHaveAttribute(
+        'role'
+      );
+    });
+  });
+
   describe('URL combobox (DAC_Custom_Combobox_01)', () => {
     const openSuggestions = async (activeIndex = 0) => {
       const editor = applyFixes();

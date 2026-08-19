@@ -107,7 +107,11 @@ from the speech viewer rather than paraphrasing.
    relying on the browser, so removing the button's `tabindex="-1"` is only half the
    story and the automated checks cannot prove focus actually lands there.
 
-10. **The URL field behaves as a combobox.** In the link dialog, `Tab` to the "URL" field.
+10. **The dialog opens with a heading.** With the link dialog open, press `H` to move by
+    heading, or open the elements list (`NVDA+F7`) and filter to headings. "Insert/Edit
+    Link" is there as a level 2 heading and marks the start of the dialog's content.
+
+11. **The URL field behaves as a combobox.** In the link dialog, `Tab` to the "URL" field.
     NVDA announces it as a combo box. Type a character, and as suggestions appear NVDA
     announces the list and the number of options. `Down` and `Up` move through them,
     announcing each one and its position, while the caret stays in the field. `Enter`
@@ -118,7 +122,7 @@ from the speech viewer rather than paraphrasing.
     If no suggestions appear at all, add a heading to the editor content first and reopen
     the dialog, since TinyMCE builds the list from headings and anchors in the document.
 
-11. **Arrow keys in focus mode.** With focus on a toolbar button, press `NVDA+Space` to
+12. **Arrow keys in focus mode.** With focus on a toolbar button, press `NVDA+Space` to
     enter focus mode, then `Left` and `Right`. Focus moves between the toolbar buttons.
 
 ### Expected result for arrow keys in browse mode
