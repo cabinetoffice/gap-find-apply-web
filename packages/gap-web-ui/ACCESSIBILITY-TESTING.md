@@ -100,8 +100,15 @@ from the speech viewer rather than paraphrasing.
    validation error appears, then `Tab` into the editing area. NVDA announces the error
    message after the question title and reports the field as invalid.
 
-9. **Arrow keys in focus mode.** With focus on a toolbar button, press `NVDA+Space` to
-   enter focus mode, then `Left` and `Right`. Focus moves between the toolbar buttons.
+9. **The link dialog can be closed from the keyboard.** Activate "Insert/edit link" to
+   open the dialog, then `Tab` through it. Focus reaches the "Close" button in the
+   dialog header, NVDA announces it as "Close button", and `Enter` closes the dialog.
+   Worth doing deliberately: TinyMCE simulates `Tab` inside its dialogs rather than
+   relying on the browser, so removing the button's `tabindex="-1"` is only half the
+   story and the automated checks cannot prove focus actually lands there.
+
+10. **Arrow keys in focus mode.** With focus on a toolbar button, press `NVDA+Space` to
+    enter focus mode, then `Left` and `Right`. Focus moves between the toolbar buttons.
 
 ### Expected result for arrow keys in browse mode
 
