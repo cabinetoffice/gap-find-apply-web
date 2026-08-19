@@ -6,13 +6,16 @@
 
 type RichTextEditor = {
   getContainer: () => HTMLElement | null;
+  getBody: () => HTMLElement | null;
   focus: () => void;
   on: (name: string, callback: () => void) => void;
 };
 
 export type RichTextAccessibilityOptions = {
   fieldName: string;
-  accessibleName?: string;
+  labelId: string;
+  describedBy?: string;
+  hasError?: boolean;
 };
 
 const FOCUSABLE_SELECTOR =
@@ -38,6 +41,52 @@ const focusElementBefore = (boundary: HTMLElement) => {
   previous?.focus();
 };
 
+// Runs the fix once the editor's toolbar header is in the DOM. In inline mode
+// TinyMCE attaches its UI from its own 'init' handler, which is registered
+// after the React wrapper's, so the header can still be absent when the fixes
+// first run and a plain early return would silently drop them.
+const whenHeaderReady = (
+  editor: RichTextEditor,
+  apply: (header: HTMLElement, container: HTMLElement) => void
+) => {
+  const container = editor.getContainer();
+  if (!container) return;
+
+  const header = container.querySelector<HTMLElement>('.tox-editor-header');
+  if (header) {
+    apply(header, container);
+    return;
+  }
+
+  const observer = new MutationObserver(() => {
+    const rendered = container.querySelector<HTMLElement>('.tox-editor-header');
+    if (!rendered) return;
+    observer.disconnect();
+    apply(rendered, container);
+  });
+  observer.observe(container, { childList: true, subtree: true });
+  editor.on('remove', () => observer.disconnect());
+};
+
+// The editing area is a bare div: TinyMCE only adds contenteditable to it, and
+// the React wrapper renders it with nothing but an id, so to a screen reader it
+// has no role, no name and no description (DAC_Custom_Text_Area_01, 1.3.1 Info
+// and Relationships, 4.1.2 Name, Role, Value). Naming it through ARIA is the
+// only option available - a label's htmlFor associates with form controls only.
+const makeEditableRegionAccessible = (
+  editor: RichTextEditor,
+  { labelId, describedBy, hasError }: RichTextAccessibilityOptions
+) => {
+  const body = editor.getBody();
+  if (!body) return;
+
+  body.setAttribute('role', 'textbox');
+  body.setAttribute('aria-multiline', 'true');
+  body.setAttribute('aria-labelledby', labelId);
+  if (describedBy) body.setAttribute('aria-describedby', describedBy);
+  if (hasError) body.setAttribute('aria-invalid', 'true');
+};
+
 // TinyMCE puts role="application" on its outer wrapper, which forces NVDA into
 // application mode (DAC_Inaccessible_Content_01, DAC_Custom_Select_01). The
 // toolbar controls are then absent from browse mode and from the elements list,
@@ -60,97 +109,86 @@ const removeApplicationRole = (editor: RichTextEditor) => {
 // and re-asserts it via a MutationObserver whenever TinyMCE resets it. Arrow
 // key navigation across the single toolbar group is left to TinyMCE, so its
 // own group attributes are deliberately not touched.
-const makeToolbarKeyboardAccessible = (
-  editor: RichTextEditor,
-  accessibleName?: string
-) => {
-  const container = editor.getContainer();
-  const header = container?.querySelector<HTMLElement>('.tox-editor-header');
-  if (!container || !header) return;
+const makeToolbarKeyboardAccessible = (editor: RichTextEditor) =>
+  whenHeaderReady(editor, (header, container) => {
+    const getButtons = () =>
+      Array.from(header.querySelectorAll<HTMLElement>('.tox-tbtn'));
 
-  const getButtons = () =>
-    Array.from(header.querySelectorAll<HTMLElement>('.tox-tbtn'));
-
-  const setEntryButton = (active: Element) => {
-    getButtons().forEach((button) => {
-      button.setAttribute('tabindex', button === active ? '0' : '-1');
-    });
-  };
-
-  // Guarantee a single tab stop exists. Only write when one is missing, so the
-  // observer below cannot loop reacting to its own mutations.
-  const ensureEntryButton = () => {
-    const buttons = getButtons();
-    if (buttons.length === 0) return;
-    const hasEntry = buttons.some(
-      (button) => button.getAttribute('tabindex') === '0'
-    );
-    if (!hasEntry) setEntryButton(buttons[0]);
-  };
-
-  // TinyMCE names none of its toolbar groups, so with role="application" gone a
-  // screen reader in browse mode announces only "toolbar" as the cursor enters
-  // it, giving no clue what the controls are for (4.1.2 Name, Role, Value).
-  const ensureToolbarName = () => {
-    header
-      .querySelectorAll<HTMLElement>('[role="toolbar"]')
-      .forEach((toolbar) => {
-        if (toolbar.getAttribute('aria-label') !== TOOLBAR_NAME) {
-          toolbar.setAttribute('aria-label', TOOLBAR_NAME);
-        }
+    const setEntryButton = (active: Element) => {
+      getButtons().forEach((button) => {
+        button.setAttribute('tabindex', button === active ? '0' : '-1');
       });
-  };
+    };
 
-  const applyToolbarFixes = () => {
-    ensureToolbarName();
-    ensureEntryButton();
-  };
+    // Guarantee a single tab stop exists. Only write when one is missing, so the
+    // observer below cannot loop reacting to its own mutations.
+    const ensureEntryButton = () => {
+      const buttons = getButtons();
+      if (buttons.length === 0) return;
+      const hasEntry = buttons.some(
+        (button) => button.getAttribute('tabindex') === '0'
+      );
+      if (!hasEntry) setEntryButton(buttons[0]);
+    };
 
-  applyToolbarFixes();
+    // TinyMCE names none of its toolbar groups, so with role="application" gone a
+    // screen reader in browse mode announces only "toolbar" as the cursor enters
+    // it, giving no clue what the controls are for (4.1.2 Name, Role, Value).
+    const ensureToolbarName = () => {
+      header
+        .querySelectorAll<HTMLElement>('[role="toolbar"]')
+        .forEach((toolbar) => {
+          if (toolbar.getAttribute('aria-label') !== TOOLBAR_NAME) {
+            toolbar.setAttribute('aria-label', TOOLBAR_NAME);
+          }
+        });
+    };
 
-  const observer = new MutationObserver(applyToolbarFixes);
-  observer.observe(header, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['tabindex'],
-  });
-  editor.on('remove', () => observer.disconnect());
+    const applyToolbarFixes = () => {
+      ensureToolbarName();
+      ensureEntryButton();
+    };
 
-  // Roving tabindex: the tab stop follows the most recently focused button.
-  header.addEventListener('focusin', (event) => {
-    const focused = (event.target as HTMLElement | null)?.closest<HTMLElement>(
-      '.tox-tbtn'
+    applyToolbarFixes();
+
+    const observer = new MutationObserver(applyToolbarFixes);
+    observer.observe(header, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['tabindex'],
+    });
+    editor.on('remove', () => observer.disconnect());
+
+    // Roving tabindex: the tab stop follows the most recently focused button.
+    header.addEventListener('focusin', (event) => {
+      const focused = (
+        event.target as HTMLElement | null
+      )?.closest<HTMLElement>('.tox-tbtn');
+      if (focused) setEntryButton(focused);
+    });
+
+    // The toolbar is a single tab stop: Tab / Shift+Tab must move focus out of it
+    // (into the editor body, or back to the previous control) rather than being
+    // trapped by TinyMCE, which by default only lets you leave with Escape.
+    // Captured so this runs before TinyMCE's own toolbar key handling.
+    header.addEventListener(
+      'keydown',
+      (event) => {
+        if (event.key !== 'Tab') return;
+        const target = event.target as HTMLElement | null;
+        if (!target || !header.contains(target)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.shiftKey) {
+          focusElementBefore(container);
+        } else {
+          editor.focus();
+        }
+      },
+      true
     );
-    if (focused) setEntryButton(focused);
   });
-
-  // The toolbar is a single tab stop: Tab / Shift+Tab must move focus out of it
-  // (into the editor body, or back to the previous control) rather than being
-  // trapped by TinyMCE, which by default only lets you leave with Escape.
-  // Captured so this runs before TinyMCE's own toolbar key handling.
-  header.addEventListener(
-    'keydown',
-    (event) => {
-      if (event.key !== 'Tab') return;
-      const target = event.target as HTMLElement | null;
-      if (!target || !header.contains(target)) return;
-      event.preventDefault();
-      event.stopPropagation();
-      if (event.shiftKey) {
-        focusElementBefore(container);
-      } else {
-        editor.focus();
-      }
-    },
-    true
-  );
-
-  if (accessibleName) {
-    const iframe = container.querySelector<HTMLIFrameElement>('iframe');
-    iframe?.setAttribute('title', accessibleName);
-  }
-};
 
 // The block-format ("Paragraph"/"Heading n") control is a TinyMCE bespoke
 // select whose generated ARIA fails several WCAG checks (DAC_Custom_Select_01):
@@ -163,98 +201,98 @@ const makeToolbarKeyboardAccessible = (
 const makeCustomSelectAccessible = (
   editor: RichTextEditor,
   fieldName: string
-) => {
-  const container = editor.getContainer();
-  const header = container?.querySelector<HTMLElement>('.tox-editor-header');
-  if (!container || !header) return;
+) =>
+  whenHeaderReady(editor, (header) => {
+    const observers: MutationObserver[] = [];
 
-  const observers: MutationObserver[] = [];
+    // Give the button an accessible name that contains its visible label and
+    // describes its purpose, e.g. "Styling: Paragraph" (2.5.3 Label in Name,
+    // 2.4.6 Headings and Labels). TinyMCE resets this on selection changes and
+    // can replace the button node entirely, so re-query the button live on every
+    // change and observe the (stable) header rather than holding a reference.
+    const applyAccessibleName = () => {
+      const button = header.querySelector<HTMLElement>('.tox-tbtn--bespoke');
+      const label = button
+        ?.querySelector<HTMLElement>('.tox-tbtn__select-label')
+        ?.textContent?.trim();
+      if (!button || !label) return;
+      const name = `Styling: ${label}`;
+      if (button.getAttribute('aria-label') !== name) {
+        button.setAttribute('aria-label', name);
+      }
+      if (button.getAttribute('title') !== name) {
+        button.setAttribute('title', name);
+      }
+    };
+    applyAccessibleName();
+    const nameObserver = new MutationObserver(applyAccessibleName);
+    nameObserver.observe(header, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['aria-label', 'title'],
+    });
+    observers.push(nameObserver);
 
-  // Give the button an accessible name that contains its visible label and
-  // describes its purpose, e.g. "Styling: Paragraph" (2.5.3 Label in Name,
-  // 2.4.6 Headings and Labels). TinyMCE resets this on selection changes and
-  // can replace the button node entirely, so re-query the button live on every
-  // change and observe the (stable) header rather than holding a reference.
-  const applyAccessibleName = () => {
-    const button = header.querySelector<HTMLElement>('.tox-tbtn--bespoke');
-    const label = button
-      ?.querySelector<HTMLElement>('.tox-tbtn__select-label')
-      ?.textContent?.trim();
-    if (!button || !label) return;
-    const name = `Styling: ${label}`;
-    if (button.getAttribute('aria-label') !== name) {
-      button.setAttribute('aria-label', name);
-    }
-    if (button.getAttribute('title') !== name) {
-      button.setAttribute('title', name);
-    }
-  };
-  applyAccessibleName();
-  const nameObserver = new MutationObserver(applyAccessibleName);
-  nameObserver.observe(header, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-    attributes: true,
-    attributeFilter: ['aria-label', 'title'],
-  });
-  observers.push(nameObserver);
+    // Correct the popup menu markup while this editor's select is open (1.3.1
+    // Info and Relationships, 4.1.2 Name, Role, Value).
+    const menuId = `${fieldName}-stylings-menu`;
+    const fixStylingsMenu = () => {
+      const expanded = header.querySelector<HTMLElement>(
+        '.tox-tbtn--bespoke[aria-expanded="true"]'
+      );
+      if (!expanded) return;
 
-  // Correct the popup menu markup while this editor's select is open (1.3.1
-  // Info and Relationships, 4.1.2 Name, Role, Value).
-  const menuId = `${fieldName}-stylings-menu`;
-  const fixStylingsMenu = () => {
-    const expanded = header.querySelector<HTMLElement>(
-      '.tox-tbtn--bespoke[aria-expanded="true"]'
+      const menu = document.querySelector<HTMLElement>(
+        '.tox-tinymce-aux [role="menu"]'
+      );
+      if (!menu) return;
+
+      // One clear role: drop the redundant listbox wrapping the menu.
+      menu.closest<HTMLElement>('[role="listbox"]')?.removeAttribute('role');
+
+      // Give the menu an id and an accessible name, and reference it from the
+      // button so aria-controls points at the surviving role="menu".
+      if (menu.id !== menuId) menu.id = menuId;
+      if (menu.getAttribute('aria-label') !== 'Stylings') {
+        menu.setAttribute('aria-label', 'Stylings');
+      }
+      if (expanded.getAttribute('aria-controls') !== menuId) {
+        expanded.setAttribute('aria-controls', menuId);
+      }
+
+      // aria-selected is not allowed on role="menuitemcheckbox"; aria-checked
+      // already conveys the current selection.
+      menu
+        .querySelectorAll<HTMLElement>(
+          '[role="menuitemcheckbox"][aria-selected]'
+        )
+        .forEach((item) => item.removeAttribute('aria-selected'));
+    };
+
+    const menuObserver = new MutationObserver(fixStylingsMenu);
+    menuObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['aria-expanded', 'aria-selected'],
+    });
+    observers.push(menuObserver);
+
+    editor.on('remove', () =>
+      observers.forEach((observer) => observer.disconnect())
     );
-    if (!expanded) return;
-
-    const menu = document.querySelector<HTMLElement>(
-      '.tox-tinymce-aux [role="menu"]'
-    );
-    if (!menu) return;
-
-    // One clear role: drop the redundant listbox wrapping the menu.
-    menu.closest<HTMLElement>('[role="listbox"]')?.removeAttribute('role');
-
-    // Give the menu an id and an accessible name, and reference it from the
-    // button so aria-controls points at the surviving role="menu".
-    if (menu.id !== menuId) menu.id = menuId;
-    if (menu.getAttribute('aria-label') !== 'Stylings') {
-      menu.setAttribute('aria-label', 'Stylings');
-    }
-    if (expanded.getAttribute('aria-controls') !== menuId) {
-      expanded.setAttribute('aria-controls', menuId);
-    }
-
-    // aria-selected is not allowed on role="menuitemcheckbox"; aria-checked
-    // already conveys the current selection.
-    menu
-      .querySelectorAll<HTMLElement>('[role="menuitemcheckbox"][aria-selected]')
-      .forEach((item) => item.removeAttribute('aria-selected'));
-  };
-
-  const menuObserver = new MutationObserver(fixStylingsMenu);
-  menuObserver.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['aria-expanded', 'aria-selected'],
   });
-  observers.push(menuObserver);
-
-  editor.on('remove', () =>
-    observers.forEach((observer) => observer.disconnect())
-  );
-};
 
 const applyRichTextAccessibilityFixes = (
   editor: RichTextEditor,
-  { fieldName, accessibleName }: RichTextAccessibilityOptions
+  options: RichTextAccessibilityOptions
 ) => {
   removeApplicationRole(editor);
-  makeToolbarKeyboardAccessible(editor, accessibleName);
-  makeCustomSelectAccessible(editor, fieldName);
+  makeEditableRegionAccessible(editor, options);
+  makeToolbarKeyboardAccessible(editor);
+  makeCustomSelectAccessible(editor, options.fieldName);
 };
 
 export default applyRichTextAccessibilityFixes;

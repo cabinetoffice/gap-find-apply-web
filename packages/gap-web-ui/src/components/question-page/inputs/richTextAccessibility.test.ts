@@ -18,31 +18,45 @@ beforeAll(() => {
 // asserts on a re-applied fix has to wait a tick first.
 const flushObservers = () => new Promise((resolve) => setTimeout(resolve, 0));
 
+// Mirrors what TinyMCE renders in inline mode: the toolbar goes in the fixed
+// container we provide, and the editing area is an element in the page rather
+// than an iframe.
 const buildEditorDom = () => {
   document.body.innerHTML = `
     <button id="preceding-control">Back</button>
-    <div class="tox tox-tinymce" role="application">
-      <div class="tox-editor-header">
-        <div class="tox-toolbar__primary" role="group">
-          <div class="tox-toolbar__group" role="toolbar">
-            <button
-              class="tox-tbtn tox-tbtn--select tox-tbtn--bespoke"
-              aria-label="Blocks"
-              title="Blocks"
-              aria-expanded="false"
-            >
-              <span class="tox-tbtn__select-label">Paragraph</span>
-            </button>
-            <button class="tox-tbtn" aria-label="Bold" title="Bold"></button>
-            <button class="tox-tbtn" aria-label="Italic" title="Italic"></button>
+    <div class="gap-rich-text">
+      <div id="grantEligibilityTab-toolbar" class="gap-rich-text__toolbar">
+        <div class="tox tox-tinymce tox-tinymce-inline" role="application">
+          <div class="tox-editor-header">
+            <div class="tox-toolbar__primary" role="group">
+              <div class="tox-toolbar__group" role="toolbar">
+                <button
+                  class="tox-tbtn tox-tbtn--select tox-tbtn--bespoke"
+                  aria-label="Blocks"
+                  title="Blocks"
+                  aria-expanded="false"
+                >
+                  <span class="tox-tbtn__select-label">Paragraph</span>
+                </button>
+                <button class="tox-tbtn" aria-label="Bold" title="Bold"></button>
+                <button class="tox-tbtn" aria-label="Italic" title="Italic"></button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <iframe title="Rich Text Area"></iframe>
+      <div
+        id="grantEligibilityTab"
+        class="mce-content-body"
+        contenteditable="true"
+      ></div>
     </div>
   `;
   return document.querySelector<HTMLElement>('.tox-tinymce')!;
 };
+
+const getEditableRegion = () =>
+  document.querySelector<HTMLElement>('.mce-content-body');
 
 const openStylingsMenu = () => {
   document
@@ -72,6 +86,7 @@ const createEditor = (container: HTMLElement) => {
   const handlers: Record<string, (() => void)[]> = {};
   return {
     getContainer: () => container,
+    getBody: () => getEditableRegion(),
     focus: jest.fn(),
     on: (name: string, callback: () => void) => {
       handlers[name] = [...(handlers[name] ?? []), callback];
@@ -97,7 +112,8 @@ const fixEditor = (
   activeEditors.push(editor);
   applyRichTextAccessibilityFixes(editor, {
     fieldName: 'grantEligibilityTab',
-    accessibleName: 'Add eligibility information for your grant',
+    labelId: 'grantEligibilityTab-label',
+    describedBy: 'grantEligibilityTab-hint',
     ...options,
   });
   return editor;
@@ -209,13 +225,74 @@ describe('Rich text accessibility fixes', () => {
       );
     });
 
-    it('Names the editing area with the question title', () => {
+    it('Applies the fixes when TinyMCE attaches the toolbar after init', async () => {
+      document.body.innerHTML = `
+        <button id="preceding-control">Back</button>
+        <div class="tox tox-tinymce tox-tinymce-inline" role="application"></div>
+      `;
+      const container = document.querySelector<HTMLElement>('.tox-tinymce')!;
+      fixEditor(container);
+
+      container.innerHTML = `
+        <div class="tox-editor-header">
+          <div class="tox-toolbar__group" role="toolbar">
+            <button class="tox-tbtn" aria-label="Bold" title="Bold"></button>
+          </div>
+        </div>
+      `;
+      await flushObservers();
+
+      expect(document.querySelector('[role="toolbar"]')).toHaveAttribute(
+        'aria-label',
+        'Formatting'
+      );
+      expect(getTabIndexes()).toEqual(['0']);
+    });
+  });
+
+  describe('Editing area (DAC_Custom_Text_Area_01)', () => {
+    it('Exposes the editing area as a multi-line text box', () => {
       applyFixes();
 
-      expect(document.querySelector('iframe')).toHaveAttribute(
-        'title',
-        'Add eligibility information for your grant'
+      expect(getEditableRegion()).toHaveAttribute('role', 'textbox');
+      expect(getEditableRegion()).toHaveAttribute('aria-multiline', 'true');
+    });
+
+    it('Names the editing area from the visible question title', () => {
+      applyFixes();
+
+      expect(getEditableRegion()).toHaveAttribute(
+        'aria-labelledby',
+        'grantEligibilityTab-label'
       );
+    });
+
+    it('Describes the editing area with the hint', () => {
+      applyFixes();
+
+      expect(getEditableRegion()).toHaveAttribute(
+        'aria-describedby',
+        'grantEligibilityTab-hint'
+      );
+    });
+
+    it('Marks the editing area invalid when the question is in error', () => {
+      fixEditor(buildEditorDom(), {
+        describedBy: 'grantEligibilityTab-hint grantEligibilityTab-error',
+        hasError: true,
+      });
+
+      expect(getEditableRegion()).toHaveAttribute('aria-invalid', 'true');
+      expect(getEditableRegion()).toHaveAttribute(
+        'aria-describedby',
+        'grantEligibilityTab-hint grantEligibilityTab-error'
+      );
+    });
+
+    it('Leaves a valid editing area without aria-invalid', () => {
+      applyFixes();
+
+      expect(getEditableRegion()).not.toHaveAttribute('aria-invalid');
     });
   });
 
