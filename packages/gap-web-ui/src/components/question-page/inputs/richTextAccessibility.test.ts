@@ -117,7 +117,17 @@ const openLinkDialog = () => {
           ></button>
         </div>
         <div class="tox-dialog__body">
-          <input class="tox-textfield" data-alloy-tabstop="true" tabindex="-1" />
+          <input
+            id="form-field_1"
+            type="url"
+            class="tox-textfield"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-haspopup="true"
+            aria-expanded="false"
+            data-alloy-tabstop="true"
+            tabindex="-1"
+          />
           <div
             class="tox-browse-url"
             role="button"
@@ -141,6 +151,50 @@ const openLinkDialog = () => {
 
 const getDialogCloseButton = () =>
   document.querySelector<HTMLElement>('.tox-dialog__header button');
+
+// The URL field's suggestion popup, as TinyMCE builds it: a menu of menuitems
+// inside the listbox that alloy gives the typeahead sandbox.
+const showLinkSuggestions = (activeIndex = 0) => {
+  const option = (index: number, label: string) => `
+    <div
+      title="${label}"
+      role="menuitem"
+      aria-haspopup="false"
+      class="tox-collection__item${
+        index === activeIndex ? ' tox-collection__item--active' : ''
+      }"
+    >
+      <div class="tox-collection__item-label">${label}</div>
+    </div>
+  `;
+
+  document.querySelector('.tox-dialog')!.insertAdjacentHTML(
+    'beforeend',
+    `
+    <div id="aria-controls_1" role="listbox" class="tox-dialog__popups">
+      <div class="tox-tiered-menu">
+        <div role="menu" class="tox-menu tox-collection tox-collection--list">
+          <div class="tox-collection__group">${option(
+            0,
+            'http://test.com'
+          )}</div>
+          <div class="tox-collection__group">${option(1, '&lt;top&gt;')}</div>
+        </div>
+      </div>
+    </div>
+  `
+  );
+};
+
+const getComboboxInput = () =>
+  document.querySelector<HTMLElement>('.tox-dialog [role="combobox"]');
+
+const getSuggestions = () =>
+  Array.from(
+    document.querySelectorAll<HTMLElement>(
+      '.tox-dialog__popups .tox-collection__item'
+    )
+  );
 
 const getButtons = () =>
   Array.from(document.querySelectorAll<HTMLElement>('.tox-tbtn'));
@@ -389,6 +443,99 @@ describe('Rich text accessibility fixes', () => {
       editor.emit('OpenWindow');
 
       expect(getDialogCloseButton()).not.toHaveAttribute('tabindex');
+    });
+  });
+
+  describe('URL combobox (DAC_Custom_Combobox_01)', () => {
+    const openSuggestions = async (activeIndex = 0) => {
+      const editor = applyFixes();
+      openLinkDialog();
+      editor.emit('OpenWindow');
+
+      showLinkSuggestions(activeIndex);
+      await flushObservers();
+
+      return editor;
+    };
+
+    it('Says the field pops up a listbox rather than a menu', () => {
+      const editor = applyFixes();
+      openLinkDialog();
+      editor.emit('OpenWindow');
+
+      expect(getComboboxInput()).toHaveAttribute('aria-haspopup', 'listbox');
+    });
+
+    it('Names the suggestion list', async () => {
+      await openSuggestions();
+
+      expect(document.querySelector('[role="listbox"]')).toHaveAttribute(
+        'aria-label',
+        'Link suggestions'
+      );
+    });
+
+    it('Removes the menu nested inside the listbox', async () => {
+      await openSuggestions();
+
+      expect(document.querySelector('[role="menu"]')).toBeNull();
+      expect(document.querySelector('.tox-tiered-menu')).toHaveAttribute(
+        'role',
+        'presentation'
+      );
+      expect(document.querySelector('.tox-collection__group')).toHaveAttribute(
+        'role',
+        'presentation'
+      );
+    });
+
+    it('Exposes the suggestions as options of the listbox', async () => {
+      await openSuggestions();
+
+      expect(document.querySelector('[role="menuitem"]')).toBeNull();
+      getSuggestions().forEach((option) =>
+        expect(option).toHaveAttribute('role', 'option')
+      );
+    });
+
+    it('Points the field at the highlighted suggestion', async () => {
+      await openSuggestions(1);
+
+      const [first, second] = getSuggestions();
+      expect(first).toHaveAttribute('aria-selected', 'false');
+      expect(second).toHaveAttribute('aria-selected', 'true');
+      expect(getComboboxInput()).toHaveAttribute(
+        'aria-activedescendant',
+        second.id
+      );
+    });
+
+    it('Follows the highlight as the user moves through the suggestions', async () => {
+      await openSuggestions(0);
+
+      const [first, second] = getSuggestions();
+      first.classList.remove('tox-collection__item--active');
+      second.classList.add('tox-collection__item--active');
+      await flushObservers();
+
+      expect(first).toHaveAttribute('aria-selected', 'false');
+      expect(second).toHaveAttribute('aria-selected', 'true');
+      expect(getComboboxInput()).toHaveAttribute(
+        'aria-activedescendant',
+        second.id
+      );
+    });
+
+    it('Stops watching once the dialog closes', async () => {
+      const editor = await openSuggestions(0);
+
+      editor.emit('CloseWindow');
+      const [first, second] = getSuggestions();
+      first.classList.remove('tox-collection__item--active');
+      second.classList.add('tox-collection__item--active');
+      await flushObservers();
+
+      expect(second).toHaveAttribute('aria-selected', 'false');
     });
   });
 
