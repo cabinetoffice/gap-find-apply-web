@@ -23,6 +23,11 @@ const FOCUSABLE_SELECTOR =
 
 const TOOLBAR_NAME = 'Formatting';
 
+const LISTBOX_NAME = 'Link suggestions';
+
+// The class TinyMCE puts on the highlighted item of an open menu or popup.
+const ACTIVE_OPTION_CLASS = 'tox-collection__item--active';
+
 // Moves focus to the last focusable element in the page that appears before the
 // given boundary element - used to leave the toolbar backwards on Shift+Tab.
 const focusElementBefore = (boundary: HTMLElement) => {
@@ -302,6 +307,94 @@ const makeDialogsKeyboardAccessible = (editor: RichTextEditor) => {
   });
 };
 
+// The link dialog's URL field is a combobox, but TinyMCE fills its popup with a
+// menu: a role="menu" nested inside the role="listbox" popup, holding the
+// suggestions as role="menuitem". Two conflicting roles means the suggestions
+// are announced as nothing at all (DAC_Custom_Combobox_01, 1.3.1 Info and
+// Relationships, 4.1.2 Name, Role, Value). This reshapes the popup into the
+// ARIA combobox pattern DAC pointed at: a named listbox of options, with the
+// highlighted one carried by aria-activedescendant. TinyMCE already sets that
+// attribute itself when it highlights an item, but only when the item has an
+// id, and it never gives them one - so the ids below also repair its own code.
+const makeUrlComboboxAccessible = (
+  editor: RichTextEditor,
+  fieldName: string
+) => {
+  const fixCombobox = () => {
+    const input = document.querySelector<HTMLElement>(
+      '.tox-dialog [role="combobox"]'
+    );
+    if (!input) return;
+
+    // A combobox pops up a listbox; aria-haspopup="true" claims a menu.
+    if (input.getAttribute('aria-haspopup') !== 'listbox') {
+      input.setAttribute('aria-haspopup', 'listbox');
+    }
+
+    const listbox = document.querySelector<HTMLElement>(
+      '.tox-dialog__popups[role="listbox"]'
+    );
+    if (!listbox) return;
+
+    if (listbox.getAttribute('aria-label') !== LISTBOX_NAME) {
+      listbox.setAttribute('aria-label', LISTBOX_NAME);
+    }
+
+    // A listbox may only own options, so the menu and group wrappers TinyMCE
+    // nests in between are taken out of the accessibility tree.
+    listbox
+      .querySelectorAll<HTMLElement>(
+        '.tox-tiered-menu, [role="menu"], .tox-collection__group'
+      )
+      .forEach((wrapper) => {
+        if (wrapper.getAttribute('role') !== 'presentation') {
+          wrapper.setAttribute('role', 'presentation');
+        }
+      });
+
+    let activeOptionId = '';
+    listbox
+      .querySelectorAll<HTMLElement>('.tox-collection__item')
+      .forEach((option, index) => {
+        if (option.getAttribute('role') !== 'option') {
+          option.setAttribute('role', 'option');
+        }
+        if (!option.id) option.id = `${fieldName}-link-suggestion-${index}`;
+
+        const selected = option.classList.contains(ACTIVE_OPTION_CLASS);
+        if (selected) activeOptionId = option.id;
+        if (option.getAttribute('aria-selected') !== String(selected)) {
+          option.setAttribute('aria-selected', String(selected));
+        }
+      });
+
+    if (
+      activeOptionId &&
+      input.getAttribute('aria-activedescendant') !== activeOptionId
+    ) {
+      input.setAttribute('aria-activedescendant', activeOptionId);
+    }
+  };
+
+  // TinyMCE builds and discards the popup as the field is typed in, and marks
+  // the highlighted suggestion with a class, so the corrections are re-applied
+  // on every change for as long as a dialog is open.
+  const observer = new MutationObserver(fixCombobox);
+
+  editor.on('OpenWindow', () => {
+    fixCombobox();
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'aria-expanded'],
+    });
+  });
+
+  editor.on('CloseWindow', () => observer.disconnect());
+  editor.on('remove', () => observer.disconnect());
+};
+
 const applyRichTextAccessibilityFixes = (
   editor: RichTextEditor,
   options: RichTextAccessibilityOptions
@@ -311,6 +404,7 @@ const applyRichTextAccessibilityFixes = (
   makeToolbarKeyboardAccessible(editor);
   makeCustomSelectAccessible(editor, options.fieldName);
   makeDialogsKeyboardAccessible(editor);
+  makeUrlComboboxAccessible(editor, options.fieldName);
 };
 
 export default applyRichTextAccessibilityFixes;

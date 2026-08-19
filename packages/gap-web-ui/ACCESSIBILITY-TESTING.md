@@ -107,7 +107,18 @@ from the speech viewer rather than paraphrasing.
    relying on the browser, so removing the button's `tabindex="-1"` is only half the
    story and the automated checks cannot prove focus actually lands there.
 
-10. **Arrow keys in focus mode.** With focus on a toolbar button, press `NVDA+Space` to
+10. **The URL field behaves as a combobox.** In the link dialog, `Tab` to the "URL" field.
+    NVDA announces it as a combo box. Type a character, and as suggestions appear NVDA
+    announces the list and the number of options. `Down` and `Up` move through them,
+    announcing each one and its position, while the caret stays in the field. `Enter`
+    puts the highlighted suggestion into the field. Note that focus never leaves the
+    field: the suggestions are announced through `aria-activedescendant`, so if NVDA goes
+    silent as you arrow, that is the finding to record.
+
+    If no suggestions appear at all, add a heading to the editor content first and reopen
+    the dialog, since TinyMCE builds the list from headings and anchors in the document.
+
+11. **Arrow keys in focus mode.** With focus on a toolbar button, press `NVDA+Space` to
     enter focus mode, then `Left` and `Right`. Focus moves between the toolbar buttons.
 
 ### Expected result for arrow keys in browse mode
