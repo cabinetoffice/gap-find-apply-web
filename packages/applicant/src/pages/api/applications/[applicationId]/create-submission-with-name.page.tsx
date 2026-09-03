@@ -29,7 +29,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       if (!submissionName || submissionName.trim() === '') {
         const redirectUrl = `${routes.nameSubmission(applicationId)}?error=required`;
         return res.redirect(
-          302,
+          303,
           `${process.env.HOST || ''}${redirectUrl}`
         );
       }
@@ -39,7 +39,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (submissionName && !/^[a-zA-Z0-9\s]+$/.test(submissionName)) {
       const redirectUrl = `${routes.nameSubmission(applicationId)}?error=invalidCharacters${submissionName ? `&submissionName=${encodeURIComponent(submissionName)}` : ''}`;
       return res.redirect(
-        302,
+        303,
         `${process.env.HOST || ''}${redirectUrl}`
       );
     }
@@ -54,7 +54,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       `Submission created with ID: ${submissionId} for application: ${applicationId}`
     );
 
+    // Use 303 See Other to force GET redirect after POST
     return res.redirect(
+      303,
       `${process.env.HOST || ''}${routes.submissions.sections(submissionId)}`
     );
   } catch (e: any) {
@@ -69,7 +71,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         linkInformation: '',
       },
     };
-    return res.redirect(routes.serviceError(serviceErrorProps));
+    return res.redirect(
+      303,
+      `${process.env.HOST || ''}${routes.serviceError(serviceErrorProps)}`
+    );
   }
 }
 
