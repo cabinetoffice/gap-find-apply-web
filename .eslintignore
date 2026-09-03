@@ -2,3 +2,4 @@
 **/assets/**/*
 **/cypress/**/*
 **/public/**/*
+**/next-env.d.ts
