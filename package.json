@@ -48,7 +48,8 @@
     "word-wrap": "^1.2.4",
     "@babel/traverse": "7.23.2",
     "parse-url": "8.1.0",
-    "@types/react": "^18.2.74"
+    "@types/react": "^18.2.74",
+    "sharp": "0.35.3"
   },
   "packageManager": "yarn@3.6.0"
 }
