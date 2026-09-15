@@ -169,13 +169,16 @@ export default function SubmissionSections({
                         <dt className="govuk-summary-list__key">
                           {section.sectionId === 'ELIGIBILITY' ||
                           eligibilityCheckPassed ? (
-                            <Link
-                              href={getSectionUrl(section.sectionId)}
+                            <a
+                              href={
+                                publicRuntimeConfig.subPath +
+                                getSectionUrl(section.sectionId)
+                              }
                               className="govuk-link govuk-link--no-visited-state govuk-!-font-weight-regular"
                               data-cy={`cy-section-title-link-${section.sectionTitle}`}
                             >
                               {section.sectionTitle}
-                            </Link>
+                            </a>
                           ) : (
                             <p
                               className="govuk-!-margin-0 govuk-!-font-weight-regular"

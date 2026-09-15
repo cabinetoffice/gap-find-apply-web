@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import Link from 'next/link';
+import getConfig from 'next/config';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
 import { GrantMandatoryQuestionService } from '../../services/GrantMandatoryQuestionService';
@@ -8,6 +8,8 @@ import { getJwtFromCookies } from '../../utils/jwt';
 import { routes } from '../../utils/routes';
 import { GrantSchemeService } from '../../services/GrantSchemeService';
 import { logger } from '../../utils/logger';
+
+const { publicRuntimeConfig } = getConfig();
 
 export async function getServerSideProps({
   req,
@@ -136,15 +138,19 @@ export default function MandatoryQuestionsBeforeYouStart({
           </li>
         </ul>
 
-        <Link
-          href={routes.api.createMandatoryQuestion(schemeId)}
+        <a
+          href={
+            publicRuntimeConfig.subPath +
+            routes.api.createMandatoryQuestion(schemeId)
+          }
           className="govuk-button"
           data-module="govuk-button"
           aria-disabled="false"
           role="button"
+          draggable="false"
         >
           Continue
-        </Link>
+        </a>
       </Layout>
     </>
   );
