@@ -157,14 +157,15 @@ export default function SubmissionSummary({
               </h1>
               <p className="govuk-body">
                 You can{' '}
-                <Link
-                  href={routes.api.submissions.downloadSummary(
-                    grantSubmissionId
-                  )}
+                <a
+                  href={
+                    publicRuntimeConfig.subPath +
+                    routes.api.submissions.downloadSummary(grantSubmissionId)
+                  }
                   className="govuk-link govuk-link--no-visited-state"
                 >
                   download a copy of your answers (ZIP)
-                </Link>{' '}
+                </a>{' '}
                 for future reference.
               </p>
 
