@@ -165,7 +165,7 @@ describe('Download submissions page', () => {
       expect(response).toStrictEqual({
         redirect: {
           destination:
-            '/service-error?serviceErrorProps={"errorInformation":"Something went wrong. This application has no submissions.","linkAttributes":{"href":"/testRefererPage","linkText":"Please return","linkInformation":" and try again."}}&excludeSubPath=true',
+            '/service-error?serviceErrorProps={"errorInformation":"Something went wrong. This application has no submissions.","linkAttributes":{"href":"/testRefererPage","linkText":"Please return","linkInformation":" and try again."}}',
           statusCode: 302,
         },
       });
@@ -192,7 +192,7 @@ describe('Download submissions page', () => {
       expect(response).toStrictEqual({
         redirect: {
           destination:
-            '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to export submissions.","linkAttributes":{"href":"/testRefererPage","linkText":"Please return","linkInformation":" and try again."}}&excludeSubPath=true',
+            '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to export submissions.","linkAttributes":{"href":"/testRefererPage","linkText":"Please return","linkInformation":" and try again."}}',
           statusCode: 302,
         },
       });
@@ -268,7 +268,7 @@ describe('Download submissions page', () => {
         expect(response).toStrictEqual({
           redirect: {
             destination:
-              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to export submissions.","linkAttributes":{"href":"/testRefererPage","linkText":"Please return","linkInformation":" and try again."}}&excludeSubPath=true',
+              '/service-error?serviceErrorProps={"errorInformation":"Something went wrong while trying to export submissions.","linkAttributes":{"href":"/testRefererPage","linkText":"Please return","linkInformation":" and try again."}}',
             statusCode: 302,
           },
         });

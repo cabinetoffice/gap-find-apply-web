@@ -1,5 +1,32 @@
 import { Redirect } from 'next';
 import ServiceError from '../types/ServiceError';
+import { FALLBACK_HREF, toSafeHref } from './safeHref';
+
+const SUB_PATH = process.env.SUB_PATH || '/apply/admin';
+
+/**
+ * The "Please return" link on the error page used to be built from the raw
+ * Referer, passed as an absolute URL with excludeSubPath=true so it wasn't
+ * double-prefixed. That absolute-URL path is what the reflected-XSS report
+ * abused, so callers now reduce the Referer to a same-origin relative path
+ * (dropping the base path, which CustomLink re-adds). The Referer is itself
+ * attacker-influenceable, so the result is still validated by toSafeHref.
+ */
+const refererToRelativeHref = (referer?: string): string => {
+  if (!referer) return FALLBACK_HREF;
+  try {
+    // A real Referer is absolute; the dummy base is only used if a relative
+    // value is supplied, and is discarded for an absolute one.
+    const url = new URL(referer, 'http://n');
+    const path =
+      (url.pathname.startsWith(SUB_PATH)
+        ? url.pathname.slice(SUB_PATH.length)
+        : url.pathname) + url.search;
+    return toSafeHref(path);
+  } catch {
+    return FALLBACK_HREF;
+  }
+};
 
 const generateErrorPageParams = (errorInformation: string, href: string) => ({
   errorInformation,
@@ -10,16 +37,12 @@ const generateErrorPageParams = (errorInformation: string, href: string) => ({
   },
 });
 
-const generateErrorPageRedirect = (
-  errorInformation: string,
-  href: string,
-  excludeSubPath = false
-) => ({
+const generateErrorPageRedirect = (errorInformation: string, href: string) => ({
   redirect: {
     statusCode: 302,
     destination: `/service-error?serviceErrorProps=${JSON.stringify(
       generateErrorPageParams(errorInformation, href)
-    )}${excludeSubPath ? '&excludeSubPath=true' : ''}`,
+    )}`,
   } as Redirect,
 });
 
@@ -102,6 +125,7 @@ export {
   handleMultipleEditorsError,
   generateErrorPageParams,
   generateErrorPageRedirect,
+  refererToRelativeHref,
   generateErrorPageRedirectV2,
   generateErrorMessageFromStatusCode,
   generateErrorPageMultipleEditors,
