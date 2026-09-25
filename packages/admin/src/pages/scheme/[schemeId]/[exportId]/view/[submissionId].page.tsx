@@ -1,7 +1,10 @@
 import { GetServerSidePropsContext } from 'next';
 import { getLoggedInUsersDetails } from '../../../../../services/UserService';
 import InferProps from '../../../../../types/InferProps';
-import { generateErrorPageRedirect } from '../../../../../utils/serviceErrorHelpers';
+import {
+  generateErrorPageRedirect,
+  refererToRelativeHref,
+} from '../../../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../../../utils/session';
 import CustomLink from '../../../../../components/custom-link/CustomLink';
 import Meta from '../../../../../components/layout/Meta';
@@ -19,8 +22,7 @@ export const getServerSideProps = async ({
 
   const errorPageRedirect = generateErrorPageRedirect(
     'Something went wrong.',
-    req.headers.referer ? req.headers.referer : '/dashboard',
-    !!req.headers.referer
+    refererToRelativeHref(req.headers.referer)
   );
 
   let submission, sessionCookie, organisationName;

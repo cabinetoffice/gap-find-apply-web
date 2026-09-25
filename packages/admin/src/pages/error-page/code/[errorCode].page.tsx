@@ -3,6 +3,7 @@ import CustomLink from '../../../components/custom-link/CustomLink';
 import Meta from '../../../components/layout/Meta';
 import InferProps from '../../../types/InferProps';
 import { generateErrorMessageFromStatusCode } from '../../../utils/serviceErrorHelpers';
+import { toSafeHref } from '../../../utils/safeHref';
 
 export const getServerSideProps = async ({
   query,
@@ -14,7 +15,7 @@ export const getServerSideProps = async ({
   return {
     props: {
       errorMessage,
-      href,
+      href: href === undefined ? null : toSafeHref(href),
     },
   };
 };

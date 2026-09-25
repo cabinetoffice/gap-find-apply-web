@@ -5,6 +5,7 @@ import {
   generateErrorPageRedirect,
   generateErrorPageRedirectV2,
   generateErrorPageAdvertAlreadyPublished,
+  refererToRelativeHref,
 } from './serviceErrorHelpers';
 
 // https://jestjs.io/docs/api#testeachtablename-fn-timeout
@@ -45,22 +46,7 @@ describe('generateErrorPage functions', () => {
   });
 
   describe('generateErrorPageRedirect', () => {
-    test('exclude sub path', () => {
-      expect(
-        generateErrorPageRedirect(
-          expectedErrorPageParams.errorInformation,
-          expectedErrorPageParams.linkAttributes.href,
-          true
-        )
-      ).toEqual({
-        redirect: {
-          destination:
-            '/service-error?serviceErrorProps={"errorInformation":"some info","linkAttributes":{"href":"some-url","linkText":"Please return","linkInformation":" and try again."}}&excludeSubPath=true',
-          statusCode: 302,
-        },
-      });
-    });
-    test("don't exclude subpath", () => {
+    test('builds the service-error redirect from the message and href', () => {
       expect(
         generateErrorPageRedirect(
           expectedErrorPageParams.errorInformation,
@@ -73,6 +59,28 @@ describe('generateErrorPage functions', () => {
           statusCode: 302,
         },
       });
+    });
+  });
+
+  describe('refererToRelativeHref', () => {
+    test('reduces an absolute same-origin Referer to a base-path-relative path', () => {
+      expect(
+        refererToRelativeHref(
+          'https://www.find-government-grants.service.gov.uk/apply/admin/scheme/123'
+        )
+      ).toBe('/scheme/123');
+    });
+
+    test('keeps a relative Referer path, stripping the base path', () => {
+      expect(refererToRelativeHref('/apply/admin/dashboard')).toBe('/dashboard');
+    });
+
+    test('falls back to /dashboard when there is no Referer', () => {
+      expect(refererToRelativeHref(undefined)).toBe('/dashboard');
+    });
+
+    test('rejects a javascript: Referer', () => {
+      expect(refererToRelativeHref('javascript:alert(1)')).toBe('/dashboard');
     });
   });
 
