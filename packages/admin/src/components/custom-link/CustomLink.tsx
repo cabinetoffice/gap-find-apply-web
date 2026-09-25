@@ -34,6 +34,12 @@ const CustomLink = ({
 
   if (typeof href === 'object') href = new URL(href).toString();
 
+  // Defence in depth: never emit a script-executing URL, even if a caller
+  // passes one with excludeSubPath (which skips the SUB_PATH prefix below).
+  // Legitimate http(s) links — Spotlight, advert-in-Find — are unaffected.
+  if (typeof href === 'string' && /^\s*(javascript|data|vbscript):/i.test(href))
+    href = '#';
+
   return (
     <a
       href={
