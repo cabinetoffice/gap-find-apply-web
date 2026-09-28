@@ -97,6 +97,93 @@ html {
   fill: govuk-colour('white') !important;
 }
 
+// TinyMCE runs in inline mode so that the editing area is an element in the
+// page rather than a contenteditable body inside an iframe, which is what
+// stopped it announcing as a text box (DAC_Custom_Text_Area_01). Inline mode
+// brings no styling with it, so the editing area is dressed as a GOV.UK
+// textarea and the content is given the styles the iframe used to supply.
+.gap-rich-text {
+  margin-bottom: govuk-spacing(6);
+
+  &__toolbar .tox.tox-tinymce-inline {
+    border: 0;
+    box-shadow: none;
+
+    .tox-editor-header {
+      padding: 0;
+      box-shadow: none;
+    }
+  }
+
+  .mce-content-body {
+    @include govuk-font($size: 19);
+
+    box-sizing: border-box;
+    min-height: 200px;
+    padding: govuk-spacing(1);
+    border: 2px solid $govuk-input-border-colour;
+    background-color: govuk-colour('white');
+    overflow-y: auto;
+    resize: vertical;
+
+    &:focus {
+      outline: $govuk-focus-width solid $govuk-focus-colour;
+      outline-offset: 0;
+      box-shadow: inset 0 0 0 2px;
+    }
+
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+
+    p {
+      @include govuk-font($size: 19);
+
+      margin: 0 0 govuk-spacing(4);
+    }
+
+    h2 {
+      @include govuk-font($size: 24, $weight: bold);
+
+      margin: 0 0 govuk-spacing(4);
+    }
+
+    h3,
+    h4,
+    h5,
+    h6 {
+      @include govuk-font($size: 19, $weight: bold);
+
+      margin: 0 0 govuk-spacing(4);
+    }
+
+    ul,
+    ol {
+      @include govuk-font($size: 19);
+
+      margin: 0 0 govuk-spacing(4);
+      padding-left: govuk-spacing(5);
+    }
+
+    li {
+      margin-bottom: govuk-spacing(1);
+    }
+
+    a {
+      @include govuk-link-common;
+      @include govuk-link-style-default;
+    }
+  }
+
+  &--error .mce-content-body {
+    border-color: $govuk-error-colour;
+  }
+}
+
 .super-admin-link {
   display: block;
   white-space: pre;
