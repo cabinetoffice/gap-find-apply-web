@@ -2,12 +2,20 @@ import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import Layout from '../../components/partials/Layout';
 import Meta from '../../components/partials/Meta';
+import { normaliseServiceError } from '../../utils/safeHref';
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  const serviceError = JSON.parse(query.serviceErrorProps as string);
+  let parsed: unknown = {};
+  try {
+    parsed = JSON.parse((query.serviceErrorProps as string) ?? '{}');
+  } catch {
+    // Malformed serviceErrorProps must not 500 the error page itself;
+    // fall through to a default, link-less error message.
+  }
+
   return {
     props: {
-      serviceError,
+      serviceError: normaliseServiceError(parsed),
     },
   };
 };

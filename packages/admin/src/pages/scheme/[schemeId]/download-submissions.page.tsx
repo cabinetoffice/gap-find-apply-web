@@ -11,7 +11,10 @@ import {
 import { getLoggedInUsersDetails } from '../../../services/UserService';
 import InferProps from '../../../types/InferProps';
 import { parseBody } from '../../../utils/parseBody';
-import { generateErrorPageRedirect } from '../../../utils/serviceErrorHelpers';
+import {
+  generateErrorPageRedirect,
+  refererToRelativeHref,
+} from '../../../utils/serviceErrorHelpers';
 import { getSessionIdFromCookies } from '../../../utils/session';
 
 export const getServerSideProps = async ({
@@ -31,8 +34,7 @@ export const getServerSideProps = async ({
 
   const errorPageRedirect = generateErrorPageRedirect(
     'Something went wrong while trying to export submissions.',
-    req.headers.referer ? req.headers.referer : '/dashboard',
-    !!req.headers.referer
+    refererToRelativeHref(req.headers.referer)
   );
 
   try {
@@ -51,8 +53,7 @@ export const getServerSideProps = async ({
   } catch (err) {
     return generateErrorPageRedirect(
       'Something went wrong. This application has no submissions.',
-      req.headers.referer ? req.headers.referer : '/dashboard',
-      !!req.headers.referer
+      refererToRelativeHref(req.headers.referer)
     );
   }
 

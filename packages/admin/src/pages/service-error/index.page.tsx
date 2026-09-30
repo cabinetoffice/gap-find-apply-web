@@ -2,31 +2,27 @@ import { GetServerSideProps } from 'next';
 import CustomLink from '../../components/custom-link/CustomLink';
 import Meta from '../../components/layout/Meta';
 import ServiceError from '../../types/ServiceError';
+import { normaliseServiceError } from '../../utils/safeHref';
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  const serviceError = JSON.parse(
-    decodeURIComponent(query.serviceErrorProps as string)
-  );
-  const excludeSubPath = query.excludeSubPath === 'true';
-
-  if (serviceError.linkAttributes === undefined)
-    serviceError.linkAttributes = {};
-
-  if (serviceError.linkAttributes.href === undefined)
-    serviceError.linkAttributes.href = '/dashboard';
+  let parsed: unknown = {};
+  try {
+    parsed = JSON.parse(
+      decodeURIComponent((query.serviceErrorProps as string) ?? '{}')
+    );
+  } catch {
+    // Malformed serviceErrorProps must not 500 the error page itself;
+    // fall through to a default, link-less error message.
+  }
 
   return {
     props: {
-      serviceError,
-      excludeSubPath,
+      serviceError: normaliseServiceError(parsed),
     },
   };
 };
 
-const ServiceErrorPage = ({
-  serviceError,
-  excludeSubPath,
-}: ServiceErrorProps) => {
+const ServiceErrorPage = ({ serviceError }: ServiceErrorProps) => {
   return (
     <>
       <Meta
@@ -45,10 +41,7 @@ const ServiceErrorPage = ({
               {serviceError.linkAttributes && (
                 <>
                   <p className="govuk-body">
-                    <CustomLink
-                      href={serviceError.linkAttributes.href}
-                      excludeSubPath={excludeSubPath}
-                    >
+                    <CustomLink href={serviceError.linkAttributes.href}>
                       {serviceError.linkAttributes.linkText}
                     </CustomLink>
                   </p>
@@ -67,7 +60,6 @@ const ServiceErrorPage = ({
 
 interface ServiceErrorProps {
   serviceError: ServiceError;
-  excludeSubPath: boolean;
 }
 
 export default ServiceErrorPage;
