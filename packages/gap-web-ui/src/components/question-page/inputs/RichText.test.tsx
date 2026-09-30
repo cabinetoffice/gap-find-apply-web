@@ -1,8 +1,13 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import { Editor } from '@tinymce/tinymce-react';
 import { merge } from 'lodash';
 import React from 'react';
 import RichText, { RichTextProps } from './RichText';
+
+jest.mock('@tinymce/tinymce-react', () => ({
+  Editor: jest.fn(() => null),
+}));
 
 const getProps = (overrides: Partial<RichTextProps> = {}) =>
   merge(
@@ -65,6 +70,15 @@ describe('Rich Text component', () => {
           'A description of the page and the question what it is asking'
         )
       ).toHaveClass('gap-new-line');
+    });
+
+    it('Submits the value through a single input named after the field', () => {
+      const { container } = render(<RichText {...getProps()} />);
+
+      expect(container.querySelectorAll('[name="fieldName"]')).toHaveLength(1);
+      expect(jest.mocked(Editor).mock.calls[0][0].init).toEqual(
+        expect.objectContaining({ hidden_input: false })
+      );
     });
   });
 
