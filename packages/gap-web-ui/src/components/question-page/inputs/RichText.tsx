@@ -116,6 +116,8 @@ const RichText = ({
             link_target_list: false,
             toolbar_persist: true,
             fixed_toolbar_container: `#${toolbarId}`,
+            // Inline mode otherwise adds a second input named after the field.
+            hidden_input: false,
           }}
           disabled={disabled}
           value={value}
