@@ -13,9 +13,7 @@ const serviceErrorProps = {
   },
 };
 
-const serviceErrorPage = (
-  <ServiceError serviceError={serviceErrorProps} excludeSubPath={false} />
-);
+const serviceErrorPage = <ServiceError serviceError={serviceErrorProps} />;
 
 describe('Service error page render', () => {
   it('Should render correct header', () => {
