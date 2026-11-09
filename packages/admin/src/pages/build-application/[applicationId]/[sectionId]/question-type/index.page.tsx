@@ -111,19 +111,26 @@ const QuestionType = ({
                   />
                 ),
               },
-              {
-                label: ResponseTypeLabels[ResponseType.SingleFileUpload],
-                value: ResponseType.SingleFileUpload,
-                hint: (
-                  <QuestionTypeHint
-                    description="Allows files that are .DOC, .DOCX, .ODT, .PDF, .XLS, .XLSX or .ZIP"
-                    questionType="document-upload"
-                    imageFileName="document-upload"
-                    imageAlt="A screenshot of a document upload component, with a button that allows the user to choose a file to upload"
-                    detailsTitle="See how document upload looks"
-                  />
-                ),
-              },
+              // Changing an existing question to a document upload drops the
+              // upload's default validation (allowed file types, max size), so
+              // admins must delete the question and add a new one instead.
+              ...(isEdit
+                ? []
+                : [
+                    {
+                      label: ResponseTypeLabels[ResponseType.SingleFileUpload],
+                      value: ResponseType.SingleFileUpload,
+                      hint: (
+                        <QuestionTypeHint
+                          description="Allows files that are .DOC, .DOCX, .ODT, .PDF, .XLS, .XLSX or .ZIP"
+                          questionType="document-upload"
+                          imageFileName="document-upload"
+                          imageAlt="A screenshot of a document upload component, with a button that allows the user to choose a file to upload"
+                          detailsTitle="See how document upload looks"
+                        />
+                      ),
+                    },
+                  ]),
               {
                 label: ResponseTypeLabels[ResponseType.Date],
                 hint: (
@@ -138,6 +145,16 @@ const QuestionType = ({
               },
             ]}
           />
+          {isEdit && (
+            <div
+              className="govuk-inset-text"
+              data-cy="cy_questionType-documentUploadUnavailable"
+            >
+              You cannot change a question to a document upload. If you need
+              applicants to upload a document, delete this question and add a
+              new one.
+            </div>
+          )}
           <input type="hidden" name="version" value={version} />
           <Button text="Save and continue" />
         </FlexibleQuestionPageLayout>

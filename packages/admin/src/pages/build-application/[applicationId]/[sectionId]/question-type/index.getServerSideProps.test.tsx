@@ -167,6 +167,53 @@ describe('getServerSideProps', () => {
         'Multiple select'
       );
     });
+
+    describe('when editing an existing question', () => {
+      const getEditContext = () =>
+        getContext({ query: { questionId: 'questionId' } });
+
+      const mockQuestionOfType = (responseType: ResponseTypeEnum) =>
+        jest.spyOn(QuestionService, 'getQuestion').mockResolvedValue({
+          responseType,
+          questionId: 'questionId',
+          profileField: '',
+          fieldPrefix: '',
+          fieldTitle: '',
+          hintText: '',
+          adminSummary: '',
+          displayText: '',
+          questionSuffix: '',
+          optional: 'false',
+          validation: { mandatory: true },
+        });
+
+      it('Should redirect back to the edit question page for a document upload question', async () => {
+        mockQuestionOfType(ResponseTypeEnum.SingleFileUpload);
+
+        const result = await getServerSideProps(getEditContext());
+
+        expect(result).toStrictEqual({
+          redirect: {
+            destination:
+              '/build-application/applicationId/sectionId/questionId/edit/question-content',
+            statusCode: 302,
+          },
+        });
+      });
+
+      it('Should return the current type as defaultChecked for other question types', async () => {
+        mockQuestionOfType(ResponseTypeEnum.ShortAnswer);
+
+        const result = (await getServerSideProps(
+          getEditContext()
+        )) as NextGetServerSidePropsResponse;
+
+        expect(result.props.pageData.defaultRadio).toStrictEqual(
+          'Short answer'
+        );
+        expect(result.props.pageData.isEdit).toBe(true);
+      });
+    });
   });
 
   describe('when handling a POST request', () => {
