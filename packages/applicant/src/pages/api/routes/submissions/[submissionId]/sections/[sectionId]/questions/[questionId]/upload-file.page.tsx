@@ -1,4 +1,4 @@
-import { IncomingForm } from 'formidable';
+import { errors as formidableErrors, IncomingForm } from 'formidable';
 import fs from 'fs';
 import { ValidationError } from 'gap-web-ui';
 import {
@@ -52,6 +52,23 @@ function urlValidationFailureParams(
     .join('');
 }
 
+export const FILE_TOO_LARGE_ERROR_MESSAGE =
+  'The selected file must be smaller than 300MB';
+
+// formidable rejects with this code once the upload passes maxFileSize
+const isFileTooLargeError = (err) =>
+  err?.code === formidableErrors.biggerThanMaxFileSize;
+
+const serviceErrorRedirectUrl = (submissionId: string, sectionId: string) =>
+  `${process.env.HOST}${routes.serviceError({
+    errorInformation: 'There was a problem uploading your file.',
+    linkAttributes: {
+      href: routes.submissions.section(submissionId, sectionId),
+      linkText: 'Go back to the section and try again',
+      linkInformation: '',
+    },
+  })}`;
+
 const getFileFromRequest = async (req) => {
   return await new Promise<{ fields: any; files: any }>((resolve, reject) => {
     const form = new IncomingForm({ maxFileSize: MAX_FILE_UPLOAD_SIZE_BYTES });
@@ -88,7 +105,38 @@ const handler = async (req, res) => {
     const sectionId = req.query.sectionId.toString();
     const questionId = req.query.questionId.toString();
     const jwt = getJwtFromCookies(req);
-    const formData = await getFileFromRequest(req);
+    let formData: Awaited<ReturnType<typeof getFileFromRequest>>;
+    try {
+      formData = await getFileFromRequest(req);
+    } catch (err) {
+      if (isFileTooLargeError(err)) {
+        const isFromCYAPage =
+          req?.headers?.referer?.includes('fromCYAPage=true');
+        const errorStr = urlValidationFailureParams(
+          [
+            {
+              fieldName: questionId,
+              errorMessage: FILE_TOO_LARGE_ERROR_MESSAGE,
+            },
+          ],
+          questionId
+        );
+        return res.redirect(
+          302,
+          `${process.env.HOST}${routes.submissions.question(
+            submissionId,
+            sectionId,
+            questionId
+          )}${errorStr}${isFromCYAPage ? '&fromCYAPage=true' : ''}`
+        );
+      }
+
+      logger.error(logger.utils.addErrorInfo(err, req));
+      return res.redirect(
+        302,
+        serviceErrorRedirectUrl(submissionId, sectionId)
+      );
+    }
 
     //form data will contains files.attachment.originalFilename only when the user has just uploaded a file
     //if the user has already uploaded an attachment previously,and press Save and continue on the question page,
@@ -206,6 +254,10 @@ const handler = async (req, res) => {
 
       // if something isn't a validation failure it's probably worth logging
       logger.error(logger.utils.addErrorInfo(err, req));
+      return res.redirect(
+        302,
+        serviceErrorRedirectUrl(submissionId, sectionId)
+      );
     }
   } else {
     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
