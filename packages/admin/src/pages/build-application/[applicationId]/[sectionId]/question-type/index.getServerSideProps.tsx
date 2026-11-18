@@ -17,6 +17,7 @@ import {
 import { getApplicationFormSummary } from '../../../../../services/ApplicationService';
 import QuestionPageGetServerSideProps from '../../../../../utils/QuestionPageGetServerSideProps';
 import { buildQueryStringWithoutUndefinedValues } from '../../../../../utils/general';
+import { NextRedirect } from '../../../../../utils/QuestionPageGetServerSidePropsTypes';
 
 type RequestBody = {
   responseType: ResponseType;
@@ -197,6 +198,16 @@ export const getServerSideProps = async (
         sectionId,
         questionId.toString()
       );
+      // Document upload questions cannot have their type changed (see the
+      // edit question page), so send anyone who lands here back to it.
+      if (questionData?.responseType === ResponseType.SingleFileUpload) {
+        return {
+          redirect: {
+            destination: `/build-application/${applicationId}/${sectionId}/${questionId}/edit/question-content${queryString}`,
+            statusCode: 302,
+          },
+        } as NextRedirect;
+      }
       if (questionData?.responseType) {
         defaultRadio = ResponseTypeLabels[questionData.responseType];
       }

@@ -319,3 +319,15 @@ export const middleware = async (req: NextRequest) => {
   logResponse(req, res);
   return res;
 };
+
+// Next.js copies the body of every request that runs through middleware and
+// cuts the copy off at 10MB (middlewareClientMaxBodySize), which breaks
+// document uploads larger than that. The upload route is not an authenticated
+// path, so this middleware does nothing for it and it is left out entirely.
+// '/' is listed separately because the second pattern does not match the root.
+export const config = {
+  matcher: [
+    '/',
+    '/((?!api/routes/submissions/[^/]+/sections/[^/]+/questions/[^/]+/upload-file).*)',
+  ],
+};

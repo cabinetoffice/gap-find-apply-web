@@ -107,6 +107,45 @@ describe('Question type page', () => {
     );
   });
 
+  it('Should not show the document upload unavailable message when adding a question', () => {
+    render(component);
+    expect(
+      screen.queryByText(/You cannot change a question to a document upload/)
+    ).not.toBeInTheDocument();
+  });
+
+  describe('When editing an existing question', () => {
+    const editComponent = (
+      <QuestionType {...getProps({ pageData: { isEdit: true } })} />
+    );
+
+    it('Should not offer document upload as an option', () => {
+      render(editComponent);
+      expect(
+        screen.queryByRole('radio', { name: 'Document upload' })
+      ).not.toBeInTheDocument();
+    });
+
+    it('Should still offer the other question types', () => {
+      render(editComponent);
+      [
+        'Short answer',
+        'Long answer',
+        'Yes/No',
+        'Multiple choice',
+        'Multiple select',
+        'Date',
+      ].forEach((name) => screen.getByRole('radio', { name }));
+    });
+
+    it('Should explain how to add a document upload instead', () => {
+      render(editComponent);
+      screen.getByText(
+        'You cannot change a question to a document upload. If you need applicants to upload a document, delete this question and add a new one.'
+      );
+    });
+  });
+
   it('Should have a date answer', () => {
     render(component);
     screen.getByRole('radio', { name: 'Date' });
