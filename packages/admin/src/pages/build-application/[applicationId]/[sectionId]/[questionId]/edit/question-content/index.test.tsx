@@ -68,6 +68,48 @@ describe('Question content page', () => {
     screen.getByRole('button', { name: 'Save changes' });
   });
 
+  describe('Change question type', () => {
+    it('Shows the change question type button for non document upload questions', () => {
+      render(
+        <QuestionContent
+          {...getPageProps(getDefaultProps, {
+            pageData: { editQuestionTypeUrl: '/change-type' },
+          })}
+        />
+      );
+
+      screen.getByRole('button', { name: 'Change question type' });
+      expect(
+        screen.queryByText(
+          /You cannot change the type of a document upload question/
+        )
+      ).not.toBeInTheDocument();
+    });
+
+    it('Hides the change question type button and explains why for document upload questions', () => {
+      render(
+        <QuestionContent
+          {...getPageProps(getDefaultProps, {
+            pageData: {
+              editQuestionTypeUrl: '/change-type',
+              questionData: {
+                ...getDefaultProps().pageData.questionData,
+                responseType: ResponseTypeEnum.SingleFileUpload,
+              },
+            },
+          })}
+        />
+      );
+
+      expect(
+        screen.queryByRole('button', { name: 'Change question type' })
+      ).not.toBeInTheDocument();
+      screen.getByText(
+        'You cannot change the type of a document upload question. If you need a different type of question, delete this question and add a new one.'
+      );
+    });
+  });
+
   describe('Optional question component', () => {
     it('Has no default', () => {
       render(<QuestionContent {...getPageProps(getDefaultProps)} />);

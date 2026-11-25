@@ -27,6 +27,11 @@ const QuestionContent = ({
   },
   previousValues,
 }: InferProps<typeof getServerSideProps>) => {
+  // Changing a document upload to another type (or vice versa) loses the
+  // question's default validation, so the type is locked for these questions.
+  const isDocumentUpload =
+    questionData.responseType === ResponseTypeEnum.SingleFileUpload;
+
   const optionalRadioDefault = () => {
     if (previousValues?.optional)
       return previousValues?.optional === 'true' ? 'Yes' : 'No';
@@ -102,18 +107,31 @@ const QuestionContent = ({
 
           <input type="hidden" name="version" value={version} />
 
+          {isDocumentUpload && (
+            <div
+              className="govuk-inset-text"
+              data-cy="cy_questionEdit_documentUploadTypeLocked"
+            >
+              You cannot change the type of a document upload question. If you
+              need a different type of question, delete this question and add a
+              new one.
+            </div>
+          )}
+
           <div className="govuk-button-group">
             <Button
               text="Save changes"
               data-cy="cy_questionEdit_saveAndContinueButton"
             />
-            <CustomLink
-              href={editQuestionTypeUrl}
-              isSecondaryButton
-              dataCy="cy_questionEdit_cancelChangesButton"
-            >
-              Change question type
-            </CustomLink>
+            {!isDocumentUpload && (
+              <CustomLink
+                href={editQuestionTypeUrl}
+                isSecondaryButton
+                dataCy="cy_questionEdit_cancelChangesButton"
+              >
+                Change question type
+              </CustomLink>
+            )}
           </div>
 
           <hr className="govuk-section-break govuk-section-break--visible govuk-section-break--xl" />
